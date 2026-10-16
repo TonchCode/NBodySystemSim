@@ -6,8 +6,11 @@ the machine (`Win32_*` CIM queries, `nvidia-smi -q`, `nvcc --version`). Raw GPU 
 list).
 
 Source tags: **[M]** measured on this machine · **[S]** NVIDIA spec / whitepaper
-(public spec for the AD103 / RTX 4080 SUPER, still to be quoted by the
-`literature-scout` agent) · **[D]** derived from [M]/[S].
+(public spec). **Update 2026-10-17:** the Ada whitepaper
+[N:nvidia2023adawhitepaper] confirms these [S] rows: SMs/GPCs, 128 FP32 per SM, Tensor/RT
+counts, 128 KB L1/shared, 64 MB L2 and the FP64 1/64 rate. It covers only the non-SUPER
+4080, though, so the **2295/2550 MHz reference clocks are still unsourced**. Quote NVIDIA's
+4080 SUPER product page or don't use them · **[D]** derived from [M]/[S].
 
 ---
 
@@ -122,7 +125,7 @@ Rows marked M were read via `cudaGetDeviceProperties` from a test program built 
 | Item | Version | Status | Src |
 |---|---|---|---|
 | NVIDIA driver | **617.42 WHQL** (CUDA UMD 13.4) | ✅ **Latest** Game Ready driver (released 2026-10-06) | M + web |
-| CUDA Toolkit | **13.4**, nvcc V13.4.92 (built 2026-09-01) | ✅ Installed at `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.4`, `CUDA_PATH` set | M |
+| CUDA Toolkit | **13.4.3** (`version.json`), nvcc V13.4.92 (built 2026-09-01). The online docs are v13.4.2, so the installed toolkit is one update newer | ✅ Installed at `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.4`, `CUDA_PATH` set | M |
 | Nsight Compute | 2026.3.1 | ✅ (kernel-level profiling) | M |
 | Nsight Systems | 2026.3.2 | ✅ (timeline profiling) | M |
 | Nsight VS Edition | 2026.3 | ✅ | M |

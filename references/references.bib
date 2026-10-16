@@ -1,0 +1,243 @@
+% references.bib — N-body CUDA project evidence base
+% Maintained by the literature-scout agent. Every entry below was verified on
+% 2026-10-17 by fetching its landing page (arXiv abstract page, Crossref DOI
+% record, publisher/conference page or NVIDIA docs page). See INDEX.md.
+% Unverified items are NOT in this file; they are listed in INDEX.md as leads.
+
+% ---------------------------------------------------------------------------
+% 1. GPU N-body / hierarchical summation, 2025-2026
+% ---------------------------------------------------------------------------
+
+@inproceedings{madan2025stochastic,
+  author    = {Madan, Abhishek and Sharp, Nicholas and Williams, Francis and Museth, Ken and Levin, David I. W.},
+  title     = {Stochastic {Barnes-Hut} Approximation for Fast Summation on the {GPU}},
+  booktitle = {Proceedings of the Special Interest Group on Computer Graphics and Interactive Techniques Conference Conference Papers (SIGGRAPH Conference Papers '25)},
+  year      = {2025},
+  pages     = {1--10},
+  publisher = {ACM},
+  address   = {Vancouver, BC, Canada},
+  doi       = {10.1145/3721238.3730725},
+  eprint    = {2506.02219},
+  archivePrefix = {arXiv}
+}
+
+@inproceedings{nagarajan2025rtbarneshut,
+  author    = {Nagarajan, Vani and Gangaraju, Rohan and Sundararajah, Kirshanthan and Pelenitsyn, Artem and Kulkarni, Milind},
+  title     = {{RT-BarnesHut}: Accelerating {Barnes-Hut} Using Ray-Tracing Hardware},
+  booktitle = {Proceedings of the 30th ACM SIGPLAN Annual Symposium on Principles and Practice of Parallel Programming (PPoPP '25)},
+  year      = {2025},
+  pages     = {43--56},
+  publisher = {ACM},
+  address   = {Las Vegas, NV, USA},
+  doi       = {10.1145/3710848.3710885}
+}
+
+@misc{stucker2026jzfmm,
+  author        = {St{\"u}cker, Jens and Foldal, Oskar},
+  title         = {{JZ-FMM}: {GPU}-native differentiable {N}-body simulations with the Fast Multipole Method},
+  year          = {2026},
+  eprint        = {2609.09307},
+  archivePrefix = {arXiv},
+  primaryClass  = {astro-ph.CO},
+  doi           = {10.48550/arXiv.2609.09307},
+  note          = {Preprint, submitted 8 Sep 2026}
+}
+
+@misc{frontiere2025crkhacc,
+  author        = {Frontiere, Nicholas and Emberson, J. D. and Buehlmann, Michael and Rangel, Esteban M. and Habib, Salman and Heitmann, Katrin and Larsen, Patricia and Morozov, Vitali and Pope, Adrian and Faucher-Gigu{\`e}re, Claude-Andr{\'e} and Georgiadou, Antigoni and Lebrun-Grandi{\'e}, Damien and Prokopenko, Andrey},
+  title         = {Cosmological Hydrodynamics at Exascale: A Trillion-Particle Leap in Capability},
+  year          = {2025},
+  eprint        = {2510.03557},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.DC},
+  doi           = {10.48550/arXiv.2510.03557},
+  note          = {Preprint, submitted 3 Oct 2025}
+}
+
+@article{yu2026cube2,
+  author  = {Yu, Hao-Ran and Chen, Bing-Hang and Xu, Kun and Sheng, Ming-Jie and Han, Jiaxin and Jing, Yipeng and Cui, Huahua},
+  title   = {{CUBE2}: A parallel {N}-body simulation code for scalability, accuracy, and memory efficiency},
+  journal = {Science China Physics, Mechanics \& Astronomy},
+  year    = {2026},
+  volume  = {69},
+  number  = {6},
+  pages   = {269511},
+  doi     = {10.1007/s11433-025-2926-0},
+  eprint  = {2512.12629},
+  archivePrefix = {arXiv}
+}
+
+@article{liu2025swphotons,
+  author  = {Liu, Zhao and Wang, Qiao and Lv, Xiaojing and Liu, Xu and Meng, Hongsong and Zhu, Guanghui and Gao, Liang and Fu, Haohuan and Yang, Guangwen},
+  title   = {{swPHoToNs}: Toward trillion-body-scale cosmological {N}-body simulations on {Sunway TaihuLight} supercomputer},
+  journal = {Engineering Reports},
+  year    = {2025},
+  volume  = {7},
+  number  = {3},
+  pages   = {e12640},
+  doi     = {10.1002/eng2.12640},
+  note    = {Issue dated March 2025; Crossref lists first online publication 19 Feb 2023}
+}
+
+% ---------------------------------------------------------------------------
+% 2. GPU load balancing / scheduling / divergence, 2025-2026
+% ---------------------------------------------------------------------------
+
+@misc{maeda2026gtap,
+  author        = {Maeda, Yuki and Taura, Kenjiro},
+  title         = {{GTaP}: A {GPU}-Resident Fork-Join Task-Parallel System with a Pragma-Based Interface},
+  year          = {2026},
+  eprint        = {2604.05982},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.DC},
+  doi           = {10.48550/arXiv.2604.05982},
+  note          = {Preprint v2, 24 Aug 2026 (v1 7 Apr 2026)}
+}
+
+@misc{shetty2026gpuqueues,
+  author        = {Shetty, Pratheek Prakash and Scogland, Thomas R. W. and Feng, Wu-chun},
+  title         = {Scalable Concurrent Queues for {GPU}},
+  year          = {2026},
+  eprint        = {2606.01693},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.DC},
+  doi           = {10.48550/arXiv.2606.01693},
+  note          = {Preprint, submitted 1 Jun 2026}
+}
+
+@misc{li2025staticbatching,
+  author        = {Li, Yinghan and Li, Yifei and Zhang, Jiejing and Chen, Bujiao and Chen, Xiaotong and Duan, Lian and Jin, Yejun and Li, Zheng and Liu, Xuanyu and Wang, Haoyu and Wang, Wente and Wang, Yajie and Yang, Jiacheng and Zhang, Peiyang and Zheng, Laiwen and Yu, Wenyuan},
+  title         = {Static Batching of Irregular Workloads on {GPUs}: Framework and Application to Efficient {MoE} Model Inference},
+  year          = {2025},
+  eprint        = {2501.16103},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.DC},
+  doi           = {10.48550/arXiv.2501.16103},
+  note          = {Preprint, submitted 27 Jan 2025}
+}
+
+@misc{jin2026eventtensor,
+  author        = {Jin, Hongyi and Hou, Bohan and Wang, Guanjie and Lai, Ruihang and Chen, Jinqi and Ye, Zihao and Cai, Yaxing and Dong, Yixin and Cheng, Xinhao and Zhang, Zhihao and Zhao, Yilong and Huang, Yingyi and Yang, Lijie and Jiang, Jinchen and Oliaro, Gabriele and Ji, Jianan and Miao, Xupeng and Grover, Vinod and Mowry, Todd C. and Jia, Zhihao and Chen, Tianqi},
+  title         = {Event Tensor: A Unified Abstraction for Compiling Dynamic Megakernel},
+  year          = {2026},
+  eprint        = {2604.13327},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.DC},
+  doi           = {10.48550/arXiv.2604.13327},
+  note          = {Accepted to MLSys 2026 (per arXiv comments)}
+}
+
+@misc{dale2026warpdivergence,
+  author        = {Dale, Alpin},
+  title         = {Characterizing Warp Divergence from {Pascal} to {Blackwell}},
+  year          = {2026},
+  eprint        = {2607.23402},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.AR},
+  doi           = {10.48550/arXiv.2607.23402},
+  note          = {Preprint, submitted 26 Jul 2026}
+}
+
+@misc{galgoczi2026ser,
+  author        = {Galg{\'o}czi, G{\'a}bor},
+  title         = {Mitigating warp divergence in {GPU} optical photon {Monte Carlo}: an order of magnitude speedup with Shader Execution Reordering},
+  year          = {2026},
+  eprint        = {2608.21396},
+  archivePrefix = {arXiv},
+  primaryClass  = {physics.ins-det},
+  note          = {Preprint, submitted 3 Aug 2026}
+}
+
+@inproceedings{nanda2025amrexlb,
+  author    = {Nanda, Amitash and Chowdhury, Md Kamal Hossain and Ross, Hannah and Gott, Kevin},
+  title     = {Exploring Dynamic Load Balancing Algorithms for Block-Structured Mesh-and-Particle Simulations in {AMReX}},
+  booktitle = {Practice and Experience in Advanced Research Computing 2025 (PEARC '25)},
+  year      = {2025},
+  publisher = {ACM},
+  note      = {Article 5},
+  doi       = {10.1145/3708035.3736022},
+  eprint    = {2505.15122},
+  archivePrefix = {arXiv}
+}
+
+% ---------------------------------------------------------------------------
+% 3. Background classics (BACKGROUND ONLY, not 2025-2026)
+% ---------------------------------------------------------------------------
+
+@article{barnes1986hierarchical,
+  author  = {Barnes, Josh and Hut, Piet},
+  title   = {A hierarchical {O(N log N)} force-calculation algorithm},
+  journal = {Nature},
+  year    = {1986},
+  volume  = {324},
+  number  = {6096},
+  pages   = {446--449},
+  doi     = {10.1038/324446a0}
+}
+
+@incollection{nyland2007nbody,
+  author    = {Nyland, Lars and Harris, Mark and Prins, Jan},
+  title     = {Fast N-Body Simulation with {CUDA}},
+  booktitle = {GPU Gems 3},
+  editor    = {Nguyen, Hubert},
+  chapter   = {31},
+  publisher = {Addison-Wesley},
+  year      = {2007},
+  isbn      = {9780321515261},
+  url       = {https://developer.nvidia.com/gpugems/gpugems3/part-v-physics-simulation/chapter-31-fast-n-body-simulation-cuda},
+  note      = {Retail listings give August 2007; the KIT library catalogue records 2008}
+}
+
+@incollection{burtscher2011barneshut,
+  author    = {Burtscher, Martin and Pingali, Keshav},
+  title     = {An Efficient {CUDA} Implementation of the Tree-Based {Barnes Hut} n-Body Algorithm},
+  booktitle = {GPU Computing Gems Emerald Edition},
+  chapter   = {6},
+  pages     = {75--92},
+  publisher = {Elsevier},
+  note      = {Chapter copyright line: 2011 NVIDIA Corporation and Wen-mei W. Hwu},
+  year      = {2011},
+  isbn      = {9780123849885},
+  doi       = {10.1016/B978-0-12-384988-5.00006-1}
+}
+
+% ---------------------------------------------------------------------------
+% 4. Official NVIDIA documentation
+% ---------------------------------------------------------------------------
+
+@manual{nvidia2026cudaguide,
+  author       = {{NVIDIA Corporation}},
+  title        = {{CUDA} Programming Guide},
+  edition      = {v13.4.2},
+  year         = {2026},
+  note         = {Last updated 10 Sep 2026. Accessed 2026-10-17},
+  url          = {https://docs.nvidia.com/cuda/cuda-programming-guide/}
+}
+
+@manual{nvidia2026bestpractices,
+  author       = {{NVIDIA Corporation}},
+  title        = {{CUDA} {C++} Best Practices Guide},
+  edition      = {13.4},
+  year         = {2026},
+  note         = {Accessed 2026-10-17; no last-updated date visible on the fetched page},
+  url          = {https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html}
+}
+
+@manual{nvidia2026adatuning,
+  author       = {{NVIDIA Corporation}},
+  title        = {{NVIDIA} {Ada} {GPU} Architecture Tuning Guide},
+  edition      = {v13.4},
+  year         = {2026},
+  note         = {Last updated 12 Oct 2026. Accessed 2026-10-17},
+  url          = {https://docs.nvidia.com/cuda/ada-tuning-guide/index.html}
+}
+
+@techreport{nvidia2023adawhitepaper,
+  author       = {{NVIDIA Corporation}},
+  title        = {{NVIDIA} {Ada} {GPU} Architecture},
+  type         = {Whitepaper},
+  number       = {V2.02},
+  year         = {2023},
+  note         = {Copyright 2023; includes Appendix B, Ada AD103 GPU Full Specifications. Accessed 2026-10-17},
+  url          = {https://images.nvidia.com/aem-dam/Solutions/geforce/ada/nvidia-ada-gpu-architecture.pdf}
+}

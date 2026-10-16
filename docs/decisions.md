@@ -30,3 +30,16 @@ Options: **(a)** GLFW + glad fetched by CMake `FetchContent`. Standard, about 20
 setup, but it downloads third-party code at configure time. **(b)** Raw Win32 + WGL, loading
 the ~15 GL functions we need by hand. No dependencies, more boilerplate, Windows-only (fine:
 one machine by brief). Needs Toncho's call.
+
+## D-005 — Literature first pass accepted, with caveats (2026-10-17)
+
+`references/` holds 20 verified entries (13 from 2025–26, 3 background, 4 NVIDIA docs) and
+about 17 unverified leads. Spot-check by the main session: 3 of 3 matched their arXiv or
+Crossref records (maeda2026gtap, li2025staticbatching, yu2026cube2).
+**Caveat for the professor:** no 2025–26 *Chinese GPU N-body* paper was found. The Chinese
+entries are CUBE2 (a CPU code), swPHoToNs (Sunway, online 2023) and Alibaba static batching
+(scheduling). We say this plainly rather than stretch.
+**Open scope question (architect):** RT-core Barnes-Hut (nagarajan2025rtbarneshut) needs
+OptiX, not plain CUDA. It is in or out of scope as an extra.
+**Methodology consequence:** the naive tree baseline (R3 #4) must deliberately omit sorting
+and warp-vote traversal. Report #6 vs #7 as phase time *and* total time (per maeda2026gtap).
