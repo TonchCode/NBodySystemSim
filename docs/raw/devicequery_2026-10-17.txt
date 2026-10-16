@@ -1,0 +1,19 @@
+﻿name=NVIDIA GeForce RTX 4080 SUPER
+cc=8.9
+SMs=80
+maxThreadsPerSM=1536
+maxBlocksPerSM=24
+regsPerSM=65536
+smemPerSM=102400
+smemPerBlockOptin=101376
+L2=67108864
+memBusWidth=256
+globalMem=17170956288
+warpSize=32
+asyncEngines=1
+concurrentKernels=1
+unifiedAddressing=1
+smClockKHz=2610000
+memClockKHz=11501000
+kernel=no error out[3]=0.500000
+runtime=13040 driver=13040
