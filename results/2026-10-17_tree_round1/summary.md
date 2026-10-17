@@ -58,9 +58,13 @@ is the largest. At 65536 and 262144 the sort is the largest.
 1. **#5/#4 traversal speedup ≈ 1.6–2.1×.**
    - Plummer 1.63 / 1.91 / 1.89, collision 1.70 / 2.11 / 1.98, core 1.64 / 1.91 / 1.91.
    - It is flat above 262144 and nearly IC-independent.
-   - Burtscher & Pingali's 2011 "order of magnitude" from sorting [burtscher2011barneshut] does
-     **not** carry over to Ada.
-2. **Sorting fixes uneven work between lanes, not divergence.**
+   - ~~Burtscher & Pingali's "order of magnitude" does not carry over to Ada.~~ **Reworded after
+     critic review 2 (#3):** we measure 1.6–2.1× for per-thread walks at bmax-θ 0.5 (1.48–2.32
+     across θ = 0.3–1.0). The 2011 statement is an unquantified sentence about a different code
+     (octree, `__all` traversal) on a different GPU, so it is **not** a like-for-like test, and no
+     attribution to Ada is claimed.
+2. **Sorting reduces divergence but does not fix the leaf-bucket serialization** (reworded, critic
+   review 2 #12).
    - Per-warp max/mean drops from 1.17–1.62 to 1.05–1.09.
    - Pop SIMT efficiency rises from 0.55–0.82 to 0.92–0.98.
    - At the interaction sites only 3–7 of 32 lanes are active in both variants (0.09–0.22). The
@@ -97,7 +101,16 @@ same N.
 | 524288 | tuned b128 u0, 205.49, 1338 | — | — | — | — |
 | 1048576 | [D] 4 × 205.49 = 822 (not run, TDR) | 73.66 | 39.17 | 11.2 [D] | 21.0 [D] |
 
-## 4. Scorecard vs 581fc47: **91 HIT / 32 MISS (123 items)**
+## 4. Scorecard vs 581fc47: ~~91 HIT / 32 MISS (123 items)~~ **(disputed, see critic review 2 #4)**
+
+> **Critic review 2 (#4):** this count can't be reproduced; no item-level table is committed.
+> - Post-registration interpretation #2 is a goalpost move: P-T1a monotonicity is a **MISS**.
+> - #4 inflates the count by splitting P-T6d.
+> - Several P-T5 HITs restate values seen before registration (§0.4).
+> - P-T6c recomputes to 1.11 < 1.3, a **MISS**.
+>
+> Treat the qualitative pattern below as the result, not the count. From tree round 2 on, every
+> scorecard is a committed item table.
 
 - **What held:** everything relative. IC ratios, imbalance metrics (P-T5/T7), error and work vs θ
   (P-T8; slopes 2.13 and −2.52), the crossover (P-T4a/b), the timeline structure, the θ = 0
@@ -118,6 +131,14 @@ The item-by-item table is in the architect's report as transcribed in
 `docs/03-design.md` §16 (and in `tools/tree_analysis.py` output).
 
 ## 5. Implications for #6 vs #7 (requested by the coordinator; not pre-registered)
+
+> **Critic review 2 (#1, #2):** the decomposition's E_mem is a *residual*, so the
+> "85–99% intra-warp" split is partly assumed by construction. It absorbs instruction-mix,
+> cache-footprint, stack and dependent-pop-latency effects, and F and the "8.4× ceiling" move with
+> c_V. Only E_sm (inter-block/tail) is c_V-independent. The "#6 ≤ 2.4%" bound applies only to a
+> block-granular queue. Tree round 2 adds a coherent θ = 0.5 control and a lane-granular #6 to
+> test both directly. Read the table below as a hypothesis generator, not a measurement of the
+> split.
 
 **Method:**
 - Work is counted in issue slots: W = 17.4·I + c_V·V, with c_V = 20 (sensitivity checked at
@@ -160,7 +181,8 @@ The item-by-item table is in the architect's report as transcribed in
 
 ## 6. Validation and gates
 
-- **Tree gates:** all 49 runs at θ > 0 pass TG1/TG2, with zero stack overflows.
+- **Tree gates:** all **47** gated runs at θ > 0 pass TG1/TG2 (corrected from "49", critic review 2
+  #13; the 8 timeline runs carry no validation), with zero stack overflows.
   - θ = 0.5: rms 6.5e-3–1.0e-2 against the 0.03 gate; p99 1.7–2.9e-2 against 0.12.
   - θ = 1.0: rms 4.7e-2 against 0.12; p99 0.171 against 0.48.
 - **θ = 0:** D-009 PASS. **All 132 all-pairs runs** pass D-009. #4, #5 and Hilbert errors are bitwise
