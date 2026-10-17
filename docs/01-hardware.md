@@ -99,7 +99,7 @@ Rows marked M were read via `cudaGetDeviceProperties` from a test program built 
 | Memory clock | 11501 MHz reported as "max", but **11701 MHz reported as current** at capture time (above its own max: a factory OC or a reporting quirk) [M]. 23 Gbps is assumed | M/D |
 | Bandwidth | **736 GB/s** theoretical (23 Gbps × 256 bit / 8), **unverified**. TODO: measure with a device-to-device copy kernel (bench-profiler) | D |
 | L2 cache | 64 MB (67,108,864 B) | M |
-| Host ↔ device | PCIe 4.0 ×16, ≈ 32 GB/s theoretical per direction | D |
+| Host ↔ device | PCIe 4.0 ×16, ≈ 31.5 GB/s theoretical per direction (16 GT/s × 128b/130b; see references) | D |
 
 ### 2.5 Power and thermal
 
@@ -176,8 +176,10 @@ machine runs Windows 11, so that does not affect us.
   in the integrator (leapfrog / Hermite) or with compensated summation. Do not use FP64 for
   the force kernel.
 - **All-pairs O(N²) is compute-bound** and maps well onto shared-memory tiling, which is the
-  classic GPU Gems 3 ch. 31 approach. At about 20 FLOP per interaction, the peak is about
-  2.6 × 10¹² interactions/s. Expect roughly 50–70% of that in practice. N = 10⁶ is about
+  classic GPU Gems 3 ch. 31 approach. At about 20 FLOP per interaction, the FLOP-based peak is about
+  2.6 × 10¹² interactions/s. **Corrected (critic review 1):** the real ceiling is set by
+  instruction issue (~17.6 SASS instructions per interaction), ≈ 1.6 × 10¹² /s at 2.76 GHz.
+  See docs/03-design.md. Expect roughly 50–70% of that in practice. N = 10⁶ is about
   10¹² interactions, so around 0.5–1 s per step.
 - **16 GB VRAM is not the limit.** 10⁷ bodies × (pos + vel, 32 B) = 320 MB. The 64 MB L2
   holds about 4M `float4` positions, which is unusually large and worth exploiting in tiling

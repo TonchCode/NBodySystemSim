@@ -35,6 +35,10 @@ tagged [S] (spec, not measured), measure it before relying on it in a benchmark 
 5. Source tags in docs: [M] measured · [S] spec · [D] derived · [P:key] paper ·
    [N:doc] NVIDIA doc.
 6. Log decisions with the *why* in `docs/decisions.md` (create on first decision).
+7. **Pre-registration is a commit, not a claim.** Predictions and tolerance gates are committed
+   *before* the timing/validation run that tests them (separate commit). Otherwise the doc
+   must not say "predicted before measuring" (critic review 1, #5).
+8. **Speedups are quoted against the best-tuned baseline**, not a default config (review 1, #3).
 
 ## Agents (`.claude/agents/`)
 

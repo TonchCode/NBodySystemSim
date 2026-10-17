@@ -7,7 +7,10 @@ belong to bench-profiler. The architect wrote the raw data in this folder. The h
 the agent from writing this summary, so the main session wrote it from the agent's report and
 re-checked the key rows independently (bottom of this file).
 
-Timing method (D-007): `--warmup-ms 300 --batch 50`, median of 10. Single timed launches at
+Timing method (D-007): time-based warm-up, batched launches. **Correction (critic review 1,
+#9):** the logs show `runs=15` throughout, batch 1 at N = 65536 and batch 5 for part of the
+out-of-sample sweep, not the "median of 10 / batch 50" first written here. The CSV `q`
+column holds the resolved q, so auto and explicit rows are merged. Single timed launches at
 small N were bimodal: the GPU idles at 210 MHz, and a 5–25 µs launch is mostly jitter. The
 smoke-test N = 4096 figure suffers from the same problem.
 
@@ -66,6 +69,12 @@ data it was fitted to and worse on new N values, so the pre-registered v1 was ke
 
 ## Best configuration per N
 
+> **Baseline note (critic review 1, #3):** "vs tiled" below is against tiled at the default
+> b256. The fair baseline is the **best-tuned 1-thread/body config** (tuned b128 full: 349 G/s
+> at N = 4096). Against that, multi's gain at N = 4096 is **2.56×**, not 3.9×. Part of the
+> small-N gain is also register prefetch rather than q (#4); that is being separated.
+
+
 | N | Best | G int/s | vs tiled |
 |---|---|---|---|
 | 1000 | multi b512 q32 | 173 | 3.4× |
@@ -85,8 +94,11 @@ Control Panel setting). A timing probe was used instead (`mufu_probe.cu`,
 | +3 FMUL | +17% | 0 | **+18.5%** |
 | FTZ rsqrt (−3 non-MUFU instructions) | −17% | 0 | **−10%** |
 
-The kernel is **instruction-issue bound** at ≈ 78% of the issue ceiling. MUFU would only
-co-limit at about 2 per interaction. This must be confirmed with ncu once counters are enabled.
+~~The kernel is instruction-issue bound; MUFU co-limits only at ~2 per interaction.~~
+**Revised after critic review 1 (#2):** only the fmul3 probe matches the pure issue model.
+mufu2 (+19% measured vs ≈ +6% predicted by issue count) and ftz (−10% vs −17%) don't. The XU
+pipe is ≈ 45% busy in the base kernel, so the honest statement is **"issue-limited with a
+significant XU (MUFU) co-limit"**. ncu pipe utilisation and stall reasons will settle it.
 
 ## Open
 
