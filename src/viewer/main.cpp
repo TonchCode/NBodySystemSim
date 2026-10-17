@@ -244,6 +244,8 @@ int main(int argc, char** argv)
         else if (k == "--kernel") kernelName = argv[i + 1];
         else if (k == "--dt")     a.params.dt = float(atof(argv[i + 1]));
         else if (k == "--block")  a.params.blockSize = atoi(argv[i + 1]);
+        else if (k == "--q")      a.params.threadsPerBody = atoi(argv[i + 1]);
+        else if (k == "--unroll") a.params.unroll = atoi(argv[i + 1]);
         else if (k == "--seed")   a.seed = unsigned(atoi(argv[i + 1]));
         else { fprintf(stderr, "unknown argument %s\n", k.c_str()); return 2; }
     }

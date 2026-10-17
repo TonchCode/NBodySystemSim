@@ -1,0 +1,15 @@
+N=999 allpairs_multi --block 256 --q 32 :: max rel err 1.750e-06  rms 4.678e-07  this rms 7.120e-08 max 5.813e-07 norm 1.344e-07  | naive rms 4.628e-07 max 1.552e-06 norm 9.495e-07 
+N=999 allpairs_multi --block 128 --q 8 :: max rel err 1.846e-06  rms 4.778e-07  this rms 1.015e-07 max 7.862e-07 norm 2.074e-07  | naive rms 4.628e-07 max 1.552e-06 norm 9.495e-07 
+N=999 allpairs_multi --block 1024 --q 2 :: max rel err 2.235e-06  rms 5.382e-07  this rms 2.543e-07 max 8.793e-07 norm 5.364e-07  | naive rms 4.628e-07 max 1.552e-06 norm 9.495e-07 
+N=999 allpairs_tuned --block 64 --unroll 0 :: max rel err 0.000e+00  rms 0.000e+00  this rms 4.628e-07 max 1.552e-06 norm 9.495e-07  | naive rms 4.628e-07 max 1.552e-06 norm 9.495e-07 
+N=999 allpairs_tuned --block 1024 --unroll 1 :: max rel err 0.000e+00  rms 0.000e+00  this rms 4.628e-07 max 1.552e-06 norm 9.495e-07  | naive rms 4.628e-07 max 1.552e-06 norm 9.495e-07 
+N=4097 allpairs_multi --block 256 --q 32 :: max rel err 3.785e-06  rms 9.308e-07  this rms 6.860e-08 max 3.260e-07 norm 1.164e-07  | naive rms 9.527e-07 max 2.406e-06 norm 1.830e-06 
+N=4097 allpairs_multi --block 128 --q 8 :: max rel err 3.885e-06  rms 9.450e-07  this rms 1.522e-07 max 6.382e-07 norm 2.677e-07  | naive rms 9.527e-07 max 2.406e-06 norm 1.830e-06 
+N=4097 allpairs_multi --block 1024 --q 2 :: max rel err 4.012e-06  rms 1.100e-06  this rms 4.941e-07 max 1.405e-06 norm 1.038e-06  | naive rms 9.527e-07 max 2.406e-06 norm 1.830e-06 
+N=4097 allpairs_tuned --block 64 --unroll 0 :: max rel err 0.000e+00  rms 0.000e+00  this rms 9.527e-07 max 2.406e-06 norm 1.830e-06  | naive rms 9.527e-07 max 2.406e-06 norm 1.830e-06 
+N=4097 allpairs_tuned --block 1024 --unroll 1 :: max rel err 0.000e+00  rms 0.000e+00  this rms 9.527e-07 max 2.406e-06 norm 1.830e-06  | naive rms 9.527e-07 max 2.406e-06 norm 1.830e-06 
+N=10007 allpairs_multi --block 256 --q 32 :: max rel err 5.109e-06  rms 1.474e-06  this rms 7.479e-08 max 3.536e-07 norm 1.134e-07  | naive rms 1.505e-06 max 4.477e-06 norm 3.292e-06 
+N=10007 allpairs_multi --block 128 --q 8 :: max rel err 6.928e-06  rms 1.500e-06  this rms 1.995e-07 max 8.832e-07 norm 3.823e-07  | naive rms 1.505e-06 max 4.477e-06 norm 3.292e-06 
+N=10007 allpairs_multi --block 1024 --q 2 :: max rel err 5.892e-06  rms 1.750e-06  this rms 7.158e-07 max 1.773e-06 norm 1.602e-06  | naive rms 1.505e-06 max 4.477e-06 norm 3.292e-06 
+N=10007 allpairs_tuned --block 64 --unroll 0 :: max rel err 0.000e+00  rms 0.000e+00  this rms 1.505e-06 max 4.477e-06 norm 3.292e-06  | naive rms 1.505e-06 max 4.477e-06 norm 3.292e-06 
+N=10007 allpairs_tuned --block 1024 --unroll 1 :: max rel err 0.000e+00  rms 0.000e+00  this rms 1.505e-06 max 4.477e-06 norm 3.292e-06  | naive rms 1.505e-06 max 4.477e-06 norm 3.292e-06 

@@ -91,4 +91,49 @@ ErrorStats compareAcc(const std::vector<float4>& acc, const std::vector<float4>&
     return {maxRel, std::sqrt(sumSq / double(acc.size()))};
 }
 
+Fp64Sample referenceFp64(const std::vector<float4>& pos, const Params& p, const std::vector<int>& idx)
+{
+    const int    n    = int(pos.size());
+    const double eps2 = double(p.softening) * p.softening;
+    Fp64Sample r;
+    r.idx = idx;
+    r.ax.resize(idx.size()); r.ay.resize(idx.size()); r.az.resize(idx.size()); r.scale.resize(idx.size());
+    for (size_t k = 0; k < idx.size(); ++k) {
+        const float4 bi = pos[idx[k]];
+        double ax = 0, ay = 0, az = 0, sc = 0;
+        for (int j = 0; j < n; ++j) {
+            double dx = double(pos[j].x) - bi.x;
+            double dy = double(pos[j].y) - bi.y;
+            double dz = double(pos[j].z) - bi.z;
+            double d2 = dx * dx + dy * dy + dz * dz + eps2;
+            double s  = pos[j].w / (d2 * std::sqrt(d2));
+            ax += dx * s; ay += dy * s; az += dz * s;
+            sc += std::sqrt(dx * dx + dy * dy + dz * dz) * s;   // |f_ij| / m_i
+        }
+        r.ax[k] = p.G * ax; r.ay[k] = p.G * ay; r.az[k] = p.G * az; r.scale[k] = p.G * sc;
+    }
+    return r;
+}
+
+Fp64Error compareFp64(const std::vector<float4>& acc, const Fp64Sample& ref)
+{
+    Fp64Error e{0, 0, 0, 0};
+    double sumSq = 0;
+    for (size_t k = 0; k < ref.idx.size(); ++k) {
+        const float4 a  = acc[ref.idx[k]];
+        double dx = a.x - ref.ax[k], dy = a.y - ref.ay[k], dz = a.z - ref.az[k];
+        double d  = std::sqrt(dx * dx + dy * dy + dz * dz);
+        double rn = std::sqrt(ref.ax[k] * ref.ax[k] + ref.ay[k] * ref.ay[k] + ref.az[k] * ref.az[k]);
+        double rel = d / (rn > 0 ? rn : 1.0);
+        e.maxRel   = rel > e.maxRel ? rel : e.maxRel;
+        sumSq     += rel * rel;
+        double nm  = d / (ref.scale[k] > 0 ? ref.scale[k] : 1.0);
+        e.normMax  = nm > e.normMax ? nm : e.normMax;
+        double kap = rn > 0 ? ref.scale[k] / rn : 0.0;
+        e.kappaMax = kap > e.kappaMax ? kap : e.kappaMax;
+    }
+    e.rmsRel = ref.idx.empty() ? 0.0 : std::sqrt(sumSq / double(ref.idx.size()));
+    return e;
+}
+
 } // namespace nbody

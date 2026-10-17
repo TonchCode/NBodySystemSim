@@ -23,6 +23,8 @@ set(NBODY_CUDA_FLAGS -lineinfo --resource-usage)
 add_library(nbody_core STATIC
   src/core/nbody.cu
   src/core/kernels_allpairs.cu
+  src/core/kernels_tuned.cu     # R3 #2
+  src/core/kernels_multi.cu     # R3 #3
   src/core/init.cpp
 )
 target_include_directories(nbody_core PUBLIC src/core)

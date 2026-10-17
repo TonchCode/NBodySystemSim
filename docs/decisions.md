@@ -50,3 +50,27 @@ entries are CUBE2 (a CPU code), swPHoToNs (Sunway, online 2023) and Alibaba stat
 OptiX, not plain CUDA. It is in or out of scope as an extra.
 **Methodology consequence:** the naive tree baseline (R3 #4) must deliberately omit sorting
 and warp-vote traversal. Report #6 vs #7 as phase time *and* total time (per maeda2026gtap).
+
+## D-006 — Validation tolerance for reordered summation (2026-10-17, cuda-architect)
+
+Variants that reorder the j-sum (`allpairs_multi`, later trees) are not bitwise equal to
+naive. Gates (03-design §4.6): **G1** rms rel. error vs naive ≤ 4·u·√N (u = 2⁻²⁴); **G2**
+max |Δa| / Σ|f_ij| vs an FP64 sample ≤ 4·u·√N; **G3** FP64 rms of the variant ≤ 1.5 × naive's.
+max-rel is reported, not gated (1e-2 sanity ceiling).
+**Why:** max-rel is inflated by κ = Σ|f| / |a| on bodies whose net force nearly cancels.
+That is a property of the problem, not of the kernel. rms and the normalised max are not
+inflated. **Rules out:** the smoke test's fixed "max rel < 1e-4", which naive itself fails
+against FP64 on ill-conditioned bodies at large N.
+
+## D-007 — Small-N timing needs time-based warm-up and batching (2026-10-17, cuda-architect)
+
+`nbody_bench --warmup-ms` and `--batch` were added (defaults unchanged). Without them, timings
+of 5–25 µs kernels were bimodal (clock ramp from 210 MHz idle, event jitter).
+**Recommendation to bench-profiler:** `--warmup-ms 300 --batch 50` for N ≤ ~20k.
+
+## D-008 — `allpairs_multi` auto-q = pre-registered cost model v1 (2026-10-17, cuda-architect)
+
+Kept the busiest-SM cost model written before measuring (`autoThreadsPerBody`). Mean loss vs
+the best measured q: 1.8% in-sample, 0.9% out-of-sample. The thread-saturation rule loses
+6.8% / 4.8%. A v2 fitted to the measured per-SM rate curve was rejected because it was worse
+out-of-sample (overfit).

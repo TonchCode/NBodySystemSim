@@ -1,0 +1,674 @@
+﻿[1/63] --kernel allpairs_multi --n System.Int32[] --block 128 --q 0
+    # launch  grid=512 block=128 q=32 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=6.40 (busiest 7)  waves=0.53
+    kernel=allpairs_multi n=2048 block=128 q=32 unroll=8 runs=15 batch=50  median=0.009 ms  min=0.008  max=0.020  
+485.848 Ginteractions/s  9717.0 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 2.460e-06  rms 6.801e-07
+    validate vs FP64 (528 bodies, kappa_max 1.5e+01): this rms 6.973e-08 max 3.807e-07 norm 1.265e-07  | naive rms 
+6.675e-07 max 2.443e-06 norm 1.816e-06
+[2/63] --kernel allpairs_multi --n System.Int32[] --block 128 --q 1
+    # launch  grid=16 block=128 q=1 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=0.20 (busiest 1)  waves=0.02
+    kernel=allpairs_multi n=2048 block=128 q=1 unroll=8 runs=15 batch=50  median=0.029 ms  min=0.029  max=0.037  
+146.181 Ginteractions/s  2923.6 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00
+    validate vs FP64 (528 bodies, kappa_max 1.5e+01): this rms 6.675e-07 max 2.443e-06 norm 1.816e-06  | naive rms 
+6.675e-07 max 2.443e-06 norm 1.816e-06
+[3/63] --kernel allpairs_multi --n System.Int32[] --block 128 --q 2
+    # launch  grid=32 block=128 q=2 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=0.40 (busiest 1)  waves=0.03
+    kernel=allpairs_multi n=2048 block=128 q=2 unroll=8 runs=15 batch=50  median=0.016 ms  min=0.016  max=0.016  
+263.992 Ginteractions/s  5279.8 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 2.719e-06  rms 7.709e-07
+    validate vs FP64 (528 bodies, kappa_max 1.5e+01): this rms 3.527e-07 max 1.425e-06 norm 7.013e-07  | naive rms 
+6.675e-07 max 2.443e-06 norm 1.816e-06
+[4/63] --kernel allpairs_multi --n System.Int32[] --block 128 --q 4
+    # launch  grid=64 block=128 q=4 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=0.80 (busiest 1)  waves=0.07
+    kernel=allpairs_multi n=2048 block=128 q=4 unroll=8 runs=15 batch=50  median=0.012 ms  min=0.011  max=0.017  
+354.882 Ginteractions/s  7097.6 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 2.640e-06  rms 7.219e-07
+    validate vs FP64 (528 bodies, kappa_max 1.5e+01): this rms 1.943e-07 max 8.395e-07 norm 3.165e-07  | naive rms 
+6.675e-07 max 2.443e-06 norm 1.816e-06
+[5/63] --kernel allpairs_multi --n System.Int32[] --block 128 --q 8
+    # launch  grid=128 block=128 q=8 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=1.60 (busiest 2)  waves=0.13
+    kernel=allpairs_multi n=2048 block=128 q=8 unroll=8 runs=15 batch=50  median=0.009 ms  min=0.008  max=0.012  
+485.308 Ginteractions/s  9706.2 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 2.725e-06  rms 6.934e-07
+    validate vs FP64 (528 bodies, kappa_max 1.5e+01): this rms 1.274e-07 max 7.864e-07 norm 1.997e-07  | naive rms 
+6.675e-07 max 2.443e-06 norm 1.816e-06
+[6/63] --kernel allpairs_multi --n System.Int32[] --block 128 --q 16
+    # launch  grid=256 block=128 q=16 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=3.20 (busiest 4)  waves=0.27
+    kernel=allpairs_multi n=2048 block=128 q=16 unroll=8 runs=15 batch=50  median=0.009 ms  min=0.008  max=0.011  
+486.569 Ginteractions/s  9731.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 2.380e-06  rms 6.845e-07
+    validate vs FP64 (528 bodies, kappa_max 1.5e+01): this rms 8.762e-08 max 4.806e-07 norm 1.363e-07  | naive rms 
+6.675e-07 max 2.443e-06 norm 1.816e-06
+[7/63] --kernel allpairs_multi --n System.Int32[] --block 128 --q 32
+    # launch  grid=512 block=128 q=32 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=6.40 (busiest 7)  waves=0.53
+    kernel=allpairs_multi n=2048 block=128 q=32 unroll=8 runs=15 batch=50  median=0.009 ms  min=0.008  max=0.015  
+472.229 Ginteractions/s  9444.6 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 2.460e-06  rms 6.801e-07
+    validate vs FP64 (528 bodies, kappa_max 1.5e+01): this rms 6.973e-08 max 3.807e-07 norm 1.265e-07  | naive rms 
+6.675e-07 max 2.443e-06 norm 1.816e-06
+[8/63] --kernel allpairs_multi --n System.Int32[] --block 256 --q 0
+    # launch  grid=128 block=256 q=16 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=1.60 (busiest 2)  waves=0.27
+    kernel=allpairs_multi n=2048 block=256 q=16 unroll=8 runs=15 batch=50  median=0.009 ms  min=0.008  max=0.014  
+488.673 Ginteractions/s  9773.5 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 2.380e-06  rms 6.845e-07
+    validate vs FP64 (528 bodies, kappa_max 1.5e+01): this rms 8.762e-08 max 4.806e-07 norm 1.363e-07  | naive rms 
+6.675e-07 max 2.443e-06 norm 1.816e-06
+[9/63] --kernel allpairs_multi --n System.Int32[] --block 256 --q 1
+    # launch  grid=8 block=256 q=1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=0.10 (busiest 1)  waves=0.02
+    kernel=allpairs_multi n=2048 block=256 q=1 unroll=8 runs=15 batch=50  median=0.037 ms  min=0.037  max=0.053  
+112.804 Ginteractions/s  2256.1 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00
+    validate vs FP64 (528 bodies, kappa_max 1.5e+01): this rms 6.675e-07 max 2.443e-06 norm 1.816e-06  | naive rms 
+6.675e-07 max 2.443e-06 norm 1.816e-06
+[10/63] --kernel allpairs_multi --n System.Int32[] --block 256 --q 2
+    # launch  grid=16 block=256 q=2 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=0.20 (busiest 1)  waves=0.03
+    kernel=allpairs_multi n=2048 block=256 q=2 unroll=8 runs=15 batch=50  median=0.020 ms  min=0.020  max=0.028  
+207.170 Ginteractions/s  4143.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 2.719e-06  rms 7.709e-07
+    validate vs FP64 (528 bodies, kappa_max 1.5e+01): this rms 3.527e-07 max 1.425e-06 norm 7.013e-07  | naive rms 
+6.675e-07 max 2.443e-06 norm 1.816e-06
+[11/63] --kernel allpairs_multi --n System.Int32[] --block 256 --q 4
+    # launch  grid=32 block=256 q=4 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=0.40 (busiest 1)  waves=0.07
+    kernel=allpairs_multi n=2048 block=256 q=4 unroll=8 runs=15 batch=50  median=0.019 ms  min=0.013  max=0.021  
+221.032 Ginteractions/s  4420.6 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 2.640e-06  rms 7.219e-07
+    validate vs FP64 (528 bodies, kappa_max 1.5e+01): this rms 1.943e-07 max 8.395e-07 norm 3.165e-07  | naive rms 
+6.675e-07 max 2.443e-06 norm 1.816e-06
+[12/63] --kernel allpairs_multi --n System.Int32[] --block 256 --q 8
+    # launch  grid=64 block=256 q=8 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=0.80 (busiest 1)  waves=0.13
+    kernel=allpairs_multi n=2048 block=256 q=8 unroll=8 runs=15 batch=50  median=0.008 ms  min=0.008  max=0.010  
+496.147 Ginteractions/s  9922.9 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 2.725e-06  rms 6.934e-07
+    validate vs FP64 (528 bodies, kappa_max 1.5e+01): this rms 1.274e-07 max 7.864e-07 norm 1.997e-07  | naive rms 
+6.675e-07 max 2.443e-06 norm 1.816e-06
+[13/63] --kernel allpairs_multi --n System.Int32[] --block 256 --q 16
+    # launch  grid=128 block=256 q=16 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=1.60 (busiest 2)  waves=0.27
+    kernel=allpairs_multi n=2048 block=256 q=16 unroll=8 runs=15 batch=50  median=0.009 ms  min=0.008  max=0.013  
+477.389 Ginteractions/s  9547.8 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 2.380e-06  rms 6.845e-07
+    validate vs FP64 (528 bodies, kappa_max 1.5e+01): this rms 8.762e-08 max 4.806e-07 norm 1.363e-07  | naive rms 
+6.675e-07 max 2.443e-06 norm 1.816e-06
+[14/63] --kernel allpairs_multi --n System.Int32[] --block 256 --q 32
+    # launch  grid=256 block=256 q=32 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=3.20 (busiest 4)  waves=0.53
+    kernel=allpairs_multi n=2048 block=256 q=32 unroll=8 runs=15 batch=50  median=0.008 ms  min=0.008  max=0.011  
+493.494 Ginteractions/s  9869.9 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 2.460e-06  rms 6.801e-07
+    validate vs FP64 (528 bodies, kappa_max 1.5e+01): this rms 6.973e-08 max 3.807e-07 norm 1.265e-07  | naive rms 
+6.675e-07 max 2.443e-06 norm 1.816e-06
+[15/63] --kernel allpairs_multi --n System.Int32[] --block 512 --q 0
+    # launch  grid=128 block=512 q=32 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=1.60 (busiest 2)  waves=0.53
+    kernel=allpairs_multi n=2048 block=512 q=32 unroll=8 runs=15 batch=50  median=0.009 ms  min=0.008  max=0.010  
+465.455 Ginteractions/s  9309.1 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 2.460e-06  rms 6.801e-07
+    validate vs FP64 (528 bodies, kappa_max 1.5e+01): this rms 6.973e-08 max 3.807e-07 norm 1.265e-07  | naive rms 
+6.675e-07 max 2.443e-06 norm 1.816e-06
+[16/63] --kernel allpairs_multi --n System.Int32[] --block 512 --q 1
+    # launch  grid=4 block=512 q=1 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=0.05 (busiest 1)  waves=0.02
+    kernel=allpairs_multi n=2048 block=512 q=1 unroll=8 runs=15 batch=50  median=0.062 ms  min=0.062  max=0.078  
+67.977 Ginteractions/s  1359.5 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00
+    validate vs FP64 (528 bodies, kappa_max 1.5e+01): this rms 6.675e-07 max 2.443e-06 norm 1.816e-06  | naive rms 
+6.675e-07 max 2.443e-06 norm 1.816e-06
+[17/63] --kernel allpairs_multi --n System.Int32[] --block 512 --q 2
+    # launch  grid=8 block=512 q=2 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=0.10 (busiest 1)  waves=0.03
+    kernel=allpairs_multi n=2048 block=512 q=2 unroll=8 runs=15 batch=50  median=0.032 ms  min=0.032  max=0.046  
+130.231 Ginteractions/s  2604.6 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 2.719e-06  rms 7.709e-07
+    validate vs FP64 (528 bodies, kappa_max 1.5e+01): this rms 3.527e-07 max 1.425e-06 norm 7.013e-07  | naive rms 
+6.675e-07 max 2.443e-06 norm 1.816e-06
+[18/63] --kernel allpairs_multi --n System.Int32[] --block 512 --q 4
+    # launch  grid=16 block=512 q=4 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=0.20 (busiest 1)  waves=0.07
+    kernel=allpairs_multi n=2048 block=512 q=4 unroll=8 runs=15 batch=50  median=0.018 ms  min=0.018  max=0.026  
+236.259 Ginteractions/s  4725.2 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 2.640e-06  rms 7.219e-07
+    validate vs FP64 (528 bodies, kappa_max 1.5e+01): this rms 1.943e-07 max 8.395e-07 norm 3.165e-07  | naive rms 
+6.675e-07 max 2.443e-06 norm 1.816e-06
+[19/63] --kernel allpairs_multi --n System.Int32[] --block 512 --q 8
+    # launch  grid=32 block=512 q=8 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=0.40 (busiest 1)  waves=0.13
+    kernel=allpairs_multi n=2048 block=512 q=8 unroll=8 runs=15 batch=50  median=0.012 ms  min=0.011  max=0.014  
+344.890 Ginteractions/s  6897.8 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 2.725e-06  rms 6.934e-07
+    validate vs FP64 (528 bodies, kappa_max 1.5e+01): this rms 1.274e-07 max 7.864e-07 norm 1.997e-07  | naive rms 
+6.675e-07 max 2.443e-06 norm 1.816e-06
+[20/63] --kernel allpairs_multi --n System.Int32[] --block 512 --q 16
+    # launch  grid=64 block=512 q=16 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=0.80 (busiest 1)  waves=0.27
+    kernel=allpairs_multi n=2048 block=512 q=16 unroll=8 runs=15 batch=50  median=0.008 ms  min=0.007  max=0.009  
+530.914 Ginteractions/s  10618.3 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 2.380e-06  rms 6.845e-07
+    validate vs FP64 (528 bodies, kappa_max 1.5e+01): this rms 8.762e-08 max 4.806e-07 norm 1.363e-07  | naive rms 
+6.675e-07 max 2.443e-06 norm 1.816e-06
+[21/63] --kernel allpairs_multi --n System.Int32[] --block 512 --q 32
+    # launch  grid=128 block=512 q=32 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=1.60 (busiest 2)  waves=0.53
+    kernel=allpairs_multi n=2048 block=512 q=32 unroll=8 runs=15 batch=50  median=0.008 ms  min=0.007  max=0.009  
+503.194 Ginteractions/s  10063.9 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 2.460e-06  rms 6.801e-07
+    validate vs FP64 (528 bodies, kappa_max 1.5e+01): this rms 6.973e-08 max 3.807e-07 norm 1.265e-07  | naive rms 
+6.675e-07 max 2.443e-06 norm 1.816e-06
+[22/63] --kernel allpairs_multi --n System.Int32[] --block 128 --q 0
+    # launch  grid=375 block=128 q=8 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=4.69 (busiest 5)  waves=0.39
+    kernel=allpairs_multi n=6000 block=128 q=8 unroll=8 runs=15 batch=50  median=0.038 ms  min=0.037  max=0.053  
+959.505 Ginteractions/s  19190.1 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 3.747e-06  rms 1.149e-06
+    validate vs FP64 (528 bodies, kappa_max 1.2e+01): this rms 1.730e-07 max 6.867e-07 norm 3.328e-07  | naive rms 
+1.139e-06 max 3.142e-06 norm 2.653e-06
+[23/63] --kernel allpairs_multi --n System.Int32[] --block 128 --q 1
+    # launch  grid=47 block=128 q=1 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=0.59 (busiest 1)  waves=0.05
+    kernel=allpairs_multi n=6000 block=128 q=1 unroll=8 runs=15 batch=50  median=0.081 ms  min=0.081  max=0.100  
+444.043 Ginteractions/s  8880.9 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00
+    validate vs FP64 (528 bodies, kappa_max 1.2e+01): this rms 1.139e-06 max 3.142e-06 norm 2.653e-06  | naive rms 
+1.139e-06 max 3.142e-06 norm 2.653e-06
+[24/63] --kernel allpairs_multi --n System.Int32[] --block 128 --q 2
+    # launch  grid=94 block=128 q=2 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=1.18 (busiest 2)  waves=0.10
+    kernel=allpairs_multi n=6000 block=128 q=2 unroll=8 runs=15 batch=50  median=0.055 ms  min=0.055  max=0.074  
+651.283 Ginteractions/s  13025.7 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 4.310e-06  rms 1.338e-06
+    validate vs FP64 (528 bodies, kappa_max 1.2e+01): this rms 5.825e-07 max 2.347e-06 norm 1.457e-06  | naive rms 
+1.139e-06 max 3.142e-06 norm 2.653e-06
+[25/63] --kernel allpairs_multi --n System.Int32[] --block 128 --q 4
+    # launch  grid=188 block=128 q=4 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=2.35 (busiest 3)  waves=0.20
+    kernel=allpairs_multi n=6000 block=128 q=4 unroll=8 runs=15 batch=50  median=0.042 ms  min=0.042  max=0.056  
+848.365 Ginteractions/s  16967.3 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 3.979e-06  rms 1.195e-06
+    validate vs FP64 (528 bodies, kappa_max 1.2e+01): this rms 2.988e-07 max 7.756e-07 norm 5.777e-07  | naive rms 
+1.139e-06 max 3.142e-06 norm 2.653e-06
+[26/63] --kernel allpairs_multi --n System.Int32[] --block 128 --q 8
+    # launch  grid=375 block=128 q=8 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=4.69 (busiest 5)  waves=0.39
+    kernel=allpairs_multi n=6000 block=128 q=8 unroll=8 runs=15 batch=50  median=0.038 ms  min=0.037  max=0.050  
+958.458 Ginteractions/s  19169.2 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 3.747e-06  rms 1.149e-06
+    validate vs FP64 (528 bodies, kappa_max 1.2e+01): this rms 1.730e-07 max 6.867e-07 norm 3.328e-07  | naive rms 
+1.139e-06 max 3.142e-06 norm 2.653e-06
+[27/63] --kernel allpairs_multi --n System.Int32[] --block 128 --q 16
+    # launch  grid=750 block=128 q=16 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=9.38 (busiest 10)  waves=0.78
+    kernel=allpairs_multi n=6000 block=128 q=16 unroll=8 runs=15 batch=50  median=0.039 ms  min=0.038  max=0.054  
+935.038 Ginteractions/s  18700.8 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 3.612e-06  rms 1.132e-06
+    validate vs FP64 (528 bodies, kappa_max 1.2e+01): this rms 9.545e-08 max 3.383e-07 norm 2.112e-07  | naive rms 
+1.139e-06 max 3.142e-06 norm 2.653e-06
+[28/63] --kernel allpairs_multi --n System.Int32[] --block 128 --q 32
+    # launch  grid=1500 block=128 q=32 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=18.75 (busiest 19)  waves=1.56
+    kernel=allpairs_multi n=6000 block=128 q=32 unroll=8 runs=15 batch=50  median=0.044 ms  min=0.044  max=0.067  
+816.164 Ginteractions/s  16323.3 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 3.707e-06  rms 1.127e-06
+    validate vs FP64 (528 bodies, kappa_max 1.2e+01): this rms 6.894e-08 max 2.413e-07 norm 1.131e-07  | naive rms 
+1.139e-06 max 3.142e-06 norm 2.653e-06
+[29/63] --kernel allpairs_multi --n System.Int32[] --block 256 --q 0
+    # launch  grid=375 block=256 q=16 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=4.69 (busiest 5)  waves=0.78
+    kernel=allpairs_multi n=6000 block=256 q=16 unroll=8 runs=15 batch=50  median=0.037 ms  min=0.037  max=0.050  
+975.479 Ginteractions/s  19509.6 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 3.612e-06  rms 1.132e-06
+    validate vs FP64 (528 bodies, kappa_max 1.2e+01): this rms 9.545e-08 max 3.383e-07 norm 2.112e-07  | naive rms 
+1.139e-06 max 3.142e-06 norm 2.653e-06
+[30/63] --kernel allpairs_multi --n System.Int32[] --block 256 --q 1
+    # launch  grid=24 block=256 q=1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=0.30 (busiest 1)  waves=0.05
+    kernel=allpairs_multi n=6000 block=256 q=1 unroll=8 runs=15 batch=50  median=0.111 ms  min=0.107  max=0.124  
+323.018 Ginteractions/s  6460.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00
+    validate vs FP64 (528 bodies, kappa_max 1.2e+01): this rms 1.139e-06 max 3.142e-06 norm 2.653e-06  | naive rms 
+1.139e-06 max 3.142e-06 norm 2.653e-06
+[31/63] --kernel allpairs_multi --n System.Int32[] --block 256 --q 2
+    # launch  grid=47 block=256 q=2 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=0.59 (busiest 1)  waves=0.10
+    kernel=allpairs_multi n=6000 block=256 q=2 unroll=8 runs=15 batch=50  median=0.057 ms  min=0.057  max=0.071  
+628.478 Ginteractions/s  12569.6 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 4.310e-06  rms 1.338e-06
+    validate vs FP64 (528 bodies, kappa_max 1.2e+01): this rms 5.825e-07 max 2.347e-06 norm 1.457e-06  | naive rms 
+1.139e-06 max 3.142e-06 norm 2.653e-06
+[32/63] --kernel allpairs_multi --n System.Int32[] --block 256 --q 4
+    # launch  grid=94 block=256 q=4 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=1.18 (busiest 2)  waves=0.20
+    kernel=allpairs_multi n=6000 block=256 q=4 unroll=8 runs=15 batch=50  median=0.052 ms  min=0.052  max=0.066  
+695.578 Ginteractions/s  13911.6 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 3.979e-06  rms 1.195e-06
+    validate vs FP64 (528 bodies, kappa_max 1.2e+01): this rms 2.988e-07 max 7.756e-07 norm 5.777e-07  | naive rms 
+1.139e-06 max 3.142e-06 norm 2.653e-06
+[33/63] --kernel allpairs_multi --n System.Int32[] --block 256 --q 8
+    # launch  grid=188 block=256 q=8 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=2.35 (busiest 3)  waves=0.39
+    kernel=allpairs_multi n=6000 block=256 q=8 unroll=8 runs=15 batch=50  median=0.041 ms  min=0.041  max=0.057  
+877.261 Ginteractions/s  17545.2 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 3.747e-06  rms 1.149e-06
+    validate vs FP64 (528 bodies, kappa_max 1.2e+01): this rms 1.730e-07 max 6.867e-07 norm 3.328e-07  | naive rms 
+1.139e-06 max 3.142e-06 norm 2.653e-06
+[34/63] --kernel allpairs_multi --n System.Int32[] --block 256 --q 16
+    # launch  grid=375 block=256 q=16 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=4.69 (busiest 5)  waves=0.78
+    kernel=allpairs_multi n=6000 block=256 q=16 unroll=8 runs=15 batch=50  median=0.037 ms  min=0.037  max=0.046  
+974.397 Ginteractions/s  19487.9 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 3.612e-06  rms 1.132e-06
+    validate vs FP64 (528 bodies, kappa_max 1.2e+01): this rms 9.545e-08 max 3.383e-07 norm 2.112e-07  | naive rms 
+1.139e-06 max 3.142e-06 norm 2.653e-06
+[35/63] --kernel allpairs_multi --n System.Int32[] --block 256 --q 32
+    # launch  grid=750 block=256 q=32 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=9.38 (busiest 10)  waves=1.56
+    kernel=allpairs_multi n=6000 block=256 q=32 unroll=8 runs=15 batch=50  median=0.040 ms  min=0.040  max=0.049  
+908.122 Ginteractions/s  18162.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 3.707e-06  rms 1.127e-06
+    validate vs FP64 (528 bodies, kappa_max 1.2e+01): this rms 6.894e-08 max 2.413e-07 norm 1.131e-07  | naive rms 
+1.139e-06 max 3.142e-06 norm 2.653e-06
+[36/63] --kernel allpairs_multi --n System.Int32[] --block 512 --q 0
+    # launch  grid=375 block=512 q=32 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=4.69 (busiest 5)  waves=1.56
+    kernel=allpairs_multi n=6000 block=512 q=32 unroll=8 runs=15 batch=50  median=0.038 ms  min=0.037  max=0.055  
+958.458 Ginteractions/s  19169.2 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 3.707e-06  rms 1.127e-06
+    validate vs FP64 (528 bodies, kappa_max 1.2e+01): this rms 6.894e-08 max 2.413e-07 norm 1.131e-07  | naive rms 
+1.139e-06 max 3.142e-06 norm 2.653e-06
+[37/63] --kernel allpairs_multi --n System.Int32[] --block 512 --q 1
+    # launch  grid=12 block=512 q=1 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=0.15 (busiest 1)  waves=0.05
+    kernel=allpairs_multi n=6000 block=512 q=1 unroll=8 runs=15 batch=50  median=0.182 ms  min=0.182  max=0.200  
+197.960 Ginteractions/s  3959.2 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00
+    validate vs FP64 (528 bodies, kappa_max 1.2e+01): this rms 1.139e-06 max 3.142e-06 norm 2.653e-06  | naive rms 
+1.139e-06 max 3.142e-06 norm 2.653e-06
+[38/63] --kernel allpairs_multi --n System.Int32[] --block 512 --q 2
+    # launch  grid=24 block=512 q=2 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=0.30 (busiest 1)  waves=0.10
+    kernel=allpairs_multi n=6000 block=512 q=2 unroll=8 runs=15 batch=50  median=0.097 ms  min=0.092  max=0.111  
+372.971 Ginteractions/s  7459.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 4.310e-06  rms 1.338e-06
+    validate vs FP64 (528 bodies, kappa_max 1.2e+01): this rms 5.825e-07 max 2.347e-06 norm 1.457e-06  | naive rms 
+1.139e-06 max 3.142e-06 norm 2.653e-06
+[39/63] --kernel allpairs_multi --n System.Int32[] --block 512 --q 4
+    # launch  grid=47 block=512 q=4 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=0.59 (busiest 1)  waves=0.20
+    kernel=allpairs_multi n=6000 block=512 q=4 unroll=8 runs=15 batch=50  median=0.049 ms  min=0.049  max=0.068  
+730.339 Ginteractions/s  14606.8 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 3.979e-06  rms 1.195e-06
+    validate vs FP64 (528 bodies, kappa_max 1.2e+01): this rms 2.988e-07 max 7.756e-07 norm 5.777e-07  | naive rms 
+1.139e-06 max 3.142e-06 norm 2.653e-06
+[40/63] --kernel allpairs_multi --n System.Int32[] --block 512 --q 8
+    # launch  grid=94 block=512 q=8 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=1.18 (busiest 2)  waves=0.39
+    kernel=allpairs_multi n=6000 block=512 q=8 unroll=8 runs=15 batch=50  median=0.050 ms  min=0.050  max=0.064  
+718.942 Ginteractions/s  14378.8 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 3.747e-06  rms 1.149e-06
+    validate vs FP64 (528 bodies, kappa_max 1.2e+01): this rms 1.730e-07 max 6.867e-07 norm 3.328e-07  | naive rms 
+1.139e-06 max 3.142e-06 norm 2.653e-06
+[41/63] --kernel allpairs_multi --n System.Int32[] --block 512 --q 16
+    # launch  grid=188 block=512 q=16 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=2.35 (busiest 3)  waves=0.78
+    kernel=allpairs_multi n=6000 block=512 q=16 unroll=8 runs=15 batch=50  median=0.040 ms  min=0.040  max=0.056  
+894.590 Ginteractions/s  17891.8 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 3.612e-06  rms 1.132e-06
+    validate vs FP64 (528 bodies, kappa_max 1.2e+01): this rms 9.545e-08 max 3.383e-07 norm 2.112e-07  | naive rms 
+1.139e-06 max 3.142e-06 norm 2.653e-06
+[42/63] --kernel allpairs_multi --n System.Int32[] --block 512 --q 32
+    # launch  grid=375 block=512 q=32 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=4.69 (busiest 5)  waves=1.56
+    kernel=allpairs_multi n=6000 block=512 q=32 unroll=8 runs=15 batch=50  median=0.038 ms  min=0.037  max=0.051  
+958.458 Ginteractions/s  19169.2 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 3.707e-06  rms 1.127e-06
+    validate vs FP64 (528 bodies, kappa_max 1.2e+01): this rms 6.894e-08 max 2.413e-07 norm 1.131e-07  | naive rms 
+1.139e-06 max 3.142e-06 norm 2.653e-06
+[43/63] --kernel allpairs_multi --n System.Int32[] --block 128 --q 0
+    # launch  grid=625 block=128 q=4 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=7.81 (busiest 8)  waves=0.65
+    kernel=allpairs_multi n=20000 block=128 q=4 unroll=8 runs=15 batch=50  median=0.366 ms  min=0.361  max=0.375  
+1091.741 Ginteractions/s  21834.8 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 8.445e-06  rms 2.190e-06
+    validate vs FP64 (528 bodies, kappa_max 2.1e+01): this rms 5.724e-07 max 5.924e-06 norm 1.149e-06  | naive rms 
+1.992e-06 max 5.132e-06 norm 4.478e-06
+[44/63] --kernel allpairs_multi --n System.Int32[] --block 128 --q 1
+    # launch  grid=157 block=128 q=1 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=1.96 (busiest 2)  waves=0.16
+    kernel=allpairs_multi n=20000 block=128 q=1 unroll=8 runs=15 batch=50  median=0.372 ms  min=0.368  max=0.389  
+1075.569 Ginteractions/s  21511.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00
+    validate vs FP64 (528 bodies, kappa_max 2.1e+01): this rms 1.992e-06 max 5.132e-06 norm 4.478e-06  | naive rms 
+1.992e-06 max 5.132e-06 norm 4.478e-06
+[45/63] --kernel allpairs_multi --n System.Int32[] --block 128 --q 2
+    # launch  grid=313 block=128 q=2 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=3.91 (busiest 4)  waves=0.33
+    kernel=allpairs_multi n=20000 block=128 q=2 unroll=8 runs=15 batch=50  median=0.363 ms  min=0.359  max=0.375  
+1101.310 Ginteractions/s  22026.2 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 8.563e-06  rms 2.467e-06
+    validate vs FP64 (528 bodies, kappa_max 2.1e+01): this rms 1.091e-06 max 8.393e-06 norm 2.024e-06  | naive rms 
+1.992e-06 max 5.132e-06 norm 4.478e-06
+[46/63] --kernel allpairs_multi --n System.Int32[] --block 128 --q 4
+    # launch  grid=625 block=128 q=4 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=7.81 (busiest 8)  waves=0.65
+    kernel=allpairs_multi n=20000 block=128 q=4 unroll=8 runs=15 batch=50  median=0.365 ms  min=0.344  max=0.383  
+1095.968 Ginteractions/s  21919.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 8.445e-06  rms 2.190e-06
+    validate vs FP64 (528 bodies, kappa_max 2.1e+01): this rms 5.724e-07 max 5.924e-06 norm 1.149e-06  | naive rms 
+1.992e-06 max 5.132e-06 norm 4.478e-06
+[47/63] --kernel allpairs_multi --n System.Int32[] --block 128 --q 8
+    # launch  grid=1250 block=128 q=8 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=15.62 (busiest 16)  waves=1.30
+    kernel=allpairs_multi n=20000 block=128 q=8 unroll=8 runs=15 batch=50  median=0.380 ms  min=0.374  max=0.397  
+1051.611 Ginteractions/s  21032.2 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 8.570e-06  rms 2.096e-06
+    validate vs FP64 (528 bodies, kappa_max 2.1e+01): this rms 2.848e-07 max 1.260e-06 norm 5.228e-07  | naive rms 
+1.992e-06 max 5.132e-06 norm 4.478e-06
+[48/63] --kernel allpairs_multi --n System.Int32[] --block 128 --q 16
+    # launch  grid=2500 block=128 q=16 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=31.25 (busiest 32)  waves=2.60
+    kernel=allpairs_multi n=20000 block=128 q=16 unroll=8 runs=15 batch=50  median=0.417 ms  min=0.407  max=0.444  
+960.345 Ginteractions/s  19206.9 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 8.139e-06  rms 2.066e-06
+    validate vs FP64 (528 bodies, kappa_max 2.1e+01): this rms 1.453e-07 max 3.957e-07 norm 2.693e-07  | naive rms 
+1.992e-06 max 5.132e-06 norm 4.478e-06
+[49/63] --kernel allpairs_multi --n System.Int32[] --block 128 --q 32
+    # launch  grid=5000 block=128 q=32 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=62.50 (busiest 63)  waves=5.21
+    kernel=allpairs_multi n=20000 block=128 q=32 unroll=8 runs=15 batch=50  median=0.526 ms  min=0.489  max=0.537  
+760.627 Ginteractions/s  15212.5 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 8.050e-06  rms 2.059e-06
+    validate vs FP64 (528 bodies, kappa_max 2.1e+01): this rms 1.011e-07 max 9.495e-07 norm 1.521e-07  | naive rms 
+1.992e-06 max 5.132e-06 norm 4.478e-06
+[50/63] --kernel allpairs_multi --n System.Int32[] --block 256 --q 0
+    # launch  grid=313 block=256 q=4 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=3.91 (busiest 4)  waves=0.65
+    kernel=allpairs_multi n=20000 block=256 q=4 unroll=8 runs=15 batch=50  median=0.355 ms  min=0.350  max=0.373  
+1127.670 Ginteractions/s  22553.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 8.445e-06  rms 2.190e-06
+    validate vs FP64 (528 bodies, kappa_max 2.1e+01): this rms 5.724e-07 max 5.924e-06 norm 1.149e-06  | naive rms 
+1.992e-06 max 5.132e-06 norm 4.478e-06
+[51/63] --kernel allpairs_multi --n System.Int32[] --block 256 --q 1
+    # launch  grid=79 block=256 q=1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=0.99 (busiest 1)  waves=0.16
+    kernel=allpairs_multi n=20000 block=256 q=1 unroll=8 runs=15 batch=50  median=0.378 ms  min=0.360  max=0.395  
+1058.398 Ginteractions/s  21168.0 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00
+    validate vs FP64 (528 bodies, kappa_max 2.1e+01): this rms 1.992e-06 max 5.132e-06 norm 4.478e-06  | naive rms 
+1.992e-06 max 5.132e-06 norm 4.478e-06
+[52/63] --kernel allpairs_multi --n System.Int32[] --block 256 --q 2
+    # launch  grid=157 block=256 q=2 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=1.96 (busiest 2)  waves=0.33
+    kernel=allpairs_multi n=20000 block=256 q=2 unroll=8 runs=15 batch=50  median=0.350 ms  min=0.344  max=0.367  
+1143.717 Ginteractions/s  22874.3 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 8.563e-06  rms 2.467e-06
+    validate vs FP64 (528 bodies, kappa_max 2.1e+01): this rms 1.091e-06 max 8.393e-06 norm 2.024e-06  | naive rms 
+1.992e-06 max 5.132e-06 norm 4.478e-06
+[53/63] --kernel allpairs_multi --n System.Int32[] --block 256 --q 4
+    # launch  grid=313 block=256 q=4 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=3.91 (busiest 4)  waves=0.65
+    kernel=allpairs_multi n=20000 block=256 q=4 unroll=8 runs=15 batch=50  median=0.353 ms  min=0.348  max=0.370  
+1134.087 Ginteractions/s  22681.7 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 8.445e-06  rms 2.190e-06
+    validate vs FP64 (528 bodies, kappa_max 2.1e+01): this rms 5.724e-07 max 5.924e-06 norm 1.149e-06  | naive rms 
+1.992e-06 max 5.132e-06 norm 4.478e-06
+[54/63] --kernel allpairs_multi --n System.Int32[] --block 256 --q 8
+    # launch  grid=625 block=256 q=8 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=7.81 (busiest 8)  waves=1.30
+    kernel=allpairs_multi n=20000 block=256 q=8 unroll=8 runs=15 batch=50  median=0.360 ms  min=0.343  max=0.378  
+1111.182 Ginteractions/s  22223.6 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 8.570e-06  rms 2.096e-06
+    validate vs FP64 (528 bodies, kappa_max 2.1e+01): this rms 2.848e-07 max 1.260e-06 norm 5.228e-07  | naive rms 
+1.992e-06 max 5.132e-06 norm 4.478e-06
+[55/63] --kernel allpairs_multi --n System.Int32[] --block 256 --q 16
+    # launch  grid=1250 block=256 q=16 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=15.62 (busiest 16)  waves=2.60
+    kernel=allpairs_multi n=20000 block=256 q=16 unroll=8 runs=15 batch=50  median=0.379 ms  min=0.354  max=0.399  
+1056.029 Ginteractions/s  21120.6 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 8.139e-06  rms 2.066e-06
+    validate vs FP64 (528 bodies, kappa_max 2.1e+01): this rms 1.453e-07 max 3.957e-07 norm 2.693e-07  | naive rms 
+1.992e-06 max 5.132e-06 norm 4.478e-06
+[56/63] --kernel allpairs_multi --n System.Int32[] --block 256 --q 32
+    # launch  grid=2500 block=256 q=32 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=31.25 (busiest 32)  waves=5.21
+    kernel=allpairs_multi n=20000 block=256 q=32 unroll=8 runs=15 batch=50  median=0.425 ms  min=0.418  max=0.450  
+941.174 Ginteractions/s  18823.5 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 8.050e-06  rms 2.059e-06
+    validate vs FP64 (528 bodies, kappa_max 2.1e+01): this rms 1.011e-07 max 9.495e-07 norm 1.521e-07  | naive rms 
+1.992e-06 max 5.132e-06 norm 4.478e-06
+[57/63] --kernel allpairs_multi --n System.Int32[] --block 512 --q 0
+    # launch  grid=157 block=512 q=4 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=1.96 (busiest 2)  waves=0.65
+    kernel=allpairs_multi n=20000 block=512 q=4 unroll=8 runs=15 batch=50  median=0.345 ms  min=0.343  max=0.363  
+1158.369 Ginteractions/s  23167.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 8.445e-06  rms 2.190e-06
+    validate vs FP64 (528 bodies, kappa_max 2.1e+01): this rms 5.724e-07 max 5.924e-06 norm 1.149e-06  | naive rms 
+1.992e-06 max 5.132e-06 norm 4.478e-06
+[58/63] --kernel allpairs_multi --n System.Int32[] --block 512 --q 1
+    # launch  grid=40 block=512 q=1 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=0.50 (busiest 1)  waves=0.17
+    kernel=allpairs_multi n=20000 block=512 q=1 unroll=8 runs=15 batch=50  median=0.637 ms  min=0.624  max=0.650  
+627.821 Ginteractions/s  12556.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00
+    validate vs FP64 (528 bodies, kappa_max 2.1e+01): this rms 1.992e-06 max 5.132e-06 norm 4.478e-06  | naive rms 
+1.992e-06 max 5.132e-06 norm 4.478e-06
+[59/63] --kernel allpairs_multi --n System.Int32[] --block 512 --q 2
+    # launch  grid=79 block=512 q=2 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=0.99 (busiest 1)  waves=0.33
+    kernel=allpairs_multi n=20000 block=512 q=2 unroll=8 runs=15 batch=50  median=0.338 ms  min=0.332  max=0.347  
+1183.858 Ginteractions/s  23677.2 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 8.563e-06  rms 2.467e-06
+    validate vs FP64 (528 bodies, kappa_max 2.1e+01): this rms 1.091e-06 max 8.393e-06 norm 2.024e-06  | naive rms 
+1.992e-06 max 5.132e-06 norm 4.478e-06
+[60/63] --kernel allpairs_multi --n System.Int32[] --block 512 --q 4
+    # launch  grid=157 block=512 q=4 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=1.96 (busiest 2)  waves=0.65
+    kernel=allpairs_multi n=20000 block=512 q=4 unroll=8 runs=15 batch=50  median=0.345 ms  min=0.341  max=0.357  
+1159.150 Ginteractions/s  23183.0 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 8.445e-06  rms 2.190e-06
+    validate vs FP64 (528 bodies, kappa_max 2.1e+01): this rms 5.724e-07 max 5.924e-06 norm 1.149e-06  | naive rms 
+1.992e-06 max 5.132e-06 norm 4.478e-06
+[61/63] --kernel allpairs_multi --n System.Int32[] --block 512 --q 8
+    # launch  grid=313 block=512 q=8 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=3.91 (busiest 4)  waves=1.30
+    kernel=allpairs_multi n=20000 block=512 q=8 unroll=8 runs=15 batch=50  median=0.354 ms  min=0.330  max=0.378  
+1129.713 Ginteractions/s  22594.3 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 8.570e-06  rms 2.096e-06
+    validate vs FP64 (528 bodies, kappa_max 2.1e+01): this rms 2.848e-07 max 1.260e-06 norm 5.228e-07  | naive rms 
+1.992e-06 max 5.132e-06 norm 4.478e-06
+[62/63] --kernel allpairs_multi --n System.Int32[] --block 512 --q 16
+    # launch  grid=625 block=512 q=16 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=7.81 (busiest 8)  waves=2.60
+    kernel=allpairs_multi n=20000 block=512 q=16 unroll=8 runs=15 batch=50  median=0.367 ms  min=0.362  max=0.389  
+1089.135 Ginteractions/s  21782.7 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 8.139e-06  rms 2.066e-06
+    validate vs FP64 (528 bodies, kappa_max 2.1e+01): this rms 1.453e-07 max 3.957e-07 norm 2.693e-07  | naive rms 
+1.992e-06 max 5.132e-06 norm 4.478e-06
+[63/63] --kernel allpairs_multi --n System.Int32[] --block 512 --q 32
+    # launch  grid=1250 block=512 q=32 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=15.62 (busiest 16)  waves=5.21
+    kernel=allpairs_multi n=20000 block=512 q=32 unroll=8 runs=15 batch=50  median=0.397 ms  min=0.391  max=0.415  
+1007.804 Ginteractions/s  20156.1 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 8.050e-06  rms 2.059e-06
+    validate vs FP64 (528 bodies, kappa_max 2.1e+01): this rms 1.011e-07 max 9.495e-07 norm 1.521e-07  | naive rms 
+1.992e-06 max 5.132e-06 norm 4.478e-06
+wrote D:\NBodyProblemSim\results\2026-10-17_architect_sanity\sweep_oos.csv
+[1/21] --kernel allpairs_multi --n System.Int32[] --block 128 --q 0
+    # launch  grid=1024 block=128 q=4 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=12.80 (busiest 13)  waves=1.07
+    kernel=allpairs_multi n=32768 block=128 q=4 unroll=8 runs=15 batch=5  median=0.927 ms  min=0.883  max=1.104  
+1158.896 Ginteractions/s  23177.9 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.017e-05  rms 2.792e-06
+    validate vs FP64 (528 bodies, kappa_max 1.0e+01): this rms 6.541e-07 max 1.729e-06 norm 1.172e-06  | naive rms 
+2.682e-06 max 6.823e-06 norm 6.671e-06
+[2/21] --kernel allpairs_multi --n System.Int32[] --block 128 --q 1
+    # launch  grid=256 block=128 q=1 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=3.20 (busiest 4)  waves=0.27
+    kernel=allpairs_multi n=32768 block=128 q=1 unroll=8 runs=15 batch=5  median=1.120 ms  min=1.078  max=1.250  
+958.791 Ginteractions/s  19175.8 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00
+    validate vs FP64 (528 bodies, kappa_max 1.0e+01): this rms 2.682e-06 max 6.823e-06 norm 6.671e-06  | naive rms 
+2.682e-06 max 6.823e-06 norm 6.671e-06
+[3/21] --kernel allpairs_multi --n System.Int32[] --block 128 --q 2
+    # launch  grid=512 block=128 q=2 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=6.40 (busiest 7)  waves=0.53
+    kernel=allpairs_multi n=32768 block=128 q=2 unroll=8 runs=15 batch=5  median=0.926 ms  min=0.922  max=1.107  
+1159.697 Ginteractions/s  23193.9 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.138e-05  rms 3.165e-06
+    validate vs FP64 (528 bodies, kappa_max 1.0e+01): this rms 1.307e-06 max 3.910e-06 norm 2.704e-06  | naive rms 
+2.682e-06 max 6.823e-06 norm 6.671e-06
+[4/21] --kernel allpairs_multi --n System.Int32[] --block 128 --q 4
+    # launch  grid=1024 block=128 q=4 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=12.80 (busiest 13)  waves=1.07
+    kernel=allpairs_multi n=32768 block=128 q=4 unroll=8 runs=15 batch=5  median=0.930 ms  min=0.883  max=1.096  
+1154.311 Ginteractions/s  23086.2 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.017e-05  rms 2.792e-06
+    validate vs FP64 (528 bodies, kappa_max 1.0e+01): this rms 6.541e-07 max 1.729e-06 norm 1.172e-06  | naive rms 
+2.682e-06 max 6.823e-06 norm 6.671e-06
+[5/21] --kernel allpairs_multi --n System.Int32[] --block 128 --q 8
+    # launch  grid=2048 block=128 q=8 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=25.60 (busiest 26)  waves=2.13
+    kernel=allpairs_multi n=32768 block=128 q=8 unroll=8 runs=15 batch=5  median=0.978 ms  min=0.920  max=1.164  
+1098.215 Ginteractions/s  21964.3 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 9.553e-06  rms 2.672e-06
+    validate vs FP64 (528 bodies, kappa_max 1.0e+01): this rms 3.446e-07 max 8.333e-07 norm 6.319e-07  | naive rms 
+2.682e-06 max 6.823e-06 norm 6.671e-06
+[6/21] --kernel allpairs_multi --n System.Int32[] --block 128 --q 16
+    # launch  grid=4096 block=128 q=16 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=51.20 (busiest 52)  waves=4.27
+    kernel=allpairs_multi n=32768 block=128 q=16 unroll=8 runs=15 batch=5  median=1.120 ms  min=1.023  max=1.328  
+958.654 Ginteractions/s  19173.1 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 9.226e-06  rms 2.640e-06
+    validate vs FP64 (528 bodies, kappa_max 1.0e+01): this rms 1.773e-07 max 5.894e-07 norm 3.475e-07  | naive rms 
+2.682e-06 max 6.823e-06 norm 6.671e-06
+[7/21] --kernel allpairs_multi --n System.Int32[] --block 128 --q 32
+    # launch  grid=8192 block=128 q=32 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=102.40 (busiest 103)  waves=8.53
+    kernel=allpairs_multi n=32768 block=128 q=32 unroll=8 runs=15 batch=5  median=1.376 ms  min=1.307  max=1.563  
+780.539 Ginteractions/s  15610.8 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 9.061e-06  rms 2.632e-06
+    validate vs FP64 (528 bodies, kappa_max 1.0e+01): this rms 1.015e-07 max 3.907e-07 norm 1.834e-07  | naive rms 
+2.682e-06 max 6.823e-06 norm 6.671e-06
+[8/21] --kernel allpairs_multi --n System.Int32[] --block 256 --q 0
+    # launch  grid=1024 block=256 q=8 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=12.80 (busiest 13)  waves=2.13
+    kernel=allpairs_multi n=32768 block=256 q=8 unroll=8 runs=15 batch=5  median=0.878 ms  min=0.876  max=1.102  
+1222.437 Ginteractions/s  24448.7 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 9.553e-06  rms 2.672e-06
+    validate vs FP64 (528 bodies, kappa_max 1.0e+01): this rms 3.446e-07 max 8.333e-07 norm 6.319e-07  | naive rms 
+2.682e-06 max 6.823e-06 norm 6.671e-06
+[9/21] --kernel allpairs_multi --n System.Int32[] --block 256 --q 1
+    # launch  grid=128 block=256 q=1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=1.60 (busiest 2)  waves=0.27
+    kernel=allpairs_multi n=32768 block=256 q=1 unroll=8 runs=15 batch=5  median=1.061 ms  min=1.023  max=1.218  
+1011.553 Ginteractions/s  20231.1 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00
+    validate vs FP64 (528 bodies, kappa_max 1.0e+01): this rms 2.682e-06 max 6.823e-06 norm 6.671e-06  | naive rms 
+2.682e-06 max 6.823e-06 norm 6.671e-06
+[10/21] --kernel allpairs_multi --n System.Int32[] --block 256 --q 2
+    # launch  grid=256 block=256 q=2 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=3.20 (busiest 4)  waves=0.53
+    kernel=allpairs_multi n=32768 block=256 q=2 unroll=8 runs=15 batch=5  median=1.061 ms  min=1.009  max=1.184  
+1011.748 Ginteractions/s  20235.0 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.138e-05  rms 3.165e-06
+    validate vs FP64 (528 bodies, kappa_max 1.0e+01): this rms 1.307e-06 max 3.910e-06 norm 2.704e-06  | naive rms 
+2.682e-06 max 6.823e-06 norm 6.671e-06
+[11/21] --kernel allpairs_multi --n System.Int32[] --block 256 --q 4
+    # launch  grid=512 block=256 q=4 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=6.40 (busiest 7)  waves=1.07
+    kernel=allpairs_multi n=32768 block=256 q=4 unroll=8 runs=15 batch=5  median=0.912 ms  min=0.905  max=1.080  
+1177.654 Ginteractions/s  23553.1 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.017e-05  rms 2.792e-06
+    validate vs FP64 (528 bodies, kappa_max 1.0e+01): this rms 6.541e-07 max 1.729e-06 norm 1.172e-06  | naive rms 
+2.682e-06 max 6.823e-06 norm 6.671e-06
+[12/21] --kernel allpairs_multi --n System.Int32[] --block 256 --q 8
+    # launch  grid=1024 block=256 q=8 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=12.80 (busiest 13)  waves=2.13
+    kernel=allpairs_multi n=32768 block=256 q=8 unroll=8 runs=15 batch=5  median=0.886 ms  min=0.875  max=1.106  
+1212.227 Ginteractions/s  24244.5 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 9.553e-06  rms 2.672e-06
+    validate vs FP64 (528 bodies, kappa_max 1.0e+01): this rms 3.446e-07 max 8.333e-07 norm 6.319e-07  | naive rms 
+2.682e-06 max 6.823e-06 norm 6.671e-06
+[13/21] --kernel allpairs_multi --n System.Int32[] --block 256 --q 16
+    # launch  grid=2048 block=256 q=16 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=25.60 (busiest 26)  waves=4.27
+    kernel=allpairs_multi n=32768 block=256 q=16 unroll=8 runs=15 batch=5  median=0.932 ms  min=0.924  max=1.175  
+1151.775 Ginteractions/s  23035.5 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 9.226e-06  rms 2.640e-06
+    validate vs FP64 (528 bodies, kappa_max 1.0e+01): this rms 1.773e-07 max 5.894e-07 norm 3.475e-07  | naive rms 
+2.682e-06 max 6.823e-06 norm 6.671e-06
+[14/21] --kernel allpairs_multi --n System.Int32[] --block 256 --q 32
+    # launch  grid=4096 block=256 q=32 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=51.20 (busiest 52)  waves=8.53
+    kernel=allpairs_multi n=32768 block=256 q=32 unroll=8 runs=15 batch=5  median=1.052 ms  min=1.030  max=1.316  
+1020.214 Ginteractions/s  20404.3 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 9.061e-06  rms 2.632e-06
+    validate vs FP64 (528 bodies, kappa_max 1.0e+01): this rms 1.015e-07 max 3.907e-07 norm 1.834e-07  | naive rms 
+2.682e-06 max 6.823e-06 norm 6.671e-06
+[15/21] --kernel allpairs_multi --n System.Int32[] --block 512 --q 0
+    # launch  grid=1024 block=512 q=16 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=12.80 (busiest 13)  waves=4.27
+    kernel=allpairs_multi n=32768 block=512 q=16 unroll=8 runs=15 batch=5  median=0.900 ms  min=0.886  max=1.157  
+1193.191 Ginteractions/s  23863.8 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 9.226e-06  rms 2.640e-06
+    validate vs FP64 (528 bodies, kappa_max 1.0e+01): this rms 1.773e-07 max 5.894e-07 norm 3.475e-07  | naive rms 
+2.682e-06 max 6.823e-06 norm 6.671e-06
+[16/21] --kernel allpairs_multi --n System.Int32[] --block 512 --q 1
+    # launch  grid=64 block=512 q=1 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=0.80 (busiest 1)  waves=0.27
+    kernel=allpairs_multi n=32768 block=512 q=1 unroll=8 runs=15 batch=5  median=0.992 ms  min=0.987  max=1.185  
+1082.345 Ginteractions/s  21646.9 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00
+    validate vs FP64 (528 bodies, kappa_max 1.0e+01): this rms 2.682e-06 max 6.823e-06 norm 6.671e-06  | naive rms 
+2.682e-06 max 6.823e-06 norm 6.671e-06
+[17/21] --kernel allpairs_multi --n System.Int32[] --block 512 --q 2
+    # launch  grid=128 block=512 q=2 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=1.60 (busiest 2)  waves=0.53
+    kernel=allpairs_multi n=32768 block=512 q=2 unroll=8 runs=15 batch=5  median=1.025 ms  min=0.984  max=1.175  
+1047.319 Ginteractions/s  20946.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.138e-05  rms 3.165e-06
+    validate vs FP64 (528 bodies, kappa_max 1.0e+01): this rms 1.307e-06 max 3.910e-06 norm 2.704e-06  | naive rms 
+2.682e-06 max 6.823e-06 norm 6.671e-06
+[18/21] --kernel allpairs_multi --n System.Int32[] --block 512 --q 4
+    # launch  grid=256 block=512 q=4 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=3.20 (busiest 4)  waves=1.07
+    kernel=allpairs_multi n=32768 block=512 q=4 unroll=8 runs=15 batch=5  median=1.001 ms  min=0.995  max=1.170  
+1072.198 Ginteractions/s  21444.0 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.017e-05  rms 2.792e-06
+    validate vs FP64 (528 bodies, kappa_max 1.0e+01): this rms 6.541e-07 max 1.729e-06 norm 1.172e-06  | naive rms 
+2.682e-06 max 6.823e-06 norm 6.671e-06
+[19/21] --kernel allpairs_multi --n System.Int32[] --block 512 --q 8
+    # launch  grid=512 block=512 q=8 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=6.40 (busiest 7)  waves=2.13
+    kernel=allpairs_multi n=32768 block=512 q=8 unroll=8 runs=15 batch=5  median=0.911 ms  min=0.901  max=1.126  
+1178.970 Ginteractions/s  23579.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 9.553e-06  rms 2.672e-06
+    validate vs FP64 (528 bodies, kappa_max 1.0e+01): this rms 3.446e-07 max 8.333e-07 norm 6.319e-07  | naive rms 
+2.682e-06 max 6.823e-06 norm 6.671e-06
+[20/21] --kernel allpairs_multi --n System.Int32[] --block 512 --q 16
+    # launch  grid=1024 block=512 q=16 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=12.80 (busiest 13)  waves=4.27
+    kernel=allpairs_multi n=32768 block=512 q=16 unroll=8 runs=15 batch=5  median=0.942 ms  min=0.879  max=1.063  
+1139.269 Ginteractions/s  22785.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 9.226e-06  rms 2.640e-06
+    validate vs FP64 (528 bodies, kappa_max 1.0e+01): this rms 1.773e-07 max 5.894e-07 norm 3.475e-07  | naive rms 
+2.682e-06 max 6.823e-06 norm 6.671e-06
+[21/21] --kernel allpairs_multi --n System.Int32[] --block 512 --q 32
+    # launch  grid=2048 block=512 q=32 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=25.60 (busiest 26)  waves=8.53
+    kernel=allpairs_multi n=32768 block=512 q=32 unroll=8 runs=15 batch=5  median=0.954 ms  min=0.947  max=1.195  
+1125.127 Ginteractions/s  22502.5 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 9.061e-06  rms 2.632e-06
+    validate vs FP64 (528 bodies, kappa_max 1.0e+01): this rms 1.015e-07 max 3.907e-07 norm 1.834e-07  | naive rms 
+2.682e-06 max 6.823e-06 norm 6.671e-06
+wrote D:\NBodyProblemSim\results\2026-10-17_architect_sanity\sweep_oos.csv

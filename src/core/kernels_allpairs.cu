@@ -11,21 +11,11 @@
 #include <cstdio>
 #include <cstdlib>
 #include "nbody.h"
+#include "interaction.cuh"
+#include "internal.h"
 
 namespace nbody {
 namespace {
-
-__device__ __forceinline__ float3 bodyBodyInteraction(float4 bi, float4 bj, float3 ai, float eps2)
-{
-    float3 r  = make_float3(bj.x - bi.x, bj.y - bi.y, bj.z - bi.z);
-    float d2  = fmaf(r.x, r.x, fmaf(r.y, r.y, fmaf(r.z, r.z, eps2)));
-    float inv = rsqrtf(d2);
-    float s   = bj.w * inv * inv * inv;     // m_j / (|r|^2 + eps^2)^(3/2)
-    ai.x = fmaf(r.x, s, ai.x);
-    ai.y = fmaf(r.y, s, ai.y);
-    ai.z = fmaf(r.z, s, ai.z);
-    return ai;
-}
 
 __global__ void allPairsNaiveKernel(const float4* __restrict__ pos, float4* __restrict__ acc,
                                     int n, float eps2, float G)
@@ -77,14 +67,29 @@ void launchTiled(const DeviceState& s, const Params& p, cudaStream_t st)
     CUDA_CHECK(cudaGetLastError());
 }
 
+LaunchInfo queryNaive(int n, const Params& p)
+{
+    return describeKernel(reinterpret_cast<const void*>(allPairsNaiveKernel), gridFor(n, p.blockSize),
+                          p.blockSize, 0);
+}
+
+LaunchInfo queryTiled(int n, const Params& p)
+{
+    LaunchInfo li = describeKernel(reinterpret_cast<const void*>(allPairsTiledKernel),
+                                   gridFor(n, p.blockSize), p.blockSize,
+                                   p.blockSize * sizeof(float4));
+    li.unroll = 8;
+    return li;
+}
+
 } // namespace
 
 // Registry hook used by nbody.cu. New variants: add a launcher here (or in a new
 // kernels_*.cu) and register it in kernelRegistry().
 void registerAllPairs(std::vector<KernelInfo>& r)
 {
-    r.push_back({"allpairs_naive", "all-pairs, global memory only (reference)", launchNaive});
-    r.push_back({"allpairs_tiled", "all-pairs, shared-memory tiling, 1 thread/body (R3 #1)", launchTiled});
+    r.push_back({"allpairs_naive", "all-pairs, global memory only (reference)", launchNaive, queryNaive});
+    r.push_back({"allpairs_tiled", "all-pairs, shared-memory tiling, 1 thread/body (R3 #1)", launchTiled, queryTiled});
 }
 
 } // namespace nbody

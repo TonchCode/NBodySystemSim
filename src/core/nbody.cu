@@ -2,16 +2,46 @@
 #include <cstdio>
 #include <cstdlib>
 #include "nbody.h"
+#include "internal.h"
 
 namespace nbody {
 
 void registerAllPairs(std::vector<KernelInfo>& r);
+void registerTuned(std::vector<KernelInfo>& r);
+void registerMulti(std::vector<KernelInfo>& r);
+
+int deviceSMCount()
+{
+    static const int sms = [] {
+        int dev = 0, v = 0;
+        CUDA_CHECK(cudaGetDevice(&dev));
+        CUDA_CHECK(cudaDeviceGetAttribute(&v, cudaDevAttrMultiProcessorCount, dev));
+        return v;
+    }();
+    return sms;
+}
+
+LaunchInfo describeKernel(const void* fn, int gridBlocks, int blockThreads, size_t dynSmem)
+{
+    cudaFuncAttributes fa{};
+    CUDA_CHECK(cudaFuncGetAttributes(&fa, fn));
+    LaunchInfo li;
+    li.gridBlocks    = gridBlocks;
+    li.blockThreads  = blockThreads;
+    li.unroll        = -1;
+    li.regsPerThread = fa.numRegs;
+    li.smemPerBlock  = fa.sharedSizeBytes + dynSmem;
+    CUDA_CHECK(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&li.blocksPerSM, fn, blockThreads, dynSmem));
+    return li;
+}
 
 const std::vector<KernelInfo>& kernelRegistry()
 {
     static const std::vector<KernelInfo> registry = [] {
         std::vector<KernelInfo> r;
-        registerAllPairs(r);
+        registerAllPairs(r);   // naive, tiled: the references, keep them first (viewer keys 1, 2)
+        registerTuned(r);      // R3 #2
+        registerMulti(r);      // R3 #3
         return r;
     }();
     return registry;

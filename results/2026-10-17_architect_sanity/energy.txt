@@ -1,0 +1,8 @@
+kernel=allpairs_tiled n=4096 block=256 q=1 unroll=8 runs=3 batch=1  median=0.082 ms  min=0.079  max=0.083  205.684 Ginteractions/s  4113.7 GFLOP/s (@20 FLOP/interaction)
+energy: E0=-0.254951  E1=-0.254951  rel drift=-2.760e-08 over 2000 steps (dt=0.001, eps=0.01)
+kernel=allpairs_tuned n=4096 block=128 q=1 unroll=0 runs=3 batch=1  median=0.051 ms  min=0.049  max=0.051  327.885 Ginteractions/s  6557.7 GFLOP/s (@20 FLOP/interaction)
+energy: E0=-0.254951  E1=-0.254951  rel drift=-2.760e-08 over 2000 steps (dt=0.001, eps=0.01)
+kernel=allpairs_multi n=4096 block=256 q=4 unroll=8 runs=3 batch=1  median=0.032 ms  min=0.025  max=0.150  528.516 Ginteractions/s  10570.3 GFLOP/s (@20 FLOP/interaction)
+energy: E0=-0.254951  E1=-0.254951  rel drift=-2.968e-08 over 2000 steps (dt=0.001, eps=0.01)
+kernel=allpairs_multi n=4096 block=256 q=32 unroll=8 runs=3 batch=1  median=0.020 ms  min=0.020  max=0.023  819.200 Ginteractions/s  16384.0 GFLOP/s (@20 FLOP/interaction)
+energy: E0=-0.254951  E1=-0.254951  rel drift=-3.139e-08 over 2000 steps (dt=0.001, eps=0.01)
