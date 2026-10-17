@@ -1,0 +1,4 @@
+GL 3.3.0 NVIDIA 617.42 | NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2
+ic=plummer mass_spectrum=equal N=65536
+screenshot -> results/2026-10-17_ic_round/screens/smoke_plummer_65536.bmp (1600x900)
+N-body | plummer (equal) | N=65536 | bh_warp | 1.085 ms/step | 102.4 G int/s real (counted, incl. build + integrator) | 1695 int/body | 2 steps/frame | 178 FPS

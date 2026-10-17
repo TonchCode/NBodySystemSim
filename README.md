@@ -30,8 +30,15 @@ build\src\viewer\nbody_viewer.exe --n 65536
 ```
 
 Viewer controls: LMB drag orbit · wheel zoom · `1`..`9` kernel · Space pause ·
-`+`/`-` steps per frame · `[` `]` brightness · `R` reset · `V` vsync · Esc quit.
-`--frames F --screenshot out.bmp` renders F frames, saves the last one and exits (for figures).
+`+`/`-` steps per frame · `PageUp`/`.` double N · `PageDown`/`,` halve N · `I` next IC ·
+`H` next mass spectrum · `M` colour by mass · `[` `]` brightness · `R` reset · `V` vsync · Esc quit.
+The title shows IC, mass spectrum, N, kernel, ms/step and the real interaction rate (tree kernels:
+counted interactions). Default kernel `bh_warp`; N is capped at 262144 for all-pairs and 4,194,304
+for tree kernels (TDR margin).
+ICs: `--ic plummer|collision|core|disk|galaxies|cube_shell|cube_edges|uniform`,
+`--mass-spectrum equal|salpeter|heavy-few`, `--bh-mass 0.01` (viewer and bench; design §19).
+`--frames F --screenshot out.bmp` renders F frames, saves the last one and exits (for figures;
+`--dist/--yaw/--pitch` set the camera, `python tools/bmp2png.py out.bmp` converts to PNG).
 
 ![viewer](docs/img/viewer_plummer_32k_2026-10-17.png)
 

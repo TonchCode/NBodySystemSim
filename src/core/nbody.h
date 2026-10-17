@@ -132,7 +132,36 @@ void makePlummer(int n, unsigned seed, std::vector<float4>& pos, std::vector<flo
 // Multi-component ICs are randomly shuffled (seeded), so the body order carries no spatial
 // information, exactly like the single Plummer. Returns false for an unknown name.
 bool makeIC(const std::string& name, int n, unsigned seed, std::vector<float4>& pos, std::vector<float4>& vel);
-const char* icNames();   // "plummer|collision|core"
+const char* icNames();   // "plummer|collision|core|disk|galaxies|cube_shell|cube_edges|uniform"
+
+// IC round (docs/03-design.md §19). Options of the new ICs and of the mass spectrum.
+//   disk        rotating disk galaxy: exponential disk + Plummer bulge + one central massive body
+//               (fraction bhMass of the galaxy's mass), thin in z, near-circular velocities from the
+//               enclosed mass (softened spherical approximation; no dark halo: not an equilibrium)
+//   galaxies    two disks (mass 1/2 each), inclined and offset, on a bound collision course
+//   cube_shell  bodies uniform on the 6 faces of [-1,1]^3 (STRESS TEST: hollow, degenerate)
+//   cube_edges  bodies uniform on the 12 edges of [-1,1]^3 (STRESS TEST: 1D, duplicate keys)
+//   uniform     uniform in the cube [-1,1]^3 (the no-clustering control)
+// massSpectrum (light bodies of every component; never the central body), masses drawn
+// independently of position and normalised to the component's mass (total mass stays 1):
+//   equal       1/N (with the legacy ICs this is BITWISE the pre-IC-round output)
+//   salpeter    dN/dm ~ m^-2.35 on [1, 100] (Salpeter-like power law with cut-offs)
+//   heavy-few   min(16, n_c / 128) bodies carry 1% of the component mass each, the rest equal
+// softening is used only for the disk velocities (softened enclosed-mass circular speed).
+struct ICOptions {
+    std::string massSpectrum = "equal";
+    double      bhMass       = 0.01;
+    double      softening    = 0.01;
+};
+bool makeIC(const std::string& name, int n, unsigned seed, std::vector<float4>& pos, std::vector<float4>& vel,
+            const ICOptions& opt);
+const char* massSpectrumNames();   // "equal|salpeter|heavy-few"
+bool        validMassSpectrum(const std::string& s);
+// FNV-1a 64 over the pos and vel arrays (IC regression hash; printed by the bench).
+unsigned long long icHash(const std::vector<float4>& pos, const std::vector<float4>& vel);
+// Time-step advisory for unequal masses [D]: dt <= eta * sqrt(eps^3 / (amax_coef * G * m_max)),
+// amax_coef = 2 / 3^1.5 (the peak of r / (r^2 + eps^2)^1.5 times eps^2), eta = 0.1 (convention).
+double dtAdvisory(const std::vector<float4>& pos, float softening, float G);
 
 // Exact reference accelerations (device, FP32): the allpairs_naive loop, launched in chunks of
 // bodies so each launch stays far below the TDR limit at N ~ 1M. Bitwise equal to allpairs_naive.
@@ -149,6 +178,12 @@ struct TreeCheck {
 };
 TreeCheck checkLastTree(const DeviceState& s);
 int       treeStackOverflows(bool reset);
+// Depth diagnostics of the most recent tree (host copy of the node table, not timed). pushDepth =
+// depth of the deepest internal node with more than leafSize bodies (the nodes a walk pushes
+// children for); every walk's stack occupancy is <= pushDepth + 2 (docs/03-design.md §19.2).
+// dupKeys = adjacent equal sorted Morton keys (bodies sharing a 21-bit cell with their neighbour).
+struct TreeDepth { int maxDepth = 0, pushDepth = 0, stackBound = 0, dupKeys = 0, threadStack = 0, warpStack = 0; };
+TreeDepth lastTreeDepth();
 // Exact theta > 0 check (critic review 2, #7), host, FP64, for the most recent tree:
 //  (1) every node's mass, COM and AABB recomputed from its [first, last] range of sortedPos and
 //      compared with the device values (mass/COM at FP32-roundoff tolerance, AABB bitwise), and

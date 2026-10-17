@@ -6,13 +6,20 @@
 // PCIe (one copy engine, docs/01-hardware.md). For N = 131k it is 4 MB, a few microseconds
 // at 736 GB/s. The core library stays untouched, so the bench measures the same code.
 //
-//   nbody_viewer [--n 32768] [--kernel allpairs_tiled] [--dt 0.002] [--block 256] [--seed 42]
+//   nbody_viewer [--n 32768] [--kernel bh_warp] [--dt 0.002] [--block 256] [--seed 42]
 //                [--frames F --screenshot out.bmp]   (run F frames, save the last one, exit)
-//                [--ic plummer|collision|core] [--theta 0.5 --leaf 16]   (tree kernels: keys 5-7)
-//   With a bh_* kernel the "T int/s" in the title is all-pairs-equivalent (N^2 / time).
+//                [--ic plummer|collision|core|disk|galaxies|cube_shell|cube_edges|uniform]
+//                [--mass-spectrum equal|salpeter|heavy-few] [--bh-mass 0.01]
+//                [--theta 0.5 --leaf 16] [--dist 4 --yaw 0.6 --pitch 0.35]   (camera)
+//                [--test-keys "F:up,F:ic,..."]   (scripted key presses for smoke tests: up down ic spectrum mass)
+//   The title shows IC, mass spectrum, N, kernel, ms/step and the REAL interaction rate: all-pairs
+//   N^2 per step; tree kernels the interactions counted by one instrumented launch (refreshed every
+//   2 s), divided by the measured ms/step (which includes the build and the two kicks).
 //
-// Controls: LMB drag orbit Â· wheel zoom Â· 1..9 kernel Â· Space pause Â· +/- steps per frame
-//           [ ] brightness Â· R reset Â· V vsync Â· Esc quit
+// Controls: LMB drag orbit · wheel zoom · 1..9 kernel · Space pause · +/- steps per frame
+//           PageUp / . double N · PageDown / , halve N · I next IC · H next mass spectrum
+//           M colour by mass · [ ] brightness · R reset · V vsync · Esc quit
+// N limits (TDR margin, CLAUDE.md rule 4): all-pairs kernels <= 262144, tree kernels <= 4194304.
 #include <glad/gl.h>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -77,19 +84,25 @@ Mat4 lookAt(float ex, float ey, float ez)   // target = origin, up = +y
 }
 
 // ---- shaders ------------------------------------------------------------------
+// Colour by speed (slow = deep blue, fast = warm white). With uMassColor, bodies heavier than the mean
+// mass (uMassRef) shift towards red and grow, log-scaled: 3x the mean starts to show, 100x is full red.
 const char* kVertexSrc = R"(#version 330 core
 layout(location = 0) in vec4 aPos;   // xyz + mass
 layout(location = 1) in vec4 aVel;
 uniform mat4  uMVP;
 uniform float uPointScale;
 uniform float uSpeedRef;
+uniform float uMassRef;
+uniform int   uMassColor;
 out vec3 vColor;
 void main() {
     gl_Position  = uMVP * vec4(aPos.xyz, 1.0);
-    gl_PointSize = clamp(uPointScale / gl_Position.w, 1.5, 8.0);
     float t = clamp(length(aVel.xyz) / uSpeedRef, 0.0, 1.0);
-    // slow = deep blue, fast = warm white
     vColor = mix(vec3(0.15, 0.35, 1.0), vec3(1.0, 0.75, 0.45), t) + vec3(0.25 * t * t);
+    float h = 0.0;
+    if (uMassColor != 0) h = clamp(log(max(aPos.w / uMassRef, 1.0) / 3.0) / log(33.3), 0.0, 1.0);
+    vColor = mix(vColor, vec3(4.0, 0.6, 0.15), h);
+    gl_PointSize = clamp(uPointScale / gl_Position.w * (1.0 + 2.0 * h), 1.5, 8.0 + 16.0 * h);
 })";
 
 const char* kFragmentSrc = R"(#version 330 core
@@ -136,28 +149,119 @@ GLuint linkProgram()
     return p;
 }
 
+constexpr int kMinN = 256, kMaxNAllPairs = 1 << 18, kMaxNTree = 1 << 22;
+
 // ---- app state ----------------------------------------------------------------
 struct App {
-    nbody::Params           params;
-    nbody::DeviceState      state;
+    nbody::Params            params;
+    nbody::DeviceState       state;
     const nbody::KernelInfo* kernel = nullptr;
-    std::vector<float4>     pos0, vel0;
-    unsigned                seed = 42;
+    std::vector<float4>      pos0, vel0;
+    unsigned                 seed = 42;
+    std::string              ic = "plummer";
+    nbody::ICOptions         icOpt;
 
     int    stepsPerFrame = 2;
-    bool   paused = false, vsync = true;
+    bool   paused = false, vsync = true, massColor = true;
     float  yaw = 0.6f, pitch = 0.35f, dist = 4.0f;
-    float  intensity = 1.0f;
+    float  intensity = 1.0f, baseIntensity = 1.0f;
     bool   dragging = false;
     double lastX = 0, lastY = 0;
-    bool   statsReset = false;   // set when steps/frame or the kernel changes: restart the ms/step window
+    bool   statsReset = false;   // set when steps/frame, the kernel, N or the IC change: restart the ms/step window
+    // pending changes requested by keys, applied in the main loop
+    int    pendingN = 0;
+    int    pendingIC = 0, pendingSpectrum = 0;
+    // GL interop
+    GLuint vbo[2] = {0, 0};
+    cudaGraphicsResource* res[2] = {nullptr, nullptr};
+    int    vboN = 0;
+    // real interaction count per force evaluation (tree: counted; all-pairs: N^2)
+    double interPerEval = -1.0;
+    double countTimer = -1e9;
 };
+
+bool isTree(const nbody::KernelInfo* k, const nbody::Params& p)
+{
+    return k->query && k->query(1024, p).approximate;
+}
+
+int maxNFor(const nbody::KernelInfo* k, const nbody::Params& p) { return isTree(k, p) ? kMaxNTree : kMaxNAllPairs; }
 
 void resetSim(App& a)
 {
     nbody::upload(a.state, a.pos0, a.vel0);
     a.kernel->launch(a.state, a.params, 0);   // prime acc for KDK
     CUDA_CHECK(cudaDeviceSynchronize());
+    a.statsReset = true;
+    a.countTimer = -1e9;
+}
+
+// (Re)size the two interop vertex buffers to n bodies: unregister, reallocate, register again.
+void resizeVbos(App& a, int n)
+{
+    for (int b = 0; b < 2; ++b)
+        if (a.res[b]) { CUDA_CHECK(cudaGraphicsUnregisterResource(a.res[b])); a.res[b] = nullptr; }
+    for (int b = 0; b < 2; ++b) {
+        glBindBuffer(GL_ARRAY_BUFFER, a.vbo[b]);
+        glBufferData(GL_ARRAY_BUFFER, GLsizeiptr(n) * sizeof(float4), nullptr, GL_DYNAMIC_DRAW);
+    }
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    for (int b = 0; b < 2; ++b)
+        CUDA_CHECK(cudaGraphicsGLRegisterBuffer(&a.res[b], a.vbo[b], cudaGraphicsRegisterFlagsWriteDiscard));
+    a.vboN = n;
+}
+
+// New IC / N: regenerate on the host, reallocate the device state and the VBOs if N changed, keep the camera.
+bool rebuild(App& a, const std::string& ic, const nbody::ICOptions& opt, int n)
+{
+    std::vector<float4> p, v;
+    if (!nbody::makeIC(ic, n, a.seed, p, v, opt)) { fprintf(stderr, "cannot make IC %s\n", ic.c_str()); return false; }
+    a.pos0.swap(p); a.vel0.swap(v);
+    a.ic = ic; a.icOpt = opt;
+    if (a.state.n != n) {
+        nbody::release(a.state);
+        a.state = nbody::allocate(n);
+        a.params.n = n;
+    }
+    if (a.vbo[0] && a.vboN != n) resizeVbos(a, n);
+    // brightness auto-scales with N so 4k and 1M bodies both look reasonable
+    a.baseIntensity = std::clamp(std::sqrt(32768.f / float(n)) * 0.6f, 0.03f, 1.0f);
+    resetSim(a);
+    const double adv = nbody::dtAdvisory(a.pos0, a.params.softening, a.params.G);
+    printf("ic=%s mass_spectrum=%s N=%d%s\n", ic.c_str(), opt.massSpectrum.c_str(), n,
+           a.params.dt > adv ? "  (dt above the heavy-body advisory: orbits near the heaviest body are not converged)" : "");
+    return true;
+}
+
+// Real interactions of one force evaluation: one instrumented launch (bitwise-equal accelerations, so the
+// integrator state is unchanged) with zeroed work counters, summed on the host.
+void countInteractions(App& a)
+{
+    const int n = a.state.n;
+    if (!isTree(a.kernel, a.params)) { a.interPerEval = double(n) * n; return; }
+    uint4* d = nullptr;
+    CUDA_CHECK(cudaMalloc(&d, size_t(n) * sizeof(uint4)));
+    CUDA_CHECK(cudaMemset(d, 0, size_t(n) * sizeof(uint4)));
+    nbody::Params q = a.params;
+    q.workCounters = d;
+    a.kernel->launch(a.state, q, 0);
+    std::vector<uint4> h(n);
+    CUDA_CHECK(cudaMemcpy(h.data(), d, size_t(n) * sizeof(uint4), cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaFree(d));
+    double s = 0;
+    for (const uint4& c : h) s += c.y;
+    a.interPerEval = s;
+}
+
+std::vector<std::string> split(const char* s)
+{
+    std::vector<std::string> out;
+    std::string cur;
+    for (const char* c = s; *c; ++c) {
+        if (*c == '|') { out.push_back(cur); cur.clear(); } else cur += *c;
+    }
+    out.push_back(cur);
+    return out;
 }
 
 void onKey(GLFWwindow* w, int key, int, int action, int)
@@ -167,7 +271,13 @@ void onKey(GLFWwindow* w, int key, int, int action, int)
     const auto& reg = nbody::kernelRegistry();
     if (key >= GLFW_KEY_1 && key <= GLFW_KEY_9) {
         size_t i = size_t(key - GLFW_KEY_1);
-        if (i < reg.size() && a.kernel != &reg[i]) { a.kernel = &reg[i]; a.statsReset = true; }
+        if (i < reg.size() && a.kernel != &reg[i]) {
+            if (a.state.n > maxNFor(&reg[i], a.params)) {
+                printf("%s is limited to N <= %d (TDR margin); halve N first\n", reg[i].name, maxNFor(&reg[i], a.params));
+            } else {
+                a.kernel = &reg[i]; a.statsReset = true; a.countTimer = -1e9;
+            }
+        }
     }
     const int spf = a.stepsPerFrame;
     switch (key) {
@@ -175,6 +285,13 @@ void onKey(GLFWwindow* w, int key, int, int action, int)
     case GLFW_KEY_SPACE:        a.paused = !a.paused; break;
     case GLFW_KEY_R:            resetSim(a); break;
     case GLFW_KEY_V:            a.vsync = !a.vsync; glfwSwapInterval(a.vsync ? 1 : 0); break;
+    case GLFW_KEY_M:            a.massColor = !a.massColor; break;
+    case GLFW_KEY_I:            a.pendingIC = 1; break;
+    case GLFW_KEY_H:            a.pendingSpectrum = 1; break;
+    case GLFW_KEY_PAGE_UP:
+    case GLFW_KEY_PERIOD:       a.pendingN = 2; break;
+    case GLFW_KEY_PAGE_DOWN:
+    case GLFW_KEY_COMMA:        a.pendingN = -2; break;
     case GLFW_KEY_EQUAL:
     case GLFW_KEY_KP_ADD:       a.stepsPerFrame = std::min(a.stepsPerFrame * 2, 64); break;
     case GLFW_KEY_MINUS:
@@ -239,8 +356,12 @@ int main(int argc, char** argv)
     App a;
     a.params.n  = 32768;
     a.params.dt = 0.002f;
-    std::string kernelName = "allpairs_tiled", screenshot, ic = "plummer";
+    // bh_warp is the tree to use from tree round 2 on (D-022); all-pairs stays on keys 1-4.
+    std::string kernelName = "bh_warp", screenshot, ic = "plummer";
     int maxFrames = 0;
+    // --test-keys "F:act,F:act,..." (smoke tests without a human): at frame F apply act = up | down | ic |
+    // spectrum | mass, exactly as the keys PageUp / PageDown / I / H / M would.
+    std::string testKeys;
     for (int i = 1; i < argc; i += 2) {
         std::string k = argv[i];
         if (i + 1 >= argc) { fprintf(stderr, "missing value for %s\n", k.c_str()); return 2; }   // no silent dangling arg
@@ -258,12 +379,27 @@ int main(int argc, char** argv)
         else if (k == "--theta")     a.params.theta = float(atof(argv[i + 1]));   // bh_* kernels
         else if (k == "--leaf")      a.params.leafSize = atoi(argv[i + 1]);
         else if (k == "--ic")        ic = argv[i + 1];
+        else if (k == "--mass-spectrum") a.icOpt.massSpectrum = argv[i + 1];
+        else if (k == "--bh-mass")   a.icOpt.bhMass = atof(argv[i + 1]);
+        else if (k == "--dist")      a.dist = float(atof(argv[i + 1]));
+        else if (k == "--yaw")       a.yaw = float(atof(argv[i + 1]));
+        else if (k == "--pitch")     a.pitch = float(atof(argv[i + 1]));
+        else if (k == "--test-keys") testKeys = argv[i + 1];
         else { fprintf(stderr, "unknown argument %s\n", k.c_str()); return 2; }
     }
     if (!(a.params.softening > 0.f)) { fprintf(stderr, "--softening must be > 0\n"); return 2; }
     if (a.params.n <= 0) { fprintf(stderr, "--n must be > 0\n"); return 2; }
+    if (!nbody::validMassSpectrum(a.icOpt.massSpectrum)) {
+        fprintf(stderr, "--mass-spectrum must be %s\n", nbody::massSpectrumNames()); return 2;
+    }
+    a.icOpt.softening = a.params.softening;
     a.kernel = nbody::findKernel(kernelName);
     if (!a.kernel) { fprintf(stderr, "unknown kernel '%s'\n", kernelName.c_str()); return 2; }
+    if (a.params.n > maxNFor(a.kernel, a.params)) {
+        fprintf(stderr, "%s is limited to N <= %d in the viewer (TDR margin)\n", a.kernel->name, maxNFor(a.kernel, a.params));
+        return 2;
+    }
+    const std::vector<std::string> icList = split(nbody::icNames()), spList = split(nbody::massSpectrumNames());
 
     // ---- window + GL ---------------------------------------------------------
     if (!glfwInit()) { fprintf(stderr, "glfwInit failed\n"); return 1; }
@@ -283,37 +419,32 @@ int main(int argc, char** argv)
     glfwSetScrollCallback(win, onScroll);
     printf("GL %s | %s\n", glGetString(GL_VERSION), glGetString(GL_RENDERER));
 
-    // ---- simulation ----------------------------------------------------------
-    const int n = a.params.n;
-    if (!nbody::makeIC(ic, n, a.seed, a.pos0, a.vel0)) {
-        fprintf(stderr, "unknown --ic %s (%s)\n", ic.c_str(), nbody::icNames());
-        return 2;
-    }
-    a.state = nbody::allocate(n);
-    resetSim(a);
-
-    // ---- GL buffers registered with CUDA --------------------------------------
-    GLuint vao, vbo[2];
+    // ---- GL buffers (registered with CUDA in resizeVbos) ----------------------
+    GLuint vao;
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
-    glGenBuffers(2, vbo);
+    glGenBuffers(2, a.vbo);
     for (int b = 0; b < 2; ++b) {
-        glBindBuffer(GL_ARRAY_BUFFER, vbo[b]);
-        glBufferData(GL_ARRAY_BUFFER, GLsizeiptr(n) * sizeof(float4), nullptr, GL_DYNAMIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, a.vbo[b]);
+        glBufferData(GL_ARRAY_BUFFER, 16, nullptr, GL_DYNAMIC_DRAW);
         glVertexAttribPointer(GLuint(b), 4, GL_FLOAT, GL_FALSE, sizeof(float4), nullptr);
         glEnableVertexAttribArray(GLuint(b));
     }
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    cudaGraphicsResource* res[2];
-    for (int b = 0; b < 2; ++b)
-        CUDA_CHECK(cudaGraphicsGLRegisterBuffer(&res[b], vbo[b], cudaGraphicsRegisterFlagsWriteDiscard));
+    // ---- simulation ----------------------------------------------------------
+    if (!rebuild(a, ic, a.icOpt, a.params.n)) {
+        fprintf(stderr, "unknown --ic %s (%s)\n", ic.c_str(), nbody::icNames());
+        return 2;
+    }
 
     GLuint prog = linkProgram();
     GLint uMVP = glGetUniformLocation(prog, "uMVP");
     GLint uPointScale = glGetUniformLocation(prog, "uPointScale");
     GLint uSpeedRef = glGetUniformLocation(prog, "uSpeedRef");
     GLint uIntensity = glGetUniformLocation(prog, "uIntensity");
+    GLint uMassRef = glGetUniformLocation(prog, "uMassRef");
+    GLint uMassColor = glGetUniformLocation(prog, "uMassColor");
     glEnable(GL_PROGRAM_POINT_SIZE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE);
@@ -324,15 +455,55 @@ int main(int argc, char** argv)
     CUDA_CHECK(cudaEventCreate(&e1));
     double titleTimer = glfwGetTime(), simMsAcc = 0.0;
     int frames = 0, simSteps = 0, totalFrames = 0;
-    char lastTitle[256] = "";
-    // brightness auto-scales with N so 4k and 1M bodies both look reasonable
-    const float baseIntensity = std::clamp(std::sqrt(32768.f / float(n)) * 0.6f, 0.03f, 1.0f);
+    char lastTitle[512] = "";
+
+    std::vector<std::pair<int, std::string>> keyScript;
+    for (size_t b = 0; b < testKeys.size();) {
+        size_t e = testKeys.find(',', b);
+        if (e == std::string::npos) e = testKeys.size();
+        const std::string item = testKeys.substr(b, e - b);
+        const size_t c = item.find(':');
+        if (c != std::string::npos) keyScript.push_back({atoi(item.substr(0, c).c_str()), item.substr(c + 1)});
+        b = e + 1;
+    }
 
     while (!glfwWindowShouldClose(win)) {
         glfwPollEvents();
-        int stepsThisFrame = 0;
+        for (const auto& ks : keyScript)
+            if (ks.first == totalFrames) {
+                if (ks.second == "up") a.pendingN = 2;
+                else if (ks.second == "down") a.pendingN = -2;
+                else if (ks.second == "ic") a.pendingIC = 1;
+                else if (ks.second == "spectrum") a.pendingSpectrum = 1;
+                else if (ks.second == "mass") a.massColor = !a.massColor;
+                printf("test key at frame %d: %s\n", totalFrames, ks.second.c_str());
+            }
+
+        // ---- pending live changes (N, IC, mass spectrum) ---------------------
+        if (a.pendingN || a.pendingIC || a.pendingSpectrum) {
+            int n = a.state.n;
+            std::string nic = a.ic;
+            nbody::ICOptions opt = a.icOpt;
+            if (a.pendingN > 0) n = std::min(n * 2, maxNFor(a.kernel, a.params));
+            if (a.pendingN < 0) n = std::max(n / 2, kMinN);
+            if (a.pendingIC) {
+                size_t i = std::find(icList.begin(), icList.end(), a.ic) - icList.begin();
+                nic = icList[(i + 1) % icList.size()];
+            }
+            if (a.pendingSpectrum) {
+                size_t i = std::find(spList.begin(), spList.end(), a.icOpt.massSpectrum) - spList.begin();
+                opt.massSpectrum = spList[(i + 1) % spList.size()];
+            }
+            if (a.pendingN > 0 && n == a.state.n)
+                printf("%s is limited to N <= %d (TDR margin)\n", a.kernel->name, maxNFor(a.kernel, a.params));
+            if (n != a.state.n || nic != a.ic || opt.massSpectrum != a.icOpt.massSpectrum) rebuild(a, nic, opt, n);
+            a.pendingN = a.pendingIC = a.pendingSpectrum = 0;
+        }
+        const int n = a.state.n;
+        if (glfwGetTime() - a.countTimer > 2.0) { countInteractions(a); a.countTimer = glfwGetTime(); }
 
         // ---- simulate --------------------------------------------------------
+        int stepsThisFrame = 0;
         if (!a.paused) {
             CUDA_CHECK(cudaEventRecord(e0));
             stepsThisFrame = a.stepsPerFrame;
@@ -341,14 +512,14 @@ int main(int argc, char** argv)
         }
 
         // ---- publish to GL (VRAM -> VRAM) -------------------------------------
-        CUDA_CHECK(cudaGraphicsMapResources(2, res, 0));
+        CUDA_CHECK(cudaGraphicsMapResources(2, a.res, 0));
         void* ptr[2];
         size_t bytes = 0;
         for (int b = 0; b < 2; ++b)
-            CUDA_CHECK(cudaGraphicsResourceGetMappedPointer(&ptr[b], &bytes, res[b]));
+            CUDA_CHECK(cudaGraphicsResourceGetMappedPointer(&ptr[b], &bytes, a.res[b]));
         CUDA_CHECK(cudaMemcpyAsync(ptr[0], a.state.pos, size_t(n) * sizeof(float4), cudaMemcpyDeviceToDevice, 0));
         CUDA_CHECK(cudaMemcpyAsync(ptr[1], a.state.vel, size_t(n) * sizeof(float4), cudaMemcpyDeviceToDevice, 0));
-        CUDA_CHECK(cudaGraphicsUnmapResources(2, res, 0));
+        CUDA_CHECK(cudaGraphicsUnmapResources(2, a.res, 0));
 
         if (!a.paused) {
             float ms = 0.f;
@@ -376,7 +547,9 @@ int main(int argc, char** argv)
         glUniformMatrix4fv(uMVP, 1, GL_FALSE, mvp.m);
         glUniform1f(uPointScale, 0.010f * float(fbh));
         glUniform1f(uSpeedRef, 1.2f);
-        glUniform1f(uIntensity, baseIntensity * a.intensity);
+        glUniform1f(uIntensity, a.baseIntensity * a.intensity);
+        glUniform1f(uMassRef, 1.0f / float(n));   // every IC has total mass 1
+        glUniform1i(uMassColor, a.massColor ? 1 : 0);
         glBindVertexArray(vao);
         glDrawArrays(GL_POINTS, 0, n);
         ++totalFrames;
@@ -384,30 +557,32 @@ int main(int argc, char** argv)
         if (last && !screenshot.empty()) saveScreenshot(screenshot.c_str(), fbw, fbh);
         glfwSwapBuffers(win);
         ++frames;
-        if (last) {
-            printf("%s\n", lastTitle);
-            glfwSetWindowShouldClose(win, 1);
-        }
 
         // ---- title / stats ----------------------------------------------------
         double now = glfwGetTime();
-        if (now - titleTimer > 0.5) {
+        if (now - titleTimer > 0.5 || last) {
             double fps = frames / (now - titleTimer);
             double msPerStep = simSteps ? simMsAcc / double(simSteps) : 0.0;
-            double tips = msPerStep > 0 ? double(n) * n / (msPerStep * 1e-3) * 1e-12 : 0.0;
-            char* title = lastTitle;
-            snprintf(title, sizeof lastTitle,
-                     "N-body | %s | N=%d | %.3f ms/step (%.2f T int/s incl. integrator) | %d steps/frame | %.0f FPS%s%s",
-                     a.kernel->name, n, msPerStep, tips, a.stepsPerFrame, fps,
+            double rate = msPerStep > 0 && a.interPerEval > 0 ? a.interPerEval / (msPerStep * 1e-3) * 1e-9 : 0.0;
+            const bool tree = isTree(a.kernel, a.params);
+            snprintf(lastTitle, sizeof lastTitle,
+                     "N-body | %s (%s) | N=%d | %s | %.3f ms/step | %.1f G int/s real (%s, incl. %sintegrator) | "
+                     "%.0f int/body | %d steps/frame | %.0f FPS%s%s",
+                     a.ic.c_str(), a.icOpt.massSpectrum.c_str(), n, a.kernel->name, msPerStep, rate,
+                     tree ? "counted" : "N^2", tree ? "build + " : "", a.interPerEval / n, a.stepsPerFrame, fps,
                      a.vsync ? "" : " | no vsync", a.paused ? " | PAUSED" : "");
-            glfwSetWindowTitle(win, title);
+            glfwSetWindowTitle(win, lastTitle);
             titleTimer = now;
             frames = simSteps = 0;
             simMsAcc = 0.0;
         }
+        if (last) {
+            printf("%s\n", lastTitle);
+            glfwSetWindowShouldClose(win, 1);
+        }
     }
 
-    for (int b = 0; b < 2; ++b) cudaGraphicsUnregisterResource(res[b]);
+    for (int b = 0; b < 2; ++b) if (a.res[b]) cudaGraphicsUnregisterResource(a.res[b]);
     nbody::release(a.state);
     glfwDestroyWindow(win);
     glfwTerminate();

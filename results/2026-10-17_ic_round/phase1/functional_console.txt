@@ -1,0 +1,7 @@
+disk exit=0
+galaxies exit=0
+cube_shell exit=0
+cube_edges exit=0
+uniform exit=0
+plummer:salpeter exit=0
+plummer:heavy-few exit=0

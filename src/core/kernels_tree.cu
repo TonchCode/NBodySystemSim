@@ -44,6 +44,10 @@
 #include "internal.h"
 #include "timeline.cuh"
 
+#ifndef WARP_STACK_ENTRIES
+#define WARP_STACK_ENTRIES 64
+#endif
+
 namespace nbody {
 
 // ---- keys (host + device, so --selftest can check the Hilbert curve on the host) -----------
@@ -90,7 +94,15 @@ unsigned long long hostHilbertKey(unsigned x, unsigned y, unsigned z) { return h
 
 namespace {
 
-constexpr int kStack       = 64;    // pending siblings per thread; overflow is flagged, not silent
+// Stack capacity (IC round, docs/03-design.md §19.2). Along any root-to-node path of the radix tree the
+// split prefix length delta strictly increases: delta in [1, 63] for distinct 63-bit keys and
+// 64 + clz(i ^ j) in [96 - ceil(log2 n), 95] for duplicate keys, so a path has at most 63 + ceil(log2 n)
+// internal nodes and the deepest internal node is at depth <= 62 + ceil(log2 n). A DFS that pushes
+// (right, left) holds <= d pending siblings when it pops a node at depth d, so occupancy <=
+// pushDepth + 2 <= 64 + ceil(log2 n) <= 95 for any int n. kStack = 96 therefore cannot overflow
+// (the check stays as a guard). Round 1-2 used 64 (sufficient only for pushDepth <= 62).
+constexpr int kStack       = 96;    // per-thread walks (local memory): provably sufficient
+constexpr int kWarpStack   = WARP_STACK_ENTRIES;   // #7 register stack: 32 entries per register per lane
 constexpr int kBboxBlocks  = 160;   // 2 per SM
 constexpr int kBboxThreads = 256;
 constexpr int kBuildBlock  = 256;
@@ -537,9 +549,14 @@ __device__ __forceinline__ void warpWalk(const TreeView& v, int u, float4* list,
     float3       a     = make_float3(0.f, 0.f, 0.f);
     [[maybe_unused]] unsigned nVisit = 0, nInter = 0, lVisit = 0, lInter = 0;
     int s0 = v.n > 1 ? 0 : ~0, s1 = 0, sp = 1;
+    [[maybe_unused]] int s2 = 0;
     [[maybe_unused]] int cnt = 0;
     auto push = [&](int x) {
-        if (lane == (sp & 31)) { if (sp < 32) s0 = x; else s1 = x; }
+        if constexpr (kWarpStack > 64) {
+            if (lane == (sp & 31)) { if (sp < 32) s0 = x; else if (sp < 64) s1 = x; else s2 = x; }
+        } else {
+            if (lane == (sp & 31)) { if (sp < 32) s0 = x; else s1 = x; }
+        }
         ++sp;
     };
     auto flush = [&]() {
@@ -556,7 +573,10 @@ __device__ __forceinline__ void warpWalk(const TreeView& v, int u, float4* list,
     };
     while (sp > 0) {
         --sp;
-        const int node = __shfl_sync(kFull, sp < 32 ? s0 : s1, sp & 31);
+        int top;
+        if constexpr (kWarpStack > 64) top = sp < 32 ? s0 : (sp < 64 ? s1 : s2);
+        else top = sp < 32 ? s0 : s1;
+        const int node = __shfl_sync(kFull, top, sp & 31);
         if constexpr (TL) { nVisit += valid; lVisit += leaderInc(); }
         if (node < 0) {
             if constexpr (LIST) {
@@ -599,7 +619,7 @@ __device__ __forceinline__ void warpWalk(const TreeView& v, int u, float4* list,
                     }
                 }
             } else {
-                if (sp + 2 > kStack) { if (lane == 0) atomicAdd(v.overflow, 1); break; }
+                if (sp + 2 > kWarpStack) { if (lane == 0) atomicAdd(v.overflow, 1); break; }
                 push(in.y);
                 push(in.x);                                         // left first, as in #5
             }
@@ -1155,6 +1175,33 @@ int treeStackOverflows(bool reset)
     CUDA_CHECK(cudaMemcpy(&h, g.overflow, 4, cudaMemcpyDeviceToHost));
     if (reset) CUDA_CHECK(cudaMemset(g.overflow, 0, 4));
     return h;
+}
+
+// Depth diagnostics of the most recent tree (IC round, §19.2): host copy of the node table + keys.
+TreeDepth lastTreeDepth()
+{
+    TreeDepth r;
+    r.threadStack = kStack; r.warpStack = kWarpStack;
+    const int n = g.lastN;
+    if (n <= 1) { r.stackBound = 1; return r; }
+    CUDA_CHECK(cudaDeviceSynchronize());
+    const int I = n - 1;
+    std::vector<int4> info(I);
+    std::vector<unsigned long long> key(n);
+    CUDA_CHECK(cudaMemcpy(info.data(), g.nodeInfo, size_t(I) * 16, cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaMemcpy(key.data(), g.keySorted, size_t(n) * 8, cudaMemcpyDeviceToHost));
+    for (int k = 1; k < n; ++k) r.dupKeys += key[k] == key[k - 1];
+    std::vector<std::pair<int, int>> st{{0, 0}};
+    while (!st.empty()) {
+        const auto [node, d] = st.back(); st.pop_back();
+        r.maxDepth = std::max(r.maxDepth, d);
+        const int4 in = info[node];
+        if (in.w - in.z + 1 > g.lastLeaf) r.pushDepth = std::max(r.pushDepth, d);
+        if (in.x >= 0) st.push_back({in.x, d + 1});
+        if (in.y >= 0) st.push_back({in.y, d + 1});
+    }
+    r.stackBound = r.pushDepth + 2;
+    return r;
 }
 
 // Host-side structural check of the most recent tree (docs/03-design.md §12.3).

@@ -338,3 +338,92 @@ chain", not "memory-bound". Next optimisations for #7 target pops per interactio
 not occupancy.
 **Caveat:** padded "12" ran at 11 blocks/SM (256 B allocation granule); fix the padding formula
 before reusing `--occ-blocks`.
+
+## D-027 — Normalised tree gates TN1/TN2 replace TG1/TG2 as the primary tree gates (2026-10-17, cuda-architect, IC round)
+
+**Supersedes D-017 as the gating rule** (D-017 stays as the record; TG1/TG2 are still computed and
+printed as "legacy", and TG3 as "legacy relative"). Implemented in `src/bench/main.cpp`
+(`kTN1`, `kTN2`, `normStats`); the selftest's TG3 uses the same metric.
+- **Metric:** e_i = |a_tree,i − a_exact,i| / S_i over all bodies, S_i = G Σ_j m_j |r_ij| / (r_ij² + ε²)^1.5
+  (the D-009 normaliser, from `forceScale`). Also printed: |Δa_i| / |a|_rms (global), and with
+  unequal masses the split heavy (m ≥ 10× median) vs light.
+- **TN1:** rms(e) ≤ 0.02 (θ/0.5)². **TN2:** p99(e) ≤ 0.045 (θ/0.5)². Plus zero stack overflows.
+- **TG3n:** the union walk's normalised rms and p99 ≤ its sibling's (#5, or #4 for `bh_warp_naive`).
+
+**Why:**
+1. *Per-body relative error breaks on near-zero net force* (tree round 2, summary §8.1): it divides by
+   |a_i|, which cancels on sheets and lines, between galaxies and next to a dominant mass. Measured in
+   phase 1: on `cube_edges` at 8192 the legacy rms rel error is 0.150 and p99 0.65 (legacy TG1/TG2 FAIL)
+   while the normalised rms is 9.3e-3. S_i ≥ |a_i| always, and does not cancel.
+2. *It is IC-independent by construction [D]:* for an accepted cell the monopole error is O(θ²) times
+   that cell's share of S_i, so e is O(θ²) for every body whatever the geometry. The legacy metric has
+   no such bound (it scales with κ_i = S_i / |a_i|).
+3. *Calibrated on the legacy ICs only, before any new-IC measurement:* 24 bh_warp validation runs (each
+   also evaluating #5) on plummer, collision, core × N 65536–1M × θ 0.3–1.0 × leaf 8/16/32
+   (`results/2026-10-17_ic_round/phase1/calib/`). Worst normalised rms / (θ/0.5)² = 6.1e-3 and p99 /
+   (θ/0.5)² = 1.43e-2 (#5, core/collision at θ = 0.3: the error falls slower than θ² at small θ).
+   The gates sit ≈ 3.3× and 3.1× above, as TG1/TG2 did (bug catchers; the exact host check and the
+   lattice selftest catch real bugs).
+4. *Verdicts on the legacy ICs do not change:* all 24 runs PASS TN1/TN2/TG3n and also PASS the legacy
+   TG1/TG2/TG3; the pre-round binary prints identical error values on the same runs.
+
+**Known exception (XFAIL, logged, not hidden):** TG3n fails for `bh_warp_naive` on `cube_edges`
+(n = 10007 and 65536, θ 0.5 and 0.7): the union of 32 *random* bodies has ≈ 13% higher normalised
+(and legacy) error than #4, although every cell it uses passes the lane's own criterion and the exact
+θ > 0 host check passes. On collinear distributions the children of a refined cell do not cancel as
+well as their parent did, so "finer is more accurate in aggregate" (TG3's premise) is false there. The
+selftest reports it as XFAIL; the bench still gates it (such a run exits 3). `bh_warp_naive` is not in
+this round's measured set. The Morton-ordered `bh_warp` passes TG3n on every IC.
+**Rules out:** gating trees on per-body relative error; quoting a legacy TG1/TG2 FAIL on a degenerate
+IC as an accuracy regression.
+
+## D-028 — Traversal stack: 96 entries per thread (provable), 64 in the #7 register stack (measured) (2026-10-17, cuda-architect, IC round)
+
+**Decided:** `kStack = 96` for every per-thread walk (#4/#5 traversal, the per-thread persistent arms);
+the #7 warp stack stays at 64 entries in two registers (`WARP_STACK_ENTRIES`, a build flag), with the
+overflow counter as an explicit run FAIL, and the bench prints the tree's push depth and stack bound
+on every tree run (`tree:` line, `lastTreeDepth()`).
+**Why:**
+- *Bound [D]:* along any root-to-node path of the radix tree the split prefix length δ strictly
+  increases; δ ∈ [1, 63] for distinct 63-bit keys and 64 + clz(i ⊕ j) for duplicates (⌈log2 n⌉
+  values). So the deepest internal node is at depth ≤ 62 + ⌈log2 n⌉, and a right-then-left DFS holds
+  ≤ pushDepth + 2 ≤ 64 + ⌈log2 n⌉ ≤ 95 entries for any int n. 96 cannot overflow.
+- *Cost of 96 per thread [M]:* exactly two SASS lines change in the 18 per-thread-walk kernels (frame
+  0x100 → 0x180, bound 0x3f → 0x5f); same instruction count, 40 registers, occupancy unchanged; the
+  local-memory reserve grows from 31 to 47 MB. The 204 other kernels are SASS-identical
+  (`results/2026-10-17_ic_round/phase1/sass_diff_stack.txt`). Phase 2 times the old and new binary on
+  round-2 reference points to confirm no speed change.
+- *Why not 96 for #7 [M]:* a third stack register keeps production at 40 registers but adds 8
+  instructions to the latency-bound pop chain (296 → 304; D-026 says this walk is pop-latency-bound)
+  and takes the instrumented twin from 40 to 44 registers (fewer resident blocks for the timelines).
+  The measured need is far below 64: stack bound ≤ 45 for every legacy IC at 1M (core: push depth
+  41), ≤ 24 for every new IC at 8192. If a future IC exceeds it, the run FAILs loudly, and the build
+  flag `-DWARP_STACK_ENTRIES=96` is the documented fallback.
+**Rules out:** a silent overflow; a 64-entry per-thread stack (correct only for push depth ≤ 62).
+
+## D-029 — IC workload suite, mass spectrum, viewer live N (2026-10-17, cuda-architect, IC round)
+
+**Decided:**
+- New `--ic`: `disk` (exponential disk + Plummer bulge + one central body of `--bh-mass`, default
+  0.01), `galaxies` (two disks, inclined, bound collision course), `cube_shell` and `cube_edges`
+  (stress tests: hollow and 1D), `uniform` (the no-clustering control). `--mass-spectrum equal |
+  salpeter | heavy-few`. All total mass 1, mass-weighted COM and momentum removed, shuffled. Design
+  §19.1, `src/core/init.cpp`.
+- The legacy ICs with the equal spectrum are **bitwise unchanged** (hash-checked in the selftest).
+- Every IC is measured with #4, #5, #6, #7: ICs are imbalance generators, not decorations.
+- Viewer: live N (PageUp/PageDown or `.`/`,`), `I` cycles the IC, `H` the mass spectrum, `M` colour by
+  mass; title shows IC, spectrum, N, kernel, ms/step and the **counted** interaction rate for tree
+  kernels; N capped at 262144 (all-pairs) and 4,194,304 (tree) for the TDR margin; the default kernel
+  is now `bh_warp` (the pending item of D-022).
+**Why these models:** the disk velocities use the softened enclosed-mass circular speed of a sphere
+with the same M(r) — exact for the bulge and central body, an approximation for the thin disk's own
+field [TODO(source): Freeman 1970]. There is no dark halo and no Toomre-Q control, so the disk is a
+self-gravitating cold disk that will form bars and clumps within about a rotation: a valid force
+snapshot and a demo, not a stable galaxy. Masses are drawn independently of position, so the expected
+density profile (and the collisionless equilibrium of the Plummer) is unchanged; heavy bodies will
+sink by dynamical friction over time.
+**Softening and dt:** ε stays global (0.01). The bench and viewer print the advisory dt ≤ 0.1 √(ε³ /
+(0.385 G m_max)) (1.6e-3 for a 1% body); the viewer's dt = 2e-3 exceeds it near the central body (a
+visual). This round's measurements are force snapshots and do not integrate.
+**Rules out:** labelling `cube_shell`/`cube_edges` as physical systems, or the disk as an equilibrium
+model.

@@ -1,0 +1,4 @@
+GL 3.3.0 NVIDIA 617.42 | NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2
+ic=disk mass_spectrum=equal N=65536  (dt above the heavy-body advisory: orbits near the heaviest body are not converged)
+screenshot -> results/2026-10-17_ic_round/screens/smoke_disk_65536.bmp (1600x900)
+N-body | disk (equal) | N=65536 | bh_warp | 0.864 ms/step | 82.1 G int/s real (counted, incl. build + integrator) | 1083 int/body | 2 steps/frame | 182 FPS

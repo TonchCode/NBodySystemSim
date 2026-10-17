@@ -1096,3 +1096,93 @@ ceiling" (D-019) was a residual-based estimate; the measured ceiling at 1M is 9.
 - Re-run the #6 items with the desktop applications closed (load-sensitive), and fix the
   `--occ-blocks` padding for the 256 B granule.
 - #7 with leaf 8 vs 16 and an octree / wide node (fewer pops: the coherent walk is pop-bound).
+
+---
+
+## 19. IC round: initial conditions as a workload suite (2026-10-17)
+
+Written by `cuda-architect` **before any timing run of this round**. What was observed while
+building (selftest, gate calibration on the legacy ICs, one functional run per new IC at N = 8192,
+viewer smoke runs) is listed in §0 of `docs/predictions/2026-10-17-ic-round.md`. Decisions: D-027
+(normalised gates), D-028 (stack), D-029 (ICs, spectrum, viewer). The tree, the bmax criterion,
+`bodyBodyInteraction()` and every #7 walk are unchanged; the per-thread walks changed only their
+stack capacity (§19.2).
+
+**Load-balancing framing.** A tree walk's cost per body is set by where the body sits. So the IC is
+the *input* of every load-balancing technique in R3: the per-body cost distribution drives intra-warp
+imbalance (what #5 and #7 fix), and the per-region cost distribution drives between-warp and
+SM-level imbalance (what #6 targets). Each new IC is a different imbalance generator; uniform is the
+control. The ranking and the per-IC expectations are in the predictions file (§2–§6).
+
+### 19.1 The ICs (`--ic`, `nbody::makeIC(..., ICOptions)`)
+All total mass 1 (G = 1), mass-weighted centre of mass and momentum removed, deterministic in the
+seed, shuffled with the legacy shuffle so the original order carries no spatial information.
+
+| IC | geometry | velocities | role |
+|---|---|---|---|
+| `disk` | exponential disk Σ ∝ e^(−R/Rd), Rd = 0.25, cut at 6 Rd, sech²(z/z0), z0 = 0.1 Rd; Plummer bulge (virial radius 0.08, 10% of the light bodies); one central body of mass `--bh-mass` (0.01) | v_c² = M(<r) R² / (r² + ε²)^1.5 from the realised enclosed mass in spheres; σ_R = σ_φ = 0.15 v_c; σ_z² = π G Σ z0; bulge: Plummer velocities × √(M_tot(<r)/M_bulge(<r)) | a dense 3D core inside a thin sheet: strong per-body cost gradient |
+| `galaxies` | two disks of mass 1/2 at (∓1.5, ∓0.5, 0), tilted 30° and (−50°, 40°) | bulk ±(0.3, 0.05, 0): relative 0.60 < escape 0.80, a bound passage and merger | two compact expensive regions in an empty box: the most clustered IC |
+| `cube_shell` | uniform on the 6 faces of [−1,1]³ | isotropic σ = 0.05 (almost cold) | **stress test**: hollow, 2D, flat AABBs |
+| `cube_edges` | uniform on the 12 edges | σ = 0.05 | **stress test**: 1D, duplicate Morton keys, corner hot spots |
+| `uniform` | uniform in [−1,1]³ | σ = 0.05 | the no-clustering control |
+
+- *Disk approximation and limits.* The spherical enclosed-mass circular speed is exact for the bulge
+  and the central body and approximate for the disk's own field [TODO(source): Freeman 1970, thin
+  exponential disk]. The vertical relation is the isothermal sheet [TODO(source): Spitzer 1942]. No
+  dark halo and no Toomre-Q control (Q ≪ 1 at these dispersions), so the disk is cold and
+  self-gravitating: it develops bars, spirals and clumps within about one rotation (rotation period
+  at Rd ≈ 1.7 time units). That is fine for a force snapshot and a demo; it is not a Milky Way model.
+- *Mass spectrum* (`--mass-spectrum`, light bodies of every component, never the central body):
+  `equal`; `salpeter`, dN/dm ∝ m^−2.35 on [1, 100] (4.3% of the bodies carry 31% of the mass);
+  `heavy-few`, min(16, n_c/128) bodies with 1% of the component mass each. Masses are drawn
+  independently of position and normalised per component, so the expected density profile is
+  unchanged. With `equal`, `plummer`, `collision` and `core` are **bitwise** the pre-round ICs
+  (FNV hashes in the selftest).
+- *What unequal masses do to the tree:* the criterion is geometric, but bmax is measured from the
+  COM, which a heavy body pulls off-centre, so small cells are opened at a larger distance (more work:
+  ≈ +15% for salpeter at 8192, §0 of the predictions), while a cell dominated by one body has a small
+  quadrupole (no error growth expected). The bench quantifies it: the FP64 sample adds the 16 heaviest
+  bodies, and the normalised error is split heavy / light.
+- *Softening / dt* [D]: ε is global. dt advisory = 0.1 √(ε³ / ((2/3^1.5) G m_max)), printed by the
+  bench and the viewer (1.6e-3 for a 1% body at ε = 0.01). Force-snapshot runs do not depend on dt.
+
+### 19.2 Stack capacity (D-028)
+Along a root-to-node path of the binary radix tree the split prefix δ strictly increases (δ ∈ [1, 63]
+for distinct keys, 64 + clz(i ⊕ j) for duplicates), so internal depth ≤ 62 + ⌈log2 n⌉ and a DFS that
+pushes (right, left) never holds more than pushDepth + 2 ≤ 95 entries. The per-thread walks now have
+96 entries: overflow is impossible (the counter stays as a guard). SASS: only the frame size and the
+bound immediate changed in 18 kernels; registers 40, occupancy unchanged. The #7 register stack stays
+at 64 (a 96-entry version costs +8 instructions on the pop chain and 4 registers in the instrumented
+twin); every tree run prints `tree: max depth, push depth → stack bound (capacity …), duplicate keys`,
+and an overflow fails the run. Measured stack bound ≤ 45 for every legacy IC at 1M.
+
+### 19.3 Gates (D-027)
+Primary tree gates are now normalised by S_i = Σ_j|f_ij| (the D-009 normaliser) over all bodies:
+TN1 rms ≤ 0.02 (θ/0.5)², TN2 p99 ≤ 0.045 (θ/0.5)², zero overflows; TG3n compares the same metric
+with the sibling. Calibrated on the legacy ICs only (worst rms 6.1e-3, p99 1.43e-2 per (θ/0.5)²); the
+legacy verdicts are unchanged. Legacy TG1/TG2/TG3 are still printed (`not gating`). New CSV columns:
+`mass_spectrum, bh_mass, ic_hash, mass_max_min, norm_rms, norm_p99, norm_max, tn1, tn2, sib_norm_rms,
+sib_norm_p99, tg3n, glob_rms, glob_p99, heavy_norm_max, tree_depth, push_depth, stack_bound, dup_keys`
+(new header; the bench refuses to append to older CSVs).
+
+### 19.4 Selftest additions (all pass; 4 logged XFAILs)
+- The round-1 and round-2 tree checks (structure, bitwise siblings, exactly-once, per-slot union
+  invariants, TG3n, and the **exact θ > 0 host check** at n ≤ 10007) now run on 12 IC labels: the 8
+  ICs plus plummer:salpeter, disk:heavy-few, galaxies:salpeter and cube_shell:heavy-few.
+- IC invariants for 8 ICs × 3 spectra × n ∈ {1, 2, 3, 1000, 65536}: total mass 1, COM and momentum 0
+  (new ICs), finite values, positive masses, determinism; legacy-IC hashes.
+- An unequal-mass pass of the exact lattice (masses {1, 2, 4, 8} and 1% at 128, N up to 65536, every
+  partial sum still exact): every kernel bitwise equal to the analytic sum. `--selftest-drop 5`
+  detects all 6204 visible drops.
+- XFAIL: TG3n of `bh_warp_naive` on `cube_edges` (D-027).
+
+### 19.5 Viewer
+Live N (PageUp/PageDown, `.`/`,`): the IC is regenerated at the new N, the device state reallocated,
+the two GL buffers resized and re-registered with CUDA (unregister → `glBufferData` →
+`cudaGraphicsGLRegisterBuffer`), the camera kept. `I` cycles the IC, `H` the mass spectrum, `M` colour
+by mass (log-scaled red shift and larger points above 3× the mean mass). The title shows IC,
+spectrum, N, kernel, ms/step and the real interaction rate: for tree kernels the interactions of one
+instrumented launch (bitwise-equal accelerations, so the integration is undisturbed), refreshed every
+2 s, divided by the measured ms/step (which includes the build and the integrator). N caps: 262144 for
+all-pairs, 4,194,304 for tree kernels (TDR margin). Default kernel `bh_warp` (D-022). `--test-keys`
+scripts key presses for smoke tests; `--dist/--yaw/--pitch` frame screenshots.
