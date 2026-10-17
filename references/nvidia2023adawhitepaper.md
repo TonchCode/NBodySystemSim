@@ -21,6 +21,23 @@
 
 The whitepaper does not mention the RTX 4080 SUPER at all.
 
+## Second pass, 2026-10-17 (PDF re-downloaded, `pdftotext -layout`, V2.02 confirmed on the title page)
+Page numbers are the printed page footers.
+| Topic | What V2.02 says | Where |
+|---|---|---|
+| SM partitions | AD10x SM "is divided into four processing blocks (or partitions)" | p. 10 (text above Figure 5, "Ada Streaming Multiprocessor (SM)", p. 11) |
+| Per-partition register file | each partition contains "a 64 KB register file" (4 × 64 KB = the 256 KB/SM on p. 8) | p. 10 |
+| Schedulers / dispatch | "one warp scheduler, one dispatch unit" per partition | p. 10 |
+| FP32/INT32 split | per partition: "16 CUDA Cores that are dedicated for processing FP32 operations"; plus 16 that "can process FP32 or INT32 operations" (16 FP32 **or** 16 INT32 per clock) | p. 10 |
+| Other per-partition units | one 4th-gen Tensor Core, four load/store units, an L0 instruction cache, and a Special Function Unit (SFU) "which executes transcendental and graphics interpolation instructions" | p. 10 |
+| GPC/TPC layout | "Each TPC includes one PolyMorph Engine and two SMs." Each GPC has "six TPCs", but that is the **AD102** GPC (Figure 2, p. 8: 6 TPCs, 12 SMs). | p. 8 |
+| AD103 TPCs per GPC | **Not stated.** Appendix B (p. 32 ff.) gives only the totals: 7 GPCs, 40 TPCs, 80 SMs. | — |
+| Tensor Cores | "tailored for the matrix multiply and accumulate math operations"; Ada "includes the Hopper FP8 Transformer Engine" | p. 24, "Ada Fourth-Generation Tensor Core" (checked by extracting single PDF pages; PDF page index = printed footer) |
+| Issue rate per scheduler | Not stated. | — |
+| SFU lanes / throughput | Not stated here; see nvidia2026bestpractices Table 5 (16 results/clk/SM, i.e. 4 per partition [D]). | — |
+
+Consequence: the "4 × 32 FP32 lanes" description is right in count, but half of each partition's 32 lanes are shared with INT32. In a cycle where a partition issues INT32 work on the shared half, only the 16 dedicated lanes are left for FP32.
+
 ## Summary
 1. The Ada SM: 128 FP32 cores, 4th-gen Tensor cores, a 3rd-gen RT core, a 256 KB register file and 128 KB L1/shared.
 2. A much larger L2 than Ampere (AD103: 64 MB against 6 MB on GA102).

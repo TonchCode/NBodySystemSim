@@ -9,7 +9,8 @@
 - Maximum concurrent warps per SM: 48, i.e. 1536 threads. This matches our [M].
 - Maximum thread blocks per SM: 24. Matches [M].
 - Shared memory capacity per SM: up to 100 KB, with carveout options 0, 8, 16, 32, 64 and 100 KB. Matches [M] 102,400 B.
-- "2x more FP32 operations per cycle per SM" than compute capability 8.0 (A100).
+- "2x more FP32 operations per cycle per SM" than compute capability 8.0 (A100). §1.4.1.3 "Improved FP32 throughput" (re-read 2026-10-17).
+- §1.4.1.2 "Improved Tensor Core Operations": Ada's 4th-gen Tensor Cores feature "the Hopper FP8 Transformer Engine" (re-read 2026-10-17). This sources FP8 support.
 - L2 is quoted for AD102 (98,304 KB). AD103's 64 MB comes from the whitepaper, not this guide.
 
 ## Summary

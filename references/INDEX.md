@@ -1,10 +1,10 @@
 # references/INDEX.md: evidence base
 
-Maintained by `literature-scout`. First pass: **2026-10-17**.
+Maintained by `literature-scout`. First pass: **2026-10-17**. Second pass (TODO closure for `docs/final/02-gpu-architecture.md`): **2026-10-17**, see [TODO-resolution-2026-10-17.md](TODO-resolution-2026-10-17.md).
 Rule: ✅ = landing page fetched on 2026-10-17, with title, authors, year, venue and DOI/arXiv ID confirmed. ⬜ = lead, **do not cite**.
 Country = country of the lead group's institution, not the authors' nationality.
 
-## Verified entries (20: 13 recent papers + 3 background + 4 NVIDIA docs)
+## Verified entries (25: 13 recent papers + 3 background + 4 NVIDIA docs + 5 spec/platform sources)
 
 ### A. GPU N-body / hierarchical methods (2025–2026)
 | Key | Year | Venue | Topic | Country | R3 | ✓ |
@@ -37,10 +37,19 @@ Country = country of the lead group's institution, not the authors' nationality.
 ### D. NVIDIA documentation
 | Key | Version | Date | Use | ✓ |
 |---|---|---|---|---|
-| [nvidia2026cudaguide](nvidia2026cudaguide.md) | CUDA Programming Guide v13.4.2 | updated 2026-09-10 | sm_89 limits (§5.1) | ✅ |
-| [nvidia2026bestpractices](nvidia2026bestpractices.md) | CUDA C++ Best Practices Guide 13.4 | no date shown | methodology, exec config, control flow | ✅ |
+| [nvidia2026cudaguide](nvidia2026cudaguide.md) | CUDA Programming Guide v13.4.2 | updated 2026-09-10 | sm_89 limits (§5.1.3 Tables 30–31, cells resolved), block/warp model (§1.2.2), 48 KB opt-in (§3.2.6) | ✅ |
+| [nvidia2026bestpractices](nvidia2026bestpractices.md) | CUDA C++ Best Practices Guide 13.4 | updated 2026-10-12 | **Table 5 throughput (FP32 128, rsqrt/MUFU 16 per clk/SM, cc 8.9)**, register granularity, copy engines, latency hiding | ✅ |
 | [nvidia2026adatuning](nvidia2026adatuning.md) | Ada Tuning Guide v13.4 | updated 2026-10-12 | 48 warps / 24 blocks / 100 KB smem per SM | ✅ |
-| [nvidia2023adawhitepaper](nvidia2023adawhitepaper.md) | Ada GPU Architecture whitepaper V2.02 | © 2023 | AD103 specs → confirms 01-hardware [S] rows | ✅ |
+| [nvidia2023adawhitepaper](nvidia2023adawhitepaper.md) | Ada GPU Architecture whitepaper V2.02 | © 2023 | AD103 specs → confirms 01-hardware [S] rows; SM partitions, schedulers, FP32/INT32 split (p. 10) | ✅ |
+
+### E. Product specifications and platform documentation (second pass)
+| Key | Source | Date | Use | ✓ |
+|---|---|---|---|---|
+| [nvidia2026rtx4080family](nvidia2026rtx4080family.md) | NVIDIA RTX 4080 family product page | undated (accessed 2026-10-17) | 4080 SUPER: 10240 cores, base 2.29 / boost 2.55 GHz, GDDR6X, 256-bit, 320 W | ✅ |
+| [burnes2024rtx40super](burnes2024rtx40super.md) | NVIDIA GeForce News | 2024-01-08 | 4080 SUPER GDDR6X at 23 Gbps | ✅ |
+| [microsoft2025tdrkeys](microsoft2025tdrkeys.md) | Microsoft Learn, TDR registry keys | ms.date 2025-11-05 | TdrDelay default 2 s | ✅ |
+| [pcisig2011pcie4](pcisig2011pcie4.md) | PCI-SIG press release (Design & Reuse reprint) | 2011-11-29 | PCIe 4.0 = 16 GT/s | ✅ (reprint; pcisig.com not fetched) |
+| [solomon2014pcie16gts](solomon2014pcie16gts.md) | Synopsys technical article | 2014-07-21 | 128b/130b at 16 GT/s | ✅ [T2] secondary, pre-final-spec |
 
 ## R3 coverage map
 | R3 # | Technique | Best sources |
@@ -78,5 +87,6 @@ Country = country of the lead group's institution, not the authors' nationality.
 | gevolution 2.0 (arXiv:2607.17929); StePS cylindrical (arXiv:2602.20787); Mercury-Opal (arXiv:2601.19654); GENGA review (arXiv:2604.09184); multi-GPU miniapps (arXiv:2511.02655) | arXiv API listing only | 2025–26 GPU N-body codes; abstracts not checked |
 | Eberius et al., hierarchical load-imbalance metric for GPU+MPI (OSTI 1863305) | search result | LB metric definition |
 | RT-BarnesHut "2x–40x" speedup figure | search snippet only | **do not quote**; the abstract gives no number |
-| NVIDIA RTX 4080 SUPER product spec page (2295/2550 MHz, 23 Gbps) | not fetched | needed to source 01-hardware clock rows |
-| Nsight Compute 2026.3 documentation | not fetched | required by the role file; next pass |
+| Nsight Compute 2026.3 documentation | not fetched | required by the role file; next pass. Needed to confirm the cc 8.9 register allocation granularity |
+| PCI-SIG FAQ / PCIe 4.0 specification (primary for 128b/130b) | pcisig.com returned a bot-check page | would replace solomon2014pcie16gts as the encoding source; fetch by hand |
+| AD103 TPCs per GPC | not in any NVIDIA source found (whitepaper gives only totals) | non-NVIDIA sources were not searched; do not cite anything unverified |
