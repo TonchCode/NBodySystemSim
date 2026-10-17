@@ -94,8 +94,8 @@ peak; it does not affect the FP32 or SFU figures used below.
 
 Transcendental functions and reciprocal square roots are executed on the SFU, one per partition,
 "which executes transcendental and graphics interpolation instructions"
-[N:nvidia2023adawhitepaper, p. 10]; in SASS these appear as `MUFU` instructions
-(`results/2026-10-17_smoke/summary.md`). This matters for N-body, because every pairwise
+[N:nvidia2023adawhitepaper, p. 10]; in SASS the reciprocal square root appears as `MUFU.RSQ`
+(`docs/03-design.md` §0.1). This matters for N-body, because every pairwise
 interaction computes one reciprocal square root, `rsqrtf(r² + ε²)`. NVIDIA recommends calling
 `rsqrtf()` explicitly, because the compiler only rewrites `1.0f/sqrtf(x)` when IEEE-754 semantics
 allow it [N:nvidia2026bestpractices, §12.1.6].
@@ -114,11 +114,47 @@ lanes therefore depends on its instruction mix per interaction. If each interact
 eight or more FP32 instructions per `rsqrtf`, the FP32 pipe is the tighter limit; if fewer, the
 SFU is [D].
 
-**Hypothesis, not a result.** The smoke-test notes suspect the kernel is bound by MUFU
-throughput or instruction issue (`results/2026-10-17_smoke/summary.md`, observation 2). This
-remains a hypothesis until Nsight Compute reports the per-pipe utilisation
-(`TODO(measure: Nsight Compute pipe utilisation, SFU/XU vs FMA, for allpairs_tiled, plus the SASS
-instruction count per interaction)`).
+**What our force loop actually issues.** The static SASS of the tiled force loop contains, per
+interaction, 3 FADD (r = x_j − x_i), 3 FFMA (d² = r·r + ε²), one FSETP and two predicated FMUL
+(the denormal guard that non-FTZ `rsqrtf` adds), **one MUFU.RSQ**, 3 FMUL (m · inv³), 3 FFMA
+(a += r·s), one LDS.128 for the shared-memory tile, and loop overhead [M]
+(`docs/03-design.md` §0.1). Of roughly 17.6 issue slots per interaction, 14 are FP32 and 1 is
+MUFU [M] (`docs/03-design.md` §0.1). In the full-unroll probe kernel the count is
+**17.38 SASS slots per interaction** [M] (`results/2026-10-17_round2/probe/sass_counts.txt`).
+With 8 or more FP32 instructions per `rsqrtf`, the SFU's 8 : 1 ratio alone does not make the
+SFU the bottleneck [D].
+
+Three ceilings follow for one SM, each in interactions per clock [D] (`docs/03-design.md` §0.1):
+FP32 lanes 128 / 14 ≈ 9.1; SFU 16; and issue 4 schedulers / 17.38 slots × 32 threads ≈ 7.4.
+The issue ceiling assumes one warp-instruction per clock per scheduler, which no source
+states (§2.2.1). At that ceiling the SFU is busy about 46 % of the time (8 of 17.38 cycles) [D].
+
+**The probe experiment.** To test which limit binds, the architect built four variants of the
+force loop that change the instruction mix in known ways, all with 40 registers and no spills
+[M], and timed them twice under the 272 W cap at an SM clock of 2,610–2,640 MHz [M]
+(`results/2026-10-17_round2/summary.md` §5):
+
+| Variant | Change | SASS slots / interaction [M] | Pure-issue model [D] | Measured time ratio [M] |
+|---|---|---|---|---|
+| base | — | 17.38 | 1.000 | 1.000 |
+| ftz | flush-to-zero removes the 3-instruction guard | 14.38 | 0.827 | 0.900 / 0.899 |
+| mufu2 | a second MUFU (+ FSEL) | 19.38 | 1.115 | 1.189 / 1.184 |
+| fmul3 | 3 extra FP32 instructions | 20.38 | 1.173 | 1.185 / 1.185 |
+
+Only fmul3 matches the pure-issue model. mufu2 is about 7 points slower than issue alone
+predicts, which points to the SFU (XU) pipe, which would be about 83 % busy in that variant
+[D] (`docs/03-design.md` §0.1). ftz gains less than the model predicts, so some other limit
+(latency, dependencies or register banks) appears once the guard is gone
+(`results/2026-10-17_round2/summary.md` §5). The project's current conclusion is that the force
+kernel is **"issue-limited with a significant XU co-limit"**
+(`results/2026-10-17_round2/summary.md` §5; `docs/reviews/2026-10-17-critic-1.md` #2). It is
+neither purely FMA-bound nor purely MUFU-bound.
+
+**Status of this conclusion.** It is an inference from timing and static SASS, not a profiler
+measurement: GPU performance counters are blocked on this machine, so Nsight Compute cannot yet
+report pipe utilisation (D-011, `docs/decisions.md`)
+(`TODO(measure: Nsight Compute issue-slot and XU/FMA pipe utilisation for allpairs_tiled and the
+probe variants, once counters are enabled)`).
 
 ### 2.2.4 Register file
 
@@ -160,9 +196,16 @@ The full AD103 has **320 fourth-generation Tensor cores** and **80 third-generat
 as "tailored for the matrix multiply and accumulate math operations", and Ada includes the FP8
 Transformer Engine from Hopper [N:nvidia2023adawhitepaper, p. 24]. The direct all-pairs force
 computation contains a reciprocal square root and a data-dependent scaling per pair rather than a
-dense matrix product, so our FP32 force kernels are written for the CUDA cores and SFUs only. That
-the compiled kernels contain no tensor instructions still has to be checked
-(`TODO(measure: cuobjdump -sass listing of allpairs_tiled)`).
+dense matrix product, so our FP32 force kernels are written for the CUDA cores and SFUs only.
+The compiled code agrees. The per-interaction instruction list of `allPairsTiledKernel`
+(`docs/03-design.md` §0.1, from `cuobjdump -sass`) contains only FP32, MUFU, shared-memory load
+and loop instructions [M]. The archived SASS of the four probe variants of the same force loop
+(`results/2026-10-17_round2/probe/mufu_probe.sass`, 18,358 lines) contains no tensor-core
+opcode at all: a search for HMMA, IMMA, HGMMA, DMMA, BMMA and QMMA returns zero matches [M].
+The production `allpairs_tiled` kernel's SASS is archived at
+`results/2026-10-17_round2/sass/allpairs_tiled_production.sass` (675 lines, non-instrumented
+instantiation). The same search returns **zero** tensor-core opcodes. The kernel contains 90 FFMA
+and 15 MUFU.RSQ (8-way unrolled main loop + remainder) [M].
 
 RT cores perform hardware traversal of bounding-volume hierarchies. Nagarajan et al. reformulate
 Barnes-Hut as a ray-tracing problem and use RT cores, through OptiX, for the node-opening
@@ -205,50 +248,63 @@ the minimum over the four constraints.
 
 ### Worked example: our tiled all-pairs kernel
 
-`ptxas` reports that `allpairs_tiled` uses **40 registers per thread with no spills**, and it was
-launched with **256 threads per block** (`results/2026-10-17_smoke/summary.md`).
+`ptxas` reports that `allPairsTiledKernel` uses **40 registers per thread, with no spills and no
+static shared memory** (`results/2026-10-17_architect_sanity/build_resource_usage.txt`). Its tile
+is sized at launch, one `float4` per thread (tile = block, `docs/03-design.md` §1), so at
+**256 threads per block** it uses 256 × 16 B = **4,096 B** of shared memory per block [D]. The
+`allpairs_tuned` instantiations, which hold the same tile as static shared memory, confirm the
+size: ptxas reports 4,096 B at block 256, 8,192 B at 512 and 16,384 B at 1,024 [M]
+(`results/2026-10-17_architect_sanity/build_resource_usage.txt`; `docs/03-design.md` §3.1).
 
 | Constraint | Calculation | Blocks / SM |
 |---|---|---|
-| Registers | 40 regs × 256 threads = 10,240 regs per block; ⌊65,536 / 10,240⌋ | **6** [D] |
+| Registers | 40 regs × 32 = 1,280 per warp; per partition ⌊16,384 / 1,280⌋ = 12 warps, × 4 = 48 warps | **6** [D] |
 | Warps | 256 threads = 8 warps per block; ⌊48 / 8⌋ | **6** [D] |
 | Blocks | hardware limit | 24 [M] |
-| Shared memory | depends on the tile size per block | ≥ 6 on the assumption below [D] |
+| Shared memory | 4,096 B per block; ⌊102,400 / 4,096⌋ (20 if 1 KB per block is reserved, as `docs/03-design.md` §3.2 budgets: `TODO(source needed: per-block shared-memory reservation on cc 8.9)`) | 25 (or 20) [D] |
 
 The minimum is **6 blocks per SM = 1,536 threads = 48 warps, i.e. 100 % theoretical occupancy**
-[D] (`results/2026-10-17_smoke/summary.md`). Across 80 SMs that is 122,880 resident threads
-[D].
+[D]. The CUDA runtime's occupancy API returns the same 6 blocks per SM for this configuration
+[M] (`results/2026-10-17_architect_sanity/summary.md`, occupancy table). Across 80 SMs that is
+122,880 resident threads [D].
 
-Three remarks follow from this calculation.
+**How registers are actually allocated: measured evidence.** The register row above uses a
+per-partition model, not one pool of 65,536 registers per SM. Two facts support it:
 
-1. **Registers and warps bind at the same time, and the register headroom may be zero.** With
-   registers counted per thread, six blocks of 256 threads fit while 6 × 256 × r ≤ 65,536, i.e.
-   up to r = 42 registers, a headroom of two registers [D]. The Best Practices Guide, however,
-   states that "register allocations are rounded up to the nearest 256 registers per warp"
-   [N:nvidia2026bestpractices, §11.1.1]. That statement accompanies a cc 7.0 example, and the
-   same paragraph notes that the granularity varies by compute capability, so it is not confirmed
-   for cc 8.9. **If it applies to cc 8.9**, then 40 registers × 32 threads = 1,280 = exactly
-   5 × 256 per warp, and 6 blocks fit; at 41 registers each warp rounds up to 1,536 registers, a
-   block needs 12,288, and only ⌊65,536 / 12,288⌋ = 5 blocks fit, i.e. 40 warps or 83 %
-   occupancy [D]. The headroom would then be **0 registers, not 2**
-   (`TODO(measure: Nsight Compute launch__occupancy_limit_registers at 40 and at 41+ registers
-   per thread)`). The naive kernel, at 39 registers, also sits at 6 blocks
-   (`results/2026-10-17_smoke/summary.md`).
-2. **Shared memory is not the limit, on the assumption** that the tile holds one `float4`
-   position (16 B) per thread, as in the classic design [P:nyland2007nbody]: 256 × 16 B = 4 KB per
-   block, and 6 blocks need 24 KB out of 100 KB [D]. The actual shared-memory size of
-   `allpairs_tiled` has not been recorded; `nvcc --resource-usage` reports it
-   [N:nvidia2026cudaguide, §2.3.7] (`TODO(measure: ptxas shared-memory usage for
-   allpairs_tiled)`).
-3. **Theoretical is not achieved occupancy.** The table gives the upper bound; Nsight Compute
-   should report the achieved value before it is used in the results chapter.
+- The whitepaper describes one 64 KB register file per partition, i.e. 16,384 registers each
+  [N:nvidia2023adawhitepaper, p. 10], and the Best Practices Guide states that
+  "register allocations are rounded up to the nearest 256 registers per warp"
+  [N:nvidia2026bestpractices, §11.1.1]. The latter is written next to a cc 7.0 example, so on
+  its own it does not prove the rule for cc 8.9.
+- The runtime confirms both rules on our GPU. The `allpairs_multi` kernel at block 64, q = 32
+  uses 44 registers [M]. 44 × 32 = 1,408 registers per warp, rounded up to 1,536 [D]. A single
+  pool of 65,536 registers would hold ⌊65,536 / 1,536⌋ = 42 warps = **21 blocks** of 2 warps.
+  Per-partition allocation holds ⌊16,384 / 1,536⌋ = 10 warps per partition = 40 warps =
+  **20 blocks** [D]. The occupancy API returns **20** [M]
+  (`results/2026-10-17_architect_sanity/summary.md`; `docs/03-design.md` §3.2). Without the
+  256-register rounding, both models would give more than 20 (22 per partition, 23 pooled) [D].
+  So only "256 per warp, per partition" matches the measurement.
 
-The same arithmetic also shows the opposite problem, the one the load-balancing chapter addresses.
-NVIDIA advises launching more blocks than there are SMs [N:nvidia2026bestpractices, §11.3]. With
-N = 4,096 bodies and 256 threads per block, the grid has only 16 blocks for 80 SMs, so at most
-20 % of the SMs have any work; the smoke test measured 224 G interactions/s in that case against
-998 G interactions/s at N = 131,072 (`results/2026-10-17_smoke/summary.md`, **smoke-test numbers,
-not benchmarks**). Full occupancy per SM does not help if most SMs are idle.
+Two remarks follow.
+
+1. **The tiled kernel has no register headroom.** At 40 registers a warp needs exactly
+   5 × 256 = 1,280 registers, and 12 warps fill a partition to 15,360 of 16,384 [D]
+   (`docs/03-design.md` §3.2). At 41 registers a warp rounds up to 1,536, a partition holds only
+   10 warps, and the SM drops to 40 warps = 5 blocks = **83 % occupancy** [D]. The naive kernel
+   (39 registers [M], `build_resource_usage.txt`) sits at the same 6-block limit. The 41-register
+   case is a prediction from the model the runtime confirmed, not a separate measurement.
+   Whether 83 % occupancy would actually be slower is a separate question. The round-1 design
+   assumes 8 warps per SM already saturate this kernel (`docs/03-design.md` §0.2, assumption A1).
+2. **Theoretical is not achieved occupancy.** The table gives the upper bound. Achieved
+   occupancy needs Nsight Compute, which is blocked on this machine (D-011).
+
+The same arithmetic also shows the opposite problem, the one the load-balancing chapter
+addresses. NVIDIA advises launching more blocks than there are SMs
+[N:nvidia2026bestpractices, §11.3]. With N = 4,096 bodies and 256 threads per block, the grid has
+only 16 blocks for 80 SMs. The round-2 per-block timeline measured exactly that: **64 of 80 SMs
+idle for the whole kernel**, with SM efficiency 0.199 [M]
+(`results/2026-10-17_round2/summary.md` §1). Full occupancy per SM does not help if most SMs are
+idle.
 
 ## 2.4 Memory hierarchy
 
@@ -304,11 +360,11 @@ For N-body the important question is which working sets fit in L2. One body posi
 With velocity stored alongside (32 B per body), it holds about 2.1 million bodies [D]. For the
 all-pairs kernel, where every block streams through the whole position array once per step, this
 means that problem sizes up to a few million bodies can in principle be served from L2 rather than
-DRAM after the first pass [D]. The N = 131,072 smoke-test run, for example, has a 2 MB position
-array, which fits in L2 thirty-two times over [D]. Two cautions apply: not all of the L2 is
+DRAM after the first pass [D]. At N = 65,536, the largest size in the round-2 sweep, the position
+array is 1 MB and fits in L2 sixty-four times over [D] (`docs/03-design.md` §2). Two cautions apply: not all of the L2 is
 necessarily available to one array, and whether the hardware actually keeps the array resident
 between tiles has to be measured (`TODO(measure: Nsight Compute L2 hit rate for allpairs_tiled
-at several N)`). The size of the L2 also means that DRAM-bandwidth arguments taken from older
+at several N, once GPU counters are enabled; D-011)`). The size of the L2 also means that DRAM-bandwidth arguments taken from older
 GPUs may not transfer to this one.
 
 ### 2.4.3 Device memory (GDDR6X)
@@ -359,30 +415,42 @@ also supports concurrent kernels and unified addressing [M].
 For visualisation, positions can be drawn directly from a buffer shared between CUDA and the
 graphics API, avoiding a PCIe round trip per frame (`docs/01-hardware.md` §5).
 
+
 ## 2.5 Precision: FP32 versus FP64
 
 The theoretical FP32 peak is 10,240 lanes × 2 FLOP per FMA × clock [D]. At NVIDIA's reference
 boost clock of 2.55 GHz [N:nvidia2026rtx4080family] this is ≈ **52.2 TFLOPS** [D], consistent with
 the "52 TFLOPS" NVIDIA lists [N:nvidia2026rtx4080family]. At the 2,610 MHz the CUDA runtime reports
-on our board [M] it is ≈ **53.5 TFLOPS** [D]. Neither figure is an upper bound: 2,745 MHz was
-observed after the smoke runs (`results/2026-10-17_smoke/summary.md`), and at the 3,105 MHz
-ceiling [M] the figure would be ≈ 63.6 TFLOPS [D] (`docs/01-hardware.md` §2.2).
+on our board [M] it is ≈ **53.5 TFLOPS** [D]. Neither figure is an upper bound on the clock: under
+load the SM ran at up to 2.79 GHz (§2.6), and at the 3,105 MHz ceiling [M] the figure would be
+≈ 63.6 TFLOPS [D] (`docs/01-hardware.md` §2.2).
+
+For this kernel the FMA peak is not the relevant ceiling anyway. With 17.38 issue slots per
+interaction and the assumed one instruction per scheduler per clock (§2.2.3), the issue-model
+ceiling is about 7.4 interactions per clock per SM. At the 2.76 GHz median clock measured under
+load that is ≈ **1.6 × 10¹² interactions/s** for 80 SMs [D]
+(`docs/reviews/2026-10-17-critic-1.md` #11). The best measured all-pairs throughput in round 2 is
+1.27 × 10¹² interactions/s (`allpairs_multi` b128 q2 at N = 65,536) [M]
+(`results/2026-10-17_round2/summary.md` §3). That is about 78 % of the issue-model ceiling at
+2.76 GHz [D], and more if that kernel ran at a lower clock, as §2.6 suggests.
 
 FP64 runs at 1/64 of the FP32 rate [N:nvidia2023adawhitepaper; N:nvidia2026cudaguide, §5.1.3
 Table 30], about **0.84 TFLOPS** at 2,610 MHz [D]. A double-precision force kernel would therefore
 be about 64 times slower than the same kernel in single precision [D].
 
 The project uses **FP32 for all force kernels** (`CLAUDE.md` rule 3), storing bodies as `float4`
-and using `rsqrtf` (`docs/01-hardware.md` §5). The accuracy cost of FP32 is handled in the
-integrator and, if needed, by compensated summation rather than by FP64 arithmetic
-(`docs/01-hardware.md` §5). As a first indication that FP32 is adequate, the smoke test integrated
-4,096 bodies for 2,000 kick-drift-kick steps with a relative energy drift of −2.8 × 10⁻⁸
-(`results/2026-10-17_smoke/summary.md`, **smoke-test number**).
+and using `rsqrtf` (`docs/01-hardware.md` §5). The round-2 long-run energy test supports this
+choice and shows where FP32 actually costs accuracy. For N = 4,096 over 100 time units, the
+relative energy error was 6.2 × 10⁻⁷ at dt = 10⁻³ and 1.09 × 10⁻⁶ at dt = 5 × 10⁻⁴ [M]
+(`results/2026-10-17_round2/summary.md` §6). A smaller time step drifted *more*, so the drift is
+dominated by per-step FP32 round-off in the integrator state (positions and velocities), not by
+the integrator's truncation error (D-014, `docs/decisions.md`). The lever for better
+conservation is therefore the precision of the integrator state, not FP64 forces (D-014).
 
-The "20 FLOP per interaction" accounting used to compare a kernel against this peak
-[P:nyland2007nbody] counts `rsqrtf` as several FLOPs, even though it executes on the SFU at
-one-eighth of the FMA rate (§2.2.3). Percentages of peak computed this way are a convention, not
-a measure of FMA utilisation.
+The "20 FLOP per interaction" accounting [P:nyland2007nbody] counts `rsqrtf` as several FLOPs,
+even though it executes on the SFU at one-eighth of the FMA rate (§2.2.3). Percentages of the
+FLOPS peak computed this way are a convention, not a measure of FMA utilisation. The issue-model
+ceiling above is the more honest denominator.
 
 ## 2.6 Platform conditions that affect measurements
 
@@ -397,30 +465,61 @@ a single timestep (`CLAUDE.md` rule 4).
 **Power limit.** NVIDIA rates the RTX 4080 SUPER at 320 W total graphics power
 [N:nvidia2026rtx4080family], which matches the board's default power limit of 320 W [M]. The
 current limit, however, is **272 W** (85 % of default), within an allowed range of 150–352 W [M].
-The driver's software power-capping counter already shows 1,683 s (about 28 minutes) of
-power-capped time [M]. A lower power limit directly lowers sustained clocks for a compute-bound
-kernel, so the limit in force is recorded with every benchmark (`docs/01-hardware.md` §2.5).
+In the round-2 session, power draw under load reached 273.6 W, so **our kernels hit the cap** [M]
+(`results/2026-10-17_round2/summary.md`, environment;
+`results/2026-10-17_round2/gpu_clock_log_phase2.csv`). The limit in force is recorded with every
+benchmark.
 
-**Clocks.** Several clock values describe this GPU, and none of them alone is "the" clock:
+**Clocks under the 272 W cap (measured).** Across the round-2 session the logged SM clock under
+load had a median of 2,760 MHz (range 2,565–2,790 MHz) [M]
+(`results/2026-10-17_round2/summary.md`, environment). The per-block timelines also give each
+kernel's effective SM clock. These ranged from **2.52 GHz to 2.78 GHz**, and the kernels that
+process more interactions per second ran at *lower* clocks [M]
+(`results/2026-10-17_round2/timeline/timeline_analysis.txt`; scorecard P-TL2 in
+`results/2026-10-17_round2/summary.md` §7). At N = 65,536, for example:
+
+| Kernel at N = 65,536 | Throughput rank | Effective SM clock [M] |
+|---|---|---|
+| `allpairs_multi` b256 q4 | fastest | 2.522 GHz |
+| `allpairs_tuned` b128 full | middle | 2.602 GHz |
+| `allpairs_tiled` b256 | slowest | 2.700 GHz |
+
+The small-N launches, which leave most SMs idle, ran at 2.73–2.79 GHz [M]
+(`timeline_analysis.txt`). Under a power cap, a faster kernel draws more power and is clocked
+down. Speedups between kernels are therefore measured at *different* clocks: part of a faster
+kernel's gain is eaten by its lower clock. This is a property of the platform as configured, and
+it is why the SM clock is logged with every run. These clocks come from the instrumented timeline
+twins, whose speed differs from production by −3.4…+6.2 % (D-011), so they show the trend, not the
+exact production clock. During the probe run (§2.2.3) the clock stayed within 2,610–2,640 MHz at
+267–271 W [M] (`results/2026-10-17_round2/summary.md` §5).
+
+Other clock values, for reference:
 
 | Clock | Value | Source |
 |---|---|---|
 | NVIDIA reference base / boost (Founders Edition) | 2.29 GHz / 2.55 GHz | [N:nvidia2026rtx4080family, "GPU Engine Specs"] |
 | Reported by the CUDA runtime (`clockRate`) | 2,610 MHz | [M] |
-| Observed by `nvidia-smi` right after the smoke runs | 2,745 MHz | `results/2026-10-17_smoke/summary.md` |
 | Maximum SM clock reported by `nvidia-smi` | 3,105 MHz | [M] |
-| Idle SM clock at capture time | 345 MHz | [M] |
+| Idle SM clock (round-2 environment capture) | 210 MHz | [M] (`results/2026-10-17_round2/env_before.txt`) |
 
 NVIDIA's page notes that partner boards may differ from the Founders Edition figures
 [N:nvidia2026rtx4080family]; ours is an ASUS board [M]. NVIDIA gives the base clock as 2.29 GHz;
-the 2,295 MHz value used in earlier project notes has no source at that precision. The sustained
-clock during a run depends on temperature and power (`docs/01-hardware.md` §4), which is why
-benchmark runs report the median of several repetitions and log the SM clock, power draw and
-temperature alongside the timings.
+the 2,295 MHz value used in earlier project notes has no source at that precision. The CUDA
+runtime's 2,610 MHz is not the operating clock: measured clocks lie both below and above it.
 
-**Background load.** At capture time the GPU was at 41 % utilisation with 5,198 MiB of memory in
-use and three active NVENC encoder sessions [M], from desktop applications
-(`docs/01-hardware.md` §4). Benchmarks are run after closing them.
+**Timer resolution.** The GPU's `%globaltimer` register advances in steps of **1.024 µs** on this
+board [M] (`results/2026-10-17_round2/timeline/timeline_analysis.txt`, "timer res 1024 ns";
+D-011). That is comparable to an entire N = 1,000 kernel, so per-block start and end times are
+taken from the SM cycle counter `clock64`, anchored to timer tick edges before and after the
+launches. Calibrated and raw metrics agree within about 1 % (D-011;
+`results/2026-10-17_round2/summary.md` §1). Any intra-kernel timing on this GPU has to account
+for this resolution.
+
+**Background load.** At the first hardware capture the GPU was at 41 % utilisation, with
+5,198 MiB of memory in use and three active NVENC encoder sessions from desktop applications [M]
+(`docs/01-hardware.md` §4). For round 2 those were closed: 0 % idle utilisation before and after
+the runs, with 1,027–1,029 MiB VRAM in use [M] (`results/2026-10-17_round2/env_before.txt`,
+`env_after.txt`).
 
 ## 2.7 Summary: measured versus specified values
 
@@ -432,18 +531,21 @@ use and three active NVENC encoder sessions [M], from desktop applications
 | FP32 CUDA cores | 10,240 (4080 SUPER) | 80 × 128 = 10,240 | [N:nvidia2026rtx4080family]; [D] |
 | SM partitions | 4 per SM; each 1 scheduler + 1 dispatch, 16 FP32 + 16 FP32/INT32 lanes, 64 KB registers, 1 SFU, 1 Tensor core | — | [N:nvidia2023adawhitepaper p. 10] |
 | FP32 / rsqrt throughput | 128 / 16 results per clk per SM (8 : 1) | — | [N:nvidia2026bestpractices §12.1.1 Table 5] |
+| Force-loop instruction mix | — | 17.38 SASS slots per interaction (probe); ≈ 17.6 (tiled, u8), of which 14 FP32 and 1 MUFU | [M] `round2/probe/sass_counts.txt`; `03-design.md` §0.1 |
+| Force-kernel limiter | — | "issue-limited with a significant XU co-limit" (timing inference, no ncu) | `results/2026-10-17_round2/summary.md` §5 |
 | INT32 throughput | 128 per clk per SM (table) vs ≤ 64 (layout) | — | NVIDIA sources disagree (§2.2.2) |
-| Tensor cores (4th gen) / RT cores (3rd gen) | 320 / 80 (full AD103) | — | [N:nvidia2023adawhitepaper App. B] |
+| Tensor cores (4th gen) / RT cores (3rd gen) | 320 / 80 (full AD103) | no tensor opcodes in the probe SASS | [N:nvidia2023adawhitepaper App. B]; [M] |
 | FP64 rate | 1/64 FP32 (64 : 1); 2 results per clk per SM | — | [N:nvidia2023adawhitepaper; N:nvidia2026cudaguide §5.1.3 T30; N:nvidia2026bestpractices T5] |
 | Register file | 256 KB / SM (4 × 64 KB) | 65,536 regs / SM, ≤ 255 / thread | [N:nvidia2023adawhitepaper p. 8, p. 10]; [M; N:nvidia2026cudaguide T31] |
+| Register allocation | 256 per warp (cc 7.0 example) | per partition (4 × 16,384), 256 per warp: the runtime gives 20 blocks (not 21) at 44 regs × 64 threads | [N:nvidia2026bestpractices §11.1.1]; [M] `architect_sanity/summary.md`; [D] |
 | L1 + shared memory | 128 KB / SM | — | [N:nvidia2023adawhitepaper] |
 | Shared memory / SM | up to 100 KB (carve-out 0–100 KB) | 102,400 B | [N:nvidia2026adatuning]; [M] |
 | Shared memory / block | 99 KB; > 48 KB needs dynamic smem + opt-in | 101,376 B | [N:nvidia2026cudaguide T31, §3.2.6]; [M] |
+| `allpairs_tiled` resources (b256) | — | 40 regs, 0 spills, 4,096 B smem → 6 blocks/SM, 100 %, register headroom 0 | [M] ptxas, runtime; [D] |
 | Resident warps / threads per SM | 48 / 1,536 | 1,536 threads | [N:nvidia2026adatuning; N:nvidia2026cudaguide T30]; [M] |
 | Resident blocks per SM | 24 | 24 | [N:nvidia2026adatuning; N:nvidia2026cudaguide T30]; [M] |
 | Max threads per block | 1,024 | — | [N:nvidia2026cudaguide T30] |
 | Warp size | 32 | 32 | [N:nvidia2026cudaguide T30]; [M] |
-| Register allocation unit | 256 per warp (stated for a cc 7.0 example) | unconfirmed for 8.9 | [N:nvidia2026bestpractices §11.1.1]; TODO(measure) |
 | L2 cache | 65,536 KB (full AD103) | 67,108,864 B (64 MB) | [N:nvidia2023adawhitepaper App. B]; [M] |
 | Memory type / interface | GDDR6X, 256-bit | 256-bit | [N:nvidia2026rtx4080family]; [M] |
 | Memory data rate | 23 Gbps | max 11,501 MHz, current 11,701 MHz reported (anomaly) | [N:burnes2024rtx40super]; [M] |
@@ -454,27 +556,47 @@ use and three active NVENC encoder sessions [M], from desktop applications
 | Copy engines | 1 engine: one copy overlaps kernels; H2D and D2H don't overlap | `asyncEngineCount` = 1 | [N:nvidia2026bestpractices §10.1.2]; [M] |
 | BAR1 / Resizable BAR | supported | 16,384 MiB → enabled | [N:nvidia2026rtx4080family]; [M]; [D] |
 | Base / boost clock | 2.29 / 2.55 GHz (Founders Edition) | — | [N:nvidia2026rtx4080family] |
-| SM clock | — | 2,610 MHz (CUDA runtime), 3,105 MHz max | [M] |
+| SM clock | — | 2,610 MHz (CUDA runtime), 3,105 MHz max; under the 272 W cap 2.52–2.78 GHz per kernel, session median 2,760 MHz | [M] |
 | Peak FP32 | 52 TFLOPS | 52.2 @ 2.55 GHz; 53.5 @ 2,610 MHz; not an upper bound | [N:nvidia2026rtx4080family]; [D] |
+| Issue-model ceiling (force loop) | — | ≈ 1.6 × 10¹² interactions/s @ 2.76 GHz (assumes 1 inst/clk/scheduler) | [D] |
+| Best measured all-pairs throughput | — | 1.27 × 10¹² interactions/s (multi b128 q2, N = 65,536) | [M] `round2/summary.md` §3 |
 | Peak FP64 | — | ≈ 0.84 TFLOPS @ 2,610 MHz | [D] |
-| Power | 320 W TGP | 320 W default, **272 W current** | [N:nvidia2026rtx4080family]; [M] |
+| Power | 320 W TGP | 320 W default, **272 W current**, reached under load (273.6 W) | [N:nvidia2026rtx4080family]; [M] |
+| `%globaltimer` resolution | — | 1.024 µs | [M] |
 | TDR timeout | `TdrDelay` default 2 s | WDDM, display attached | [N:microsoft2025tdrkeys]; [M] |
 
 ## 2.8 What this means for N-body (bridge to the following chapters)
 
-All smoke-test numbers in this section come from `results/2026-10-17_smoke/summary.md` and were
-**recorded under background load at 272 W; they are not benchmarks.**
+Numbers in this section come from the round-2 session, with the environment controlled (idle 0 %
+before and after) and the 272 W cap reached (`results/2026-10-17_round2/summary.md`), unless
+labelled otherwise.
 
-- **The SM is the unit of balance.** Per SM, the tiled kernel already reaches 100 % theoretical
-  occupancy (§2.3) [D], with possibly no register headroom. Across the chip, small problems leave
-  SMs idle: 16 blocks for 80 SMs at N = 4,096. This is the measured motivation for the
-  load-balancing techniques of chapter 4.
+- **Per SM, occupancy is solved; across SMs, it is not.** The tiled kernel reaches 100 %
+  theoretical occupancy with zero register headroom (§2.3). The measured per-block timelines show
+  two imbalance regimes, both caused by how blocks land on the 80 SMs
+  (`results/2026-10-17_round2/summary.md` §1):
+  - **Starvation at small N.** With 80 or fewer blocks, each busy SM gets exactly one block and
+    the rest stay idle for the whole kernel. Tiled b256 at N = 4,096 leaves 64 SMs idle (SM
+    efficiency 0.199); `allpairs_multi` b512 q8 cuts that to 16 idle SMs (0.786).
+  - **The wave tail at large N.** When all blocks are resident at once, the last wave is partial.
+    Tiled b256 at N = 65,536 spends 23.5 % of its span in the tail; `allpairs_multi` b256 q4,
+    with more blocks than resident slots, cuts it to 0.1 %.
+
+  Chapter 4 treats both regimes and the techniques that remove them.
+- **What load balancing buys.** Against the best-tuned one-thread-per-body baseline, splitting
+  each body over several threads is worth 2.40× at N = 1,000, 2.56× at N = 4,096, 1.40× at
+  N = 10,000 and 1.02× at N = 65,536 (`results/2026-10-17_round2/summary.md` §3). The gain is
+  large exactly where starvation is measured and vanishes once every SM is busy.
 - **Shared-memory tiling pays off.** The tiled kernel was 2.6× faster than the naive one at
-  N = 16,384 (smoke-test number), as expected from tile reuse [P:nyland2007nbody].
-- **Arithmetic, not bandwidth, is the expected limit.** At N = 131,072 the smoke test reached about
-  1.0 × 10¹² interactions/s, about 37 % of the 53.5 TFLOPS FP32 figure by the 20-FLOP convention
-  (smoke-test number). Whether the SFU or the FP32 lanes set the limit depends on the instruction
-  mix (§2.2.3) and is a **hypothesis** for Nsight Compute.
+  N = 16,384 (`results/2026-10-17_smoke/summary.md`, **smoke-test number**, not repeated in
+  round 2), as expected from tile reuse [P:nyland2007nbody].
+- **Instruction issue, not bandwidth, is the limit.** The best round-2 throughput,
+  1.27 × 10¹² interactions/s, is about 78 % of the issue-model ceiling (§2.5). The force loop is
+  issue-limited with a significant SFU co-limit (§2.2.3), an inference that still waits for
+  Nsight Compute.
+- **The power cap couples clock to speed.** Faster kernels ran at lower clocks (2.52 vs 2.70 GHz
+  at N = 65,536, §2.6). The results chapter must report speedups together with the clocks they ran
+  at.
 - **The L2 changes the picture for large N.** Position arrays of up to about four million bodies
   fit in the 64 MB L2 (§2.4.2) [D], so tiling experiments should measure L2 hit rates rather than
   assume DRAM traffic.
