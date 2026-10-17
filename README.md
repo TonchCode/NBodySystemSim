@@ -11,6 +11,15 @@ Needs CUDA 13.4 and VS 2026 Insiders with the C++ workload (CMake and Ninja are 
 tools\build.bat Release
 ```
 
+**Visual Studio 2026 (Insiders):** File → Open → Folder… → `D:\NBodyProblemSim`. VS reads
+`CMakePresets.json`. Pick **x64 Release**, then select `nbody_viewer.exe` or `nbody_bench.exe` as
+the startup item and press F5. The build output goes to `out/build/<preset>/`. The CUDA 13.4 VS
+integration is installed, so `.cu` files get syntax highlighting and Nsight menus.
+
+**Reading order for studying the code:** `src/core/nbody.h` → `interaction.cuh` →
+`kernels_allpairs.cu` → `kernels_multi.cu` → `kernels_tree.cu` (with `docs/03-design.md`
+§10–§16). `src/bench/main.cpp` is the measurement and validation harness.
+
 ## Run
 
 ```bat
