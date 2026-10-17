@@ -8,6 +8,8 @@
 //
 //   nbody_viewer [--n 32768] [--kernel allpairs_tiled] [--dt 0.002] [--block 256] [--seed 42]
 //                [--frames F --screenshot out.bmp]   (run F frames, save the last one, exit)
+//                [--ic plummer|collision|core] [--theta 0.5 --leaf 16]   (tree kernels: keys 5-7)
+//   With a bh_* kernel the "T int/s" in the title is all-pairs-equivalent (N^2 / time).
 //
 // Controls: LMB drag orbit Â· wheel zoom Â· 1..9 kernel Â· Space pause Â· +/- steps per frame
 //           [ ] brightness Â· R reset Â· V vsync Â· Esc quit
@@ -237,7 +239,7 @@ int main(int argc, char** argv)
     App a;
     a.params.n  = 32768;
     a.params.dt = 0.002f;
-    std::string kernelName = "allpairs_tiled", screenshot;
+    std::string kernelName = "allpairs_tiled", screenshot, ic = "plummer";
     int maxFrames = 0;
     for (int i = 1; i < argc; i += 2) {
         std::string k = argv[i];
@@ -253,6 +255,9 @@ int main(int argc, char** argv)
         else if (k == "--seed")   a.seed = unsigned(atoi(argv[i + 1]));
         else if (k == "--softening") a.params.softening = float(atof(argv[i + 1]));
         else if (k == "--prefetch")  a.params.prefetch = atoi(argv[i + 1]);
+        else if (k == "--theta")     a.params.theta = float(atof(argv[i + 1]));   // bh_* kernels
+        else if (k == "--leaf")      a.params.leafSize = atoi(argv[i + 1]);
+        else if (k == "--ic")        ic = argv[i + 1];
         else { fprintf(stderr, "unknown argument %s\n", k.c_str()); return 2; }
     }
     if (!(a.params.softening > 0.f)) { fprintf(stderr, "--softening must be > 0\n"); return 2; }
@@ -280,7 +285,10 @@ int main(int argc, char** argv)
 
     // ---- simulation ----------------------------------------------------------
     const int n = a.params.n;
-    nbody::makePlummer(n, a.seed, a.pos0, a.vel0);
+    if (!nbody::makeIC(ic, n, a.seed, a.pos0, a.vel0)) {
+        fprintf(stderr, "unknown --ic %s (%s)\n", ic.c_str(), nbody::icNames());
+        return 2;
+    }
     a.state = nbody::allocate(n);
     resetSim(a);
 

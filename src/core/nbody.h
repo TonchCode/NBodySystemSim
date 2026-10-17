@@ -37,6 +37,18 @@ struct Params {
     // instrumented instantiation (tiled, tuned, multi), which writes one BlockStamp per block.
     // The production instantiations are compiled without the stamping code (template flag).
     BlockStamp* timeline = nullptr;
+    // R3 #4/#5 (bh_*): opening parameter of the bmax criterion (accept a node iff
+    // |x - com| >= bmax / theta; theta = 0 opens everything = exact all-pairs order-changed sum)
+    // and the leaf-bucket size (nodes with <= leafSize bodies are summed directly).
+    float theta    = 0.5f;
+    int   leafSize = 16;
+    // bh_*: per-thread work counters of the instrumented traversal (uint4 per traversal thread:
+    // nodes popped, interactions, leader pops, leader interactions). nullptr = not collected.
+    // Non-null selects the instrumented twin, like timeline.
+    uint4* workCounters = nullptr;
+    // Kernels with LaunchInfo::nPhases > 0: if non-null, an array of nPhases + 1 events; the
+    // launcher records [0] before the first phase and [k] after phase k (GTaP-style phase times).
+    cudaEvent_t* phaseEvents = nullptr;
 };
 
 // Device buffers. pos.w = mass, vel.w unused (padding for 16-byte loads).
@@ -66,6 +78,11 @@ struct LaunchInfo {
     int    regsPerThread  = 0;
     size_t smemPerBlock   = 0;   // static + dynamic, bytes (excl. the 1 KB system reservation)
     int    blocksPerSM    = 0;   // max resident blocks per SM for this config
+    // Tree kernels: forces are approximate (theta-dependent truncation error), and the launch
+    // is a pipeline of phases (build + traversal). gridBlocks/regs above describe the traversal.
+    bool        approximate   = false;
+    int         nPhases       = 0;
+    const char* phaseNames[8] = {};
 };
 using LaunchQuery = LaunchInfo (*)(int n, const Params&);
 
@@ -91,6 +108,32 @@ void step(DeviceState& s, const Params& p, const KernelInfo& k, cudaStream_t str
 
 // Initial conditions (host). Plummer sphere in virial equilibrium, total mass 1.
 void makePlummer(int n, unsigned seed, std::vector<float4>& pos, std::vector<float4>& vel);
+// Named initial conditions (docs/03-design.md §13), all total mass 1, equal-mass bodies:
+//   plummer    = makePlummer (bitwise identical)
+//   collision  two Plummer spheres (N/2 each, virial radius 0.25) at x = -/+1, y = -/+0.125,
+//              approaching at -/+0.35 along x
+//   core       Plummer halo (3N/4, virial radius 1) + dense Plummer core (N/4, virial radius 0.03)
+// Multi-component ICs are randomly shuffled (seeded), so the body order carries no spatial
+// information, exactly like the single Plummer. Returns false for an unknown name.
+bool makeIC(const std::string& name, int n, unsigned seed, std::vector<float4>& pos, std::vector<float4>& vel);
+const char* icNames();   // "plummer|collision|core"
+
+// Exact reference accelerations (device, FP32): the allpairs_naive loop, launched in chunks of
+// bodies so each launch stays far below the TDR limit at N ~ 1M. Bitwise equal to allpairs_naive.
+void referenceAcc(const DeviceState& s, const Params& p, std::vector<float4>& acc);
+
+// Tree diagnostics (bh_* kernels). checkLastTree verifies the most recently built tree on the
+// host: orders are permutations, sortedPos = pos[perm], keys monotone, every body in exactly
+// one leaf, node ranges contiguous, masses additive, boxes nested, root mass / COM conserved.
+struct TreeCheck {
+    bool        ok = true;
+    std::string msg;
+    int         n = 0, internalNodes = 0, maxDepth = 0, leafBuckets = 0, leafBodies = 0;
+    double      massRelErr = 0, comAbsErr = 0;
+};
+TreeCheck checkLastTree(const DeviceState& s);
+int       treeStackOverflows(bool reset);   // traversal stack overflows since the last reset (must be 0)
+unsigned long long hostHilbertKey(unsigned x, unsigned y, unsigned z);   // 21-bit coords (for --selftest)
 
 // Conditioning pre-filter (device, FP32, O(N^2), diagnostic only, not a force kernel):
 // scale[i] = G * sum_j |f_ij| / m_i. kappa_i ~ scale[i] / |a_i|. Used to pick the

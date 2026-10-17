@@ -25,9 +25,15 @@ add_library(nbody_core STATIC
   src/core/kernels_allpairs.cu
   src/core/kernels_tuned.cu     # R3 #2
   src/core/kernels_multi.cu     # R3 #3
+  src/core/kernels_tree.cu      # R3 #4, #5
   src/core/init.cpp
 )
 target_include_directories(nbody_core PUBLIC src/core)
+# CUB (CCCL, shipped with CUDA 13.4) requires MSVC's conforming preprocessor. Only the tree TU
+# includes CUB, so the flag is scoped to it (host-side only; device code is unaffected).
+if(MSVC)
+  set_source_files_properties(src/core/kernels_tree.cu PROPERTIES COMPILE_OPTIONS "-Xcompiler=/Zc:preprocessor")
+endif()
 target_compile_options(nbody_core PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:${NBODY_CUDA_FLAGS}>)
 target_link_libraries(nbody_core PUBLIC CUDA::cudart)
 

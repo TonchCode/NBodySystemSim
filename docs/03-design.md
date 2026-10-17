@@ -1,4 +1,4 @@
-# 03 — Kernel design: all-pairs variants (R3 #1–#3)
+# 03 — Kernel design: all-pairs variants (R3 #1–#3) and the Barnes-Hut tree code (R3 #4–#5, §10–§15)
 
 Owner: `cuda-architect`. Target: the device in [`01-hardware.md`](01-hardware.md) (RTX 4080
 SUPER, sm_89, 80 SMs). Tags: [M] measured · [S] spec · [D] derived · [P:key] paper ·
@@ -521,3 +521,236 @@ results.
   [P:xu2025tascell, transferable]. Same-kernel co-execution gave 1.31× over GPU-only
   [P:nozal2025coexecution, transferable, T2: full text not read]. The 6P + 8E hybrid CPU
   (01-hardware §1) has no 2025–26 source.
+
+---
+
+## 10. Barnes-Hut tree code: overview (R3 #4–#5)
+
+Written 2026-10-17 by `cuda-architect`, **before any timing run of the tree kernels**. What was
+observed while building it (one functional check at N = 8192, plus exit-code checks) is listed
+in §0 of `docs/predictions/2026-10-17-tree-round1.md`, so the reader can tell which numbers
+below are predictions. Code: `src/core/kernels_tree.cu`.
+
+**Why a tree, and why here.** All-pairs is perfectly balanced per thread (every thread does N
+interactions), so its only imbalance is SM-level (starvation and the wave tail, §8.1). A tree
+code replaces the far field by cell monopoles, O(N log N) instead of O(N²)
+[P:barnes1986hierarchical]. Its work per body depends on where the body sits, and the walk is
+data-dependent control flow, so it is where intra-warp imbalance and divergence appear
+[P:nagarajan2025rtbarneshut: tree traversal maps poorly onto ordinary GPU cores, motivation
+only; P:dale2026warpdivergence, T2: k divergent paths serialize, efficiency ≈ 32/k].
+
+**Pipeline (one `KernelInfo::launch` = one force evaluation, 5 timed phases, all on the GPU):**
+
+| phase | kernels | work | notes |
+|---|---|---|---|
+| keys | bbox partial (160 × 256) + bbox final (1 block) + Morton key | 2 reads of pos, 8 B/body written | no host sync: the key kernel reads the box from device memory |
+| sort | `cub::DeviceRadixSort::SortPairs` (63 key bits, 32-bit index) + gather | ~8 radix passes over 12 B/body; gather 32 B/body | CUB ships with CUDA 13.4 (`include/cccl`), no download |
+| tree | memset + radix-tree kernel (N−1 threads) + bottom-up multipole (N threads) | O(N) | binary radix tree over the sorted keys |
+| order | nothing (#4, #5 Morton) / Hilbert key + second sort (#5 Hilbert) | | the *only* place the variants differ |
+| traverse | one thread per body, private stack | O(N log N) | the R3 #4/#5 kernel |
+
+The build is the same for every variant: the tree does not depend on the thread order. The
+build stays GPU-resident: positions never leave the device (one copy engine, 01-hardware
+§2.2), and 2025–26 tree codes keep the tree on the GPU [P:stucker2026jzfmm: sorting, tree
+build and traversal all GPU-side; P:frontiere2025crkhacc: "GPU-resident tree solvers"]. A CPU
+build is the R3 #8 question and is not done here.
+
+**TDR.** One force evaluation is about 10 kernel launches. The longest is the traversal. The
+worst case tried (N = 1M, core IC, θ = 0.3, unsorted) completed without a TDR (exit code only;
+its time was not looked at). The exact reference for validation (`referenceAcc`) is launched
+in chunks of ≤ 2³⁶ interactions, so validation at N = 1M is also TDR-safe.
+
+**Memory** at N = 1M [D]: keys 3 × 8 MB, indices 3 × 4 MB, sortedPos 16 MB, nodes
+(com 16 + lo 16 + hi 16 + info 16 + rc² 4 B) × (N−1) = 68 MB, parents and arrival counters
+12 MB: about 130 MB of 16 GB. The traversal reads com + rc² + info + sortedPos = 52 MB, which
+fits in the 64 MB L2.
+
+## 11. Build design
+
+### 11.1 Keys
+63-bit Morton keys, 21 bits per axis, in the bounding **cube** of the bodies (side = the largest
+extent × 1.0001, so the maximum coordinate stays inside). Bits are interleaved by the standard
+magic-mask expansion. 21 bits per axis gives cells of side/2²¹. For the Plummer box (side ≈ 12,
+from the r ≤ 10 Plummer-radius cut in `makePlummer`) that is 6e-6, far below the softening
+0.01, so key collisions only happen for (near-)coincident bodies, and those are handled
+exactly (§11.2). The tree is built on the Morton curve [P:stucker2026jzfmm, direct: Morton sort
+plus bottom-up build].
+
+### 11.2 Binary radix tree
+N−1 internal nodes over the sorted keys, one thread per node. The node's direction and range
+come from the common-prefix length δ with its neighbours, and the split from a binary search on
+δ. Equal keys are made distinct by appending the index (δ = 64 + clz(i ⊕ j)), so duplicates are
+legal. Every node then covers a **contiguous range** [first, last] of the sorted array, which
+makes leaf buckets free: a small node is just a range. This is Karras' parallel radix-tree
+construction [TODO(source): T. Karras, "Maximizing parallelism in the construction of BVHs,
+octrees, and k-d trees", HPG 2012; not in `references.bib`, so not cited]. Child encoding:
+≥ 0 = internal node, < 0 = ~(sorted body index).
+
+*Why binary and not an octree:* the radix tree is built in one O(N) kernel with no atomics and
+no level-by-level passes, and its nodes are exactly Morton prefix cells (tightened to the
+bodies' AABB below). The price is about 3× the depth of an octree (31–43 levels at N = 65536,
+§0 of the predictions), so more node pops per interaction. That costs #4 and #5 the same and
+does not affect their comparison. It is a constant-factor choice for #6/#7 to revisit.
+
+### 11.3 Multipoles: monopole only (justified)
+Bottom-up pass, one thread per leaf: walk to the parent and `atomicAdd` on the node's arrival
+counter. The first child to arrive stops; the second builds the node from both children (mass,
+centre of mass, tight AABB, opening radius) and continues upward. Node data written by other
+threads is read with `ld.global.cg` after a `__threadfence`, so stale L1 lines are never used.
+The COM is clamped into the AABB (rounding), so bmax below really bounds every body of the node.
+
+**Why monopole only.** (1) A cell interaction is then *the same* `bodyBodyInteraction` as a
+body interaction (the COM acts as a pseudo-body). "Interactions" is one work unit with one
+instruction cost across the all-pairs and tree kernels, so per-warp work counts and interaction
+rates compare directly with §0–§8, which is what R3 is graded on. (2) The truncation error is
+acceptable for a load-balancing study: rms ≈ 0.7% at θ = 0.5 in the functional check
+(predictions §0). A quadrupole would cut the error at fixed θ, or give the same error at a
+larger θ with fewer interactions, at about +30 FLOP per cell interaction and +24 B per node.
+That is an accuracy-per-cost question and is deferred. It changes the absolute speed of #4 and
+#5 equally and the #5/#4 ratio hardly at all.
+
+### 11.4 Opening criterion: bmax
+Accept node c for body i iff |x_i − com_c|² ≥ (bmax_c / θ)², where bmax_c is the distance from
+the COM to the farthest corner of the node's tight AABB, so every body of the node lies within
+bmax_c of the COM. If the node is not accepted: a node with ≤ `leafSize` bodies (default 16) is
+summed directly over its contiguous range, a larger node pushes both children, and a
+single-body child is one body interaction.
+- *Safety:* any point inside the node's box is within bmax of the COM, so for θ ≤ 1 a body
+  inside a node's box always opens it. The classic size criterion s/d < θ can accept a cell that
+  contains the body when the COM sits near an edge [TODO(source): Salmon & Warren 1994, not in
+  `references.bib`].
+- *Meaning of θ:* θ trades accuracy against cost [P:barnes1986hierarchical]. Our θ is defined
+  on bmax, not on the cell side, so it is not numerically the classic θ. For a cube with the COM
+  at its centre bmax = 0.87 s, so our θ ≈ 0.87 × the classic one; with tight AABBs and binary
+  cells the mapping is only approximate. Every θ in this repo is a bmax-θ.
+- *θ = 0* sets rc² = +∞: nothing is ever accepted, so the walk sums every body through the
+  leaf buckets. That is an exact, reordered all-pairs sum, which links the tree to the D-009
+  gates and to the exact lattice self-test (§12.3).
+- *Error:* per accepted cell the error scales as (bmax/d)² ≤ θ², because the dipole term
+  vanishes about the COM and the first neglected term is the quadrupole [D, standard multipole
+  argument; no source in the bib]. Cell errors add with partial cancellation, so the per-body
+  error should scale between θ² and θ³.
+
+## 12. R3 #4 (`bh_naive`) and R3 #5 (`bh_sorted`, `bh_hilbert`)
+
+### 12.1 Decomposition, and the one difference
+One kernel, `bhTraverseKernel`: one thread per body, block = `--block` (128 for every
+pre-registered run), a 64-entry private stack in local memory, no shared memory, no warp vote,
+no cooperation. Thread t processes body `order[t]` and writes `acc[order[t]]`:
+
+| registry name | R3 | `order[]` | extra cost |
+|---|---|---|---|
+| `bh_naive` | #4 | identity (written once; CUB never writes its inputs, checked) | none |
+| `bh_sorted` | #5 | the Morton permutation the build already produced | none: the sort is part of the build |
+| `bh_hilbert` | #5, sub-variant | Hilbert permutation (Skilling transpose [TODO(source): Skilling 2004, not in bib], second radix sort) | one key kernel + one sort |
+
+**The only difference between #4 and #5 is the content of `order[]`.** Same kernel, same SASS,
+same tree and the same per-body visiting order, so the three variants produce
+**bitwise-identical accelerations** (asserted by `--selftest` for 3 ICs × 6 N × 2 (θ, leaf)
+configurations). This is the methodological point of D-005: #4 must not contain #5's ordering
+or #7's warp vote, which the classic GPU code combines [P:burtscher2011barneshut: in-order body
+sort plus warp-vote traversal]. Note that the tree *build* sorts the bodies in every variant,
+because the radix tree needs sorted keys. "Unsorted" in #4 means that the *threads* run in the
+original (spatially random) body order; the leaf bodies the walk reads come from the sorted
+array in all variants. So #4 isolates exactly what #5 changes: which bodies share a warp.
+
+**Load-balancing problem addressed by #5:** intra-warp imbalance and divergence. In #4 a warp's
+32 bodies are a random sample of the whole system. They open different nodes, their loops have
+different lengths (the warp runs until its slowest lane is done), and each lane fetches a
+different node (up to 32 separate sectors per load). In #5 a warp's bodies are spatial
+neighbours [P:thaler2026sfcneighbor, transferable: Hilbert runs of consecutive particles are
+spatially compact on GPUs; P:stucker2026jzfmm: Morton order], so they walk similar paths and
+mostly read the same node (one sector, broadcast). The price: block costs now differ by region
+(a block in the dense core is expensive, one in the halo is cheap), so #5 moves imbalance from
+inside warps to between blocks. Whether the dynamic block scheduler absorbs it is a measurement
+(§14, P-T7 in the predictions).
+Ada-specific 2026 evidence that regrouping uneven one-thread-per-item work pays:
+[P:galgoczi2026ser: about 5.1× from the reordering itself, RTX 4090, photon Monte Carlo via
+OptiX SER; transferable]. Morton vs Hilbert for traversal divergence has no 2025–26 source
+(evidence map §5), so our measurement is new.
+
+### 12.2 Occupancy, traffic, expected bottleneck [M regs from ptxas; D for the rest]
+- `bhTraverseKernel<false>` (production) and `<true>` (instrumented): **40 registers, 0 spills,
+  256 B stack frame** (the local-memory stack). 40 regs → 1280 per warp → 12 warps per
+  partition → 48 warps per SM. Block 128 → **12 blocks/SM, 100% occupancy** (runtime-confirmed:
+  "resident 12 blocks/SM"). Local-memory reserve: 256 B × 1536 × 80 ≈ 31 MB.
+- Build kernels: radix tree 19 regs, multipole 38 regs, no spills.
+- Grid at block 128: 64 blocks (N = 8192), 512 (65536: a single wave, 960 slots), 2048
+  (262144: 2.1 waves), 8192 (1M: 8.5 waves).
+- Per node pop: 16 B com + 4 B rc² (+ 16 B info if opened), i.e. 2–3 separate 32 B sectors. Per
+  leaf body: 16 B from a contiguous range. In #4 each lane of a warp touches different nodes, so
+  one warp-wide load is up to 32 sectors. The top of the tree stays in L1 and the rest comes
+  from L2 (the whole traversal working set fits in the 64 MB L2 up to N = 1M). In #5 most loads
+  are warp-uniform.
+- **Expected bottleneck:** not FP32 throughput. #4: L2 latency and bandwidth on scattered node
+  loads, plus divergence. #5: issue slots lost to divergence (the leaf-bucket loop is run by the
+  few lanes that reached a bucket while the others wait; P-T5 in the predictions). The AD103 L2
+  bandwidth is still unsourced (§2 TODO), so the #4 memory ceiling can only be bounded by
+  measurement, not computed.
+
+### 12.3 Validation (pre-registered in the predictions file)
+- **θ = 0:** the D-009 gates G0/G1/G2 apply unchanged (an exact reordered sum). Checked once in
+  the functional run (N = 8192: PASS, normMax 3.0e-6 ≤ 5.4e-6).
+- **θ > 0, tree gates** (`kTG1`, `kTG2` in `src/bench/main.cpp`), over all bodies vs the exact
+  FP32 reference (bitwise `allpairs_naive`, chunked): **TG1** rms rel ≤ 0.03·(θ/0.5)²,
+  **TG2** p99 rel ≤ 0.12·(θ/0.5)², and **zero stack overflows**. They are bug catchers, about 4×
+  above the expected truncation error (§11.4). The expected error itself is a prediction and is
+  scored separately. A FAIL exits with code 3. FP64-sample numbers are printed as well.
+- **`--selftest` additions** (exact, all pass):
+  1. Every `bh_*` kernel at θ = 0, blocks {64, 128, 256} × leaf {1, 8, 16, 64}, instrumented and
+     not, on the dyadic lattice at the 10 selftest N: bitwise equal to the analytic sum (720
+     cases; the lattice has many duplicate positions, so the duplicate-key path is exercised).
+     `--selftest-drop J` fails all of them. An injected bug (the leaf loop skips its last body)
+     failed exactly the 486 cases where it can be visible (leaf > 1 and n > 1).
+  2. The Hilbert key on a 16³ sub-grid is a bijection with unit steps.
+  3. `checkLastTree` for 3 ICs × N ∈ {1, 2, 3, 1000, 10007, 65536} × 2 configs × 3 variants:
+     orders are permutations (identity unmodified), sortedPos = pos[perm], keys monotone, every
+     body in exactly one leaf, every internal node reached once, ranges contiguous, masses
+     additive, boxes nested, COM inside its box, root mass and COM conserved.
+  4. #5 is bitwise equal to #4.
+  5. No stack overflow.
+
+## 13. Initial conditions (`--ic`, `nbody::makeIC`)
+All have total mass 1 and equal-mass bodies (1/N), and are shuffled with the seed so the
+original order is spatially random. Otherwise the components of a two-part IC would be
+contiguous runs and #4 would be partly sorted.
+- `plummer`: `makePlummer`, bitwise unchanged. Mildly concentrated.
+- `collision`: two Plummer spheres, N/2 each, virial radius 0.25 (mass 0.5), at (∓1, ∓0.125, 0),
+  approaching at ±0.35 along x. Two dense clumps in an empty box.
+- `core`: a Plummer halo (3N/4, virial radius 1) plus a dense Plummer core (N/4, virial radius
+  0.03, 33× smaller). Strongly clustered and bimodal: tree depth 43 vs 31 for the Plummer at
+  N = 65536. Each component is internally in equilibrium but the whole is not, so this is a
+  force snapshot, not an evolution test.
+
+## 14. Imbalance metrics for #4 vs #5 (no ncu)
+From the instrumented twin (`Params::workCounters`, one uint4 per traversal thread). The counts
+are algorithmic, so they are identical for the production kernel.
+- **I_t, V_t:** interactions (cells + bodies) and nodes popped by thread t.
+- **Per-warp max/mean** = Σ_w max_{t∈w} I_t / Σ_w mean_{t∈w} I_t (the median over warps is also
+  printed). A warp's loop runs until its slowest lane is done, so this is the intra-warp load
+  imbalance; 1 = perfect.
+- **SIMT efficiency** (as executed, from `__activemask()`): at every pop and every interaction
+  site the lowest active lane increments a leader counter, so Σ leaders = warp-level steps
+  actually issued. eff_inter = Σ I / (32 Σ leader_I), eff_pop = Σ V / (32 Σ leader_V). This is
+  the mean-active-lanes metric without ncu. Caveat: the counting code may itself change where
+  ptxas places reconvergence points, so it measures the twin as executed.
+- **Warp-cost max/mean** = max_w max_t I_t / mean_w max_t I_t: the spread of warp cost, i.e.
+  the imbalance #5 moves *between* warps and blocks.
+- **SM level:** per-block timelines (D-011, `--timeline`, `tools/timeline_analysis.py`) of the
+  traversal kernel: SM efficiency, max/mean SM busy, tail.
+- `--tree-stats out.csv` writes one row per warp, for histograms.
+
+## 15. Interface changes (backward compatible)
+- `Params`: `theta`, `leafSize`, `workCounters`, `phaseEvents`. `LaunchInfo`: `approximate`,
+  `nPhases`, `phaseNames`. The all-pairs kernels ignore the new fields, and no all-pairs kernel
+  source changed.
+- `KernelInfo::launch` still computes acc from pos, with the build inside it. Phase times come
+  from events the launcher records when `phaseEvents` is set. The bench times the production
+  pipeline without events, and the phases in separate launches with events.
+- `referenceAcc` (bitwise `allpairs_naive`, chunked) replaces the single naive launch in the
+  bench's validation for every kernel. `forceScale` is chunked the same way (same results).
+- Bench: `--ic`, `--theta`, `--leaf`, `--tree-stats`. The CSV has 18 new trailing columns
+  (older CSVs are refused for appending, as before). Viewer: `--ic`, `--theta`, `--leaf`; keys
+  5–7 select the tree kernels.
+- CUB needs MSVC's conforming preprocessor: `-Xcompiler=/Zc:preprocessor`, scoped to
+  `kernels_tree.cu` only.

@@ -7,6 +7,17 @@
 //               --prefetch 0|1    multi only: next-tile register prefetch (default 1)
 //   --warmup-ms 300   time-based warm-up (recommended for small N: clocks ramp from idle)
 //   --batch 20        time 20 back-to-back launches per run and report the mean (small N)
+//   --ic plummer|collision|core   initial conditions (default plummer; docs/03-design.md §13)
+//
+// Tree codes (R3 #4/#5: bh_naive, bh_sorted, bh_hilbert; docs/03-design.md §10-§14):
+//   --theta 0.5 --leaf 16      opening parameter (bmax criterion) and leaf-bucket size
+//   Phase times (keys, sort, tree, order, traverse) are measured with events inside the
+//   pipeline in --runs extra launches and printed next to the production total.
+//   One instrumented launch collects per-thread work counters (nodes popped, interactions,
+//   and __activemask leader counts), printed as per-warp max/mean and SIMT efficiency;
+//   --tree-stats out.csv also writes one row per warp.
+//   Validation: theta = 0 uses the D-009 gates unchanged (the tree is then an exact,
+//   reordered all-pairs sum); theta > 0 uses the pre-registered tree gates TG1/TG2 (below).
 //
 // Load imbalance without ncu (critic review 1, #1):
 //   --timeline out.csv [--timeline-launches 3]
@@ -51,13 +62,14 @@ namespace {
 
 struct Args {
     std::string kernel = "allpairs_tiled";
-    std::string csv, timeline, energyLog;
+    std::string csv, timeline, energyLog, ic = "plummer", treeStats;
     int  n = 1 << 14, block = 256, runs = 10, warmup = 3, steps = 0;
     int  q = 0, unroll = 8, prefetch = 1, fp64Sample = 512, warmupMs = 0, batch = 1;
     int  timelineLaunches = 3, energyEvery = 0, selftestDrop = -1;
     unsigned seed = 42;
     bool list = false, validate = true, energy = false, selftest = false;
-    float dt = 1e-3f, softening = 1e-2f;
+    float dt = 1e-3f, softening = 1e-2f, theta = 0.5f;
+    int   leaf = 16;
 };
 
 int toInt(const char* flag, const char* v)
@@ -111,6 +123,10 @@ Args parse(int argc, char** argv)
         else if (s == "--energy-log")        { a.energyLog = next(); a.energy = true; }
         else if (s == "--energy-every")      a.energyEvery = nexti();
         else if (s == "--selftest")          a.selftest = true;
+        else if (s == "--ic")                a.ic = next();
+        else if (s == "--theta")             a.theta = nextf();
+        else if (s == "--leaf")              a.leaf = nexti();
+        else if (s == "--tree-stats")        a.treeStats = next();
         else if (s == "--selftest-drop")     { a.selftestDrop = nexti(); a.selftest = true; }
         else { fprintf(stderr, "unknown argument %s\n", s.c_str()); exit(2); }
     }
@@ -119,6 +135,8 @@ Args parse(int argc, char** argv)
     if (a.n <= 0)             { fprintf(stderr, "--n must be > 0\n"); exit(2); }
     if (!(a.dt > 0.f))        { fprintf(stderr, "--dt must be > 0\n"); exit(2); }
     if (a.prefetch != 0 && a.prefetch != 1) { fprintf(stderr, "--prefetch must be 0 or 1\n"); exit(2); }
+    if (!(a.theta >= 0.f) || a.theta > 2.f) { fprintf(stderr, "--theta must be in [0, 2]\n"); exit(2); }
+    if (a.leaf < 1) { fprintf(stderr, "--leaf must be >= 1\n"); exit(2); }
     return a;
 }
 
@@ -155,6 +173,72 @@ constexpr double kU = 1.0 / 16777216.0;   // FP32 unit roundoff 2^-24
 //   G0  sanity: max rel error vs naive <= 1e-2 (gross bugs)
 // Missed interactions are caught by --selftest (exact), not by these statistical gates.
 constexpr double kG1 = 1.0, kG2 = 1.5, kG0 = 1e-2;
+
+// ---------------------------------------------------------------------------------------
+// Tree gates (theta > 0), pre-registered in docs/predictions/2026-10-17-tree-round1.md before
+// any run that tests them. Errors are |a_tree - a_exact| / |a_exact| per body, over ALL bodies,
+// a_exact = referenceAcc (bitwise allpairs_naive). They are bug catchers, set ~3x above the
+// predicted truncation error (monopole + bmax criterion: error ~ theta^2, docs/03-design.md §12):
+//   TG1  rms  <= kTG1 * (theta / 0.5)^2
+//   TG2  p99  <= kTG2 * (theta / 0.5)^2
+// theta = 0 is an exact (reordered) all-pairs sum and uses the D-009 gates G0/G1/G2 unchanged.
+// Missed or duplicated interactions are caught exactly by --selftest (theta = 0 lattice).
+constexpr double kTG1 = 0.03, kTG2 = 0.12;
+double treeGateRms(double th) { return kTG1 * (th / 0.5) * (th / 0.5); }
+double treeGateP99(double th) { return kTG2 * (th / 0.5) * (th / 0.5); }
+
+// Per-warp work statistics from the instrumented traversal's counters (uint4 per thread:
+// pops, interactions, leader pops, leader interactions), docs/03-design.md §14.
+struct WarpStats {
+    double interPerBody = 0, visitsPerBody = 0;
+    double warpMaxMean  = 0;   // sum_w max_lane(I) / sum_w mean_lane(I): 1 = no intra-warp imbalance
+    double warpMaxMeanMedian = 0;
+    double simtInter    = 0;   // sum I / (32 * sum leaderI): mean active lanes / 32 at interaction sites
+    double simtVisit    = 0;   // the same at node pops
+    double interWarp    = 0;   // max_w max_lane(I) / mean_w max_lane(I): spread of warp cost
+    long long totalInter = 0, totalVisits = 0;
+    int warps = 0;
+};
+
+WarpStats warpStats(const std::vector<uint4>& wc, int n, const std::string& csvPath)
+{
+    WarpStats w;
+    std::ofstream f;
+    if (!csvPath.empty()) {
+        f.open(csvPath);
+        f << "warp,lanes,inter_sum,inter_max,inter_min,visit_sum,visit_max,lead_visit,lead_inter\n";
+    }
+    double sumMax = 0, sumMean = 0, maxOfMax = 0;
+    long long leadI = 0, leadV = 0;
+    std::vector<double> ratios;
+    for (int b = 0; b < n; b += 32) {
+        const int lanes = std::min(32, n - b);
+        unsigned long long si = 0, sv = 0, lv = 0, li = 0;
+        unsigned mx = 0, mn = ~0u, vmx = 0;
+        for (int t = b; t < b + lanes; ++t) {
+            si += wc[t].y; sv += wc[t].x; lv += wc[t].z; li += wc[t].w;
+            mx = std::max(mx, wc[t].y); mn = std::min(mn, wc[t].y); vmx = std::max(vmx, wc[t].x);
+        }
+        const double mean = double(si) / lanes;
+        sumMax += mx; sumMean += mean; maxOfMax = std::max(maxOfMax, double(mx));
+        if (mean > 0) ratios.push_back(mx / mean);
+        w.totalInter += si; w.totalVisits += sv; leadI += li; leadV += lv;
+        ++w.warps;
+        if (f) f << b / 32 << ',' << lanes << ',' << si << ',' << mx << ',' << mn << ',' << sv << ',' << vmx << ','
+                 << lv << ',' << li << '\n';
+    }
+    w.interPerBody  = double(w.totalInter) / n;
+    w.visitsPerBody = double(w.totalVisits) / n;
+    w.warpMaxMean   = sumMean > 0 ? sumMax / sumMean : 0;
+    if (!ratios.empty()) {
+        std::nth_element(ratios.begin(), ratios.begin() + ratios.size() / 2, ratios.end());
+        w.warpMaxMeanMedian = ratios[ratios.size() / 2];
+    }
+    w.simtInter = leadI > 0 ? double(w.totalInter) / (32.0 * leadI) : 0;
+    w.simtVisit = leadV > 0 ? double(w.totalVisits) / (32.0 * leadV) : 0;
+    w.interWarp = sumMax > 0 ? maxOfMax / (sumMax / w.warps) : 0;
+    return w;
+}
 
 // ---------------------------------------------------------------------------------------
 // Exact missed-interaction self-test.
@@ -198,12 +282,94 @@ std::vector<SelftestCase> allConfigs(int n)
                 snprintf(buf, sizeof buf, "multi b%d q%d pf%d", b, q, pf);
                 out.push_back({&k, p, buf});
             }
+        } else if (name.rfind("bh_", 0) == 0) {
+            // theta = 0: every node is opened, so the tree is an exact all-pairs sum through the
+            // leaf buckets; on the lattice that must be bitwise equal to the analytic sum.
+            for (int b : {64, 128, 256}) for (int leaf : {1, 8, 16, 64}) {
+                Params p = base; p.blockSize = b; p.theta = 0.f; p.leafSize = leaf;
+                snprintf(buf, sizeof buf, "%s b%d leaf%d th0", k.name, b, leaf);
+                out.push_back({&k, p, buf});
+            }
         } else {
             base.blockSize = 256;
             out.push_back({&k, base, name + " b256 (default params)"});
         }
     }
     return out;
+}
+
+// Tree-specific checks (docs/03-design.md §12.3), run after the exact lattice cases:
+//  (a) the Hilbert key on a 16^3 sub-grid of the 21-bit grid is a bijection whose consecutive
+//      cells are face neighbours (a Hilbert curve; Morton fails this);
+//  (b) for each IC x N x bh variant at theta > 0: checkLastTree passes (permutations, every body
+//      in exactly one leaf, ranges, masses, boxes, root mass and COM);
+//  (c) bh_sorted and bh_hilbert are BITWISE equal to bh_naive (same tree, same per-body order:
+//      the thread order is the only difference between R3 #4 and #5);
+//  (d) no traversal stack overflow.
+int runTreeSelftest(unsigned seed)
+{
+    using namespace nbody;
+    int fails = 0, cases = 0;
+    {   // (a)
+        struct P { unsigned long long k; int x, y, z; };
+        std::vector<P> pts;
+        for (int x = 0; x < 16; ++x) for (int y = 0; y < 16; ++y) for (int z = 0; z < 16; ++z)
+            pts.push_back({hostHilbertKey(unsigned(x) << 17, unsigned(y) << 17, unsigned(z) << 17), x, y, z});
+        std::sort(pts.begin(), pts.end(), [](const P& a, const P& b) { return a.k < b.k; });
+        int bad = 0;
+        for (size_t i = 1; i < pts.size(); ++i) {
+            const int d = std::abs(pts[i].x - pts[i - 1].x) + std::abs(pts[i].y - pts[i - 1].y) +
+                          std::abs(pts[i].z - pts[i - 1].z);
+            if (d != 1 || pts[i].k == pts[i - 1].k) ++bad;
+        }
+        ++cases;
+        if (bad) { ++fails; printf("  FAIL hilbert: %d of 4095 consecutive steps are not unit steps\n", bad); }
+    }
+    const char* ics[] = {"plummer", "collision", "core"};
+    const int   ns[]  = {1, 2, 3, 1000, 10007, 65536};
+    const char* ks[]  = {"bh_naive", "bh_sorted", "bh_hilbert"};
+    for (const char* ic : ics)
+        for (int n : ns) {
+            std::vector<float4> pos, vel, acc0, acc;
+            makeIC(ic, n, seed, pos, vel);
+            DeviceState s = allocate(n);
+            upload(s, pos, vel);
+            for (int cfg = 0; cfg < 2; ++cfg) {
+                Params p;
+                p.n = n; p.blockSize = cfg ? 256 : 128; p.theta = cfg ? 0.7f : 0.5f; p.leafSize = cfg ? 8 : 16;
+                for (int v = 0; v < 3; ++v) {
+                    const KernelInfo* k = findKernel(ks[v]);
+                    CUDA_CHECK(cudaMemset(s.acc, 0xFF, size_t(n) * sizeof(float4)));
+                    k->launch(s, p, 0);
+                    CUDA_CHECK(cudaDeviceSynchronize());
+                    downloadAcc(s, v ? acc : acc0);
+                    TreeCheck tc = checkLastTree(s);
+                    ++cases;
+                    if (!tc.ok) {
+                        ++fails;
+                        printf("  FAIL tree %s n=%d %s th%.1f: %s\n", ic, n, ks[v], p.theta, tc.msg.c_str());
+                    }
+                    if (v && std::memcmp(acc.data(), acc0.data(), size_t(n) * sizeof(float4)) != 0) {
+                        ++fails;
+                        printf("  FAIL %s n=%d: %s not bitwise equal to bh_naive\n", ic, n, ks[v]);
+                    }
+                    if (n == 1 && (acc0[0].x != 0.f || acc0[0].y != 0.f || acc0[0].z != 0.f)) {
+                        ++fails;
+                        printf("  FAIL n=1: acceleration not 0\n");
+                    }
+                    if (v == 0 && cfg == 0 && n == 65536)
+                        printf("  tree %-9s n=%d: depth %d, %d internal nodes, %d leaf buckets, root mass err %.1e, "
+                               "COM err %.1e\n", ic, n, tc.maxDepth, tc.internalNodes, tc.leafBuckets, tc.massRelErr,
+                               tc.comAbsErr);
+                }
+            }
+            release(s);
+        }
+    const int ov = treeStackOverflows(true);
+    ++cases;
+    if (ov) { ++fails; printf("  FAIL tree stack overflows: %d\n", ov); }
+    printf("selftest (tree): %d checks, %d failed\n", cases, fails);
+    return fails;
 }
 
 int runSelftest(int dropBody, unsigned seed)
@@ -297,6 +463,8 @@ int runSelftest(int dropBody, unsigned seed)
     CUDA_CHECK(cudaFree(dTl));
     printf("selftest: %d cases, %d failed, %d timeline-record failures (%d of the analytic accelerations are 0)\n",
            nCases, nFail, nStampFail, nTrivial);
+    if (int ov = treeStackOverflows(true)) { printf("  FAIL tree stack overflows: %d\n", ov); ++nFail; }
+    if (dropBody < 0) nFail += runTreeSelftest(seed);
     if (dropBody >= 0) {
         const bool ok = nMissed == 0 && nFail == nExpectFail;
         printf("selftest-drop %d: %s (%d of %d cases where the drop is visible detected it; %d cases where it "
@@ -331,6 +499,7 @@ int main(int argc, char** argv)
     Params p;
     p.n = a.n; p.blockSize = a.block; p.dt = a.dt; p.softening = a.softening;
     p.unroll = a.unroll; p.threadsPerBody = a.q; p.prefetch = a.prefetch;
+    p.theta = a.theta; p.leafSize = a.leaf;
 
     // ---- launch configuration + occupancy (what will actually run) -------------
     LaunchInfo li;
@@ -371,7 +540,8 @@ int main(int argc, char** argv)
     }
 
     std::vector<float4> pos, vel, acc, ref;
-    makePlummer(p.n, a.seed, pos, vel);
+    if (!makeIC(a.ic, p.n, a.seed, pos, vel)) { fprintf(stderr, "unknown --ic %s (%s)\n", a.ic.c_str(), icNames()); return 2; }
+    printf("# ic=%s seed=%u theta=%g leaf=%d\n", a.ic.c_str(), a.seed, p.theta, p.leafSize);
     DeviceState s = allocate(p.n);
     upload(s, pos, vel);
 
@@ -459,17 +629,67 @@ int main(int argc, char** argv)
         CUDA_CHECK(cudaFree(dTl));
     }
 
+    // ---- tree kernels: phase times + per-warp work statistics -------------------
+    std::vector<double> phaseMed;
+    WarpStats ws;
+    int stackOverflows = 0;
+    if (li.nPhases > 0) {
+        std::vector<cudaEvent_t> ev(li.nPhases + 1);
+        for (auto& e : ev) CUDA_CHECK(cudaEventCreate(&e));
+        std::vector<std::vector<float>> ph(li.nPhases, std::vector<float>(a.runs));
+        std::vector<float> phSum(a.runs);
+        Params pp = p;
+        pp.phaseEvents = ev.data();
+        for (int r = 0; r < a.runs; ++r) {
+            k->launch(s, pp, 0);
+            CUDA_CHECK(cudaEventSynchronize(ev[li.nPhases]));
+            for (int q = 0; q < li.nPhases; ++q) CUDA_CHECK(cudaEventElapsedTime(&ph[q][r], ev[q], ev[q + 1]));
+            CUDA_CHECK(cudaEventElapsedTime(&phSum[r], ev[0], ev[li.nPhases]));
+        }
+        printf("phases (median of %d, ms):", a.runs);
+        for (int q = 0; q < li.nPhases; ++q) {
+            phaseMed.push_back(median(ph[q]));
+            printf("  %s %.4f", li.phaseNames[q], phaseMed.back());
+        }
+        const double build = phaseMed.size() >= 3 ? phaseMed[0] + phaseMed[1] + phaseMed[2] : 0.0;
+        printf("  | build(keys+sort+tree) %.4f  order %.4f  traverse %.4f  sum %.4f  (production total %.4f)\n", build,
+               phaseMed.size() > 3 ? phaseMed[3] : 0.0, phaseMed.back(), median(phSum), med);
+        for (auto& e : ev) CUDA_CHECK(cudaEventDestroy(e));
+
+        uint4* dWc = nullptr;
+        CUDA_CHECK(cudaMalloc(&dWc, size_t(p.n) * sizeof(uint4)));
+        CUDA_CHECK(cudaMemset(dWc, 0, size_t(p.n) * sizeof(uint4)));
+        Params pw = p;
+        pw.workCounters = dWc;
+        k->launch(s, pw, 0);
+        CUDA_CHECK(cudaDeviceSynchronize());
+        std::vector<uint4> wc(p.n);
+        CUDA_CHECK(cudaMemcpy(wc.data(), dWc, size_t(p.n) * sizeof(uint4), cudaMemcpyDeviceToHost));
+        CUDA_CHECK(cudaFree(dWc));
+        ws = warpStats(wc, p.n, a.treeStats);
+        const double trav = phaseMed.back();
+        printf("work: %.1f interactions/body (%.3e total), %.1f nodes popped/body | per-warp max/mean %.3f "
+               "(median warp %.3f) | SIMT eff interactions %.3f, pops %.3f | warp-cost max/mean %.2f | "
+               "traversal %.1f G interactions/s%s\n",
+               ws.interPerBody, double(ws.totalInter), ws.visitsPerBody, ws.warpMaxMean, ws.warpMaxMeanMedian,
+               ws.simtInter, ws.simtVisit, ws.interWarp, trav > 0 ? ws.totalInter / (trav * 1e-3) * 1e-9 : 0.0,
+               a.treeStats.empty() ? "" : ("  -> " + a.treeStats).c_str());
+        stackOverflows = treeStackOverflows(true);
+        if (stackOverflows) printf("ERROR: %d traversal stack overflows (results invalid)\n", stackOverflows);
+    }
+
     // ---- validation vs reference kernel + gates (D-009) ------------------------
     double maxRel = -1.0, rmsRel = -1.0, fp64Rms = -1.0, fp64Max = -1.0, fp64Norm = -1.0;
     double naiveNorm = -1.0, kappaMax = -1.0;
     std::string g1 = "na", g2 = "na", gates = "na";
     bool gateFail = false;
+    double errP50 = -1.0, errP99 = -1.0;
+    const bool treeGates = li.approximate && p.theta > 0.f;
     if (a.validate) {
-        downloadAcc(s, acc);
-        const KernelInfo* r = findKernel("allpairs_naive");
-        r->launch(s, p, 0);
+        k->launch(s, p, 0);   // the timed production result (the twins above rewrote acc)
         CUDA_CHECK(cudaDeviceSynchronize());
-        downloadAcc(s, ref);
+        downloadAcc(s, acc);
+        referenceAcc(s, p, ref);   // allpairs_naive loop in TDR-safe chunks, bitwise equal to it
         ErrorStats e = compareAcc(acc, ref);
         maxRel = e.maxRel; rmsRel = e.rmsRel;
         const bool bitwise = std::memcmp(acc.data(), ref.data(), acc.size() * sizeof(float4)) == 0;
@@ -520,14 +740,42 @@ int main(int argc, char** argv)
             g1 = ok1 ? "PASS" : "FAIL"; g2 = ok2 ? "PASS" : "FAIL";
             gateFail = !(ok0 && ok1 && ok2);
             gates = gateFail ? "FAIL" : "PASS";
-            printf("gates (D-009): G1 %s (normMax %.3e <= %.3e = %.1f u sqrtN; naive %.3e %s)  "
+            if (!treeGates) printf("gates (D-009): G1 %s (normMax %.3e <= %.3e = %.1f u sqrtN; naive %.3e %s)  "
                    "G2 %s (<= %.1f x naive = %.3e)  G0 %s (max rel vs naive %.2e <= %.0e)  => %s\n",
                    g1.c_str(), ev.normMax, T1, kG1, en.normMax, en.normMax <= T1 ? "passes" : "FAILS",
                    g2.c_str(), kG2, kG2 * en.normMax, ok0 ? "PASS" : "FAIL", maxRel, kG0, gates.c_str());
-        } else {
+        } else if (!treeGates) {
             gateFail = maxRel > kG0;
             gates = gateFail ? "FAIL" : "G0only";
             printf("gates: G1/G2 need --fp64-sample > 0; G0 %s\n", gateFail ? "FAIL" : "PASS");
+        }
+        if (treeGates) {   // tree truncation error over all bodies (pre-registered TG1/TG2)
+            std::vector<double> rel(acc.size());
+            for (size_t i = 0; i < acc.size(); ++i) {
+                const double dx = double(acc[i].x) - ref[i].x, dy = double(acc[i].y) - ref[i].y,
+                             dz = double(acc[i].z) - ref[i].z;
+                const double rn = std::sqrt(double(ref[i].x) * ref[i].x + double(ref[i].y) * ref[i].y +
+                                            double(ref[i].z) * ref[i].z);
+                rel[i] = std::sqrt(dx * dx + dy * dy + dz * dz) / (rn > 0 ? rn : 1.0);
+            }
+            auto pct = [&](double q) {
+                size_t at = std::min(rel.size() - 1, size_t(q * double(rel.size())));
+                std::nth_element(rel.begin(), rel.begin() + at, rel.end());
+                return rel[at];
+            };
+            errP50 = pct(0.50);
+            errP99 = pct(0.99);
+            const double T1 = treeGateRms(p.theta), T2 = treeGateP99(p.theta);
+            const bool ok1 = rmsRel <= T1, ok2 = errP99 <= T2, okS = stackOverflows == 0;
+            g1 = ok1 ? "PASS" : "FAIL"; g2 = ok2 ? "PASS" : "FAIL";
+            gateFail = !(ok1 && ok2 && okS);
+            gates = gateFail ? "FAIL" : "PASS";
+            printf("tree error vs exact (all %d bodies): rms %.3e  p50 %.3e  p99 %.3e  max %.3e\n", p.n, rmsRel, errP50,
+                   errP99, maxRel);
+            printf("gates (tree, theta=%.2f): TG1 %s (rms %.3e <= %.3e)  TG2 %s (p99 %.3e <= %.3e)  stack %s  => %s\n",
+                   p.theta, g1.c_str(), rmsRel, T1, g2.c_str(), errP99, T2, okS ? "ok" : "OVERFLOW", gates.c_str());
+        } else if (stackOverflows) {
+            gateFail = true; gates = "FAIL";
         }
     } else {
         printf("gates: not evaluated (--no-validate)\n");
@@ -538,7 +786,9 @@ int main(int argc, char** argv)
         static const char* kHeader =
             "kernel,n,block,q_requested,q,prefetch,unroll,grid,regs,blocks_per_sm,occupancy,run,ms,"
             "ginteractions_per_s,gflops,max_rel_err,rms_rel_err,fp64_rms_rel,fp64_max_rel,fp64_norm_max,"
-            "naive_fp64_norm_max,kappa_max,g1,g2,gates,batch,warmup_ms";
+            "naive_fp64_norm_max,kappa_max,g1,g2,gates,batch,warmup_ms,ic,theta,leaf,err_p50,err_p99,"
+            "inter_per_body,visits_per_body,warp_max_mean,simt_eff_inter,simt_eff_visit,warp_cost_max_mean,"
+            "ph_keys_ms,ph_sort_ms,ph_tree_ms,ph_order_ms,ph_traverse_ms,stack_overflows";
         std::string first;
         {
             std::ifstream in(a.csv);
@@ -557,7 +807,16 @@ int main(int argc, char** argv)
               << li.blocksPerSM << ',' << occ << ',' << i << ',' << ms[i] << ',' << ipsi * 1e-9 << ','
               << ipsi * kFlopsPerInteraction * 1e-9 << ',' << maxRel << ',' << rmsRel << ',' << fp64Rms << ','
               << fp64Max << ',' << fp64Norm << ',' << naiveNorm << ',' << kappaMax << ',' << g1 << ',' << g2
-              << ',' << gates << ',' << a.batch << ',' << a.warmupMs << '\n';
+              << ',' << gates << ',' << a.batch << ',' << a.warmupMs << ',' << a.ic << ','
+              << (li.approximate ? double(p.theta) : -1.0) << ',' << (li.approximate ? p.leafSize : -1) << ','
+              << errP50 << ',' << errP99 << ',';
+            if (li.nPhases > 0)
+                f << ws.interPerBody << ',' << ws.visitsPerBody << ',' << ws.warpMaxMean << ',' << ws.simtInter << ','
+                  << ws.simtVisit << ',' << ws.interWarp;
+            else
+                f << "-1,-1,-1,-1,-1,-1";
+            for (int q = 0; q < 5; ++q) f << ',' << (q < int(phaseMed.size()) ? phaseMed[q] : -1.0);
+            f << ',' << stackOverflows << '\n';
         }
     }
 

@@ -1,5 +1,7 @@
 // Initial conditions and host-side diagnostics (double precision).
+#include <algorithm>
 #include <cmath>
+#include <numeric>
 #include <random>
 #include "nbody.h"
 
@@ -55,6 +57,56 @@ void makePlummer(int n, unsigned seed, std::vector<float4>& pos, std::vector<flo
         pos[i].x -= float(cx); pos[i].y -= float(cy); pos[i].z -= float(cz);
         vel[i].x -= float(cvx); vel[i].y -= float(cvy); vel[i].z -= float(cvz);
     }
+}
+
+namespace {
+
+// One Plummer component: makePlummer (virial units, mass 1) scaled to virial radius a and
+// mass mc (G = 1: velocities scale with sqrt(mc / a)), moved to centre c with bulk velocity v.
+// Body mass is set to 1/nTotal so every body in every IC has the same mass.
+void appendPlummer(int nc, unsigned seed, double a, double mc, double3 c, double3 v, int nTotal,
+                   std::vector<float4>& pos, std::vector<float4>& vel)
+{
+    std::vector<float4> p, u;
+    makePlummer(nc, seed, p, u);
+    const double vs = std::sqrt(mc / a);
+    for (int i = 0; i < nc; ++i) {
+        pos.push_back(make_float4(float(c.x + a * p[i].x), float(c.y + a * p[i].y), float(c.z + a * p[i].z),
+                                  float(1.0 / nTotal)));
+        vel.push_back(make_float4(float(v.x + vs * u[i].x), float(v.y + vs * u[i].y), float(v.z + vs * u[i].z), 0.f));
+    }
+}
+
+} // namespace
+
+const char* icNames() { return "plummer|collision|core"; }
+
+bool makeIC(const std::string& name, int n, unsigned seed, std::vector<float4>& pos, std::vector<float4>& vel)
+{
+    if (name == "plummer") { makePlummer(n, seed, pos, vel); return true; }
+    pos.clear(); vel.clear();
+    pos.reserve(n); vel.reserve(n);
+    if (name == "collision") {
+        const int n1 = n / 2, n2 = n - n1;
+        appendPlummer(n1, seed, 0.25, 0.5, make_double3(-1.0, -0.125, 0.0), make_double3(0.35, 0.0, 0.0), n, pos, vel);
+        appendPlummer(n2, seed + 1000003u, 0.25, 0.5, make_double3(1.0, 0.125, 0.0), make_double3(-0.35, 0.0, 0.0), n,
+                      pos, vel);
+    } else if (name == "core") {
+        const int nc = n / 4, nh = n - nc;
+        appendPlummer(nh, seed, 1.0, 0.75, make_double3(0, 0, 0), make_double3(0, 0, 0), n, pos, vel);
+        appendPlummer(nc, seed + 1000003u, 0.03, 0.25, make_double3(0, 0, 0), make_double3(0, 0, 0), n, pos, vel);
+    } else {
+        return false;
+    }
+    // Shuffle so the original order is spatially random (like the single Plummer): otherwise the
+    // components would be contiguous runs and bh_naive's "unsorted" warps would be partly sorted.
+    std::vector<int> idx(n);
+    std::iota(idx.begin(), idx.end(), 0);
+    std::shuffle(idx.begin(), idx.end(), std::mt19937(seed ^ 0x5eedu));
+    std::vector<float4> p2(n), v2(n);
+    for (int i = 0; i < n; ++i) { p2[i] = pos[idx[i]]; v2[i] = vel[idx[i]]; }
+    pos.swap(p2); vel.swap(v2);
+    return true;
 }
 
 Energy computeEnergy(const std::vector<float4>& pos, const std::vector<float4>& vel, const Params& p)

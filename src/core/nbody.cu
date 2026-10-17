@@ -1,7 +1,9 @@
 // State management, integrator, kernel registry.
+#include <algorithm>
 #include <cstdio>
 #include <cstdlib>
 #include "nbody.h"
+#include "interaction.cuh"
 #include "internal.h"
 
 namespace nbody {
@@ -9,6 +11,7 @@ namespace nbody {
 void registerAllPairs(std::vector<KernelInfo>& r);
 void registerTuned(std::vector<KernelInfo>& r);
 void registerMulti(std::vector<KernelInfo>& r);
+void registerTree(std::vector<KernelInfo>& r);
 
 int deviceSMCount()
 {
@@ -42,6 +45,7 @@ const std::vector<KernelInfo>& kernelRegistry()
         registerAllPairs(r);   // naive, tiled: the references, keep them first (viewer keys 1, 2)
         registerTuned(r);      // R3 #2
         registerMulti(r);      // R3 #3
+        registerTree(r);       // R3 #4, #5 (viewer keys 5, 6, 7)
         return r;
     }();
     return registry;
@@ -120,10 +124,10 @@ __global__ void kickDriftKernel(float4* pos, float4* vel, const float4* acc, int
 // to shortlist the worst-conditioned bodies (largest kappa = scale / |a|); their kappa is then
 // recomputed in FP64 on the host (referenceFp64). FP32 is enough for ranking.
 __global__ void forceScaleKernel(const float4* __restrict__ pos, float* __restrict__ scale, int n,
-                                 float eps2, float G)
+                                 int i0, int i1, float eps2, float G)
 {
-    int i = blockIdx.x * blockDim.x + threadIdx.x;
-    if (i >= n) return;
+    int i = i0 + blockIdx.x * blockDim.x + threadIdx.x;
+    if (i >= i1) return;
     float4 bi = pos[i];
     float  sc = 0.f;
     for (int j = 0; j < n; ++j) {
@@ -136,6 +140,23 @@ __global__ void forceScaleKernel(const float4* __restrict__ pos, float* __restri
     }
     scale[i] = G * sc;
 }
+
+// Same loop as allPairsNaiveKernel (kernels_allpairs.cu), restricted to bodies [i0, i1):
+// bitwise-equal results, but each launch is O(chunk * N), so N ~ 1M stays far under TDR.
+__global__ void referenceChunkKernel(const float4* __restrict__ pos, float4* __restrict__ acc, int n,
+                                     int i0, int i1, float eps2, float G)
+{
+    int i = i0 + blockIdx.x * blockDim.x + threadIdx.x;
+    if (i >= i1) return;
+    float4 bi = pos[i];
+    float3 a  = make_float3(0.f, 0.f, 0.f);
+    for (int j = 0; j < n; ++j)
+        a = bodyBodyInteraction(bi, pos[j], a, eps2);
+    acc[i] = make_float4(G * a.x, G * a.y, G * a.z, 0.f);
+}
+
+// Bodies per launch: chunk * n <= 2^36 interactions (~0.1-0.2 s at the naive kernel's rate).
+int referenceChunk(int n) { return int(std::max<long long>(256, std::min<long long>(n, (1ll << 36) / std::max(1, n)))); }
 
 } // namespace
 
@@ -183,10 +204,31 @@ void forceScale(const DeviceState& s, const Params& p, std::vector<float>& scale
 {
     float* d = nullptr;
     CUDA_CHECK(cudaMalloc(&d, s.n * sizeof(float)));
-    forceScaleKernel<<<(s.n + 255) / 256, 256>>>(s.pos, d, s.n, p.softening * p.softening, p.G);
-    CUDA_CHECK(cudaGetLastError());
+    const int chunk = referenceChunk(s.n);
+    for (int i0 = 0; i0 < s.n; i0 += chunk) {
+        const int i1 = std::min(s.n, i0 + chunk);
+        forceScaleKernel<<<(i1 - i0 + 255) / 256, 256>>>(s.pos, d, s.n, i0, i1, p.softening * p.softening, p.G);
+        CUDA_CHECK(cudaGetLastError());
+        CUDA_CHECK(cudaDeviceSynchronize());
+    }
     scale.resize(s.n);
     CUDA_CHECK(cudaMemcpy(scale.data(), d, s.n * sizeof(float), cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaFree(d));
+}
+
+void referenceAcc(const DeviceState& s, const Params& p, std::vector<float4>& acc)
+{
+    float4* d = nullptr;
+    CUDA_CHECK(cudaMalloc(&d, size_t(s.n) * sizeof(float4)));
+    const int chunk = referenceChunk(s.n);
+    for (int i0 = 0; i0 < s.n; i0 += chunk) {
+        const int i1 = std::min(s.n, i0 + chunk);
+        referenceChunkKernel<<<(i1 - i0 + 255) / 256, 256>>>(s.pos, d, s.n, i0, i1, p.softening * p.softening, p.G);
+        CUDA_CHECK(cudaGetLastError());
+        CUDA_CHECK(cudaDeviceSynchronize());
+    }
+    acc.resize(s.n);
+    CUDA_CHECK(cudaMemcpy(acc.data(), d, size_t(s.n) * sizeof(float4), cudaMemcpyDeviceToHost));
     CUDA_CHECK(cudaFree(d));
 }
 
