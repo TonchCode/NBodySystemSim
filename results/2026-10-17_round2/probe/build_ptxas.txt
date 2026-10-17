@@ -1,0 +1,22 @@
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_Z1kILi3EEvPK6float4PS0_if' for 'sm_89'
+ptxas info    : Function properties for _Z1kILi3EEvPK6float4PS0_if
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 1 barriers, 2048 bytes smem, 376 bytes cmem[0]
+ptxas info    : Compile time = 0.000 ms
+ptxas info    : Compiling entry function '_Z1kILi2EEvPK6float4PS0_if' for 'sm_89'
+ptxas info    : Function properties for _Z1kILi2EEvPK6float4PS0_if
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 1 barriers, 2048 bytes smem, 376 bytes cmem[0]
+ptxas info    : Compile time = 0.000 ms
+ptxas info    : Compiling entry function '_Z1kILi1EEvPK6float4PS0_if' for 'sm_89'
+ptxas info    : Function properties for _Z1kILi1EEvPK6float4PS0_if
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 1 barriers, 2048 bytes smem, 376 bytes cmem[0]
+ptxas info    : Compile time = 0.000 ms
+ptxas info    : Compiling entry function '_Z1kILi0EEvPK6float4PS0_if' for 'sm_89'
+ptxas info    : Function properties for _Z1kILi0EEvPK6float4PS0_if
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 1 barriers, 2048 bytes smem, 376 bytes cmem[0]
+ptxas info    : Compile time = 0.000 ms
+mufu_probe.cu

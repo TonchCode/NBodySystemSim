@@ -1,0 +1,31 @@
+﻿# per = 128  (counts / per; static whole-kernel counts)
+# kernel: _Z1kILi3EEvPK6float4PS0_if
+# kernel: _Z1kILi2EEvPK6float4PS0_if
+# kernel: _Z1kILi1EEvPK6float4PS0_if
+# kernel: _Z1kILi0EEvPK6float4PS0_if
+opcode            k0        k1        k2        k3
+FFMA            7.00      6.00      6.00      6.00
+FMUL            7.00      5.00      3.00      5.00
+FADD            3.00      3.00      3.00      3.00
+MUFU            1.00      2.00      1.00      1.00
+LDS             1.00      1.00      1.00      1.00
+FSETP           1.00      1.00      0.00      1.00
+FSEL            0.00      1.00      0.00      0.00
+NOP             0.11      0.11      0.11      0.11
+MOV             0.05      0.05      0.05      0.05
+LEA             0.04      0.04      0.04      0.04
+BRA             0.02      0.02      0.02      0.02
+BAR             0.02      0.02      0.02      0.02
+ISETP           0.02      0.02      0.02      0.02
+LDG             0.02      0.02      0.02      0.02
+CS2R            0.02      0.02      0.02      0.02
+S2R             0.02      0.02      0.02      0.02
+IADD3           0.02      0.02      0.02      0.02
+SHF             0.01      0.01      0.01      0.01
+STS             0.01      0.01      0.01      0.01
+STG             0.01      0.01      0.01      0.01
+EXIT            0.01      0.01      0.01      0.01
+CALL            0.01      0.01      0.01      0.01
+ULDC            0.01      0.01      0.01      0.01
+IMAD            0.01      0.01      0.01      0.01
+TOTAL          20.38     19.38     14.38     17.38

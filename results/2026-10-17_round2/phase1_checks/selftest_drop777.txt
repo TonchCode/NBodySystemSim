@@ -1,0 +1,7 @@
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+selftest: exact dyadic lattice, eps = 1, masses {1,2}  [--selftest-drop: every case is EXPECTED to fail]
+  FAIL n=1000   naive b256              999/1000 bodies wrong; body 0 got (0.00760173798 -0.00790405273 -0.0132722855) want (0.00761508942 -0.0079202652 -0.0132780075)
+  FAIL n=1000   tiled b64               999/1000 bodies wrong; body 0 got (0.00760173798 -0.00790405273 -0.0132722855) want (0.00761508942 -0.0079202652 -0.0132780075)
+  FAIL n=1000   tiled b64              +timeline  999/1000 bodies wrong; body 0 got (0.00760173798 -0.00790405273 -0.0132722855) want (0.00761508942 -0.0079202652 -0.0132780075)
+selftest: 1810 cases, 905 failed, 0 timeline-record failures (1 of the analytic accelerations are 0)
+selftest-drop 777: PASS, the test detects a dropped j in every variant (905 of 905 cases where the drop is visible detected it; 905 cases where it cannot be visible, e.g. n = 1)

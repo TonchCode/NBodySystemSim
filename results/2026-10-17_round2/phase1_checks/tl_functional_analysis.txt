@@ -1,0 +1,4 @@
+== tl_functional_multi_2048.csv: allpairs_multi n=2048 b=256 q=4 pf=1 u=8  (2 launches, median shown)
+   span 11.40 us | max busy 11.32 | mean busy (80 SMs) 4.50 | max/mean 2.515 (active SMs: 1.006) | SM eff 0.395
+   clock calibration: 32 SMs calibrated, 0 raw; f 2.6065..2.6095 GHz; calibrated vs raw start outside one tick by <= 0 ns
+   active 32 / idle 48 SMs | blocks/SM 0..1 | tail 0.11 us (1.0% of span) | start skew 0.11 us | timer res 1024 ns | SM clock 2.609 GHz

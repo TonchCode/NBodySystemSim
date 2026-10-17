@@ -13,6 +13,7 @@
 #include "nbody.h"
 #include "interaction.cuh"
 #include "internal.h"
+#include "timeline.cuh"
 
 namespace nbody {
 namespace {
@@ -29,10 +30,14 @@ __global__ void allPairsNaiveKernel(const float4* __restrict__ pos, float4* __re
     acc[i] = make_float4(G * a.x, G * a.y, G * a.z, 0.f);
 }
 
+// TL = true: the instrumented instantiation (per-block timeline, timeline.cuh). The extra
+// parameter is last, so the production instantiation's parameter offsets and SASS are unchanged.
+template <bool TL>
 __global__ void allPairsTiledKernel(const float4* __restrict__ pos, float4* __restrict__ acc,
-                                    int n, float eps2, float G)
+                                    int n, float eps2, float G, BlockStamp* tl)
 {
     extern __shared__ float4 tile[];
+    stampBlockStart<TL>(tl);
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     // Out-of-range threads still help load tiles; they just don't write a result.
     float4 bi = (i < n) ? pos[i] : make_float4(0.f, 0.f, 0.f, 0.f);
@@ -48,6 +53,7 @@ __global__ void allPairsTiledKernel(const float4* __restrict__ pos, float4* __re
         __syncthreads();
     }
     if (i < n) acc[i] = make_float4(G * a.x, G * a.y, G * a.z, 0.f);
+    stampBlockEnd<TL>(tl);
 }
 
 int gridFor(int n, int block) { return (n + block - 1) / block; }
@@ -62,8 +68,12 @@ void launchNaive(const DeviceState& s, const Params& p, cudaStream_t st)
 void launchTiled(const DeviceState& s, const Params& p, cudaStream_t st)
 {
     size_t smem = p.blockSize * sizeof(float4);
-    allPairsTiledKernel<<<gridFor(s.n, p.blockSize), p.blockSize, smem, st>>>(
-        s.pos, s.acc, s.n, p.softening * p.softening, p.G);
+    if (p.timeline)
+        allPairsTiledKernel<true><<<gridFor(s.n, p.blockSize), p.blockSize, smem, st>>>(
+            s.pos, s.acc, s.n, p.softening * p.softening, p.G, p.timeline);
+    else
+        allPairsTiledKernel<false><<<gridFor(s.n, p.blockSize), p.blockSize, smem, st>>>(
+            s.pos, s.acc, s.n, p.softening * p.softening, p.G, nullptr);
     CUDA_CHECK(cudaGetLastError());
 }
 
@@ -75,10 +85,13 @@ LaunchInfo queryNaive(int n, const Params& p)
 
 LaunchInfo queryTiled(int n, const Params& p)
 {
-    LaunchInfo li = describeKernel(reinterpret_cast<const void*>(allPairsTiledKernel),
+    const void* fn = p.timeline ? reinterpret_cast<const void*>(allPairsTiledKernel<true>)
+                                : reinterpret_cast<const void*>(allPairsTiledKernel<false>);
+    LaunchInfo li = describeKernel(fn,
                                    gridFor(n, p.blockSize), p.blockSize,
                                    p.blockSize * sizeof(float4));
-    li.unroll = 8;
+    li.unroll       = 8;
+    li.instrumented = p.timeline != nullptr;
     return li;
 }
 

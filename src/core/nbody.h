@@ -9,6 +9,15 @@
 
 namespace nbody {
 
+// Per-block timeline record (instrumented builds only, R3 imbalance measurement without ncu).
+// t0/t1: %globaltimer (ns, one clock for the whole GPU) at block entry and after the block's
+// last thread has finished (a final __syncthreads). c0/c1: clock64() on that SM (cycles; not
+// synchronised across SMs, but finer-grained, and c/t gives the SM clock during the block).
+struct BlockStamp {
+    unsigned long long t0, t1, c0, c1;
+    unsigned           smid, block;
+};
+
 struct Params {
     int   n          = 1 << 14;
     float dt         = 1e-3f;
@@ -20,6 +29,14 @@ struct Params {
     // R3 #3 (allpairs_multi): threads cooperating on one body, one of {1,2,4,8,16,32};
     // 0 = automatic (autoThreadsPerBody, a cost model of SM-level load balance).
     int   threadsPerBody = 0;
+    // R3 #3: register prefetch of the next tile in allpairs_multi (1 = on, the round-1
+    // behaviour; 0 = off). An independent switch so prefetch and q can be measured
+    // separately (critic review 1, #4).
+    int   prefetch       = 1;
+    // Device buffer of >= gridBlocks records. nullptr = production kernels. Non-null = the
+    // instrumented instantiation (tiled, tuned, multi), which writes one BlockStamp per block.
+    // The production instantiations are compiled without the stamping code (template flag).
+    BlockStamp* timeline = nullptr;
 };
 
 // Device buffers. pos.w = mass, vel.w unused (padding for 16-byte loads).
@@ -44,6 +61,8 @@ struct LaunchInfo {
     int    blockThreads   = 0;
     int    threadsPerBody = 1;   // as resolved (auto -> concrete q)
     int    unroll         = 0;   // as compiled (0 = full tile); -1 = not applicable
+    int    prefetch       = -1;  // multi: 0/1 as compiled; -1 = not applicable
+    bool   instrumented   = false;
     int    regsPerThread  = 0;
     size_t smemPerBlock   = 0;   // static + dynamic, bytes (excl. the 1 KB system reservation)
     int    blocksPerSM    = 0;   // max resident blocks per SM for this config
@@ -73,6 +92,20 @@ void step(DeviceState& s, const Params& p, const KernelInfo& k, cudaStream_t str
 // Initial conditions (host). Plummer sphere in virial equilibrium, total mass 1.
 void makePlummer(int n, unsigned seed, std::vector<float4>& pos, std::vector<float4>& vel);
 
+// Conditioning pre-filter (device, FP32, O(N^2), diagnostic only, not a force kernel):
+// scale[i] = G * sum_j |f_ij| / m_i. kappa_i ~ scale[i] / |a_i|. Used to pick the
+// candidate worst-conditioned bodies, whose kappa is then recomputed in FP64.
+void forceScale(const DeviceState& s, const Params& p, std::vector<float>& scale);
+
+// Timeline clock calibration. %globaltimer ticks in 1.024 us steps on this board (measured,
+// results/2026-10-17_round2/phase1_checks), too coarse for 10-30 us kernels, while clock64
+// is per-SM and unsynchronised. Each record: on SM smid, the first clock64 value seen after
+// a %globaltimer tick edge (tA, cA), then again after spinning ~spinUs (tB, cB). With one
+// record before and one after the timeline launches, every SM's cycle counter maps onto
+// global ns: t(c) = tA + (c - cA) / f, f = cycles per ns between the two anchors.
+struct ClockCal { unsigned smid; unsigned long long tA, cA, tB, cB; };
+void clockCalibration(std::vector<ClockCal>& out, int spinUs = 500);
+
 // Diagnostics (host, double precision, O(N^2): use for N <= ~65k).
 struct Energy { double kinetic, potential, total; };
 Energy computeEnergy(const std::vector<float4>& pos, const std::vector<float4>& vel, const Params& p);
@@ -86,14 +119,17 @@ ErrorStats compareAcc(const std::vector<float4>& acc, const std::vector<float4>&
 // FP32 sum is built from. |a| << scale means the net force nearly cancels: such a body is
 // ill-conditioned and its *relative* error is amplified by kappa = scale / |a|.
 struct Fp64Sample { std::vector<int> idx; std::vector<double> ax, ay, az, scale; };
+double kappaOf(const Fp64Sample& r, size_t k);   // scale / |a| of sample k (0 if a == 0)
 Fp64Sample referenceFp64(const std::vector<float4>& pos, const Params& p, const std::vector<int>& idx);
 
 // Errors of an FP32 acc array vs the FP64 sample. normMax = max |da| / scale, which is
-// the conditioning-independent measure (bounded by ~ gamma_N * u for any summation order).
+// the conditioning-independent measure. Worst case for recursive summation in any order:
+// normMax <= gamma_{N+c} = (N+c)u / (1 - (N+c)u), u = 2^-24, c ~ a few (rounding inside
+// each term); the typical (random-rounding) size is ~ u * sqrt(N).
 struct Fp64Error { double maxRel, rmsRel, normMax, kappaMax; };
 Fp64Error compareFp64(const std::vector<float4>& acc, const Fp64Sample& ref);
 
-// R3 #3: q chosen by a cost model of SM-level load balance (see docs/03-design.md §4.4).
+// R3 #3: q chosen by a cost model of SM-level load balance (see docs/03-design.md sec. 4.4).
 int autoThreadsPerBody(int n, int blockSize);
 
 // Device facts used by heuristics (cached cudaDeviceGetAttribute).

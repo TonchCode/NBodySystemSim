@@ -102,8 +102,10 @@ significant XU (MUFU) co-limit"**. ncu pipe utilisation and stall reasons will s
 
 ## Open
 
-- `-ftz` / `rsqrt.approx.ftz`: +10% for one instruction, but it changes numerics. Needs
-  Toncho's call.
+- `-ftz` / `rsqrt.approx.ftz`: +10%. **Corrected (critic review 1, #12):** it removes
+  *three* instructions per interaction (the non-FTZ denormal guard: FSETP + 2 FMUL; SASS counts
+  in `results/2026-10-17_round2/probe/sass_counts.txt`), not one. It changes numerics, so it
+  needs Toncho's call.
 - Enable GPU performance counters for Nsight Compute. This is an admin/security setting, so
   Toncho has to do it.
 - Tuned b256 u8 is 2–4% slower than tiled despite the same algorithm. Unexplained.

@@ -1,0 +1,10 @@
+# 177 configurations used, 63 skipped (multi-wave or below --min-us)
+ warps/SM    n  median G/s/SM  max G/s/SM  G/s per warp (median)  best config
+      2.0   14           4.01        4.75                   2.01  allpairs_multi n=4096 b=64 q=1 u=8 pf=1
+      4.0   29           8.56       11.01                   2.14  allpairs_tuned n=10000 b=128 q=1 u=0 pf=1
+      8.0   28          13.70       16.18                   1.71  allpairs_tuned n=10000 b=256 q=1 u=0 pf=1
+     14.0    1          10.44       10.44                   0.75  allpairs_multi n=4096 b=64 q=8 u=8 pf=1
+     16.0   32          16.05       17.80                   1.00  allpairs_tuned n=10000 b=512 q=1 u=16 pf=1
+     26.0    8          14.45       15.49                   0.56  allpairs_tuned n=65536 b=64 q=1 u=0 pf=1
+     28.0    8          15.78       16.92                   0.56  allpairs_tuned n=65536 b=128 q=1 u=0 pf=1
+     32.0   57          16.97       18.23                   0.53  allpairs_tiled n=4096 b=1024 q=1 u=8 pf=1

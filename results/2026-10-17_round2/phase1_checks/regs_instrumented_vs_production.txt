@@ -1,0 +1,71 @@
+noPF ('1024', '1') 53 PF 55
+TL allPairsMultiKernel ('1024', '1', '1', '1') 57 prod 55
+noPF ('1024', '16') 53 PF 55
+TL allPairsMultiKernel ('1024', '16', '1', '1') 57 prod 55
+noPF ('1024', '2') 53 PF 55
+TL allPairsMultiKernel ('1024', '2', '1', '1') 57 prod 55
+noPF ('1024', '32') 53 PF 55
+TL allPairsMultiKernel ('1024', '32', '1', '1') 57 prod 55
+noPF ('1024', '4') 53 PF 55
+TL allPairsMultiKernel ('1024', '4', '1', '1') 57 prod 55
+noPF ('1024', '8') 53 PF 55
+TL allPairsMultiKernel ('1024', '8', '1', '1') 57 prod 55
+noPF ('128', '1') 39 PF 40
+TL allPairsMultiKernel ('128', '1', '0', '1') 38 prod 39
+noPF ('128', '16') 40 PF 40
+noPF ('128', '2') 39 PF 40
+TL allPairsMultiKernel ('128', '2', '0', '1') 38 prod 39
+noPF ('128', '32') 39 PF 40
+TL allPairsMultiKernel ('128', '32', '0', '1') 40 prod 39
+noPF ('128', '4') 39 PF 40
+TL allPairsMultiKernel ('128', '4', '0', '1') 38 prod 39
+noPF ('128', '8') 39 PF 40
+TL allPairsMultiKernel ('128', '8', '0', '1') 38 prod 39
+noPF ('256', '1') 39 PF 40
+TL allPairsMultiKernel ('256', '1', '0', '1') 38 prod 39
+noPF ('256', '16') 39 PF 40
+TL allPairsMultiKernel ('256', '16', '0', '1') 38 prod 39
+noPF ('256', '2') 39 PF 40
+TL allPairsMultiKernel ('256', '2', '0', '1') 38 prod 39
+noPF ('256', '32') 40 PF 40
+noPF ('256', '4') 39 PF 40
+TL allPairsMultiKernel ('256', '4', '0', '1') 38 prod 39
+noPF ('256', '8') 39 PF 40
+TL allPairsMultiKernel ('256', '8', '0', '1') 38 prod 39
+noPF ('512', '1') 39 PF 40
+TL allPairsMultiKernel ('512', '1', '0', '1') 38 prod 39
+noPF ('512', '16') 39 PF 40
+TL allPairsMultiKernel ('512', '16', '0', '1') 38 prod 39
+noPF ('512', '2') 39 PF 40
+TL allPairsMultiKernel ('512', '2', '0', '1') 38 prod 39
+noPF ('512', '32') 39 PF 40
+TL allPairsMultiKernel ('512', '32', '0', '1') 38 prod 39
+noPF ('512', '4') 39 PF 40
+TL allPairsMultiKernel ('512', '4', '0', '1') 38 prod 39
+noPF ('512', '8') 39 PF 40
+TL allPairsMultiKernel ('512', '8', '0', '1') 38 prod 39
+noPF ('64', '1') 39 PF 40
+TL allPairsMultiKernel ('64', '1', '0', '1') 38 prod 39
+noPF ('64', '16') 39 PF 40
+TL allPairsMultiKernel ('64', '16', '0', '1') 40 prod 39
+noPF ('64', '2') 39 PF 40
+TL allPairsMultiKernel ('64', '2', '0', '1') 38 prod 39
+noPF ('64', '32') 40 PF 44
+TL allPairsMultiKernel ('64', '32', '0', '1') 44 prod 40
+TL allPairsMultiKernel ('64', '32', '1', '1') 48 prod 44
+noPF ('64', '4') 39 PF 40
+TL allPairsMultiKernel ('64', '4', '0', '1') 38 prod 39
+noPF ('64', '8') 40 PF 40
+TL allPairsTunedKernel ('1024', '1', '1') 22 prod 20
+TL allPairsTunedKernel ('1024', '16', '1') 54 prod 56
+TL allPairsTunedKernel ('1024', '4', '1') 38 prod 37
+TL allPairsTunedKernel ('1024', '8', '1') 54 prod 53
+TL allPairsTunedKernel ('128', '1', '1') 22 prod 19
+TL allPairsTunedKernel ('128', '4', '1') 38 prod 37
+TL allPairsTunedKernel ('256', '1', '1') 22 prod 19
+TL allPairsTunedKernel ('256', '4', '1') 38 prod 37
+TL allPairsTunedKernel ('512', '1', '1') 22 prod 19
+TL allPairsTunedKernel ('512', '4', '1') 38 prod 37
+TL allPairsTunedKernel ('64', '1', '1') 22 prod 19
+TL allPairsTunedKernel ('64', '4', '1') 38 prod 37
+parsed 172 TL reg diffs 40

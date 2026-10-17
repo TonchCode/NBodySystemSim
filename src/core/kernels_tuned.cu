@@ -17,17 +17,22 @@
 #include "nbody.h"
 #include "interaction.cuh"
 #include "internal.h"
+#include "timeline.cuh"
 
 namespace nbody {
 namespace {
 
-template <int BLOCK, int UNROLL>   // UNROLL == 0 means "unroll the whole tile"
+// UNROLL == 0 means "unroll the whole tile". TL = instrumented (per-block timeline,
+// timeline.cuh); the stamp parameter is last, so TL = false keeps the round-1 SASS.
+template <int BLOCK, int UNROLL, bool TL>
 __global__ void __launch_bounds__(BLOCK)
-allPairsTunedKernel(const float4* __restrict__ pos, float4* __restrict__ acc, int n, float eps2, float G)
+allPairsTunedKernel(const float4* __restrict__ pos, float4* __restrict__ acc, int n, float eps2, float G,
+                    BlockStamp* tl)
 {
     constexpr int U = (UNROLL == 0) ? BLOCK : UNROLL;
     static_assert(BLOCK % U == 0, "unroll must divide the tile");
     __shared__ float4 tile[BLOCK];
+    stampBlockStart<TL>(tl);
 
     const int i  = blockIdx.x * BLOCK + threadIdx.x;
     float4    bi = (i < n) ? pos[i] : make_float4(0.f, 0.f, 0.f, 0.f);
@@ -43,13 +48,14 @@ allPairsTunedKernel(const float4* __restrict__ pos, float4* __restrict__ acc, in
         __syncthreads();
     }
     if (i < n) acc[i] = make_float4(G * a.x, G * a.y, G * a.z, 0.f);
+    stampBlockEnd<TL>(tl);
 }
 
-template <int BLOCK, int UNROLL>
+template <int BLOCK, int UNROLL, bool TL>
 void launchT(const DeviceState& s, const Params& p, cudaStream_t st)
 {
-    allPairsTunedKernel<BLOCK, UNROLL><<<ceilDiv(s.n, BLOCK), BLOCK, 0, st>>>(
-        s.pos, s.acc, s.n, p.softening * p.softening, p.G);
+    allPairsTunedKernel<BLOCK, UNROLL, TL><<<ceilDiv(s.n, BLOCK), BLOCK, 0, st>>>(
+        s.pos, s.acc, s.n, p.softening * p.softening, p.G, p.timeline);
 }
 
 struct Variant {
@@ -57,21 +63,27 @@ struct Variant {
     const void*   kernel;
 };
 
-template <int BLOCK, int UNROLL>
-Variant variant()
+template <int BLOCK, int UNROLL, bool TL>
+Variant variantT()
 {
-    return {&launchT<BLOCK, UNROLL>, reinterpret_cast<const void*>(&allPairsTunedKernel<BLOCK, UNROLL>)};
+    return {&launchT<BLOCK, UNROLL, TL>, reinterpret_cast<const void*>(&allPairsTunedKernel<BLOCK, UNROLL, TL>)};
+}
+
+template <int BLOCK, int UNROLL>
+Variant variant(bool tl)
+{
+    return tl ? variantT<BLOCK, UNROLL, true>() : variantT<BLOCK, UNROLL, false>();
 }
 
 template <int BLOCK>
-Variant byUnroll(int unroll)
+Variant byUnroll(int unroll, bool tl)
 {
     switch (unroll) {
-    case 1:  return variant<BLOCK, 1>();
-    case 4:  return variant<BLOCK, 4>();
-    case 8:  return variant<BLOCK, 8>();
-    case 16: return variant<BLOCK, 16>();
-    case 0:  return variant<BLOCK, 0>();
+    case 1:  return variant<BLOCK, 1>(tl);
+    case 4:  return variant<BLOCK, 4>(tl);
+    case 8:  return variant<BLOCK, 8>(tl);
+    case 16: return variant<BLOCK, 16>(tl);
+    case 0:  return variant<BLOCK, 0>(tl);
     default: break;
     }
     fprintf(stderr, "allpairs_tuned: unroll %d not instantiated (use 1, 4, 8, 16 or 0 = full)\n", unroll);
@@ -80,12 +92,13 @@ Variant byUnroll(int unroll)
 
 Variant select(const Params& p)
 {
+    const bool tl = p.timeline != nullptr;
     switch (p.blockSize) {
-    case 64:   return byUnroll<64>(p.unroll);
-    case 128:  return byUnroll<128>(p.unroll);
-    case 256:  return byUnroll<256>(p.unroll);
-    case 512:  return byUnroll<512>(p.unroll);
-    case 1024: return byUnroll<1024>(p.unroll);
+    case 64:   return byUnroll<64>(p.unroll, tl);
+    case 128:  return byUnroll<128>(p.unroll, tl);
+    case 256:  return byUnroll<256>(p.unroll, tl);
+    case 512:  return byUnroll<512>(p.unroll, tl);
+    case 1024: return byUnroll<1024>(p.unroll, tl);
     default: break;
     }
     fprintf(stderr, "allpairs_tuned: block %d not instantiated (use 64, 128, 256, 512, 1024)\n", p.blockSize);
@@ -101,7 +114,8 @@ void launchTuned(const DeviceState& s, const Params& p, cudaStream_t st)
 LaunchInfo queryTuned(int n, const Params& p)
 {
     LaunchInfo li = describeKernel(select(p).kernel, ceilDiv(n, p.blockSize), p.blockSize, 0);
-    li.unroll = p.unroll;
+    li.unroll       = p.unroll;
+    li.instrumented = p.timeline != nullptr;
     return li;
 }
 

@@ -1,0 +1,4 @@
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+selftest: exact dyadic lattice, eps = 1, masses {1,2}
+selftest: 1810 cases, 0 failed, 0 timeline-record failures (1 of the analytic accelerations are 0)
+selftest: PASS

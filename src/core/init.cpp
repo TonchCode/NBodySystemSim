@@ -115,6 +115,12 @@ Fp64Sample referenceFp64(const std::vector<float4>& pos, const Params& p, const 
     return r;
 }
 
+double kappaOf(const Fp64Sample& r, size_t k)
+{
+    double rn = std::sqrt(r.ax[k] * r.ax[k] + r.ay[k] * r.ay[k] + r.az[k] * r.az[k]);
+    return rn > 0 ? r.scale[k] / rn : 0.0;
+}
+
 Fp64Error compareFp64(const std::vector<float4>& acc, const Fp64Sample& ref)
 {
     Fp64Error e{0, 0, 0, 0};

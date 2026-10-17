@@ -148,6 +148,7 @@ struct App {
     float  intensity = 1.0f;
     bool   dragging = false;
     double lastX = 0, lastY = 0;
+    bool   statsReset = false;   // set when steps/frame or the kernel changes: restart the ms/step window
 };
 
 void resetSim(App& a)
@@ -164,8 +165,9 @@ void onKey(GLFWwindow* w, int key, int, int action, int)
     const auto& reg = nbody::kernelRegistry();
     if (key >= GLFW_KEY_1 && key <= GLFW_KEY_9) {
         size_t i = size_t(key - GLFW_KEY_1);
-        if (i < reg.size()) a.kernel = &reg[i];
+        if (i < reg.size() && a.kernel != &reg[i]) { a.kernel = &reg[i]; a.statsReset = true; }
     }
+    const int spf = a.stepsPerFrame;
     switch (key) {
     case GLFW_KEY_ESCAPE:       glfwSetWindowShouldClose(w, 1); break;
     case GLFW_KEY_SPACE:        a.paused = !a.paused; break;
@@ -179,6 +181,7 @@ void onKey(GLFWwindow* w, int key, int, int action, int)
     case GLFW_KEY_RIGHT_BRACKET:a.intensity *= 1.25f; break;
     default: break;
     }
+    if (a.stepsPerFrame != spf) a.statsReset = true;
 }
 
 void onMouseButton(GLFWwindow* w, int button, int action, int)
@@ -236,8 +239,9 @@ int main(int argc, char** argv)
     a.params.dt = 0.002f;
     std::string kernelName = "allpairs_tiled", screenshot;
     int maxFrames = 0;
-    for (int i = 1; i + 1 < argc; i += 2) {
+    for (int i = 1; i < argc; i += 2) {
         std::string k = argv[i];
+        if (i + 1 >= argc) { fprintf(stderr, "missing value for %s\n", k.c_str()); return 2; }   // no silent dangling arg
         if      (k == "--n")          a.params.n = atoi(argv[i + 1]);
         else if (k == "--frames")     maxFrames = atoi(argv[i + 1]);
         else if (k == "--screenshot") screenshot = argv[i + 1];
@@ -247,8 +251,12 @@ int main(int argc, char** argv)
         else if (k == "--q")      a.params.threadsPerBody = atoi(argv[i + 1]);
         else if (k == "--unroll") a.params.unroll = atoi(argv[i + 1]);
         else if (k == "--seed")   a.seed = unsigned(atoi(argv[i + 1]));
+        else if (k == "--softening") a.params.softening = float(atof(argv[i + 1]));
+        else if (k == "--prefetch")  a.params.prefetch = atoi(argv[i + 1]);
         else { fprintf(stderr, "unknown argument %s\n", k.c_str()); return 2; }
     }
+    if (!(a.params.softening > 0.f)) { fprintf(stderr, "--softening must be > 0\n"); return 2; }
+    if (a.params.n <= 0) { fprintf(stderr, "--n must be > 0\n"); return 2; }
     a.kernel = nbody::findKernel(kernelName);
     if (!a.kernel) { fprintf(stderr, "unknown kernel '%s'\n", kernelName.c_str()); return 2; }
 
@@ -307,18 +315,20 @@ int main(int argc, char** argv)
     CUDA_CHECK(cudaEventCreate(&e0));
     CUDA_CHECK(cudaEventCreate(&e1));
     double titleTimer = glfwGetTime(), simMsAcc = 0.0;
-    int frames = 0, simFrames = 0, totalFrames = 0;
+    int frames = 0, simSteps = 0, totalFrames = 0;
     char lastTitle[256] = "";
     // brightness auto-scales with N so 4k and 1M bodies both look reasonable
     const float baseIntensity = std::clamp(std::sqrt(32768.f / float(n)) * 0.6f, 0.03f, 1.0f);
 
     while (!glfwWindowShouldClose(win)) {
         glfwPollEvents();
+        int stepsThisFrame = 0;
 
         // ---- simulate --------------------------------------------------------
         if (!a.paused) {
             CUDA_CHECK(cudaEventRecord(e0));
-            for (int s = 0; s < a.stepsPerFrame; ++s) nbody::step(a.state, a.params, *a.kernel, 0);
+            stepsThisFrame = a.stepsPerFrame;
+            for (int s = 0; s < stepsThisFrame; ++s) nbody::step(a.state, a.params, *a.kernel, 0);
             CUDA_CHECK(cudaEventRecord(e1));
         }
 
@@ -336,8 +346,11 @@ int main(int argc, char** argv)
             float ms = 0.f;
             CUDA_CHECK(cudaEventSynchronize(e1));
             CUDA_CHECK(cudaEventElapsedTime(&ms, e0, e1));
+            if (a.statsReset) {   // window restarts with the first frame at the new setting
+                simMsAcc = 0.0; simSteps = 0; a.statsReset = false;
+            }
             simMsAcc += ms;
-            ++simFrames;
+            simSteps += stepsThisFrame;   // the steps actually run this frame, not the current setting
         }
 
         // ---- draw ------------------------------------------------------------
@@ -372,7 +385,7 @@ int main(int argc, char** argv)
         double now = glfwGetTime();
         if (now - titleTimer > 0.5) {
             double fps = frames / (now - titleTimer);
-            double msPerStep = simFrames ? simMsAcc / (simFrames * double(a.stepsPerFrame)) : 0.0;
+            double msPerStep = simSteps ? simMsAcc / double(simSteps) : 0.0;
             double tips = msPerStep > 0 ? double(n) * n / (msPerStep * 1e-3) * 1e-12 : 0.0;
             char* title = lastTitle;
             snprintf(title, sizeof lastTitle,
@@ -381,7 +394,7 @@ int main(int argc, char** argv)
                      a.vsync ? "" : " | no vsync", a.paused ? " | PAUSED" : "");
             glfwSetWindowTitle(win, title);
             titleTimer = now;
-            frames = simFrames = 0;
+            frames = simSteps = 0;
             simMsAcc = 0.0;
         }
     }

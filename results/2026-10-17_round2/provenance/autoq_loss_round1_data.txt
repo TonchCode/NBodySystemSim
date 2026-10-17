@@ -1,0 +1,104 @@
+v2 rate curve r(warps) from in-sample data: 2:4.01, 4:8.56, 8:13.70, 14:10.44, 16:16.05, 26:14.45, 28:15.78, 32:16.97
+model              set            cells mean loss   worst  worst cell
+v1                 in-sample         20      1.8%   12.2%  n=4096 b=128 q=4 (best q=16)
+      n=  1000 b=  64  q=16  best=16  loss   0.0%
+      n=  1000 b= 128  q=16  best=16  loss   0.0%
+      n=  1000 b= 256  q=16  best=32  loss   1.4%
+      n=  1000 b= 512  q=32  best=32  loss   0.0%
+      n=  1000 b=1024  q=32  best=32  loss   0.0%
+      n=  4096 b=  64  q= 8  best= 8  loss   0.0%
+      n=  4096 b= 128  q= 4  best=16  loss  12.2%
+      n=  4096 b= 256  q= 4  best=32  loss   8.7%
+      n=  4096 b= 512  q= 8  best= 8  loss   0.0%
+      n=  4096 b=1024  q=16  best=16  loss   0.0%
+      n= 10000 b=  64  q= 2  best= 2  loss   0.0%
+      n= 10000 b= 128  q= 2  best= 4  loss   0.0%
+      n= 10000 b= 256  q= 2  best= 4  loss   7.1%
+      n= 10000 b= 512  q= 4  best= 4  loss   0.0%
+      n= 10000 b=1024  q= 8  best= 8  loss   0.0%
+      n= 65536 b=  64  q= 1  best= 2  loss   6.1%
+      n= 65536 b= 128  q= 2  best= 2  loss   0.0%
+      n= 65536 b= 256  q= 4  best= 4  loss   0.0%
+      n= 65536 b= 512  q= 8  best= 8  loss   0.0%
+      n= 65536 b=1024  q=16  best=16  loss   0.0%
+v1                 out-of-sample     12      0.9%    7.5%  n=20000 b=256 q=1 (best q=2)
+      n=  2048 b= 128  q= 8  best=16  loss   0.3%
+      n=  2048 b= 256  q= 8  best= 8  loss   0.0%
+      n=  2048 b= 512  q=16  best=16  loss   0.0%
+      n=  6000 b= 128  q= 8  best= 8  loss   0.0%
+      n=  6000 b= 256  q=16  best=16  loss   0.0%
+      n=  6000 b= 512  q=32  best=32  loss   0.0%
+      n= 20000 b= 128  q= 1  best= 2  loss   2.3%
+      n= 20000 b= 256  q= 1  best= 2  loss   7.5%
+      n= 20000 b= 512  q= 2  best= 2  loss   0.0%
+      n= 32768 b= 128  q= 4  best= 2  loss   0.3%
+      n= 32768 b= 256  q= 8  best= 8  loss   0.0%
+      n= 32768 b= 512  q=16  best=16  loss   0.0%
+v2(reconstructed)  in-sample         20      1.0%    7.3%  n=4096 b=128 q=8 (best q=16)
+      n=  1000 b=  64  q=16  best=16  loss   0.0%
+      n=  1000 b= 128  q=16  best=16  loss   0.0%
+      n=  1000 b= 256  q=32  best=32  loss   0.0%
+      n=  1000 b= 512  q=32  best=32  loss   0.0%
+      n=  1000 b=1024  q=32  best=32  loss   0.0%
+      n=  4096 b=  64  q= 4  best= 8  loss   4.3%
+      n=  4096 b= 128  q= 8  best=16  loss   7.3%
+      n=  4096 b= 256  q=32  best=32  loss   0.0%
+      n=  4096 b= 512  q=16  best= 8  loss   3.7%
+      n=  4096 b=1024  q=16  best=16  loss   0.0%
+      n= 10000 b=  64  q= 4  best= 2  loss   2.3%
+      n= 10000 b= 128  q= 4  best= 4  loss   0.0%
+      n= 10000 b= 256  q= 8  best= 4  loss   1.4%
+      n= 10000 b= 512  q= 8  best= 4  loss   1.5%
+      n= 10000 b=1024  q= 8  best= 8  loss   0.0%
+      n= 65536 b=  64  q= 2  best= 2  loss   0.0%
+      n= 65536 b= 128  q= 2  best= 2  loss   0.0%
+      n= 65536 b= 256  q= 4  best= 4  loss   0.0%
+      n= 65536 b= 512  q= 8  best= 8  loss   0.0%
+      n= 65536 b=1024  q=16  best=16  loss   0.0%
+v2(reconstructed)  out-of-sample     12      0.6%    3.2%  n=2048 b=256 q=16 (best q=8)
+      n=  2048 b= 128  q=16  best=16  loss   0.0%
+      n=  2048 b= 256  q=16  best= 8  loss   3.2%
+      n=  2048 b= 512  q=16  best=16  loss   0.0%
+      n=  6000 b= 128  q= 8  best= 8  loss   0.0%
+      n=  6000 b= 256  q=16  best=16  loss   0.0%
+      n=  6000 b= 512  q=32  best=32  loss   0.0%
+      n= 20000 b= 128  q= 4  best= 2  loss   0.8%
+      n= 20000 b= 256  q= 4  best= 2  loss   1.0%
+      n= 20000 b= 512  q= 4  best= 2  loss   2.1%
+      n= 32768 b= 128  q= 4  best= 2  loss   0.3%
+      n= 32768 b= 256  q= 8  best= 8  loss   0.0%
+      n= 32768 b= 512  q=16  best=16  loss   0.0%
+sat                in-sample         20      6.8%   26.0%  n=4096 b=64 q=32 (best q=8)
+      n=  1000 b=  64  q=32  best=16  loss   1.5%
+      n=  1000 b= 128  q=32  best=16  loss   4.7%
+      n=  1000 b= 256  q=32  best=32  loss   0.0%
+      n=  1000 b= 512  q=32  best=32  loss   0.0%
+      n=  1000 b=1024  q=32  best=32  loss   0.0%
+      n=  4096 b=  64  q=32  best= 8  loss  26.0%
+      n=  4096 b= 128  q=32  best=16  loss  13.3%
+      n=  4096 b= 256  q=32  best=32  loss   0.0%
+      n=  4096 b= 512  q=32  best= 8  loss  10.2%
+      n=  4096 b=1024  q=32  best=16  loss   9.3%
+      n= 10000 b=  64  q=16  best= 2  loss  23.6%
+      n= 10000 b= 128  q=16  best= 4  loss   7.9%
+      n= 10000 b= 256  q=16  best= 4  loss   5.6%
+      n= 10000 b= 512  q=16  best= 4  loss   4.7%
+      n= 10000 b=1024  q=16  best= 8  loss   5.0%
+      n= 65536 b=  64  q= 2  best= 2  loss   0.0%
+      n= 65536 b= 128  q= 2  best= 2  loss   0.0%
+      n= 65536 b= 256  q= 2  best= 4  loss   4.2%
+      n= 65536 b= 512  q= 2  best= 8  loss  11.5%
+      n= 65536 b=1024  q= 2  best=16  loss   8.0%
+sat                out-of-sample     12      4.8%   14.8%  n=6000 b=128 q=32 (best q=8)
+      n=  2048 b= 128  q=32  best=16  loss   2.9%
+      n=  2048 b= 256  q=32  best= 8  loss   0.5%
+      n=  2048 b= 512  q=32  best=16  loss   7.4%
+      n=  6000 b= 128  q=32  best= 8  loss  14.8%
+      n=  6000 b= 256  q=32  best=16  loss   6.9%
+      n=  6000 b= 512  q=32  best=32  loss   0.0%
+      n= 20000 b= 128  q= 8  best= 2  loss   4.5%
+      n= 20000 b= 256  q= 8  best= 2  loss   2.8%
+      n= 20000 b= 512  q= 8  best= 2  loss   4.6%
+      n= 32768 b= 128  q= 4  best= 2  loss   0.3%
+      n= 32768 b= 256  q= 4  best= 8  loss   3.4%
+      n= 32768 b= 512  q= 4  best=16  loss   9.8%

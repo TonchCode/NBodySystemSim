@@ -74,3 +74,36 @@ Kept the busiest-SM cost model written before measuring (`autoThreadsPerBody`). 
 the best measured q: 1.8% in-sample, 0.9% out-of-sample. The thread-saturation rule loses
 6.8% / 4.8%. A v2 fitted to the measured per-SM rate curve was rejected because it was worse
 out-of-sample (overfit).
+
+## D-009 — Validation gates v2: conditioning-independent, calibrated, in code (2026-10-17, cuda-architect, round 2)
+
+**Supersedes the D-006 thresholds** (D-006 stays as the record of what was decided first).
+Pre-registered in `docs/predictions/2026-10-17-round2.md`, committed before the round-2 runs.
+Implemented in `src/bench/main.cpp` (`kG0/kG1/kG2`). Every validated bench run prints PASS/FAIL,
+and a FAIL exits with code 3.
+- **G1 (primary):** normMax = max |Δa| / Σ_j|f_ij| vs the FP64 sample ≤ **1.0 · u · √N**.
+- **G2 (no regression):** the variant's normMax ≤ **1.5 ×** naive's normMax on the same sample.
+- **G0 (gross bugs):** max rel error vs naive ≤ 1e-2.
+- **Missed interactions:** `nbody_bench --selftest`. An exact-arithmetic lattice (dyadic
+  positions, masses {1, 2}, eps = 1), where every FP32 operation is exact in any order. All
+  1810 variant × N × instrumented cases must be *bitwise* equal to the analytic sum.
+
+**Why each change (critic review 1, #6):**
+1. *Primary metric = normMax, not rms-rel.* rms-rel divides by |a_i|, so it is inflated by
+   κ_i = Σ|f| / |a| exactly like max-rel. That makes the D-006 "rms is not κ-inflated"
+   statement wrong. normMax divides by Σ|f|, so it is conditioning-independent.
+2. *Calibrated, not generic.* Measured naive normMax / (u√N) = 0.47–0.68 over N = 1000…65536
+   (round-1 sanity data, 8 values of N). The old 4·u·√N sat 6–8× above that noise. kG1 = 1.0
+   = 1.5 × the worst measured ratio. Naive itself passes G1 with a ≥ 1.47× margin.
+3. *Statistical gates cannot catch a dropped j at large N.* One missing body changes a_i
+   by about |f_ij| / Σ|f| ≈ 1/N on average: 1.5e-5 at N = 65536, about G1's own threshold.
+   So the dedicated exact test is the gate for that failure class. Shown to work: an injected
+   "drop the last body" bug in tiled, and a "drop one j per tile" bug in one multi config,
+   fail exactly those configs and nothing else. `--selftest-drop J` (body J's mass zeroed in
+   the GPU input only) fails every case where the drop is visible
+   (`results/2026-10-17_round2/phase1_checks/`).
+4. *Worst-conditioned sample by κ, not smallest |a|.* The 16 extra FP64 bodies are the
+   largest-κ ones: a GPU FP32 shortlist of 64, then ranked by FP64 κ.
+
+**Rules out:** gating on rms-rel or max-rel. Using G1 for tree codes: those have a θ-dependent
+truncation error by design and will need their own pre-registered gate.

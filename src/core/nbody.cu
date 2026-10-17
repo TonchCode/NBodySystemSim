@@ -115,7 +115,80 @@ __global__ void kickDriftKernel(float4* pos, float4* vel, const float4* acc, int
     }
 }
 
+// Diagnostic, not a force kernel: scale_i = G * sum_j m_j |r_ij| / (r_ij^2 + eps^2)^(3/2),
+// the sum of force magnitudes (per unit m_i) that body i's FP32 sum is built from. Only used
+// to shortlist the worst-conditioned bodies (largest kappa = scale / |a|); their kappa is then
+// recomputed in FP64 on the host (referenceFp64). FP32 is enough for ranking.
+__global__ void forceScaleKernel(const float4* __restrict__ pos, float* __restrict__ scale, int n,
+                                 float eps2, float G)
+{
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i >= n) return;
+    float4 bi = pos[i];
+    float  sc = 0.f;
+    for (int j = 0; j < n; ++j) {
+        float4 bj = pos[j];
+        float rx = bj.x - bi.x, ry = bj.y - bi.y, rz = bj.z - bi.z;
+        float r2 = fmaf(rx, rx, fmaf(ry, ry, rz * rz));
+        float d2 = r2 + eps2;
+        float inv = rsqrtf(d2);
+        sc = fmaf(bj.w * inv * inv * inv, sqrtf(r2), sc);
+    }
+    scale[i] = G * sc;
+}
+
 } // namespace
+
+namespace {
+
+__device__ __forceinline__ unsigned long long gtimer()
+{
+    unsigned long long t;
+    asm volatile("mov.u64 %0, %%globaltimer;" : "=l"(t));
+    return t;
+}
+
+// One thread per block. Edge = first clock64 after %globaltimer changes value, so (t, c) is
+// a pair taken within one loop iteration of the tick; the latency is the same on every SM.
+__global__ void clockCalKernel(ClockCal* out, unsigned long long spinNs)
+{
+    unsigned smid;
+    asm volatile("mov.u32 %0, %%smid;" : "=r"(smid));
+    unsigned long long t = gtimer(), tn, c;
+    do { tn = gtimer(); c = clock64(); } while (tn == t);
+    const unsigned long long tA = tn, cA = c;
+    while (gtimer() < tA + spinNs) {}
+    t = gtimer();
+    do { tn = gtimer(); c = clock64(); } while (tn == t);
+    out[blockIdx.x] = ClockCal{smid, tA, cA, tn, c};
+}
+
+} // namespace
+
+void clockCalibration(std::vector<ClockCal>& out, int spinUs)
+{
+    // 4 blocks per SM of 32 threads: all co-resident, so every SM gets at least one (checked
+    // by the analysis, which needs one record per SM per phase).
+    const int grid = 4 * deviceSMCount();
+    ClockCal* d = nullptr;
+    CUDA_CHECK(cudaMalloc(&d, grid * sizeof(ClockCal)));
+    clockCalKernel<<<grid, 32>>>(d, (unsigned long long)spinUs * 1000ull);
+    CUDA_CHECK(cudaGetLastError());
+    out.resize(grid);
+    CUDA_CHECK(cudaMemcpy(out.data(), d, grid * sizeof(ClockCal), cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaFree(d));
+}
+
+void forceScale(const DeviceState& s, const Params& p, std::vector<float>& scale)
+{
+    float* d = nullptr;
+    CUDA_CHECK(cudaMalloc(&d, s.n * sizeof(float)));
+    forceScaleKernel<<<(s.n + 255) / 256, 256>>>(s.pos, d, s.n, p.softening * p.softening, p.G);
+    CUDA_CHECK(cudaGetLastError());
+    scale.resize(s.n);
+    CUDA_CHECK(cudaMemcpy(scale.data(), d, s.n * sizeof(float), cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaFree(d));
+}
 
 void step(DeviceState& s, const Params& p, const KernelInfo& k, cudaStream_t stream)
 {
