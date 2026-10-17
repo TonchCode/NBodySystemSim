@@ -88,7 +88,8 @@ def slot_metrics(path):
     if cal["A"] and cal["B"]:
         rows, _ = tla.calibrate(rows, cal)
     sms = int(meta.get("sms", 80))
-    bps = int(meta.get("blocks_per_sm", 12))
+    # round 2: warp-unit timelines carry slots_per_sm (resident warps/SM); block timelines = blocks/SM
+    bps = int(meta.get("slots_per_sm", meta.get("blocks_per_sm", 12)))
     out = []
     for L in sorted({r["launch"] for r in rows}):
         rr = [r for r in rows if r["launch"] == L]

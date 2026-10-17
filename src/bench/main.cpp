@@ -19,6 +19,21 @@
 //   Validation: theta = 0 uses the D-009 gates unchanged (the tree is then an exact,
 //   reordered all-pairs sum); theta > 0 uses the pre-registered tree gates TG1/TG2 (below).
 //
+// Tree round 2 (R3 #6/#7, docs/03-design.md §17): bh_warp, bh_warp_list, bh_warp_naive,
+//   bh_persistent, bh_persistent_lane, bh_persistent_lane_naive, bh_persistent_warp,
+//   bh_persistent_static, and the control bh_coherent (no gates: computes 1 body in 32).
+//   --theta is limited to [0, 1] (bmax safety argument).
+//   --timeline-unit warp   one timeline record per 32-slot work unit (per persistent warp for
+//                          bh_persistent_lane) instead of per block; header has slots_per_sm.
+//   --occ-blocks B         pad each traversal block with dynamic shared memory so that at most B
+//                          blocks are resident per SM (occupancy sweep at fixed N). Note: the
+//                          padding also shrinks the L1 carve-out, so compare with --occ-blocks 12.
+//   Sibling checks on every run of a round-2 kernel: TG3 (union-walk error <= #5's at the same
+//   theta, and per slot never fewer pops/interactions), union work ratio, and bitwise equality +
+//   equal per-slot counts against the exact sibling (persistent arms: exactly-once processing).
+//   CSV (new header): ginteractions_per_s / gflops = the REAL interaction rate (tree: counted
+//   interactions / pipeline time); N^2 / time is n2equiv_ginter_per_s (critic review 2, #5).
+//
 // Load imbalance without ncu (critic review 1, #1):
 //   --timeline out.csv [--timeline-launches 3]
 //       Times the production kernel and its instrumented twin interleaved (overhead), then runs
@@ -51,6 +66,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <cstdint>
 #include <cstring>
 #include <fstream>
 #include <random>
@@ -70,6 +86,8 @@ struct Args {
     bool list = false, validate = true, energy = false, selftest = false;
     float dt = 1e-3f, softening = 1e-2f, theta = 0.5f;
     int   leaf = 16;
+    int   occBlocks = 0;                 // tree round 2: cap resident blocks/SM (shared-memory padding)
+    std::string tlUnit = "block";        // timeline record unit: block | warp
 };
 
 int toInt(const char* flag, const char* v)
@@ -128,6 +146,8 @@ Args parse(int argc, char** argv)
         else if (s == "--leaf")              a.leaf = nexti();
         else if (s == "--tree-stats")        a.treeStats = next();
         else if (s == "--selftest-drop")     { a.selftestDrop = nexti(); a.selftest = true; }
+        else if (s == "--occ-blocks")        a.occBlocks = nexti();
+        else if (s == "--timeline-unit")     a.tlUnit = next();
         else { fprintf(stderr, "unknown argument %s\n", s.c_str()); exit(2); }
     }
     // eps <= 0 makes the self-term 0 * rsqrt(0) = NaN (critic review 1, #12).
@@ -135,7 +155,10 @@ Args parse(int argc, char** argv)
     if (a.n <= 0)             { fprintf(stderr, "--n must be > 0\n"); exit(2); }
     if (!(a.dt > 0.f))        { fprintf(stderr, "--dt must be > 0\n"); exit(2); }
     if (a.prefetch != 0 && a.prefetch != 1) { fprintf(stderr, "--prefetch must be 0 or 1\n"); exit(2); }
-    if (!(a.theta >= 0.f) || a.theta > 2.f) { fprintf(stderr, "--theta must be in [0, 2]\n"); exit(2); }
+    // theta <= 1: the bmax criterion's safety argument holds only there (critic review 2, #11).
+    if (!(a.theta >= 0.f) || a.theta > 1.f) { fprintf(stderr, "--theta must be in [0, 1]\n"); exit(2); }
+    if (a.tlUnit != "block" && a.tlUnit != "warp") { fprintf(stderr, "--timeline-unit must be block or warp\n"); exit(2); }
+    if (a.occBlocks < 0 || a.occBlocks > 24) { fprintf(stderr, "--occ-blocks must be in [0, 24]\n"); exit(2); }
     if (a.leaf < 1) { fprintf(stderr, "--leaf must be >= 1\n"); exit(2); }
     return a;
 }
@@ -241,6 +264,82 @@ WarpStats warpStats(const std::vector<uint4>& wc, int n, const std::string& csvP
 }
 
 // ---------------------------------------------------------------------------------------
+// Tree round 2 helpers (docs/03-design.md §17).
+struct RelStats { double rms = -1, p99 = -1; };
+
+// rms and p99 of the per-body relative error |a - ref| / |ref| (same definitions as the TG1/TG2
+// code in main: rms as compareAcc, p99 as the nth_element at floor(0.99 n)).
+RelStats relStats(const std::vector<float4>& acc, const std::vector<float4>& ref)
+{
+    std::vector<double> rel(acc.size());
+    double ss = 0;
+    for (size_t i = 0; i < acc.size(); ++i) {
+        const double dx = double(acc[i].x) - ref[i].x, dy = double(acc[i].y) - ref[i].y, dz = double(acc[i].z) - ref[i].z;
+        const double rn = std::sqrt(double(ref[i].x) * ref[i].x + double(ref[i].y) * ref[i].y + double(ref[i].z) * ref[i].z);
+        rel[i] = std::sqrt(dx * dx + dy * dy + dz * dz) / (rn > 0 ? rn : 1.0);
+        ss += rel[i] * rel[i];
+    }
+    RelStats r;
+    if (rel.empty()) return r;
+    r.rms = std::sqrt(ss / double(rel.size()));
+    const size_t at = std::min(rel.size() - 1, size_t(0.99 * double(rel.size())));
+    std::nth_element(rel.begin(), rel.begin() + at, rel.end());
+    r.p99 = rel[at];
+    return r;
+}
+
+// Production launch of k on s (acc poisoned with NaN first), result downloaded.
+std::vector<float4> runAcc(const nbody::KernelInfo& k, const nbody::DeviceState& s, const nbody::Params& p)
+{
+    std::vector<float4> out;
+    CUDA_CHECK(cudaMemset(s.acc, 0xFF, size_t(s.n) * sizeof(float4)));
+    nbody::Params q = p;
+    q.timeline = nullptr; q.workCounters = nullptr; q.phaseEvents = nullptr;
+    k.launch(s, q, 0);
+    CUDA_CHECK(cudaDeviceSynchronize());
+    nbody::downloadAcc(s, out);
+    return out;
+}
+
+// Instrumented launch with zeroed work counters (one uint4 per thread slot); optional acc.
+std::vector<uint4> runCounters(const nbody::KernelInfo& k, const nbody::DeviceState& s, const nbody::Params& p,
+                               std::vector<float4>* accOut = nullptr)
+{
+    uint4* d = nullptr;
+    CUDA_CHECK(cudaMalloc(&d, size_t(s.n) * sizeof(uint4)));
+    CUDA_CHECK(cudaMemset(d, 0, size_t(s.n) * sizeof(uint4)));
+    CUDA_CHECK(cudaMemset(s.acc, 0xFF, size_t(s.n) * sizeof(float4)));
+    nbody::Params q = p;
+    q.timeline = nullptr; q.phaseEvents = nullptr; q.workCounters = d;
+    k.launch(s, q, 0);
+    CUDA_CHECK(cudaDeviceSynchronize());
+    std::vector<uint4> h(s.n);
+    CUDA_CHECK(cudaMemcpy(h.data(), d, size_t(s.n) * sizeof(uint4), cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaFree(d));
+    if (accOut) nbody::downloadAcc(s, *accOut);
+    return h;
+}
+
+// Slots whose pop (x) or interaction (y) count differs / is below the other run's.
+int countDiff(const std::vector<uint4>& a, const std::vector<uint4>& b)
+{
+    int d = 0;
+    for (size_t i = 0; i < a.size(); ++i) d += (a[i].x != b[i].x || a[i].y != b[i].y);
+    return d;
+}
+int countBelow(const std::vector<uint4>& a, const std::vector<uint4>& b)
+{
+    int d = 0;
+    for (size_t i = 0; i < a.size(); ++i) d += (a[i].x < b[i].x || a[i].y < b[i].y);
+    return d;
+}
+
+bool bitwiseEq(const std::vector<float4>& a, const std::vector<float4>& b)
+{
+    return a.size() == b.size() && std::memcmp(a.data(), b.data(), a.size() * sizeof(float4)) == 0;
+}
+
+// ---------------------------------------------------------------------------------------
 // Exact missed-interaction self-test.
 // Positions X_i = integers in [-16, 15] times 2^-20, masses m_j in {1, 2}, eps = 1, G = 1.
 // Then |r| < 2^-15, r^2 < 2^-30, so every fmaf in d2 rounds to exactly eps^2 = 1, rsqrtf(1) =
@@ -282,6 +381,8 @@ std::vector<SelftestCase> allConfigs(int n)
                 snprintf(buf, sizeof buf, "multi b%d q%d pf%d", b, q, pf);
                 out.push_back({&k, p, buf});
             }
+        } else if (name == "bh_coherent") {
+            continue;   // diagnostic control: computes 1 body in 32 by design (tested in runTreeSelftest)
         } else if (name.rfind("bh_", 0) == 0) {
             // theta = 0: every node is opened, so the tree is an exact all-pairs sum through the
             // leaf buckets; on the lattice that must be bitwise equal to the analytic sum.
@@ -365,6 +466,152 @@ int runTreeSelftest(unsigned seed)
             }
             release(s);
         }
+    // ---- tree round 2 (docs/03-design.md §17.6) ------------------------------------------------
+    //  (e) every round-2 kernel: instrumented twin bitwise equal to production;
+    //  (f) persistent arms bitwise equal to their non-persistent sibling, with EQUAL per-slot pop and
+    //      interaction counts (counters accumulate, so a body processed 0 or 2 times is caught);
+    //      bh_warp_list and bh_persistent_warp bitwise equal to bh_warp;
+    //  (g) union walks: per slot, pops and interactions never below #5's (#4's for bh_warp_naive),
+    //      and (n >= 1000, theta > 0) rms and p99 error not above the sibling's (TG3);
+    //  (h) theta = 0 on random ICs: the union walks are bitwise equal to bh_sorted;
+    //  (i) exact theta > 0 host check (n <= 10007): FP64 node recompute + host walk, for #5 and #7;
+    //  (j) the coherent control computes exactly one body per warp, bitwise equal to bh_sorted's;
+    //  (k) per-warp-unit timeline records: every unit written once with sane stamps.
+    {
+        const char* r2[] = {"bh_warp", "bh_warp_list", "bh_warp_naive", "bh_persistent", "bh_persistent_lane",
+                            "bh_persistent_lane_naive", "bh_persistent_warp", "bh_persistent_static"};
+        const int c0 = cases, f0 = fails;
+        double worstExact = 0;
+        for (const char* ic : ics)
+            for (int n : ns) {
+                std::vector<float4> pos, vel;
+                makeIC(ic, n, seed, pos, vel);
+                DeviceState s = allocate(n);
+                upload(s, pos, vel);
+                for (int cfg = 0; cfg < 3; ++cfg) {
+                    if (cfg == 2 && n > 10007) continue;
+                    Params p;
+                    p.n = n; p.blockSize = cfg == 1 ? 256 : 128; p.leafSize = cfg == 1 ? 8 : 16;
+                    p.theta = cfg == 0 ? 0.5f : (cfg == 1 ? 0.7f : 0.f);
+                    const KernelInfo* k4 = findKernel("bh_naive");
+                    const KernelInfo* k5 = findKernel("bh_sorted");
+                    std::vector<float4> acc4, acc5, acc7;
+                    const std::vector<uint4> wc4 = runCounters(*k4, s, p, &acc4);
+                    const std::vector<uint4> wc5 = runCounters(*k5, s, p, &acc5);
+                    std::vector<uint4> wc7;
+                    std::vector<float4> ref;
+                    const bool errCheck = n >= 1000 && p.theta > 0.f;
+                    if (errCheck) referenceAcc(s, p, ref);
+                    for (const char* nm : r2) {
+                        const KernelInfo* k = findKernel(nm);
+                        const LaunchInfo  li = k->query(n, p);
+                        std::vector<float4> ai;
+                        const std::vector<uint4> wci = runCounters(*k, s, p, &ai);
+                        std::vector<float4> ap = runAcc(*k, s, p);
+                        const std::string name = nm;
+                        if (name == "bh_persistent_static") {   // again, now partitioned on measured costs
+                            const std::vector<float4> ap2 = runAcc(*k, s, p);
+                            ++cases;
+                            if (!bitwiseEq(ap, ap2)) { ++fails; printf("  FAIL %s n=%d %s: result changes with the partition\n", ic, n, nm); }
+                        }
+                        ++cases;
+                        if (!bitwiseEq(ai, ap)) { ++fails; printf("  FAIL %s n=%d %s th%.1f: instrumented != production\n", ic, n, nm, p.theta); }
+                        if (name == "bh_warp") { acc7 = ap; wc7 = wci; }
+                        if (li.exactSibling) {
+                            const std::string sib = li.exactSibling;
+                            const std::vector<float4>& ra = sib == "bh_warp" ? acc7 : (sib == "bh_naive" ? acc4 : acc5);
+                            const std::vector<uint4>&  rw = sib == "bh_warp" ? wc7 : (sib == "bh_naive" ? wc4 : wc5);
+                            ++cases;
+                            if (!bitwiseEq(ap, ra)) { ++fails; printf("  FAIL %s n=%d %s th%.1f: not bitwise equal to %s\n", ic, n, nm, p.theta, li.exactSibling); }
+                            ++cases;
+                            if (const int d = countDiff(wci, rw)) {
+                                ++fails; printf("  FAIL %s n=%d %s th%.1f: %d slots with counts != %s (not exactly once)\n", ic, n, nm, p.theta, d, li.exactSibling);
+                            }
+                        }
+                        if (li.errorSibling) {
+                            const bool naiveSib = std::string(li.errorSibling) == "bh_naive";
+                            ++cases;
+                            if (const int b = countBelow(wci, naiveSib ? wc4 : wc5)) {
+                                ++fails; printf("  FAIL %s n=%d %s th%.1f: %d slots with fewer pops/interactions than %s\n", ic, n, nm, p.theta, b, li.errorSibling);
+                            }
+                            if (p.theta == 0.f) {
+                                ++cases;
+                                if (!bitwiseEq(ap, naiveSib ? acc4 : acc5)) { ++fails; printf("  FAIL %s n=%d %s th0: not bitwise equal to %s\n", ic, n, nm, li.errorSibling); }
+                            }
+                            if (errCheck) {
+                                const RelStats e = relStats(ap, ref), es = relStats(naiveSib ? acc4 : acc5, ref);
+                                ++cases;
+                                if (!(e.rms <= es.rms && e.p99 <= es.p99)) {
+                                    ++fails; printf("  FAIL %s n=%d %s th%.1f: TG3 rms %.3e > %.3e or p99 %.3e > %.3e\n", ic, n, nm, p.theta, e.rms, es.rms, e.p99, es.p99);
+                                }
+                                if (name == "bh_warp" && n == 65536 && cfg == 0)
+                                    printf("  union %-9s n=%d: rms %.3e vs #5 %.3e, p99 %.3e vs %.3e\n", ic, n, e.rms, es.rms, e.p99, es.p99);
+                            }
+                        }
+                    }
+                    if (n <= 10007 && p.theta > 0.f) {   // (i)
+                        const float eps2 = p.softening * p.softening;
+                        for (int uw = 0; uw <= 1; ++uw) {
+                            const TreeExactCheck x = checkLastTreeExact(uw ? acc7 : acc5, uw ? &wc7 : &wc5, eps2, p.G, uw == 1);
+                            ++cases;
+                            worstExact = std::max(worstExact, x.maxErrOverBound);
+                            if (!x.ok) { ++fails; printf("  FAIL exact host check %s n=%d %s th%.1f: %s\n", ic, n, uw ? "union" : "#5", p.theta, x.msg.c_str()); }
+                            if (n == 10007 && cfg == 0 && std::string(ic) == "plummer")
+                                printf("  exact host check plummer n=%d %s: %d nodes (max mass rel %.1e, COM abs %.1e, bmax abs %.1e), "
+                                       "%d bodies, count mismatches %d, max |da|/sum|f| = %.3f of (I+10)u\n", n,
+                                       uw ? "union walk" : "#5 walk", x.nodes, x.maxMassRel, x.maxComAbs, x.maxBmaxAbs, x.bodies,
+                                       x.countMismatch, x.maxErrOverBound);
+                        }
+                    }
+                }
+                release(s);
+            }
+        {   // (j) coherent control and (k) unit timelines, plummer
+            for (int n : {1000, 10007, 65536}) {
+                std::vector<float4> pos, vel;
+                makeIC("plummer", n, seed, pos, vel);
+                DeviceState s = allocate(n);
+                upload(s, pos, vel);
+                Params p;
+                p.n = n; p.blockSize = 128; p.theta = 0.5f; p.leafSize = 16;
+                const std::vector<float4> a5 = runAcc(*findKernel("bh_sorted"), s, p);
+                const std::vector<float4> ac = runAcc(*findKernel("bh_coherent"), s, p);
+                int written = 0, wrong = 0;
+                for (int i = 0; i < n; ++i)
+                    if (!std::isnan(ac[i].x)) { ++written; if (std::memcmp(&ac[i], &a5[i], 16) != 0) ++wrong; }
+                ++cases;
+                if (written != (n + 31) / 32 || wrong) {
+                    ++fails; printf("  FAIL coherent control n=%d: %d bodies written (want %d), %d differ from bh_sorted\n", n, written, (n + 31) / 32, wrong);
+                }
+                const char* tk[] = {"bh_sorted", "bh_warp", "bh_warp_list", "bh_persistent", "bh_persistent_lane",
+                                    "bh_persistent_warp", "bh_persistent_static", "bh_coherent"};
+                for (const char* nm : tk) {
+                    const KernelInfo* k = findKernel(nm);
+                    Params q = p;
+                    q.timelineWarp = 1;
+                    q.timeline = reinterpret_cast<BlockStamp*>(uintptr_t(16));
+                    const int rec = k->query(n, q).timelineRecords;
+                    BlockStamp* d = nullptr;
+                    CUDA_CHECK(cudaMalloc(&d, size_t(rec) * sizeof(BlockStamp)));
+                    CUDA_CHECK(cudaMemset(d, 0, size_t(rec) * sizeof(BlockStamp)));
+                    q.timeline = d;
+                    k->launch(s, q, 0);
+                    CUDA_CHECK(cudaDeviceSynchronize());
+                    std::vector<BlockStamp> h(rec);
+                    CUDA_CHECK(cudaMemcpy(h.data(), d, size_t(rec) * sizeof(BlockStamp), cudaMemcpyDeviceToHost));
+                    CUDA_CHECK(cudaFree(d));
+                    int bad = 0;
+                    for (int b = 0; b < rec; ++b)
+                        if (h[b].block != unsigned(b) || h[b].t0 == 0 || h[b].t1 < h[b].t0 || h[b].c1 < h[b].c0 || h[b].smid >= 1024) ++bad;
+                    ++cases;
+                    if (bad) { ++fails; printf("  FAIL warp-unit timeline %s n=%d: %d/%d records invalid\n", nm, n, bad, rec); }
+                }
+                release(s);
+            }
+        }
+        printf("selftest (tree round 2): %d checks, %d failed; exact host check worst |da|/sum|f| = %.3f of its (I+10)u bound\n",
+               cases - c0, fails - f0, worstExact);
+    }
     const int ov = treeStackOverflows(true);
     ++cases;
     if (ov) { ++fails; printf("  FAIL tree stack overflows: %d\n", ov); }
@@ -444,7 +691,8 @@ int runSelftest(int dropBody, unsigned seed)
                                acc[firstBad].y, acc[firstBad].z, ex[firstBad], ey[firstBad], ez[firstBad]);
                 }
                 if (tl) {   // the stamps themselves: every block written once, sane times
-                    const int grid = c.k->query(n, p).gridBlocks;
+                    const LaunchInfo lq = c.k->query(n, p);
+                    const int grid = lq.timelineRecords > 0 ? lq.timelineRecords : lq.gridBlocks;
                     hTl.resize(grid);
                     CUDA_CHECK(cudaMemcpy(hTl.data(), dTl, grid * sizeof(BlockStamp), cudaMemcpyDeviceToHost));
                     int sb = 0;
@@ -500,6 +748,7 @@ int main(int argc, char** argv)
     p.n = a.n; p.blockSize = a.block; p.dt = a.dt; p.softening = a.softening;
     p.unroll = a.unroll; p.threadsPerBody = a.q; p.prefetch = a.prefetch;
     p.theta = a.theta; p.leafSize = a.leaf;
+    p.timelineWarp = a.tlUnit == "warp" ? 1 : 0;
 
     // ---- launch configuration + occupancy (what will actually run) -------------
     LaunchInfo li;
@@ -519,7 +768,20 @@ int main(int argc, char** argv)
     };
     if (k->query) {
         li  = k->query(p.n, p);
+        if (a.occBlocks > 0) {   // occupancy sweep at fixed N (critic review 2, #6): pad dynamic smem
+            if (!li.approximate) { fprintf(stderr, "--occ-blocks: tree kernels only\n"); return 2; }
+            const int per = dp.sharedMemPerMultiprocessor / a.occBlocks;   // 102400 B / B
+            const int pad = per - int(dp.reservedSharedMemPerBlock) - int(li.dynSmem);
+            if (pad < 0) { fprintf(stderr, "--occ-blocks %d: no room for padding\n", a.occBlocks); return 2; }
+            p.smemPad = pad;
+            li = k->query(p.n, p);
+            printf("# occupancy cap: --occ-blocks %d -> %d B padding per block -> resident %d blocks/SM%s\n", a.occBlocks,
+                   pad, li.blocksPerSM, li.blocksPerSM == a.occBlocks ? "" : "  (WARNING: not the requested value)");
+        }
         occ = printLaunch("launch ", li);
+        if (li.persistent) printf("# persistent: grid = min(resident blocks/SM x %d SMs, blocks with work) = %d blocks (%d warps)\n", sms,
+                                  li.gridBlocks, li.gridBlocks * li.blockThreads / 32);
+        if (li.control) printf("# CONTROL kernel: forces of only 1 body in 32 are computed; validation and gates are skipped\n");
     }
 
     // ---- instrumented twin (timeline) ---------------------------------------
@@ -529,9 +791,12 @@ int main(int argc, char** argv)
     LaunchInfo liTl;
     if (wantTl) {
         if (!k->query) { fprintf(stderr, "--timeline: kernel %s has no query\n", k->name); return 2; }
-        CUDA_CHECK(cudaMalloc(&dTl, size_t(li.gridBlocks) * a.timelineLaunches * sizeof(BlockStamp)));
-        pTl.timeline = dTl;
+        pTl.timeline = reinterpret_cast<BlockStamp*>(uintptr_t(16));   // query only tests for non-null
         liTl = k->query(p.n, pTl);
+        if (liTl.timelineRecords <= 0) liTl.timelineRecords = liTl.gridBlocks;
+        if (liTl.timelineSlotsPerSM <= 0) liTl.timelineSlotsPerSM = liTl.blocksPerSM;
+        CUDA_CHECK(cudaMalloc(&dTl, size_t(liTl.timelineRecords) * a.timelineLaunches * sizeof(BlockStamp)));
+        pTl.timeline = dTl;
         if (!liTl.instrumented) { fprintf(stderr, "--timeline: kernel %s has no instrumented build\n", k->name); return 2; }
         printLaunch("timeline", liTl);
         if (liTl.blocksPerSM != li.blocksPerSM)
@@ -585,26 +850,35 @@ int main(int argc, char** argv)
     const double inter = double(p.n) * p.n;
     const double ips   = inter / (med * 1e-3);
     const double gflop = ips * kFlopsPerInteraction * 1e-9;
-    printf("kernel=%s n=%d block=%d q=%d prefetch=%d unroll=%d runs=%d batch=%d  median=%.4f ms  min=%.4f  max=%.4f  "
-           "%.3f Ginteractions/s  %.1f GFLOP/s (@%.0f FLOP/interaction)\n",
-           k->name, p.n, p.blockSize, li.threadsPerBody, li.prefetch, li.unroll, a.runs, a.batch, med, sorted.front(),
-           sorted.back(), ips * 1e-9, gflop, kFlopsPerInteraction);
+    // Tree kernels (critic review 2, #5): N^2 / time is NOT the tree's interaction rate, so it is
+    // labelled N^2-equivalent; the real rates are on the work: line and in the CSV.
+    if (li.approximate)
+        printf("kernel=%s n=%d block=%d q=%d prefetch=%d unroll=%d runs=%d batch=%d  median=%.4f ms  min=%.4f  max=%.4f  "
+               "%.3f G N^2-equivalent interactions/s (not the tree rate; see the work: line)\n",
+               k->name, p.n, p.blockSize, li.threadsPerBody, li.prefetch, li.unroll, a.runs, a.batch, med, sorted.front(),
+               sorted.back(), ips * 1e-9);
+    else
+        printf("kernel=%s n=%d block=%d q=%d prefetch=%d unroll=%d runs=%d batch=%d  median=%.4f ms  min=%.4f  max=%.4f  "
+               "%.3f Ginteractions/s  %.1f GFLOP/s (@%.0f FLOP/interaction)\n",
+               k->name, p.n, p.blockSize, li.threadsPerBody, li.prefetch, li.unroll, a.runs, a.batch, med, sorted.front(),
+               sorted.back(), ips * 1e-9, gflop, kFlopsPerInteraction);
 
     if (wantTl) {
         const double medTl = median(msTl);
         printf("timeline: instrumented median %.4f ms vs production %.4f ms  overhead %+.2f%%\n", medTl, med,
                100.0 * (medTl / med - 1.0));
-        CUDA_CHECK(cudaMemset(dTl, 0, size_t(li.gridBlocks) * a.timelineLaunches * sizeof(BlockStamp)));
+        const int nRec = liTl.timelineRecords;
+        CUDA_CHECK(cudaMemset(dTl, 0, size_t(nRec) * a.timelineLaunches * sizeof(BlockStamp)));
         std::vector<ClockCal> calBefore, calAfter;
         clockCalibration(calBefore);   // synchronous; anchors every SM's clock64 to %globaltimer
         for (int l = 0; l < a.timelineLaunches; ++l) {   // back to back, like a batch
             Params pl = pTl;
-            pl.timeline = dTl + size_t(l) * li.gridBlocks;
+            pl.timeline = dTl + size_t(l) * nRec;
             k->launch(s, pl, 0);
         }
         CUDA_CHECK(cudaDeviceSynchronize());
         clockCalibration(calAfter);
-        std::vector<BlockStamp> h(size_t(li.gridBlocks) * a.timelineLaunches);
+        std::vector<BlockStamp> h(size_t(nRec) * a.timelineLaunches);
         CUDA_CHECK(cudaMemcpy(h.data(), dTl, h.size() * sizeof(BlockStamp), cudaMemcpyDeviceToHost));
         std::ofstream f(a.timeline);
         if (!f) { fprintf(stderr, "cannot write %s\n", a.timeline.c_str()); return 1; }
@@ -613,19 +887,21 @@ int main(int argc, char** argv)
           << " grid=" << li.gridBlocks << " sms=" << sms << " blocks_per_sm=" << liTl.blocksPerSM
           << " regs=" << liTl.regsPerThread << " regs_production=" << li.regsPerThread
           << " launches=" << a.timelineLaunches << " batch=" << a.batch << " runs=" << a.runs
-          << " prod_median_ms=" << med << " tl_median_ms=" << median(msTl) << "\n";
+          << " prod_median_ms=" << med << " tl_median_ms=" << median(msTl) << " unit=" << a.tlUnit
+          << " records=" << nRec << " slots_per_sm=" << liTl.timelineSlotsPerSM << " theta=" << p.theta
+          << " leaf=" << p.leafSize << " ic=" << a.ic << " smem_pad=" << p.smemPad << "\n";
         for (int ph = 0; ph < 2; ++ph)
             for (const ClockCal& c : ph ? calAfter : calBefore)
                 f << "#cal," << (ph ? 'B' : 'A') << ',' << c.smid << ',' << c.tA << ',' << c.cA << ',' << c.tB
                   << ',' << c.cB << '\n';
         f << "launch,block,smid,t_start_ns,t_end_ns,cyc_start,cyc_end\n";
         for (int l = 0; l < a.timelineLaunches; ++l)
-            for (int b = 0; b < li.gridBlocks; ++b) {
-                const BlockStamp& r = h[size_t(l) * li.gridBlocks + b];
+            for (int b = 0; b < nRec; ++b) {
+                const BlockStamp& r = h[size_t(l) * nRec + b];
                 f << l << ',' << r.block << ',' << r.smid << ',' << r.t0 << ',' << r.t1 << ',' << r.c0 << ','
                   << r.c1 << '\n';
             }
-        printf("timeline: %d launches x %d blocks -> %s\n", a.timelineLaunches, li.gridBlocks, a.timeline.c_str());
+        printf("timeline: %d launches x %d %s records -> %s\n", a.timelineLaunches, nRec, a.tlUnit.c_str(), a.timeline.c_str());
         CUDA_CHECK(cudaFree(dTl));
     }
 
@@ -633,6 +909,7 @@ int main(int argc, char** argv)
     std::vector<double> phaseMed;
     WarpStats ws;
     int stackOverflows = 0;
+    std::vector<uint4> wcOwn;
     if (li.nPhases > 0) {
         std::vector<cudaEvent_t> ev(li.nPhases + 1);
         for (auto& e : ev) CUDA_CHECK(cudaEventCreate(&e));
@@ -667,6 +944,7 @@ int main(int argc, char** argv)
         CUDA_CHECK(cudaMemcpy(wc.data(), dWc, size_t(p.n) * sizeof(uint4), cudaMemcpyDeviceToHost));
         CUDA_CHECK(cudaFree(dWc));
         ws = warpStats(wc, p.n, a.treeStats);
+        wcOwn = wc;
         const double trav = phaseMed.back();
         printf("work: %.1f interactions/body (%.3e total), %.1f nodes popped/body | per-warp max/mean %.3f "
                "(median warp %.3f) | SIMT eff interactions %.3f, pops %.3f | warp-cost max/mean %.2f | "
@@ -674,6 +952,10 @@ int main(int argc, char** argv)
                ws.interPerBody, double(ws.totalInter), ws.visitsPerBody, ws.warpMaxMean, ws.warpMaxMeanMedian,
                ws.simtInter, ws.simtVisit, ws.interWarp, trav > 0 ? ws.totalInter / (trav * 1e-3) * 1e-9 : 0.0,
                a.treeStats.empty() ? "" : ("  -> " + a.treeStats).c_str());
+        printf("rates: real %.2f G interactions/s over the full pipeline (%.4f ms), %.2f over the traversal; "
+               "N^2-equivalent %.1f G/s%s\n", ws.totalInter / (med * 1e-3) * 1e-9, med,
+               trav > 0 ? ws.totalInter / (trav * 1e-3) * 1e-9 : 0.0, ips * 1e-9,
+               li.control ? "  (control: lane-work; 1 body in 32 computed)" : "");
         stackOverflows = treeStackOverflows(true);
         if (stackOverflows) printf("ERROR: %d traversal stack overflows (results invalid)\n", stackOverflows);
     }
@@ -685,7 +967,12 @@ int main(int argc, char** argv)
     bool gateFail = false;
     double errP50 = -1.0, errP99 = -1.0;
     const bool treeGates = li.approximate && p.theta > 0.f;
-    if (a.validate) {
+    std::string tg3 = "na", exactMatch = "na", countsMatch = "na";
+    double sibRms = -1, sibP99 = -1, unionI = -1, unionV = -1;
+    if (li.control) {
+        printf("gates: not evaluated (control kernel)\n");
+        gates = "control";
+    } else if (a.validate) {
         k->launch(s, p, 0);   // the timed production result (the twins above rewrote acc)
         CUDA_CHECK(cudaDeviceSynchronize());
         downloadAcc(s, acc);
@@ -777,6 +1064,48 @@ int main(int argc, char** argv)
         } else if (stackOverflows) {
             gateFail = true; gates = "FAIL";
         }
+        // ---- tree round 2 sibling checks (docs/03-design.md §17.6), on the full-N run:
+        //   errorSibling   TG3: union-walk error <= the sibling's (#5 or #4) at the same theta, and
+        //                  per slot I and V never below the sibling's (the union only opens more);
+        //   counterSibling work ratio (union overhead) vs the sibling's counters;
+        //   exactSibling   accelerations bitwise equal and per-slot counts equal (exactly once).
+        if (li.errorSibling && treeGates) {
+            const KernelInfo* ks = findKernel(li.errorSibling);
+            const RelStats rs = relStats(runAcc(*ks, s, p), ref);
+            sibRms = rs.rms; sibP99 = rs.p99;
+            const bool ok = rmsRel <= rs.rms && errP99 <= rs.p99;
+            tg3 = ok ? "PASS" : "FAIL";
+            printf("TG3 (error <= %s at theta=%.2f): rms %.3e vs %.3e (ratio %.3f), p99 %.3e vs %.3e (ratio %.3f) => %s\n",
+                   li.errorSibling, p.theta, rmsRel, rs.rms, rmsRel / rs.rms, errP99, rs.p99, errP99 / rs.p99, tg3.c_str());
+            if (!ok) { gateFail = true; gates = "FAIL"; }
+        }
+        if (li.counterSibling && !wcOwn.empty()) {
+            const std::vector<uint4> wcs = runCounters(*findKernel(li.counterSibling), s, p);
+            long long si = 0, sv = 0;
+            for (const uint4& c : wcs) { si += c.y; sv += c.x; }
+            unionI = si > 0 ? double(ws.totalInter) / double(si) : -1;
+            unionV = sv > 0 ? double(ws.totalVisits) / double(sv) : -1;
+            printf("work vs %s: interactions x%.4f, pops x%.4f", li.counterSibling, unionI, unionV);
+            if (li.errorSibling) {
+                const int below = countBelow(wcOwn, wcs);
+                printf(" | slots with fewer pops or interactions than %s: %d (must be 0)", li.counterSibling, below);
+                if (below) { gateFail = true; gates = "FAIL"; tg3 = "FAIL"; }
+            }
+            printf("\n");
+        }
+        if (li.exactSibling) {
+            const KernelInfo*   kx  = findKernel(li.exactSibling);
+            const std::vector<float4> ax = runAcc(*kx, s, p);
+            const bool bit = bitwiseEq(ax, acc);
+            int diff = -1;
+            if (!wcOwn.empty()) diff = countDiff(wcOwn, runCounters(*kx, s, p));
+            exactMatch  = bit ? "yes" : "NO";
+            countsMatch = diff == 0 ? "yes" : (diff < 0 ? "na" : "NO");
+            printf("exact vs %s: accelerations %s, per-slot pop/interaction counts %s (%d slots differ; "
+                   "equal counts = every body processed exactly once)\n",
+                   li.exactSibling, bit ? "bitwise equal" : "DIFFER", countsMatch.c_str(), diff);
+            if (!bit || diff > 0) { gateFail = true; gates = "FAIL"; }
+        }
     } else {
         printf("gates: not evaluated (--no-validate)\n");
     }
@@ -788,7 +1117,12 @@ int main(int argc, char** argv)
             "ginteractions_per_s,gflops,max_rel_err,rms_rel_err,fp64_rms_rel,fp64_max_rel,fp64_norm_max,"
             "naive_fp64_norm_max,kappa_max,g1,g2,gates,batch,warmup_ms,ic,theta,leaf,err_p50,err_p99,"
             "inter_per_body,visits_per_body,warp_max_mean,simt_eff_inter,simt_eff_visit,warp_cost_max_mean,"
-            "ph_keys_ms,ph_sort_ms,ph_tree_ms,ph_order_ms,ph_traverse_ms,stack_overflows";
+            "ph_keys_ms,ph_sort_ms,ph_tree_ms,ph_order_ms,ph_traverse_ms,stack_overflows,"
+            "n2equiv_ginter_per_s,trav_ginter_per_s,occ_blocks,smem_pad,persistent,control,"
+            "sib_rms,sib_p99,tg3,union_inter_ratio,union_visit_ratio,exact_match,counts_match";
+        // Round 2 (critic review 2, #5): ginteractions_per_s / gflops hold the REAL interaction rate
+        // (all-pairs: N^2; trees: counted interactions / pipeline time); N^2 / time is in
+        // n2equiv_ginter_per_s. Older CSVs (other header) are refused for appending.
         std::string first;
         {
             std::ifstream in(a.csv);
@@ -800,12 +1134,15 @@ int main(int argc, char** argv)
         }
         std::ofstream f(a.csv, std::ios::app);
         if (first.empty()) f << kHeader << '\n';
+        const double realInter = li.approximate ? double(ws.totalInter) : inter;
+        const double travMs    = phaseMed.empty() ? -1.0 : phaseMed.back();
         for (int i = 0; i < a.runs; ++i) {
-            double ipsi = inter / (ms[i] * 1e-3);
+            double ipsi  = realInter > 0 ? realInter / (ms[i] * 1e-3) : -1e9;
+            double n2eq  = inter / (ms[i] * 1e-3);
             f << k->name << ',' << p.n << ',' << p.blockSize << ',' << a.q << ',' << li.threadsPerBody << ','
               << li.prefetch << ',' << li.unroll << ',' << li.gridBlocks << ',' << li.regsPerThread << ','
-              << li.blocksPerSM << ',' << occ << ',' << i << ',' << ms[i] << ',' << ipsi * 1e-9 << ','
-              << ipsi * kFlopsPerInteraction * 1e-9 << ',' << maxRel << ',' << rmsRel << ',' << fp64Rms << ','
+              << li.blocksPerSM << ',' << occ << ',' << i << ',' << ms[i] << ',' << (ipsi > 0 ? ipsi * 1e-9 : -1.0) << ','
+              << (ipsi > 0 ? ipsi * kFlopsPerInteraction * 1e-9 : -1.0) << ',' << maxRel << ',' << rmsRel << ',' << fp64Rms << ','
               << fp64Max << ',' << fp64Norm << ',' << naiveNorm << ',' << kappaMax << ',' << g1 << ',' << g2
               << ',' << gates << ',' << a.batch << ',' << a.warmupMs << ',' << a.ic << ','
               << (li.approximate ? double(p.theta) : -1.0) << ',' << (li.approximate ? p.leafSize : -1) << ','
@@ -816,7 +1153,11 @@ int main(int argc, char** argv)
             else
                 f << "-1,-1,-1,-1,-1,-1";
             for (int q = 0; q < 5; ++q) f << ',' << (q < int(phaseMed.size()) ? phaseMed[q] : -1.0);
-            f << ',' << stackOverflows << '\n';
+            f << ',' << stackOverflows << ',' << n2eq * 1e-9 << ','
+              << (li.approximate && travMs > 0 ? ws.totalInter / (travMs * 1e-3) * 1e-9 : -1.0) << ',' << a.occBlocks
+              << ',' << p.smemPad << ',' << int(li.persistent) << ',' << int(li.control) << ',' << sibRms << ','
+              << sibP99 << ',' << tg3 << ',' << unionI << ',' << unionV << ',' << exactMatch << ',' << countsMatch
+              << '\n';
         }
     }
 

@@ -38,6 +38,7 @@
 #include <cstring>
 #include <vector>
 #include <cub/device/device_radix_sort.cuh>
+#include <cub/device/device_scan.cuh>
 #include "nbody.h"
 #include "interaction.cuh"
 #include "internal.h"
@@ -93,7 +94,7 @@ constexpr int kStack       = 64;    // pending siblings per thread; overflow is 
 constexpr int kBboxBlocks  = 160;   // 2 per SM
 constexpr int kBboxThreads = 256;
 constexpr int kBuildBlock  = 256;
-enum class Order { Identity, Morton, Hilbert };
+enum class Order { Identity, Morton, Hilbert, Coherent };
 
 // ---- GPU-resident tree context (one per process; grown on demand) ----------------------
 struct TreeCtx {
@@ -107,11 +108,20 @@ struct TreeCtx {
     int    *leafParent = nullptr, *nodeParent = nullptr, *arrive = nullptr;
     float4 *bboxPartial = nullptr, *bbox = nullptr;   // [2*kBboxBlocks], [2] (lo, hi)
     int    *overflow = nullptr;
+    // round 2
+    int    *cohOrder = nullptr;                       // coherent control: perm[t & ~31]
+    int    *queue = nullptr;                          // persistent work counter
+    unsigned long long *unitCost = nullptr, *unitPre = nullptr;   // static partition
+    int    *warpStart = nullptr;
+    int     warpStartCap = 0, costN = -1, costG = -1;
+    void   *scanTmp = nullptr;
+    size_t  scanTmpBytes = 0;
     void   *sortTmp = nullptr;
     size_t  sortTmpBytes = 0;
     int     lastN = 0;
     float   lastTheta = 0.f;
     int     lastLeaf = 0;
+    float   lastEps2 = 0.f;
     Order   lastOrder = Order::Identity;
 } g;
 
@@ -127,7 +137,8 @@ void ensureCapacity(int n)
     auto fr = [](auto*& p) { if (p) cudaFree(p); p = nullptr; };
     fr(g.keyIn); fr(g.keySorted); fr(g.keyH); fr(g.iota); fr(g.perm); fr(g.hOrder); fr(g.sortedPos);
     fr(g.nodeCom); fr(g.nodeLo); fr(g.nodeHi); fr(g.nodeRc2); fr(g.nodeInfo); fr(g.leafParent);
-    fr(g.nodeParent); fr(g.arrive); fr(g.sortTmp);
+    fr(g.nodeParent); fr(g.arrive); fr(g.sortTmp); fr(g.cohOrder); fr(g.unitCost); fr(g.unitPre); fr(g.scanTmp);
+    g.costN = -1;
     const size_t N = size_t(n), I = size_t(n > 1 ? n - 1 : 1);
     CUDA_CHECK(cudaMalloc(&g.keyIn, N * 8));
     CUDA_CHECK(cudaMalloc(&g.keySorted, N * 8));
@@ -144,11 +155,19 @@ void ensureCapacity(int n)
     CUDA_CHECK(cudaMalloc(&g.leafParent, N * 4));
     CUDA_CHECK(cudaMalloc(&g.nodeParent, I * 4));
     CUDA_CHECK(cudaMalloc(&g.arrive, I * 4));
+    CUDA_CHECK(cudaMalloc(&g.cohOrder, N * 4));
+    const size_t U = (N + 31) / 32;
+    CUDA_CHECK(cudaMalloc(&g.unitCost, U * 8));
+    CUDA_CHECK(cudaMalloc(&g.unitPre, U * 8));
+    g.scanTmpBytes = 0;
+    CUDA_CHECK(cub::DeviceScan::InclusiveSum(nullptr, g.scanTmpBytes, g.unitCost, g.unitPre, int(U)));
+    CUDA_CHECK(cudaMalloc(&g.scanTmp, g.scanTmpBytes));
     if (!g.bbox) {
         CUDA_CHECK(cudaMalloc(&g.bboxPartial, 2 * kBboxBlocks * 16));
         CUDA_CHECK(cudaMalloc(&g.bbox, 2 * 16));
         CUDA_CHECK(cudaMalloc(&g.overflow, 4));
         CUDA_CHECK(cudaMemset(g.overflow, 0, 4));
+        CUDA_CHECK(cudaMalloc(&g.queue, 4));
     }
     g.sortTmpBytes = 0;
     CUDA_CHECK(cub::DeviceRadixSort::SortPairs(nullptr, g.sortTmpBytes, g.keyIn, g.keySorted, g.iota, g.perm,
@@ -347,14 +366,37 @@ __device__ __forceinline__ unsigned leaderInc()
     return (threadIdx.x & 31) == unsigned(__ffs(m) - 1) ? 1u : 0u;
 }
 
-template <bool TL>
+// Round 2: per-warp-unit timeline records (TLW). One BlockStamp per work unit (= 32 consecutive
+// thread slots, or one persistent warp's lifetime for the lane-refill kernel); `block` = unit id.
+template <bool TLW>
+__device__ __forceinline__ void unitStampStart(BlockStamp* tl, int u)
+{
+    if constexpr (TLW) {
+        if (tl && (threadIdx.x & 31) == 0) {
+            BlockStamp* r = tl + u;
+            r->t0 = globalTimerNs(); r->c0 = clock64(); r->smid = smId(); r->block = unsigned(u);
+        }
+    }
+}
+template <bool TLW>
+__device__ __forceinline__ void unitStampEnd(BlockStamp* tl, int u)
+{
+    if constexpr (TLW) {
+        __syncwarp();
+        if (tl && (threadIdx.x & 31) == 0) { BlockStamp* r = tl + u; r->c1 = clock64(); r->t1 = globalTimerNs(); }
+    }
+}
+
+// TL: instrumented twin; TLW (only with TL): per-warp-unit stamps instead of per-block stamps.
+template <bool TL, bool TLW = false>
 __global__ void bhTraverseKernel(const float4* __restrict__ pos, float4* __restrict__ acc,
                                  const int* __restrict__ order, int n, const float4* __restrict__ sortedPos,
                                  const float4* __restrict__ nodeCom, const float* __restrict__ nodeRc2,
                                  const int4* __restrict__ nodeInfo, int leafSize, float eps2, float G,
                                  int* __restrict__ overflow, BlockStamp* tl, uint4* wc)
 {
-    if constexpr (TL) { if (tl) stampBlockStart<true>(tl); }
+    if constexpr (TL && !TLW) { if (tl) stampBlockStart<true>(tl); }
+    if constexpr (TLW) { if (((blockIdx.x * blockDim.x + threadIdx.x) >> 5) * 32 < n) unitStampStart<true>(tl, (blockIdx.x * blockDim.x + threadIdx.x) >> 5); }
     const int t = blockIdx.x * blockDim.x + threadIdx.x;
     if (t < n) {
         const int    body = order[t];
@@ -395,9 +437,371 @@ __global__ void bhTraverseKernel(const float4* __restrict__ pos, float4* __restr
         acc[body] = make_float4(G * a.x, G * a.y, G * a.z, 0.f);
         if constexpr (TL) { if (wc) wc[t] = make_uint4(nVisit, nInter, lVisit, lInter); }
     }
-    if constexpr (TL) {
+    if constexpr (TLW) { if (((blockIdx.x * blockDim.x + threadIdx.x) >> 5) * 32 < n) unitStampEnd<true>(tl, (blockIdx.x * blockDim.x + threadIdx.x) >> 5); }
+    if constexpr (TL && !TLW) {
         if (tl) stampBlockEnd<true>(tl);
     }
+}
+
+// =================================================================================================
+// Tree round 2 (docs/03-design.md §17): R3 #7 (warp-cooperative union walk), R3 #6 (persistent
+// threads with a global atomic queue at warp and at lane granularity, and a static cost-balanced
+// partition), and the coherent control. All walks use the same tree, criterion and
+// bodyBodyInteraction() as bhTraverseKernel.
+// =================================================================================================
+constexpr unsigned kFull = 0xffffffffu;
+constexpr int      kList = 64;   // per-warp interaction-list entries (bh_warp_list), float4 each
+
+struct TreeView {
+    const float4* pos; float4* acc; const int* order; int n;
+    const float4* sortedPos; const float4* nodeCom; const float* nodeRc2; const int4* nodeInfo;
+    int leafSize; float eps2; float G; int* overflow;
+};
+
+// Counters: persistent kernels accumulate (atomicAdd into a zeroed buffer), so a body processed
+// twice shows doubled counts and one never processed shows zeros (exactly-once check).
+__device__ __forceinline__ void putWc(uint4* wc, int t, uint4 c, bool accumulate)
+{
+    if (!wc) return;
+    if (accumulate) {
+        atomicAdd(&wc[t].x, c.x); atomicAdd(&wc[t].y, c.y); atomicAdd(&wc[t].z, c.z); atomicAdd(&wc[t].w, c.w);
+    } else {
+        wc[t] = c;
+    }
+}
+
+// The #4/#5 per-thread walk for thread slot t, identical statement for statement to
+// bhTraverseKernel's body (so its accelerations are bitwise equal), for the persistent kernels.
+template <bool TL>
+__device__ __forceinline__ void threadWalk(const TreeView& v, int t, uint4* wc, bool accWc)
+{
+    const int    body = v.order[t];
+    const float4 bi   = v.pos[body];
+    float3       a    = make_float3(0.f, 0.f, 0.f);
+    [[maybe_unused]] unsigned nVisit = 0, nInter = 0, lVisit = 0, lInter = 0;
+    int stack[kStack];
+    int sp = 0;
+    stack[sp++] = v.n > 1 ? 0 : ~0;
+    while (sp > 0) {
+        const int node = stack[--sp];
+        if constexpr (TL) { ++nVisit; lVisit += leaderInc(); }
+        if (node < 0) {
+            a = bodyBodyInteraction(bi, v.sortedPos[~node], a, v.eps2);
+            if constexpr (TL) { ++nInter; lInter += leaderInc(); }
+            continue;
+        }
+        const float4 c  = v.nodeCom[node];
+        const float  dx = c.x - bi.x, dy = c.y - bi.y, dz = c.z - bi.z;
+        const float  d2 = fmaf(dx, dx, fmaf(dy, dy, dz * dz));
+        if (d2 >= v.nodeRc2[node]) {
+            a = bodyBodyInteraction(bi, c, a, v.eps2);
+            if constexpr (TL) { ++nInter; lInter += leaderInc(); }
+        } else {
+            const int4 in = v.nodeInfo[node];
+            if (in.w - in.z + 1 <= v.leafSize) {
+                for (int k = in.z; k <= in.w; ++k) {
+                    a = bodyBodyInteraction(bi, v.sortedPos[k], a, v.eps2);
+                    if constexpr (TL) { ++nInter; lInter += leaderInc(); }
+                }
+            } else {
+                if (sp + 2 > kStack) { atomicAdd(v.overflow, 1); break; }
+                stack[sp++] = in.y;
+                stack[sp++] = in.x;
+            }
+        }
+    }
+    v.acc[body] = make_float4(v.G * a.x, v.G * a.y, v.G * a.z, 0.f);
+    if constexpr (TL) putWc(wc, t, make_uint4(nVisit, nInter, lVisit, lInter), accWc);
+}
+
+// ---- R3 #7: warp-cooperative union walk for work unit u (thread slots 32u .. 32u+31) ------------
+// Every lane of the warp must call it. The warp pops one node at a time from a warp-shared stack;
+// the node is opened iff ANY valid lane's bmax criterion opens it (__any_sync over the union of
+// the lanes' decisions, burtscher2011barneshut), so control flow is warp-uniform: no idle lanes,
+// all loads same-address (broadcast). A lane whose own criterion would have accepted an opened
+// node gets its children instead (finer, never fewer interactions: I_lane(#7) >= I_lane(#5)).
+// Stack: 64 entries held in two registers per lane (entry k lives in lane k % 32, register
+// k / 32), pushed with a predicated move and popped with one __shfl_sync: no shared memory and no
+// __syncwarp on the walk. LIST: accepted cells and bucket bodies are appended to a per-warp
+// shared-memory list (bucket bodies loaded cooperatively, one per lane, coalesced) and evaluated
+// in a dense loop when it fills; the summation order equals the direct walk's, so
+// bh_warp_list is bitwise equal to bh_warp.
+template <bool TL, bool LIST>
+__device__ __forceinline__ void warpWalk(const TreeView& v, int u, float4* list, uint4* wc, bool accWc)
+{
+    const int    lane  = threadIdx.x & 31;
+    const int    t     = u * 32 + lane;
+    const bool   valid = t < v.n;
+    const int    body  = valid ? v.order[t] : 0;
+    const float4 bi    = valid ? v.pos[body] : make_float4(0.f, 0.f, 0.f, 0.f);
+    float3       a     = make_float3(0.f, 0.f, 0.f);
+    [[maybe_unused]] unsigned nVisit = 0, nInter = 0, lVisit = 0, lInter = 0;
+    int s0 = v.n > 1 ? 0 : ~0, s1 = 0, sp = 1;
+    [[maybe_unused]] int cnt = 0;
+    auto push = [&](int x) {
+        if (lane == (sp & 31)) { if (sp < 32) s0 = x; else s1 = x; }
+        ++sp;
+    };
+    auto flush = [&]() {
+        if constexpr (LIST) {
+            __syncwarp();
+#pragma unroll 4
+            for (int j = 0; j < cnt; ++j) {
+                a = bodyBodyInteraction(bi, list[j], a, v.eps2);
+                if constexpr (TL) { nInter += valid; lInter += leaderInc(); }
+            }
+            __syncwarp();
+            cnt = 0;
+        }
+    };
+    while (sp > 0) {
+        --sp;
+        const int node = __shfl_sync(kFull, sp < 32 ? s0 : s1, sp & 31);
+        if constexpr (TL) { nVisit += valid; lVisit += leaderInc(); }
+        if (node < 0) {
+            if constexpr (LIST) {
+                if (cnt == kList) flush();
+                if (lane == 0) list[cnt] = v.sortedPos[~node];
+                ++cnt;
+            } else {
+                a = bodyBodyInteraction(bi, v.sortedPos[~node], a, v.eps2);
+                if constexpr (TL) { nInter += valid; lInter += leaderInc(); }
+            }
+            continue;
+        }
+        const float4 c  = v.nodeCom[node];
+        const float  dx = c.x - bi.x, dy = c.y - bi.y, dz = c.z - bi.z;
+        const float  d2 = fmaf(dx, dx, fmaf(dy, dy, dz * dz));
+        const bool   open = __any_sync(kFull, valid && !(d2 >= v.nodeRc2[node]));
+        if (!open) {
+            if constexpr (LIST) {
+                if (cnt == kList) flush();
+                if (lane == 0) list[cnt] = c;
+                ++cnt;
+            } else {
+                a = bodyBodyInteraction(bi, c, a, v.eps2);
+                if constexpr (TL) { nInter += valid; lInter += leaderInc(); }
+            }
+        } else {
+            const int4 in = v.nodeInfo[node];
+            if (in.w - in.z + 1 <= v.leafSize) {
+                if constexpr (LIST) {
+                    for (int k0 = in.z; k0 <= in.w; k0 += 32) {
+                        const int m = min(32, in.w - k0 + 1);
+                        if (cnt + m > kList) flush();
+                        if (lane < m) list[cnt + lane] = v.sortedPos[k0 + lane];
+                        cnt += m;
+                    }
+                } else {
+                    for (int k = in.z; k <= in.w; ++k) {
+                        a = bodyBodyInteraction(bi, v.sortedPos[k], a, v.eps2);
+                        if constexpr (TL) { nInter += valid; lInter += leaderInc(); }
+                    }
+                }
+            } else {
+                if (sp + 2 > kStack) { if (lane == 0) atomicAdd(v.overflow, 1); break; }
+                push(in.y);
+                push(in.x);                                         // left first, as in #5
+            }
+        }
+    }
+    flush();
+    if (valid) {
+        v.acc[body] = make_float4(v.G * a.x, v.G * a.y, v.G * a.z, 0.f);
+        if constexpr (TL) putWc(wc, t, make_uint4(nVisit, nInter, lVisit, lInter), accWc);
+    }
+}
+
+// Normal grid: warp w of the grid = unit w. dynamic smem = list (LIST) + padding (--occ-blocks).
+template <bool TL, bool TLW, bool LIST>
+__global__ void bhWarpKernel(TreeView v, BlockStamp* tl, uint4* wc)
+{
+    extern __shared__ float4 smemList[];
+    if constexpr (TL && !TLW) { if (tl) stampBlockStart<true>(tl); }
+    const int u      = (blockIdx.x * blockDim.x + threadIdx.x) >> 5;
+    const int nUnits = (v.n + 31) >> 5;
+    if (u < nUnits) {                                               // warp-uniform
+        unitStampStart<TLW>(tl, u);
+        warpWalk<TL, LIST>(v, u, LIST ? smemList + (threadIdx.x >> 5) * kList : nullptr, wc, false);
+        unitStampEnd<TLW>(tl, u);
+    }
+    if constexpr (TL && !TLW) { if (tl) stampBlockEnd<true>(tl); }
+}
+
+// ---- R3 #6: persistent blocks (grid = resident blocks/SM x SMs) ---------------------------------
+// WARP-granular units (32 consecutive thread slots, Morton order) handed out by
+//   STATIC = false: a global atomic counter, one atomicAdd per unit by lane 0 [huang2026weave:
+//                   "each SM claims its next tile via atomicAdd on a global counter"];
+//   STATIC = true:  a precomputed contiguous partition balanced on the previous launch's measured
+//                   per-unit cost (clock64 cycles; costzones-style) [xia2025voltrix: persistent
+//                   kernel + precomputed balanced partition; li2025staticbatching: prefix sum of
+//                   per-task cost, no runtime scheduler].
+// WARPWALK: the unit is walked by #7's union walk instead of #5's per-thread walk.
+template <bool TL, bool TLW, bool WARPWALK, bool STATIC>
+__global__ void bhPersistentKernel(TreeView v, int* queue, const int* warpStart, unsigned long long* unitCost,
+                                   BlockStamp* tl, uint4* wc)
+{
+    if constexpr (TL && !TLW) { if (tl) stampBlockStart<true>(tl); }
+    const int lane   = threadIdx.x & 31;
+    [[maybe_unused]] const int gw     = (blockIdx.x * blockDim.x + threadIdx.x) >> 5;
+    [[maybe_unused]] const int nUnits = (v.n + 31) >> 5;
+    int u = 0;
+    [[maybe_unused]] int uEnd = 0;
+    if constexpr (STATIC) { u = warpStart[gw]; uEnd = warpStart[gw + 1]; }
+    for (;;) {
+        if constexpr (STATIC) {
+            if (u >= uEnd) break;
+        } else {
+            int x = 0;
+            if (lane == 0) x = atomicAdd(queue, 1);
+            u = __shfl_sync(kFull, x, 0);
+            if (u >= nUnits) break;
+        }
+        [[maybe_unused]] long long c0 = 0;
+        if constexpr (STATIC) c0 = clock64();
+        unitStampStart<TLW>(tl, u);
+        if constexpr (WARPWALK) {
+            warpWalk<TL, false>(v, u, nullptr, wc, true);
+        } else {
+            const int t = u * 32 + lane;
+            if (t < v.n) threadWalk<TL>(v, t, wc, true);
+        }
+        unitStampEnd<TLW>(tl, u);
+        if constexpr (STATIC) {
+            __syncwarp();
+            if (lane == 0) unitCost[u] = (unsigned long long)(clock64() - c0);
+            ++u;
+        }
+    }
+    if constexpr (TL && !TLW) { if (tl) stampBlockEnd<true>(tl); }
+}
+
+// LANE-granular persistent threads: every lane runs #5's walk for one body at a time; when its
+// stack empties it writes the result and the warp refills all idle lanes with the next bodies
+// (Morton slots) from the global counter, one atomicAdd per refill (the leader adds popc(idle)).
+// This targets the loop-level loss (lanes done, waiting for the warp's slowest lane) that a
+// warp- or block-granular queue cannot touch. One loop iteration = one node pop (+ its leaf
+// bucket), identical per-body arithmetic to bhTraverseKernel (bitwise-equal accelerations).
+// TLW: one record per persistent warp (unit = global warp id; units are bodies here).
+template <bool TL, bool TLW>
+__global__ void bhLaneRefillKernel(TreeView v, int* queue, BlockStamp* tl, uint4* wc)
+{
+    if constexpr (TL && !TLW) { if (tl) stampBlockStart<true>(tl); }
+    const int      lane = threadIdx.x & 31;
+    const int      gw   = (blockIdx.x * blockDim.x + threadIdx.x) >> 5;
+    const unsigned lt   = (1u << lane) - 1u;
+    unitStampStart<TLW>(tl, gw);
+    int    t = -1, body = 0, sp = 0;
+    float4 bi = make_float4(0.f, 0.f, 0.f, 0.f);
+    float3 a  = make_float3(0.f, 0.f, 0.f);
+    [[maybe_unused]] unsigned nVisit = 0, nInter = 0, lVisit = 0, lInter = 0;
+    int  stack[kStack];
+    // Batched claims: the warp owns a buffer of up to 32 consecutive slots [bufBase, bufBase +
+    // bufLeft) and lane 0 holds the NEXT batch's atomicAdd result (pend), issued one batch ahead,
+    // so an idle lane is refilled from registers; the atomic's latency is only exposed when the
+    // prefetched result has not arrived yet (once per 32 bodies at most).
+    int  bufBase = 0, bufLeft = 0, pend = 0;
+    bool drained = false;
+    {
+        int b0 = 0;
+        if (lane == 0) b0 = atomicAdd(queue, 32);
+        bufBase = __shfl_sync(kFull, b0, 0);
+        bufLeft = bufBase < v.n ? 32 : 0;
+        drained = bufLeft == 0;
+        if (lane == 0 && !drained) pend = atomicAdd(queue, 32);
+    }
+    for (;;) {
+        if (t >= 0 && sp == 0) {                                    // body finished
+            v.acc[body] = make_float4(v.G * a.x, v.G * a.y, v.G * a.z, 0.f);
+            if constexpr (TL) putWc(wc, t, make_uint4(nVisit, nInter, lVisit, lInter), true);
+            t = -1;
+        }
+        unsigned idle = __ballot_sync(kFull, t < 0);
+        while (idle && !drained) {                                  // warp-uniform
+            const int take = min(__popc(idle), bufLeft);
+            const int rank = __popc(idle & lt);
+            if (t < 0 && rank < take) {
+                const int cand = bufBase + rank;
+                if (cand < v.n) {
+                    t = cand; body = v.order[t]; bi = v.pos[body]; a = make_float3(0.f, 0.f, 0.f);
+                    sp = 0; stack[sp++] = v.n > 1 ? 0 : ~0;
+                    if constexpr (TL) { nVisit = nInter = lVisit = lInter = 0; }
+                }
+            }
+            bufBase += take; bufLeft -= take;
+            if (bufBase >= v.n) { drained = true; break; }
+            if (bufLeft == 0) {                                     // switch to the prefetched batch
+                bufBase = __shfl_sync(kFull, pend, 0);
+                bufLeft = 32;
+                if (bufBase >= v.n) { drained = true; break; }
+                if (lane == 0) pend = atomicAdd(queue, 32);
+            }
+            idle = __ballot_sync(kFull, t < 0);
+        }
+        if (__all_sync(kFull, t < 0)) break;                        // only once drained
+        if (t >= 0) {
+            const int node = stack[--sp];
+            if constexpr (TL) { ++nVisit; lVisit += leaderInc(); }
+            if (node < 0) {
+                a = bodyBodyInteraction(bi, v.sortedPos[~node], a, v.eps2);
+                if constexpr (TL) { ++nInter; lInter += leaderInc(); }
+            } else {
+                const float4 c  = v.nodeCom[node];
+                const float  dx = c.x - bi.x, dy = c.y - bi.y, dz = c.z - bi.z;
+                const float  d2 = fmaf(dx, dx, fmaf(dy, dy, dz * dz));
+                if (d2 >= v.nodeRc2[node]) {
+                    a = bodyBodyInteraction(bi, c, a, v.eps2);
+                    if constexpr (TL) { ++nInter; lInter += leaderInc(); }
+                } else {
+                    const int4 in = v.nodeInfo[node];
+                    if (in.w - in.z + 1 <= v.leafSize) {
+                        for (int k = in.z; k <= in.w; ++k) {
+                            a = bodyBodyInteraction(bi, v.sortedPos[k], a, v.eps2);
+                            if constexpr (TL) { ++nInter; lInter += leaderInc(); }
+                        }
+                    } else if (sp + 2 > kStack) {
+                        atomicAdd(v.overflow, 1); sp = 0;               // abandon this body (flagged)
+                    } else {
+                        stack[sp++] = in.y;
+                        stack[sp++] = in.x;
+                    }
+                }
+            }
+        }
+    }
+    unitStampEnd<TLW>(tl, gw);
+    if constexpr (TL && !TLW) { if (tl) stampBlockEnd<true>(tl); }
+}
+
+// Static partition (bh_persistent_static): costs of the previous launch -> inclusive prefix P ->
+// unit u belongs to warp floor((2 P[u] - c[u]) G / (2 T)) (its cost midpoint); warpStart[g] = the
+// first unit of warp g (monotone owners, contiguous ranges), warpStart[G] = nUnits.
+__global__ void fillCostKernel(unsigned long long* c, int m)
+{
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i < m) c[i] = 1ull;
+}
+__global__ void partitionKernel(const unsigned long long* __restrict__ cost, const unsigned long long* __restrict__ pre,
+                                int nUnits, int G, int* __restrict__ warpStart)
+{
+    const int u = blockIdx.x * blockDim.x + threadIdx.x;
+    if (u >= nUnits) return;
+    const unsigned long long T = pre[nUnits - 1] > 0 ? pre[nUnits - 1] : 1ull;
+    auto owner = [&](int k) {
+        const double mid = (2.0 * double(pre[k]) - double(cost[k])) / (2.0 * double(T));
+        return min(G - 1, max(0, int(mid * G)));
+    };
+    const int o  = owner(u);
+    const int op = u > 0 ? owner(u - 1) : -1;
+    for (int gq = op + 1; gq <= o; ++gq) warpStart[gq] = u;
+    if (u == nUnits - 1)
+        for (int gq = o + 1; gq <= G; ++gq) warpStart[gq] = nUnits;
+}
+
+__global__ void coherentOrderKernel(const int* __restrict__ perm, int n, int* __restrict__ out)
+{
+    int t = blockIdx.x * blockDim.x + threadIdx.x;
+    if (t < n) out[t] = perm[t & ~31];
 }
 
 // ---- launcher -------------------------------------------------------------------------------------
@@ -406,14 +810,73 @@ constexpr int     kPhases       = 5;
 
 void checkParams(const Params& p)
 {
-    if (!(p.theta >= 0.f)) { fprintf(stderr, "bh: theta must be >= 0 (got %g)\n", p.theta); exit(2); }
+    // theta <= 1 (critic review 2, #11): the bmax safety argument (a body inside a node's box always
+    // opens it) holds only for theta <= 1.
+    if (!(p.theta >= 0.f) || p.theta > 1.f) { fprintf(stderr, "bh: theta must be in [0, 1] (got %g)\n", p.theta); exit(2); }
     if (p.leafSize < 1)    { fprintf(stderr, "bh: leaf size must be >= 1 (got %d)\n", p.leafSize); exit(2); }
     if (p.blockSize < 32 || p.blockSize > 1024 || p.blockSize % 32) {
         fprintf(stderr, "bh: block must be a multiple of 32 in [32, 1024] (got %d)\n", p.blockSize); exit(2);
     }
 }
 
-void launchBH(const DeviceState& s, const Params& p, cudaStream_t st, Order ord)
+// Traversal variants (round 1: Thread; round 2: the rest). See registerTree() for the names.
+enum class Var { Thread, Warp, WarpList, PersUnit, PersLane, PersWarp, PersStatic };
+
+bool isPersistent(Var v) { return v == Var::PersUnit || v == Var::PersLane || v == Var::PersWarp || v == Var::PersStatic; }
+
+template <bool TL, bool TLW>
+const void* traverseFnT(Var v)
+{
+    switch (v) {
+    case Var::Thread:     return reinterpret_cast<const void*>(bhTraverseKernel<TL, TLW>);
+    case Var::Warp:       return reinterpret_cast<const void*>(bhWarpKernel<TL, TLW, false>);
+    case Var::WarpList:   return reinterpret_cast<const void*>(bhWarpKernel<TL, TLW, true>);
+    case Var::PersUnit:   return reinterpret_cast<const void*>(bhPersistentKernel<TL, TLW, false, false>);
+    case Var::PersWarp:   return reinterpret_cast<const void*>(bhPersistentKernel<TL, TLW, true, false>);
+    case Var::PersStatic: return reinterpret_cast<const void*>(bhPersistentKernel<TL, TLW, false, true>);
+    case Var::PersLane:   return reinterpret_cast<const void*>(bhLaneRefillKernel<TL, TLW>);
+    }
+    return nullptr;
+}
+const void* traverseFn(Var v, bool tl, bool tlw)
+{
+    if (!tl) return traverseFnT<false, false>(v);
+    return tlw ? traverseFnT<true, true>(v) : traverseFnT<true, false>(v);
+}
+
+size_t dynSmemOf(Var v, const Params& p)
+{
+    return (v == Var::WarpList ? size_t(p.blockSize / 32) * kList * sizeof(float4) : 0) + size_t(std::max(0, p.smemPad));
+}
+
+// Resident blocks/SM for (kernel, block, dynamic smem), cached; also raises the dynamic-smem limit
+// above 48 KB when needed (--occ-blocks). Cached so that timed launches make no extra API calls.
+int residentBlocks(const void* fn, int block, size_t dyn)
+{
+    struct E { const void* fn; int block; size_t dyn; int bps; };
+    static std::vector<E> cache;
+    for (const E& e : cache) if (e.fn == fn && e.block == block && e.dyn == dyn) return e.bps;
+    if (dyn > 48 * 1024)
+        CUDA_CHECK(cudaFuncSetAttribute(fn, cudaFuncAttributeMaxDynamicSharedMemorySize, int(dyn)));
+    int bps = 0;
+    CUDA_CHECK(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&bps, fn, block, dyn));
+    cache.push_back({fn, block, dyn, bps});
+    return bps;
+}
+
+int gridOf(Var v, const void* fn, int n, const Params& p)
+{
+    if (!isPersistent(v)) return ceilDiv(n, p.blockSize);
+    // Persistent grid = what fits on the GPU, but never more blocks than there is work for: with
+    // more resident warps than 32-body units (N < 122,880 at 12 blocks/SM x 4 warps), the excess
+    // warps race for the few units and the winners cluster on a few SMs (sanity run, N = 8192:
+    // 0.75 ms vs 0.51 ms for the normal grid). Capped, the hardware spreads the blocks as it does
+    // for a normal grid.
+    const int resident = std::max(1, residentBlocks(fn, p.blockSize, dynSmemOf(v, p)) * deviceSMCount());
+    return std::max(1, std::min(resident, ceilDiv(ceilDiv(n, 32), p.blockSize / 32)));
+}
+
+void launchBH(const DeviceState& s, const Params& p, cudaStream_t st, Order ord, Var var)
 {
     checkParams(p);
     const int n = s.n;
@@ -439,6 +902,7 @@ void launchBH(const DeviceState& s, const Params& p, cudaStream_t st, Order ord)
                                                     g.nodeCom, g.nodeLo, g.nodeHi, g.nodeRc2, n, invT2);
     }
     mark(3);
+    // ---- order phase: the thread -> body map, plus the scheduler set-up of the persistent kernels
     const int* order = g.iota;
     if (ord == Order::Morton) order = g.perm;
     if (ord == Order::Hilbert) {
@@ -447,36 +911,150 @@ void launchBH(const DeviceState& s, const Params& p, cudaStream_t st, Order ord)
         CUDA_CHECK(cub::DeviceRadixSort::SortPairs(g.sortTmp, tmp, g.keyIn, g.keyH, g.iota, g.hOrder, n, 0, 63, st));
         order = g.hOrder;
     }
+    if (ord == Order::Coherent) {
+        coherentOrderKernel<<<gb, kBuildBlock, 0, st>>>(g.perm, n, g.cohOrder);
+        order = g.cohOrder;
+    }
+    const bool   tl     = p.timeline || p.workCounters;
+    const bool   tlw    = tl && p.timelineWarp && p.timeline;
+    const void*  fn     = traverseFn(var, tl, tlw);
+    const size_t dyn    = dynSmemOf(var, p);
+    const int    grid   = gridOf(var, fn, n, p);
+    const int    nUnits = ceilDiv(n, 32);
+    if (dyn > 48 * 1024) residentBlocks(fn, p.blockSize, dyn);    // raises the opt-in limit once
+    if (var == Var::PersUnit || var == Var::PersLane || var == Var::PersWarp)
+        CUDA_CHECK(cudaMemsetAsync(g.queue, 0, 4, st));
+    if (var == Var::PersStatic) {
+        const int G = grid * p.blockSize / 32;
+        if (G + 1 > g.warpStartCap) {
+            if (g.warpStart) CUDA_CHECK(cudaFree(g.warpStart));
+            CUDA_CHECK(cudaMalloc(&g.warpStart, size_t(G + 1) * 4));
+            g.warpStartCap = G + 1;
+        }
+        if (g.costN != n || g.costG != G) {   // no previous launch with this N and grid: uniform costs
+            fillCostKernel<<<ceilDiv(nUnits, 256), 256, 0, st>>>(g.unitCost, nUnits);
+            g.costN = n; g.costG = G;
+        }
+        size_t stmp = g.scanTmpBytes;
+        CUDA_CHECK(cub::DeviceScan::InclusiveSum(g.scanTmp, stmp, g.unitCost, g.unitPre, nUnits, st));
+        partitionKernel<<<ceilDiv(nUnits, 256), 256, 0, st>>>(g.unitCost, g.unitPre, nUnits, G, g.warpStart);
+    }
     mark(4);
+    // ---- traverse phase
     const float eps2 = p.softening * p.softening;
-    const int   grid = ceilDiv(n, p.blockSize);
-    if (p.timeline || p.workCounters)
-        bhTraverseKernel<true><<<grid, p.blockSize, 0, st>>>(s.pos, s.acc, order, n, g.sortedPos, g.nodeCom,
-                                                            g.nodeRc2, g.nodeInfo, p.leafSize, eps2, p.G,
-                                                            g.overflow, p.timeline, p.workCounters);
-    else
-        bhTraverseKernel<false><<<grid, p.blockSize, 0, st>>>(s.pos, s.acc, order, n, g.sortedPos, g.nodeCom,
-                                                             g.nodeRc2, g.nodeInfo, p.leafSize, eps2, p.G,
-                                                             g.overflow, nullptr, nullptr);
+    BlockStamp* tlp  = tl ? p.timeline : nullptr;
+    uint4*      wcp  = tl ? p.workCounters : nullptr;
+    TreeView v{s.pos, s.acc, order, n, g.sortedPos, g.nodeCom, g.nodeRc2, g.nodeInfo, p.leafSize, eps2, p.G, g.overflow};
+    const dim3 G3(grid), B3(p.blockSize);
+    if (var == Var::Thread) {
+        if (!tl)
+            bhTraverseKernel<false><<<G3, B3, dyn, st>>>(s.pos, s.acc, order, n, g.sortedPos, g.nodeCom, g.nodeRc2,
+                                                         g.nodeInfo, p.leafSize, eps2, p.G, g.overflow, nullptr, nullptr);
+        else if (!tlw)
+            bhTraverseKernel<true><<<G3, B3, dyn, st>>>(s.pos, s.acc, order, n, g.sortedPos, g.nodeCom, g.nodeRc2,
+                                                        g.nodeInfo, p.leafSize, eps2, p.G, g.overflow, tlp, wcp);
+        else
+            bhTraverseKernel<true, true><<<G3, B3, dyn, st>>>(s.pos, s.acc, order, n, g.sortedPos, g.nodeCom,
+                                                              g.nodeRc2, g.nodeInfo, p.leafSize, eps2, p.G, g.overflow,
+                                                              tlp, wcp);
+    } else {
+        // Round-2 kernels: cudaLaunchKernel with the selected instantiation.
+        int* q = g.queue; const int* ws = g.warpStart; unsigned long long* uc = g.unitCost;
+        void* argsWarp[] = {&v, &tlp, &wcp};
+        void* argsPers[] = {&v, &q, &ws, &uc, &tlp, &wcp};
+        void* argsLane[] = {&v, &q, &tlp, &wcp};
+        void** args = (var == Var::Warp || var == Var::WarpList) ? argsWarp : (var == Var::PersLane ? argsLane : argsPers);
+        CUDA_CHECK(cudaLaunchKernel(fn, G3, B3, args, dyn, st));
+    }
     mark(5);
     CUDA_CHECK(cudaGetLastError());
     g.lastN = n; g.lastTheta = p.theta; g.lastLeaf = p.leafSize; g.lastOrder = ord;
+    g.lastEps2 = eps2;
 }
 
-void launchNaiveBH(const DeviceState& s, const Params& p, cudaStream_t st)   { launchBH(s, p, st, Order::Identity); }
-void launchSortedBH(const DeviceState& s, const Params& p, cudaStream_t st)  { launchBH(s, p, st, Order::Morton); }
-void launchHilbertBH(const DeviceState& s, const Params& p, cudaStream_t st) { launchBH(s, p, st, Order::Hilbert); }
+template <Var V, Order O>
+void launchV(const DeviceState& s, const Params& p, cudaStream_t st) { launchBH(s, p, st, O, V); }
 
-LaunchInfo queryBH(int n, const Params& p)
+LaunchInfo queryV(int n, const Params& p, Var var)
 {
-    const bool  inst = p.timeline || p.workCounters;
-    const void* fn   = inst ? reinterpret_cast<const void*>(bhTraverseKernel<true>)
-                            : reinterpret_cast<const void*>(bhTraverseKernel<false>);
-    LaunchInfo li   = describeKernel(fn, ceilDiv(n, p.blockSize), p.blockSize, 0);
+    const bool   inst = p.timeline || p.workCounters;
+    const bool   tlw  = inst && p.timelineWarp && p.timeline;
+    const void*  fn   = traverseFn(var, inst, tlw);
+    const size_t dyn  = dynSmemOf(var, p);
+    const int    grid = gridOf(var, fn, n, p);
+    if (dyn > 48 * 1024) residentBlocks(fn, p.blockSize, dyn);
+    LaunchInfo li   = describeKernel(fn, grid, p.blockSize, dyn);
     li.instrumented = inst;
     li.approximate  = true;
     li.nPhases      = kPhases;
+    li.persistent   = isPersistent(var);
+    li.dynSmem      = dyn;
     for (int k = 0; k < kPhases; ++k) li.phaseNames[k] = kPhaseNames[k];
+    if (tlw) {
+        li.timelineRecords    = var == Var::PersLane ? grid * p.blockSize / 32 : ceilDiv(n, 32);
+        li.timelineSlotsPerSM = li.blocksPerSM * p.blockSize / 32;
+    } else {
+        li.timelineRecords    = grid;
+        li.timelineSlotsPerSM = li.blocksPerSM;
+    }
+    return li;
+}
+
+LaunchInfo queryBH(int n, const Params& p) { return queryV(n, p, Var::Thread); }
+LaunchInfo queryCoherent(int n, const Params& p)
+{
+    LaunchInfo li = queryV(n, p, Var::Thread);
+    li.control = true;
+    return li;
+}
+LaunchInfo queryWarp(int n, const Params& p)
+{
+    LaunchInfo li = queryV(n, p, Var::Warp);
+    li.errorSibling = li.counterSibling = "bh_sorted";
+    return li;
+}
+LaunchInfo queryWarpNaive(int n, const Params& p)
+{
+    LaunchInfo li = queryV(n, p, Var::Warp);
+    li.errorSibling = li.counterSibling = "bh_naive";
+    return li;
+}
+LaunchInfo queryWarpList(int n, const Params& p)
+{
+    LaunchInfo li = queryV(n, p, Var::WarpList);
+    li.errorSibling = li.counterSibling = "bh_sorted";
+    li.exactSibling = "bh_warp";
+    return li;
+}
+LaunchInfo queryPersUnit(int n, const Params& p)
+{
+    LaunchInfo li = queryV(n, p, Var::PersUnit);
+    li.exactSibling = li.counterSibling = "bh_sorted";
+    return li;
+}
+LaunchInfo queryPersLane(int n, const Params& p)
+{
+    LaunchInfo li = queryV(n, p, Var::PersLane);
+    li.exactSibling = li.counterSibling = "bh_sorted";
+    return li;
+}
+LaunchInfo queryPersLaneNaive(int n, const Params& p)
+{
+    LaunchInfo li = queryV(n, p, Var::PersLane);
+    li.exactSibling = li.counterSibling = "bh_naive";
+    return li;
+}
+LaunchInfo queryPersWarp(int n, const Params& p)
+{
+    LaunchInfo li = queryV(n, p, Var::PersWarp);
+    li.exactSibling = "bh_warp";
+    li.errorSibling = li.counterSibling = "bh_sorted";
+    return li;
+}
+LaunchInfo queryPersStatic(int n, const Params& p)
+{
+    LaunchInfo li = queryV(n, p, Var::PersStatic);
+    li.exactSibling = li.counterSibling = "bh_sorted";
     return li;
 }
 
@@ -589,15 +1167,160 @@ TreeCheck checkLastTree(const DeviceState& s)
     return r;
 }
 
+// Exact theta > 0 check of the most recent tree and walk (critic review 2, #7); see nbody.h.
+TreeExactCheck checkLastTreeExact(const std::vector<float4>& acc, const std::vector<uint4>* wc, float eps2, float G,
+                                  bool unionWalk)
+{
+    TreeExactCheck r;
+    const int n = g.lastN;
+    auto fail = [&](const std::string& m) { if (r.ok) { r.ok = false; r.msg = m; } };
+    if (n <= 0 || int(acc.size()) != n) { fail("no tree / acc size mismatch"); return r; }
+    CUDA_CHECK(cudaDeviceSynchronize());
+    std::vector<float4> spos(n);
+    std::vector<int> perm(n);
+    CUDA_CHECK(cudaMemcpy(spos.data(), g.sortedPos, size_t(n) * 16, cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaMemcpy(perm.data(), g.perm, size_t(n) * 4, cudaMemcpyDeviceToHost));
+    const int I = n > 1 ? n - 1 : 0;
+    std::vector<int4> info(I);
+    std::vector<float4> com(I), lo(I), hi(I);
+    std::vector<float> rc2(I);
+    if (I) {
+        CUDA_CHECK(cudaMemcpy(info.data(), g.nodeInfo, size_t(I) * 16, cudaMemcpyDeviceToHost));
+        CUDA_CHECK(cudaMemcpy(com.data(), g.nodeCom, size_t(I) * 16, cudaMemcpyDeviceToHost));
+        CUDA_CHECK(cudaMemcpy(lo.data(), g.nodeLo, size_t(I) * 16, cudaMemcpyDeviceToHost));
+        CUDA_CHECK(cudaMemcpy(hi.data(), g.nodeHi, size_t(I) * 16, cudaMemcpyDeviceToHost));
+        CUDA_CHECK(cudaMemcpy(rc2.data(), g.nodeRc2, size_t(I) * 4, cudaMemcpyDeviceToHost));
+    }
+    double ext = 0;
+    for (const float4& p : spos)
+        ext = std::max(ext, double(std::max(std::fabs(p.x), std::max(std::fabs(p.y), std::fabs(p.z)))));
+    if (ext <= 0) ext = 1;
+    // (1) node data from first principles
+    const double th = g.lastTheta;
+    for (int i = 0; i < I; ++i) {
+        const int4 in = info[i];
+        double M = 0, cx = 0, cy = 0, cz = 0;
+        float lx = FLT_MAX, ly = FLT_MAX, lz = FLT_MAX, hx = -FLT_MAX, hy = -FLT_MAX, hz = -FLT_MAX;
+        for (int k = in.z; k <= in.w; ++k) {
+            const float4 p = spos[k];
+            M += p.w; cx += double(p.w) * p.x; cy += double(p.w) * p.y; cz += double(p.w) * p.z;
+            lx = std::min(lx, p.x); ly = std::min(ly, p.y); lz = std::min(lz, p.z);
+            hx = std::max(hx, p.x); hy = std::max(hy, p.y); hz = std::max(hz, p.z);
+        }
+        ++r.nodes;
+        bool bad = false;
+        const double mr = M > 0 ? std::fabs(com[i].w - M) / M : std::fabs(com[i].w);
+        r.maxMassRel = std::max(r.maxMassRel, mr);
+        if (mr > 1e-5) bad = true;
+        if (lo[i].x != lx || lo[i].y != ly || lo[i].z != lz || hi[i].x != hx || hi[i].y != hy || hi[i].z != hz) bad = true;
+        if (M > 0) {
+            cx /= M; cy /= M; cz /= M;
+            const double ce = std::max(std::fabs(com[i].x - cx), std::max(std::fabs(com[i].y - cy), std::fabs(com[i].z - cz)));
+            r.maxComAbs = std::max(r.maxComAbs, ce);
+            if (ce > 1e-5 * ext) bad = true;
+            if (th > 0) {
+                const double bx = std::max(cx - lx, hx - cx), by = std::max(cy - ly, hy - cy), bz = std::max(cz - lz, hz - cz);
+                const double b64 = std::sqrt(bx * bx + by * by + bz * bz);
+                const double bd  = std::sqrt(double(rc2[i])) * th;
+                r.maxBmaxAbs = std::max(r.maxBmaxAbs, std::fabs(bd - b64));
+                if (std::fabs(bd - b64) > 2e-5 * ext + 1e-5 * b64) bad = true;
+            }
+        }
+        if (bad) { ++r.nodeFails; fail("node " + std::to_string(i) + ": mass/COM/AABB/bmax disagree with the FP64 recompute"); }
+    }
+    // (2) host walk with the device's FP32 criterion and FP64 accumulation
+    const double u = 1.0 / 16777216.0;
+    auto check = [&](int k, double ax, double ay, double az, double sc, unsigned nv, unsigned ni) {
+        ++r.bodies;
+        if (wc && ((*wc)[k].x != nv || (*wc)[k].y != ni)) {
+            ++r.countMismatch;
+            fail("slot " + std::to_string(k) + ": device pop/interaction counts differ from the host walk");
+        }
+        const float4 d = acc[perm[k]];
+        const double ex = d.x - G * ax, ey = d.y - G * ay, ez = d.z - G * az;
+        const double e  = std::sqrt(ex * ex + ey * ey + ez * ez) / (G * sc > 0 ? G * sc : 1.0);
+        const double bound = (double(ni) + 10.0) * u;
+        r.maxErrOverBound = std::max(r.maxErrOverBound, e / bound);
+        if (e > bound) { ++r.errFails; fail("slot " + std::to_string(k) + ": |a_dev - a_host| / sum|f| above (I + 10) u"); }
+    };
+    auto term = [&](const float4& bi, const float4& bj, double& ax, double& ay, double& az, double& sc) {
+        const double rx = double(bj.x) - bi.x, ry = double(bj.y) - bi.y, rz = double(bj.z) - bi.z;
+        const double d2 = rx * rx + ry * ry + rz * rz + double(eps2);
+        const double s  = double(bj.w) / (d2 * std::sqrt(d2));
+        ax += rx * s; ay += ry * s; az += rz * s;
+        sc += std::sqrt(rx * rx + ry * ry + rz * rz) * s;
+    };
+    auto accepts = [&](const float4& bi, int node) {
+        const float4 c  = com[node];
+        const float  dx = c.x - bi.x, dy = c.y - bi.y, dz = c.z - bi.z;
+        const float  d2 = std::fmaf(dx, dx, std::fmaf(dy, dy, dz * dz));
+        return d2 >= rc2[node];
+    };
+    const int leaf = g.lastLeaf;
+    const int W    = unionWalk ? 32 : 1;
+    for (int base = 0; base < n; base += W) {
+        const int m = std::min(W, n - base);
+        std::vector<double> ax(m, 0), ay(m, 0), az(m, 0), sc(m, 0);
+        unsigned nv = 0, ni = 0;   // per lane (identical for all lanes of a union walk)
+        std::vector<int> st{n > 1 ? 0 : ~0};
+        while (!st.empty()) {
+            const int node = st.back(); st.pop_back();
+            ++nv;
+            auto all = [&](const float4& bj) {
+                for (int l = 0; l < m; ++l) term(spos[base + l], bj, ax[l], ay[l], az[l], sc[l]);
+                ++ni;
+            };
+            if (node < 0) { all(spos[~node]); continue; }
+            bool open = false;
+            for (int l = 0; l < m && !open; ++l) open = !accepts(spos[base + l], node);
+            if (!open) { all(com[node]); continue; }
+            const int4 in = info[node];
+            if (in.w - in.z + 1 <= leaf) { for (int k = in.z; k <= in.w; ++k) all(spos[k]); }
+            else { st.push_back(in.y); st.push_back(in.x); }
+        }
+        for (int l = 0; l < m; ++l) check(base + l, ax[l], ay[l], az[l], sc[l], nv, ni);
+    }
+    return r;
+}
+
 void registerTree(std::vector<KernelInfo>& r)
 {
     r.push_back({"bh_naive",
                  "Barnes-Hut, 1 thread/body, ORIGINAL body order, no warp cooperation (--theta, --leaf) (R3 #4)",
-                 launchNaiveBH, queryBH});
+                 launchV<Var::Thread, Order::Identity>, queryBH});
     r.push_back({"bh_sorted",
-                 "Barnes-Hut, same traversal, threads in Morton order (R3 #5)", launchSortedBH, queryBH});
+                 "Barnes-Hut, same traversal, threads in Morton order (R3 #5)", launchV<Var::Thread, Order::Morton>, queryBH});
     r.push_back({"bh_hilbert",
-                 "Barnes-Hut, same traversal, threads in Hilbert order (R3 #5, sub-variant)", launchHilbertBH, queryBH});
+                 "Barnes-Hut, same traversal, threads in Hilbert order (R3 #5, sub-variant)",
+                 launchV<Var::Thread, Order::Hilbert>, queryBH});
+    // ---- tree round 2 (docs/03-design.md §17)
+    r.push_back({"bh_warp",
+                 "Barnes-Hut, warp-cooperative union walk (warp vote, register stack), Morton warps (R3 #7)",
+                 launchV<Var::Warp, Order::Morton>, queryWarp});
+    r.push_back({"bh_warp_list",
+                 "bh_warp + per-warp shared-memory interaction lists, dense evaluation (R3 #7, sub-variant)",
+                 launchV<Var::WarpList, Order::Morton>, queryWarpList});
+    r.push_back({"bh_warp_naive",
+                 "bh_warp on ORIGINAL-order warps (R3 #7 without #5; union of 32 random bodies)",
+                 launchV<Var::Warp, Order::Identity>, queryWarpNaive});
+    r.push_back({"bh_persistent",
+                 "persistent blocks, warp-granular atomic queue of 32-body units, #5 walk (R3 #6)",
+                 launchV<Var::PersUnit, Order::Morton>, queryPersUnit});
+    r.push_back({"bh_persistent_lane",
+                 "persistent threads, lane-granular refill from an atomic queue, #5 walk (R3 #6)",
+                 launchV<Var::PersLane, Order::Morton>, queryPersLane});
+    r.push_back({"bh_persistent_lane_naive",
+                 "bh_persistent_lane on ORIGINAL body order (R3 #6 on #4)",
+                 launchV<Var::PersLane, Order::Identity>, queryPersLaneNaive});
+    r.push_back({"bh_persistent_warp",
+                 "persistent blocks, warp-granular atomic queue, #7 union walk (R3 #6 + #7)",
+                 launchV<Var::PersWarp, Order::Morton>, queryPersWarp});
+    r.push_back({"bh_persistent_static",
+                 "persistent blocks, static partition balanced on the previous launch's unit costs, #5 walk (R3 #6, static arm)",
+                 launchV<Var::PersStatic, Order::Morton>, queryPersStatic});
+    r.push_back({"bh_coherent",
+                 "CONTROL: #5 kernel with order[t] = perm[t & ~31] (all 32 lanes walk one body; forces of 31/32 bodies not computed)",
+                 launchV<Var::Thread, Order::Coherent>, queryCoherent});
 }
 
 } // namespace nbody

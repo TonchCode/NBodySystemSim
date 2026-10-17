@@ -298,6 +298,11 @@ Shared memory: BLOCK × 16 B, as for tuned. So: 100% for b64…b512 (b64/Q32: 44
 1536 regs/warp → 42 warps by registers → 21 blocks → **87.5%**, to be confirmed by the
 runtime API), 67% for b1024 (thread limit).
 
+> **Correction (2026-10-17, cuda-architect, tree round 2; tech-writer finding):** the runtime gave
+> **20 blocks/SM (83%)** for b64/q32, not 21 (87.5%). The SM-wide count above is wrong because
+> registers are allocated per sub-partition (§3.2): floor(16,384 / 1536) = 10 warps per partition
+> × 4 = 40 warps = 20 blocks of 2 warps. The text above is left as written.
+
 ### 4.4 Choosing q automatically
 Two heuristics, implemented and compared:
 1. **Thread saturation** (the simple rule): the smallest Q with N·Q ≥ 80 × 1536 = 122,880
@@ -765,6 +770,13 @@ runs. Data: `results/2026-10-17_tree_round1/` (272 W cap, idle 0% before and aft
 harness blocked the agent from writing `summary.md`. Scorecard: **91 HIT / 32 MISS** of 123
 scored items. §10–§15 above are left as written.
 
+> **Correction (2026-10-17, tree round 2):** the 91 / 32 scorecard is **disputed** (critic review 2,
+> #4): no item table was committed, post-registration interpretation #2 moved a goalpost (P-T1a
+> monotonicity is a MISS on set D), splitting P-T6d inflated the count, several P-T5 HITs restate
+> §0.4 pre-registration observations, and P-T6c recomputes to 1.11 < 1.3 (a MISS). See
+> `results/2026-10-17_tree_round1/summary.md` §4 for the annotated status. From round 2 on, the
+> scorecard is a committed item table (§17.8).
+
 ### 16.1 What held and what didn't
 - **Held (relative structure):**
   - IC ratios of work.
@@ -824,6 +836,12 @@ fill (timeline). Method: `tools/tree_analysis.py`.
 (warp-uniform walk or per-warp interaction lists) over #6. The persistent queue (#6) can recover
 ≤ 2.4% at 1M. Its gain needs a single-wave clustered case to show at all.
 
+> **Correction (2026-10-17, tree round 2):** the ≤ 2.4% bound holds for a **block-granular queue
+> only** (critic review 2, #2). A lane-granular persistent queue targets the loop-level loss
+> (per-warp max/mean 1.05–1.09 for #5, up to 1.62 for #4), which E_sm does not contain. The
+> decomposition itself is also contested (critic review 2, #1: E_mem is a residual). Round 2
+> replaces it with a measured coherent control (§17.4).
+
 ### 16.5 Open items (tree)
 - Separate the memory residual (a′) without ncu: an exploratory stack-in-shared-memory variant
   would isolate the local-memory stack share.
@@ -832,3 +850,176 @@ fill (timeline). Method: `tools/tree_analysis.py`.
 - An octree (or a wider radix node) to cut the 1.5 pops/interaction.
 - Quadrupole (§11.3), deferred.
 - Karras, Skilling and Salmon & Warren are still TODO(source).
+
+---
+
+## 17. Tree round 2: R3 #7 (warp-cooperative walk) and R3 #6 (persistent threads)
+
+Written 2026-10-17 by `cuda-architect`, **before any timing run of these kernels**. It folds in
+critic review 2 (#1, #2, #4, #5, #6, #7, #8, #11). What was observed while building (selftest,
+mutation tests, one functional run at N = 8192) is in §0 of
+`docs/predictions/2026-10-17-tree-round2.md`. Code: `src/core/kernels_tree.cu`. The tree, the bmax
+criterion, `bodyBodyInteraction()` and the build are unchanged (§10–§13). **The production SASS of
+all 192 pre-existing kernels is instruction-for-instruction unchanged** (`tools/sass_diff.py`
+before/after the round-2 edits: 192 of 192 matched).
+
+### 17.1 Registry and what each variant isolates
+
+| name | R3 | walk | scheduler | isolates |
+|---|---|---|---|---|
+| `bh_sorted` | #5 | per thread | hardware block scheduler | baseline |
+| `bh_warp` | **#7** | warp-union walk | hardware | intra-warp incoherence (lanes + memory) |
+| `bh_warp_list` | #7, sub-variant | union walk + per-warp interaction lists | hardware | interleaving of pops and interactions |
+| `bh_warp_naive` | #7 without #5 | union walk on original-order warps | hardware | how much #7 needs #5 (critic review 2, #3) |
+| `bh_persistent` | **#6**, warp-granular | per thread | atomic queue of 32-slot units | between-warp, block-internal and tail loss |
+| `bh_persistent_lane` | **#6**, lane-granular | per thread | per-lane refill from the queue | loop-level loss (lanes done, warp not) |
+| `bh_persistent_lane_naive` | #6 on #4 | per thread, original order | per-lane refill | the same, where it is large (#4) |
+| `bh_persistent_warp` | #6 + #7 | union walk | atomic queue of units | #6 with intra-warp coherence |
+| `bh_persistent_static` | #6, static arm | per thread | precomputed cost-balanced partition | dynamic vs precomputed |
+| `bh_coherent` | **control** | per thread, `order[t] = perm[t & ~31]` | hardware | the coherent ceiling at θ > 0 (critic review 2, #1) |
+
+### 17.2 R3 #7: the warp-union walk (`warpWalk`)
+- **Decomposition.** One warp = one work unit = 32 consecutive Morton slots. The warp pops one node
+  at a time; every lane evaluates its own bmax test; the node is opened iff **any** valid lane opens
+  it (`__any_sync`), the union of the lanes' decisions [P:burtscher2011barneshut: the warp traverses
+  the union of its threads' paths with a warp vote; background]. Control flow is warp-uniform, so
+  every interaction and pop runs on 32 lanes and every node or body load is a same-address
+  (broadcast) load.
+- **Accuracy.** A lane whose own test would accept an opened node gets the node's children or bucket
+  instead. Per lane, I(#7) ≥ I(#5) and V(#7) ≥ V(#5) (induction over the walk; asserted per slot by
+  `--selftest` and on every bench run). The aggregate error drops (TG3), but one body's error is
+  not guaranteed to drop (cancellation), so TG3 is an aggregate gate.
+- **Stack.** 64 entries in two registers per lane (entry k in lane k mod 32, register k / 32): push =
+  a predicated move, pop = one `__shfl_sync`. No shared memory, no `__syncwarp` on the walk, no local
+  memory (0 B stack frame; #5 has a 256 B local stack). This is the per-warp shared stack, held in
+  the register file.
+- **List variant.** Accepted cells (lane 0) and bucket bodies (one per lane, coalesced) are appended
+  to a 64-entry per-warp list in shared memory (1 KB per warp, 4 KB per 128-thread block) and
+  evaluated in a dense, 4× unrolled loop (LDS.128 broadcast + interaction) when the list fills. The
+  summation order equals the direct walk's, so it is **bitwise equal to `bh_warp`**. It is a separate
+  arm because it tests whether interleaving dependent pop chains with interactions still costs
+  anything once the walk is coherent.
+- **Resources** [M, ptxas `--resource-usage`]: production 40 regs, 0 spills, 0 B stack frame (both
+  variants); 12 blocks/SM at block 128 (the list's 4 KB per block fits: 48 KB/SM). The instrumented
+  list twin has 48 regs → 10 blocks/SM: its counters are algorithmic and valid, its timelines are
+  not comparable.
+- **Traffic and bottleneck [D].** Per pop: one broadcast com (16 B) + rc2 (4 B) + info if opened
+  (16 B), i.e. one L1 wavefront per load instead of up to 32. Expected bottleneck: the dependent pop
+  chain (shuffle → node load → test → vote → branch), i.e. latency hidden by resident warps; not
+  FP32 and not L2 bandwidth.
+- **Load-balancing problem addressed:** intra-warp imbalance and divergence (idle lanes at buckets,
+  finished lanes waiting) and memory-side incoherence, by construction. The price is the union's
+  extra work. The metrics that prove it: SIMT efficiency (must be 1.000 at both sites), the union
+  work ratio (interactions and pops vs #5), and the traversal time against the coherent control
+  (§17.4).
+
+### 17.3 R3 #6: persistent threads
+- **Grid.** min(resident blocks/SM × 80, blocks that have work). The cap matters below N = 122,880
+  (3840 resident warps at 40 regs and block 128). Without it the excess warps race for the few units
+  and the winners cluster on a few SMs: in the functional run at N = 8192 the uncapped warp queue
+  took 0.75 ms against 0.51 ms for the normal grid (predictions §0).
+- **Warp-granular queue** (`bh_persistent`, `bh_persistent_warp`): lane 0 claims the next unit with
+  `atomicAdd` on a global counter and broadcasts it [P:huang2026weave, transferable: SMs claim the
+  next tile with atomicAdd on a global counter]. It replaces the hardware block scheduler (already
+  dynamic, at 4-warp granularity) by a warp-granular one, so it can recover the block-internal wait
+  (3 warps done, block slot still held) and shorten the tail to one unit. It cannot touch the
+  loop-level loss inside a warp. Below 122,880 bodies every warp gets at most one unit, so it reduces
+  to the normal grid plus one atomic.
+- **Lane-granular refill** (`bh_persistent_lane`, `_naive`), the critic-2 #2 design. Each lane runs
+  #5's walk for one body. When its stack empties it writes the result, and the warp refills every
+  idle lane from a warp-owned batch of 32 consecutive slots: one `atomicAdd(queue, 32)` per batch,
+  issued one batch ahead so the atomic's latency is off the critical path. One loop iteration = one
+  pop. It attacks the loop-level loss (eff_pop < 1, per-warp max/mean > 1). **Limit:** it can only
+  rebalance when a lane gets more than one body, i.e. N ≫ 32 × resident warps = 122,880. **Price:**
+  after the first refill a warp's lanes hold bodies from two Morton batches (two regions), so memory
+  coherence degrades towards #4's. On #4 that costs nothing (already random). The per-body
+  arithmetic is that of `bhTraverseKernel`, so the accelerations are bitwise equal. There is no
+  2025–26 source in the bib for lane-granular persistent threads; the warp-level stealing analogue
+  is [P:chen2026gmatch, transferable], persistent traversal in general [P:maeda2026gtap].
+- **Static arm** (`bh_persistent_static`): per-unit costs (clock64 cycles of the previous launch,
+  costzones-style; uniform on the first launch at a given N and grid) → CUB inclusive scan →
+  contiguous unit ranges of equal cost per persistent warp (owner = cost midpoint × G / total)
+  [P:xia2025voltrix, transferable: persistent kernel + precomputed balanced partition;
+  P:li2025staticbatching, transferable: prefix sum of per-task cost, no runtime scheduler]. In the
+  bench every timed launch uses the costs of the previous identical launch: the best case for a
+  static partition. Its known disadvantage: contiguous ranges spread co-resident warps over
+  far-apart regions (worse L1 sharing than the queue, where co-resident warps take neighbouring
+  units).
+- The **order phase** holds the scheduler set-up (queue reset: a 4 B memset; static: scan +
+  partition), so the traversal phase is the kernel alone.
+- **Resources** [M]: 38–40 regs in production, 256 B local stack for the per-thread walks, 0 for
+  `bh_persistent_warp`; 12 blocks/SM at block 128.
+- **Exactly once.** The persistent instrumented twins accumulate their counters with atomics into a
+  zeroed buffer, so a slot processed twice shows doubled counts and a skipped slot shows zeros. Every
+  bench run of a persistent kernel compares accelerations (bitwise) and per-slot pop and interaction
+  counts (exactly) with its non-persistent sibling.
+
+### 17.4 The coherent control (`bh_coherent`, critic review 2, #1)
+The same kernel and SASS as #5 (`bhTraverseKernel`), the same tree and θ, with
+`order[t] = perm[t & ~31]`: all 32 lanes of a warp walk the body of the warp's first slot. That gives
+perfect lane coherence and same-address loads with the same instruction mix and the same local
+stack (now with a uniform index), at θ = 0.5. Only 1 body in 32 gets a force (the 32 identical
+writes are benign), so it has no gates, and its "interactions" are lane-work. Its traversal time is
+what #5's kernel needs for #5-like per-lane work when the warp is coherent: a measured ceiling for
+intra-warp fixes that replaces the residual E_mem. The selftest checks that exactly ⌈N/32⌉ bodies
+are written, each bitwise equal to bh_sorted's. Caveat: a control warp's work is one body's path,
+so its warp-cost spread samples #5's lanes rather than #5's warp maxima; the comparison is on lane
+work per second (and on time, since the lane-work totals are within a few % of #5's).
+Not built: a stack-in-shared-memory #5. At 64 ints × 128 threads = 32 KB per block it would run at
+3 blocks/SM and confound the stack with occupancy. The register stack of #7 and the uniform-index
+local stack of the control bracket the stack's share instead.
+
+### 17.5 Measurement additions
+- **Warp-unit timelines** (`--timeline-unit warp`): one record per 32-slot unit (per persistent warp
+  for lane refill), so persistent kernels have a meaningful timeline and block-internal warp idling
+  becomes visible. `slots_per_sm` in the header = resident warps/SM; `tools/tree_analysis.py` uses it.
+- **Occupancy sweep** (`--occ-blocks B`, critic review 2, #6): dynamic shared-memory padding caps the
+  resident blocks/SM at fixed N; padding = ⌊102,400 / B⌋ − 1024 − the kernel's own smem. The padding
+  also pins the L1 carve-out near its minimum for every B, so B = 12 padded is compared with B = 12
+  unpadded to separate L1 capacity from occupancy.
+- **θ ≤ 1** in the bench and the launcher (critic review 2, #11).
+
+### 17.6 Validation (pre-registered gates)
+- TG1/TG2 and D-009 unchanged. **TG3 (new, union walks):** rms and p99 relative error over all bodies
+  ≤ the sibling's (#5; #4 for `bh_warp_naive`) at the same θ, and per slot no fewer pops or
+  interactions than the sibling. **Exact siblings:** `bh_warp_list` and `bh_persistent_warp` ≡
+  `bh_warp`; the per-thread persistent arms ≡ `bh_sorted` (≡ `bh_naive`), bitwise and with equal
+  per-slot counts. A FAIL exits with code 3.
+- **`--selftest` additions** (all pass: 1494 new tree checks; the lattice now has 4450 cases because
+  every new kernel runs the exact θ = 0 lattice too):
+  1. **Exact θ > 0 host check** (critic review 2, #7) for 3 ICs × N ∈ {1, 2, 3, 1000, 10007} × θ ∈
+     {0.5, 0.7}. Every node's mass, COM, AABB and bmax are recomputed in FP64 from its
+     [first, last] range (AABB bitwise; mass rel ≤ 1e-5; COM and bmax ≤ 2e-5 × extent). Then the same
+     tree is walked on the host with the device's FP32 test (the same `fmaf` expression and the
+     device com/rc2) and FP64 accumulation, for the #5 walk and for the union walk. Per-body pop and
+     interaction counts must equal the device's, and |a_dev − a_host| / Σ|f| must be ≤ (I + 10) u.
+     Worst case seen: 0.27 of the bound. This checks the monopole-accept branch exactly.
+  2. Instrumented = production, bitwise, for every new kernel; exact siblings as above; the static
+     partition stable across re-partitions; union per-slot I, V ≥ sibling; TG3 at N ≥ 1000; at θ = 0
+     the union walks ≡ `bh_sorted` on random ICs; the coherent control; warp-unit timeline records.
+  3. **Mutation tests** (code reverted afterwards): a persistent queue that skips its last unit, the
+     vote changed from `__any_sync` to `__all_sync`, and a 0.1% mass error in #5's monopole-accept
+     branch. All three fail the selftest (480 failures). The third is caught **only** by the new
+     exact host check; TG1/TG2 pass it. `--selftest-drop 5` still detects all 3560 visible drops.
+
+### 17.7 Interface changes
+- `Params`: `timelineWarp`, `smemPad`. `LaunchInfo`: `timelineRecords`, `timelineSlotsPerSM`,
+  `persistent`, `control`, `errorSibling`, `exactSibling`, `counterSibling`, `dynSmem`.
+- `checkLastTreeExact()` in `nbody.h`. `bhTraverseKernel` gained a defaulted template flag (TLW,
+  warp-unit stamps); its production and round-1 instrumented instantiations are unchanged in SASS.
+- **Rate label (critic review 2, #5).** For tree kernels the headline `kernel=` line now reads
+  "G N^2-equivalent interactions/s (not the tree rate; see the work: line)" and drops GFLOP/s. A new
+  `rates:` line gives the real rate over the pipeline and over the traversal. In the new CSV header,
+  `ginteractions_per_s` and `gflops` hold the **real** interaction rate (all-pairs: N²; trees:
+  counted interactions / pipeline time), `n2equiv_ginter_per_s` holds N² / time, and
+  `trav_ginter_per_s` the traversal rate. Historic CSVs are unchanged, and the bench refuses to
+  append to them (header check). The round-1 tree CSVs keep N²-equivalent values in
+  `ginteractions_per_s`; they must not be read as tree rates.
+- New CSV columns: `n2equiv_ginter_per_s, trav_ginter_per_s, occ_blocks, smem_pad, persistent,
+  control, sib_rms, sib_p99, tg3, union_inter_ratio, union_visit_ratio, exact_match, counts_match`.
+
+### 17.8 Scorecard rule (critic review 2, #4)
+The phase-2 scorecard is a committed table file (`results/<date>_tree_round2/scorecard.csv`): one row
+per pre-registered item ID, with the range, the measured value, the source log, HIT/MISS, and an
+`anchored` flag for items built on a pre-registration observation. No item is split or reinterpreted
+after registration; a disputed reading is listed as disputed.

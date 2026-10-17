@@ -49,6 +49,13 @@ struct Params {
     // Kernels with LaunchInfo::nPhases > 0: if non-null, an array of nPhases + 1 events; the
     // launcher records [0] before the first phase and [k] after phase k (GTaP-style phase times).
     cudaEvent_t* phaseEvents = nullptr;
+    // Tree round 2 (docs/03-design.md §17). timelineWarp = 1: the instrumented tree twins write
+    // one BlockStamp per warp work unit (32 thread slots; for bh_persistent_lane one per
+    // persistent warp) instead of one per block; LaunchInfo::timelineRecords says how many.
+    int timelineWarp = 0;
+    // Occupancy sweep: extra dynamic shared memory per traversal block (bytes, unused by the
+    // kernel) to cap resident blocks/SM at fixed N (critic review 2, #6). 0 = off.
+    int smemPad = 0;
 };
 
 // Device buffers. pos.w = mass, vel.w unused (padding for 16-byte loads).
@@ -83,6 +90,15 @@ struct LaunchInfo {
     bool        approximate   = false;
     int         nPhases       = 0;
     const char* phaseNames[8] = {};
+    // Tree round 2.
+    int         timelineRecords   = 0;        // records per launch (0 = gridBlocks)
+    int         timelineSlotsPerSM = 0;       // concurrent records per SM (blocks or warps/SM)
+    bool        persistent        = false;
+    bool        control           = false;    // diagnostic control: forces not all computed, no gates
+    const char* errorSibling      = nullptr;  // kernel whose error this one must not exceed (TG3)
+    const char* exactSibling      = nullptr;  // kernel this one must equal bitwise (+ equal counters)
+    const char* counterSibling    = nullptr;  // kernel whose work counters are the overhead baseline
+    size_t      dynSmem           = 0;        // dynamic shared memory of the traversal launch
 };
 using LaunchQuery = LaunchInfo (*)(int n, const Params&);
 
@@ -132,7 +148,23 @@ struct TreeCheck {
     double      massRelErr = 0, comAbsErr = 0;
 };
 TreeCheck checkLastTree(const DeviceState& s);
-int       treeStackOverflows(bool reset);   // traversal stack overflows since the last reset (must be 0)
+int       treeStackOverflows(bool reset);
+// Exact theta > 0 check (critic review 2, #7), host, FP64, for the most recent tree:
+//  (1) every node's mass, COM and AABB recomputed from its [first, last] range of sortedPos and
+//      compared with the device values (mass/COM at FP32-roundoff tolerance, AABB bitwise), and
+//      the opening radius rc2 against the FP64 bmax;
+//  (2) a host walk of the same tree with the same FP32 criterion (bitwise-identical decisions:
+//      same fmaf expression, device com/rc2) and FP64 accumulation, per body: the interaction and
+//      pop counts must equal the device counters exactly, and |a_dev - a_host| / sum|f| must be
+//      within (I + 10) u (FP32 summation bound). unionWalk = the #7 warp-union criterion.
+// acc: device result indexed by body; wc: device counters indexed by thread slot (Morton order).
+struct TreeExactCheck {
+    bool ok = true; std::string msg;
+    int nodes = 0, nodeFails = 0, bodies = 0, countMismatch = 0, errFails = 0;
+    double maxMassRel = 0, maxComAbs = 0, maxBmaxAbs = 0, maxErrOverBound = 0;
+};
+TreeExactCheck checkLastTreeExact(const std::vector<float4>& acc, const std::vector<uint4>* wc, float eps2, float G,
+                                  bool unionWalk);   // traversal stack overflows since the last reset (must be 0)
 unsigned long long hostHilbertKey(unsigned x, unsigned y, unsigned z);   // 21-bit coords (for --selftest)
 
 // Conditioning pre-filter (device, FP32, O(N^2), diagnostic only, not a force kernel):

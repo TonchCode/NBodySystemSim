@@ -122,6 +122,15 @@ switching on that evidence would be fitting to noise. The real loss is elsewhere
 searches q at a fixed block, and the joint (block, q) optimum beats it by up to 12% (N = 4096).
 **Rules out:** citing "v2 overfit" anywhere.
 
+> **Correction (2026-10-17, cuda-architect, tree round 2):** recomputed from
+> `results/2026-10-17_round2/sweep/sweep.csv` (medians, prefetch on = the default, N = 4096,
+> joint best = multi b512 q8, 0.01878 ms): auto-q at the bench default b256 (q4, 0.02177 ms) is
+> **15.9% slower, i.e. 13.8% lower throughput**; the worst fixed block is b128 (q4, 0.02252 ms:
+> 19.9% slower, 16.6% lower throughput); at b512 / b1024 auto-q is within 0.4% / 1.0%. So critic
+> review 1's "14%" is right (throughput at the default block), and "up to 12%" above is wrong: it
+> matches no cell. The correct statement is "up to 16.6% lower throughput (b128), 13.8% at the
+> default b256".
+
 ## D-011 — Load imbalance is measured with per-block timelines (2026-10-17, cuda-architect, round 2)
 
 GPU performance counters stay blocked (Toncho's call), so ncu's `sm__cycles_active` is not
@@ -210,7 +219,9 @@ measured #5/#4 gain (1.6–2.1×) is therefore caused by the order alone.
 **Decided:** for θ > 0, gate on rms rel error ≤ 0.03·(θ/0.5)² and p99 rel error ≤ 0.12·(θ/0.5)²
 over all bodies vs the chunked exact reference, plus zero stack overflows. θ = 0 uses D-009.
 Pre-registered in 581fc47.
-**Why:** all 49 tree runs pass with 2.3–4.6× margin on rms. Bug detection is the exact selftest's
+**Why:** all 49 tree runs pass with 2.3–4.6× margin on rms.
+*(Correction 2026-10-17, tree round 2: **47** gated runs, not 49 (critic review 2, #13); the
+other θ > 0 logs are timeline runs with `--no-validate`.)* Bug detection is the exact selftest's
 job: 720 θ = 0 lattice cases, `--selftest-drop`, and an injected leaf-loop bug that failed
 exactly its 486 visible cases. The statistical gates only catch gross approximation errors.
 **Rules out:** gating trees with D-009's FP32-roundoff thresholds (θ > 0 is truncation-limited
@@ -246,6 +257,12 @@ not the first choice: the loop-level imbalance it targets is ≈ 2.4% for #5. R3
 (it is a graded technique), but pre-registered as small (≤ 3% at N ≥ 262144), with its test case
 in the single-wave clustered regime. The extra work of the union walk is the quantity to
 pre-register for #7.
+
+> **Correction (2026-10-17, tree round 2):** "≤ 3%" applies to a **block-granular queue only**
+> (critic review 2, #2). Round 2 builds #6 at warp and at lane granularity and pre-registers the
+> lane-granular bound from 1 − eff_pop and per-warp max/mean (§17.3,
+> `docs/predictions/2026-10-17-tree-round2.md`). The 85–99% / 8.4× figures rest on a residual
+> (critic review 2, #1) and are replaced by a measured coherent control (§17.4).
 
 ## D-020 — How tree speedups over all-pairs are quoted (2026-10-17, cuda-architect)
 
