@@ -17,7 +17,14 @@ tools\build.bat Release
 build\nbody_bench.exe --list
 build\nbody_bench.exe --kernel allpairs_tiled --n 131072 --runs 10 --csv results\run.csv
 build\nbody_bench.exe --kernel allpairs_tiled --n 4096 --steps 2000 --energy
+build\src\viewer\nbody_viewer.exe --n 65536
 ```
+
+Viewer controls: LMB drag orbit · wheel zoom · `1`..`9` kernel · Space pause ·
+`+`/`-` steps per frame · `[` `]` brightness · `R` reset · `V` vsync · Esc quit.
+`--frames F --screenshot out.bmp` renders F frames, saves the last one and exits (for figures).
+
+![viewer](docs/img/viewer_plummer_32k_2026-10-17.png)
 
 ## Layout
 
