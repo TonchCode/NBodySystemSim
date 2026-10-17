@@ -1,0 +1,48 @@
+== tl_multi_b512q32_n1000.csv: allpairs_multi n=1000 b=512 q=32 pf=1 u=8  (5 launches, median shown)
+   span 2.05 us | max busy 2.05 | mean busy (80 SMs) 1.61 | max/mean 1.270 (active SMs: 1.000) | SM eff 0.787
+   clock calibration: 0 SMs calibrated, 63 raw; f nan..nan GHz; calibrated vs raw start outside one tick by <= nan ns  ** WARNING: raw 1.024 us stamps used for some SMs **
+   active 63 / idle 17 SMs | blocks/SM 0..1 | tail 0.00 us (0.0% of span) | start skew 0.00 us | timer res 1024 ns | SM clock 2.448 GHz
+== tl_tiled_256_n1000.csv: allpairs_tiled n=1000 b=256 q=1 pf=-1 u=8  (5 launches, median shown)
+   span 18.43 us | max busy 18.43 | mean busy (80 SMs) 0.92 | max/mean 20.000 (active SMs: 1.000) | SM eff 0.050
+   clock calibration: 0 SMs calibrated, 4 raw; f nan..nan GHz; calibrated vs raw start outside one tick by <= nan ns  ** WARNING: raw 1.024 us stamps used for some SMs **
+   active 4 / idle 76 SMs | blocks/SM 0..1 | tail 0.00 us (0.0% of span) | start skew 0.00 us | timer res 1024 ns | SM clock 2.844 GHz
+== tl_tuned_b128u0_n1000.csv: allpairs_tuned n=1000 b=128 q=1 pf=-1 u=0  (5 launches, median shown)
+   span 11.26 us | max busy 11.26 | mean busy (80 SMs) 1.13 | max/mean 10.105 (active SMs: 1.011) | SM eff 0.099
+   clock calibration: 0 SMs calibrated, 8 raw; f nan..nan GHz; calibrated vs raw start outside one tick by <= nan ns  ** WARNING: raw 1.024 us stamps used for some SMs **
+   active 8 / idle 72 SMs | blocks/SM 0..1 | tail 0.00 us (0.0% of span) | start skew 0.00 us | timer res 1024 ns | SM clock 2.724 GHz
+== tl_multi_b512q8_n4096.csv: allpairs_multi n=4096 b=512 q=8 pf=1 u=8  (5 launches, median shown)
+   span 17.41 us | max busy 17.41 | mean busy (80 SMs) 13.93 | max/mean 1.250 (active SMs: 1.000) | SM eff 0.800
+   clock calibration: 0 SMs calibrated, 64 raw; f nan..nan GHz; calibrated vs raw start outside one tick by <= nan ns  ** WARNING: raw 1.024 us stamps used for some SMs **
+   active 64 / idle 16 SMs | blocks/SM 0..1 | tail 0.00 us (0.0% of span) | start skew 0.00 us | timer res 1024 ns | SM clock 2.674 GHz
+== tl_tiled_256_n4096.csv: allpairs_tiled n=4096 b=256 q=1 pf=-1 u=8  (5 launches, median shown)
+   span 75.78 us | max busy 75.78 | mean busy (80 SMs) 15.07 | max/mean 5.000 (active SMs: 1.000) | SM eff 0.200
+   clock calibration: 0 SMs calibrated, 16 raw; f nan..nan GHz; calibrated vs raw start outside one tick by <= nan ns  ** WARNING: raw 1.024 us stamps used for some SMs **
+   active 16 / idle 64 SMs | blocks/SM 0..1 | tail 0.00 us (0.0% of span) | start skew 0.00 us | timer res 1024 ns | SM clock 2.767 GHz
+== tl_tuned_b128u0_n4096.csv: allpairs_tuned n=4096 b=128 q=1 pf=-1 u=0  (5 launches, median shown)
+   span 45.06 us | max busy 45.06 | mean busy (80 SMs) 17.65 | max/mean 2.521 (active SMs: 1.009) | SM eff 0.397
+   clock calibration: 0 SMs calibrated, 32 raw; f nan..nan GHz; calibrated vs raw start outside one tick by <= nan ns  ** WARNING: raw 1.024 us stamps used for some SMs **
+   active 32 / idle 48 SMs | blocks/SM 0..1 | tail 0.00 us (0.0% of span) | start skew 0.00 us | timer res 1024 ns | SM clock 2.782 GHz
+== tl_multi_b1024q8_n10000.csv: allpairs_multi n=10000 b=1024 q=8 pf=1 u=8  (5 launches, median shown)
+   span 84.99 us | max busy 84.99 | mean busy (80 SMs) 83.35 | max/mean 1.022 (active SMs: 1.009) | SM eff 0.979
+   clock calibration: 0 SMs calibrated, 79 raw; f nan..nan GHz; calibrated vs raw start outside one tick by <= nan ns  ** WARNING: raw 1.024 us stamps used for some SMs **
+   active 79 / idle 1 SMs | blocks/SM 0..1 | tail 1.02 us (1.2% of span) | start skew 0.00 us | timer res 1024 ns | SM clock 2.584 GHz
+== tl_tiled_256_n10000.csv: allpairs_tiled n=10000 b=256 q=1 pf=-1 u=8  (5 launches, median shown)
+   span 190.46 us | max busy 190.46 | mean busy (80 SMs) 95.18 | max/mean 2.002 (active SMs: 1.001) | SM eff 0.499
+   clock calibration: 0 SMs calibrated, 40 raw; f nan..nan GHz; calibrated vs raw start outside one tick by <= nan ns  ** WARNING: raw 1.024 us stamps used for some SMs **
+   active 40 / idle 40 SMs | blocks/SM 0..1 | tail 0.00 us (0.0% of span) | start skew 0.00 us | timer res 1024 ns | SM clock 2.751 GHz
+== tl_tuned_b128u0_n10000.csv: allpairs_tuned n=10000 b=128 q=1 pf=-1 u=0  (5 launches, median shown)
+   span 111.62 us | max busy 111.62 | mean busy (80 SMs) 109.62 | max/mean 1.022 (active SMs: 1.009) | SM eff 0.978
+   clock calibration: 0 SMs calibrated, 79 raw; f nan..nan GHz; calibrated vs raw start outside one tick by <= nan ns  ** WARNING: raw 1.024 us stamps used for some SMs **
+   active 79 / idle 1 SMs | blocks/SM 0..1 | tail 1.02 us (0.9% of span) | start skew 0.00 us | timer res 1024 ns | SM clock 2.728 GHz
+== tl_multi_b256q4_n65536.csv: allpairs_multi n=65536 b=256 q=4 pf=1 u=8  (5 launches, median shown)
+   span 3408.90 us | max busy 3408.90 | mean busy (80 SMs) 3356.31 | max/mean 1.016 (active SMs: 1.016) | SM eff 0.985
+   clock calibration: 0 SMs calibrated, 80 raw; f nan..nan GHz; calibrated vs raw start outside one tick by <= nan ns  ** WARNING: raw 1.024 us stamps used for some SMs **
+   active 80 / idle 0 SMs | blocks/SM 12..13 | tail 4.10 us (0.1% of span) | start skew 2034.69 us | timer res 1024 ns | SM clock 2.518 GHz
+== tl_tiled_256_n65536.csv: allpairs_tiled n=65536 b=256 q=1 pf=-1 u=8  (5 launches, median shown)
+   span 3999.74 us | max busy 3999.74 | mean busy (80 SMs) 3248.36 | max/mean 1.231 (active SMs: 1.231) | SM eff 0.812
+   clock calibration: 0 SMs calibrated, 80 raw; f nan..nan GHz; calibrated vs raw start outside one tick by <= nan ns  ** WARNING: raw 1.024 us stamps used for some SMs **
+   active 80 / idle 0 SMs | blocks/SM 3..4 | tail 939.01 us (23.5% of span) | start skew 0.00 us | timer res 1024 ns | SM clock 2.699 GHz
+== tl_tuned_b128u0_n65536.csv: allpairs_tuned n=65536 b=128 q=1 pf=-1 u=0  (5 launches, median shown)
+   span 3504.13 us | max busy 3504.13 | mean busy (80 SMs) 3210.91 | max/mean 1.091 (active SMs: 1.091) | SM eff 0.916
+   clock calibration: 0 SMs calibrated, 80 raw; f nan..nan GHz; calibrated vs raw start outside one tick by <= nan ns  ** WARNING: raw 1.024 us stamps used for some SMs **
+   active 80 / idle 0 SMs | blocks/SM 6..7 | tail 483.84 us (13.8% of span) | start skew 0.00 us | timer res 1024 ns | SM clock 2.599 GHz

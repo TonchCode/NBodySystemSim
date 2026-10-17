@@ -1,0 +1,48 @@
+== tl_multi_b512q32_n1000.csv: allpairs_multi n=1000 b=512 q=32 pf=1 u=8  (5 launches, median shown)
+   span 1.95 us | max busy 1.91 | mean busy (80 SMs) 1.41 | max/mean 1.352 (active SMs: 1.065) | SM eff 0.723
+   clock calibration: 63 SMs calibrated, 0 raw; f 2.7743..2.7745 GHz; calibrated vs raw start outside one tick by <= 110 ns
+   active 63 / idle 17 SMs | blocks/SM 0..1 | tail 0.12 us (6.1% of span) | start skew 0.06 us | timer res 1024 ns | SM clock 2.774 GHz
+== tl_tiled_256_n1000.csv: allpairs_tiled n=1000 b=256 q=1 pf=-1 u=8  (5 launches, median shown)
+   span 18.90 us | max busy 18.88 | mean busy (80 SMs) 0.94 | max/mean 20.067 (active SMs: 1.003) | SM eff 0.050
+   clock calibration: 4 SMs calibrated, 0 raw; f 2.7827..2.7866 GHz; calibrated vs raw start outside one tick by <= 0 ns
+   active 4 / idle 76 SMs | blocks/SM 0..1 | tail 0.07 us (0.4% of span) | start skew 0.04 us | timer res 1024 ns | SM clock 2.784 GHz
+== tl_tuned_b128u0_n1000.csv: allpairs_tuned n=1000 b=128 q=1 pf=-1 u=0  (5 launches, median shown)
+   span 11.17 us | max busy 11.14 | mean busy (80 SMs) 1.10 | max/mean 10.099 (active SMs: 1.010) | SM eff 0.099
+   clock calibration: 8 SMs calibrated, 0 raw; f 2.7751..2.7889 GHz; calibrated vs raw start outside one tick by <= 0 ns
+   active 8 / idle 72 SMs | blocks/SM 0..1 | tail 0.13 us (1.2% of span) | start skew 0.04 us | timer res 1024 ns | SM clock 2.785 GHz
+== tl_multi_b512q8_n4096.csv: allpairs_multi n=4096 b=512 q=8 pf=1 u=8  (5 launches, median shown)
+   span 17.40 us | max busy 17.31 | mean busy (80 SMs) 13.65 | max/mean 1.268 (active SMs: 1.014) | SM eff 0.786
+   clock calibration: 64 SMs calibrated, 0 raw; f 2.7265..2.7279 GHz; calibrated vs raw start outside one tick by <= 663 ns
+   active 64 / idle 16 SMs | blocks/SM 0..1 | tail 0.24 us (1.4% of span) | start skew 0.18 us | timer res 1024 ns | SM clock 2.728 GHz
+== tl_tiled_256_n4096.csv: allpairs_tiled n=4096 b=256 q=1 pf=-1 u=8  (5 launches, median shown)
+   span 75.89 us | max busy 75.63 | mean busy (80 SMs) 15.08 | max/mean 5.016 (active SMs: 1.003) | SM eff 0.199
+   clock calibration: 16 SMs calibrated, 0 raw; f 2.7709..2.7750 GHz; calibrated vs raw start outside one tick by <= 312 ns
+   active 16 / idle 64 SMs | blocks/SM 0..1 | tail 0.48 us (0.6% of span) | start skew 0.39 us | timer res 1024 ns | SM clock 2.775 GHz
+== tl_tuned_b128u0_n4096.csv: allpairs_tuned n=4096 b=128 q=1 pf=-1 u=0  (5 launches, median shown)
+   span 44.67 us | max busy 44.54 | mean busy (80 SMs) 17.68 | max/mean 2.518 (active SMs: 1.007) | SM eff 0.396
+   clock calibration: 32 SMs calibrated, 0 raw; f 2.7697..2.7732 GHz; calibrated vs raw start outside one tick by <= 472 ns
+   active 32 / idle 48 SMs | blocks/SM 0..1 | tail 0.32 us (0.7% of span) | start skew 0.43 us | timer res 1024 ns | SM clock 2.773 GHz
+== tl_multi_b1024q8_n10000.csv: allpairs_multi n=10000 b=1024 q=8 pf=1 u=8  (5 launches, median shown)
+   span 85.49 us | max busy 84.39 | mean busy (80 SMs) 82.92 | max/mean 1.018 (active SMs: 1.005) | SM eff 0.970
+   clock calibration: 79 SMs calibrated, 0 raw; f 2.5823..2.5912 GHz; calibrated vs raw start outside one tick by <= 2363 ns
+   active 79 / idle 1 SMs | blocks/SM 0..1 | tail 1.32 us (1.5% of span) | start skew 1.23 us | timer res 1024 ns | SM clock 2.590 GHz
+== tl_tiled_256_n10000.csv: allpairs_tiled n=10000 b=256 q=1 pf=-1 u=8  (5 launches, median shown)
+   span 191.16 us | max busy 190.51 | mean busy (80 SMs) 95.00 | max/mean 2.005 (active SMs: 1.003) | SM eff 0.497
+   clock calibration: 40 SMs calibrated, 0 raw; f 2.7513..2.7589 GHz; calibrated vs raw start outside one tick by <= 1335 ns
+   active 40 / idle 40 SMs | blocks/SM 0..1 | tail 0.91 us (0.5% of span) | start skew 0.96 us | timer res 1024 ns | SM clock 2.756 GHz
+== tl_tuned_b128u0_n10000.csv: allpairs_tuned n=10000 b=128 q=1 pf=-1 u=0  (5 launches, median shown)
+   span 111.34 us | max busy 111.24 | mean busy (80 SMs) 109.13 | max/mean 1.019 (active SMs: 1.007) | SM eff 0.980
+   clock calibration: 79 SMs calibrated, 0 raw; f 2.7354..2.7404 GHz; calibrated vs raw start outside one tick by <= 1674 ns
+   active 79 / idle 1 SMs | blocks/SM 0..1 | tail 0.69 us (0.6% of span) | start skew 0.58 us | timer res 1024 ns | SM clock 2.740 GHz
+== tl_multi_b256q4_n65536.csv: allpairs_multi n=65536 b=256 q=4 pf=1 u=8  (5 launches, median shown)
+   span 3419.26 us | max busy 3407.61 | mean busy (80 SMs) 3353.61 | max/mean 1.016 (active SMs: 1.016) | SM eff 0.981
+   clock calibration: 80 SMs calibrated, 0 raw; f 2.5027..2.5227 GHz; calibrated vs raw start outside one tick by <= 36863 ns
+   active 80 / idle 0 SMs | blocks/SM 12..13 | tail 3.48 us (0.1% of span) | start skew 2050.55 us | timer res 1024 ns | SM clock 2.522 GHz
+== tl_tiled_256_n65536.csv: allpairs_tiled n=65536 b=256 q=1 pf=-1 u=8  (5 launches, median shown)
+   span 4000.54 us | max busy 3999.63 | mean busy (80 SMs) 3247.98 | max/mean 1.231 (active SMs: 1.231) | SM eff 0.812
+   clock calibration: 80 SMs calibrated, 0 raw; f 2.6983..2.6998 GHz; calibrated vs raw start outside one tick by <= 1397 ns
+   active 80 / idle 0 SMs | blocks/SM 3..4 | tail 938.51 us (23.5% of span) | start skew 1.60 us | timer res 1024 ns | SM clock 2.700 GHz
+== tl_tuned_b128u0_n65536.csv: allpairs_tuned n=65536 b=128 q=1 pf=-1 u=0  (5 launches, median shown)
+   span 3515.37 us | max busy 3506.50 | mean busy (80 SMs) 3212.37 | max/mean 1.092 (active SMs: 1.092) | SM eff 0.914
+   clock calibration: 80 SMs calibrated, 0 raw; f 2.5969..2.6023 GHz; calibrated vs raw start outside one tick by <= 37306 ns
+   active 80 / idle 0 SMs | blocks/SM 6..7 | tail 485.11 us (13.8% of span) | start skew 9.98 us | timer res 1024 ns | SM clock 2.602 GHz

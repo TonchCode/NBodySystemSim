@@ -1,0 +1,1001 @@
+﻿[1/100] --kernel allpairs_tiled --n 65536 --block 64
+    # launch  grid=1024 block=64 q=1 prefetch=-1 unroll=8  regs=40 smem=1024 B  resident 24 blocks/SM (100% occupancy) 
+ blocks/SM=12.80 (busiest 13)  waves=0.53
+    kernel=allpairs_tiled n=65536 block=64 q=1 prefetch=-1 unroll=8 runs=10 batch=5  median=3.6946 ms  min=3.6907  
+max=3.7118  1162.511 Ginteractions/s  23250.2 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[2/100] --kernel allpairs_tiled --n 65536 --block 128
+    # launch  grid=512 block=128 q=1 prefetch=-1 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy) 
+ blocks/SM=6.40 (busiest 7)  waves=0.53
+    kernel=allpairs_tiled n=65536 block=128 q=1 prefetch=-1 unroll=8 runs=10 batch=5  median=3.6458 ms  min=3.6362  
+max=3.6532  1178.043 Ginteractions/s  23560.9 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[3/100] --kernel allpairs_tiled --n 65536 --block 256
+    # launch  grid=256 block=256 q=1 prefetch=-1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=3.20 (busiest 4)  waves=0.53
+    kernel=allpairs_tiled n=65536 block=256 q=1 prefetch=-1 unroll=8 runs=10 batch=5  median=3.9474 ms  min=3.9432  
+max=3.9545  1088.063 Ginteractions/s  21761.3 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[4/100] --kernel allpairs_tiled --n 65536 --block 512
+    # launch  grid=128 block=512 q=1 prefetch=-1 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=1.60 (busiest 2)  waves=0.53
+    kernel=allpairs_tiled n=65536 block=512 q=1 prefetch=-1 unroll=8 runs=10 batch=5  median=3.8313 ms  min=3.8230  
+max=3.8347  1121.027 Ginteractions/s  22420.5 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[5/100] --kernel allpairs_tiled --n 65536 --block 1024
+    # launch  grid=64 block=1024 q=1 prefetch=-1 unroll=8  regs=40 smem=16384 B  resident 1 blocks/SM (67% occupancy)  
+blocks/SM=0.80 (busiest 1)  waves=0.80
+    kernel=allpairs_tiled n=65536 block=1024 q=1 prefetch=-1 unroll=8 runs=10 batch=5  median=3.7912 ms  min=3.7720  
+max=3.7939  1132.870 Ginteractions/s  22657.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[6/100] --kernel allpairs_tuned --n 65536 --block 64 --unroll 1
+    # launch  grid=1024 block=64 q=1 prefetch=-1 unroll=1  regs=19 smem=1024 B  resident 24 blocks/SM (100% occupancy) 
+ blocks/SM=12.80 (busiest 13)  waves=0.53
+    kernel=allpairs_tuned n=65536 block=64 q=1 prefetch=-1 unroll=1 runs=10 batch=5  median=4.8361 ms  min=4.8279  
+max=4.8519  888.097 Ginteractions/s  17761.9 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[7/100] --kernel allpairs_tuned --n 65536 --block 64 --unroll 4
+    # launch  grid=1024 block=64 q=1 prefetch=-1 unroll=4  regs=37 smem=1024 B  resident 24 blocks/SM (100% occupancy) 
+ blocks/SM=12.80 (busiest 13)  waves=0.53
+    kernel=allpairs_tuned n=65536 block=64 q=1 prefetch=-1 unroll=4 runs=10 batch=5  median=3.8257 ms  min=3.8134  
+max=3.8286  1122.667 Ginteractions/s  22453.3 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[8/100] --kernel allpairs_tuned --n 65536 --block 64 --unroll 8
+    # launch  grid=1024 block=64 q=1 prefetch=-1 unroll=8  regs=40 smem=1024 B  resident 24 blocks/SM (100% occupancy) 
+ blocks/SM=12.80 (busiest 13)  waves=0.53
+    kernel=allpairs_tuned n=65536 block=64 q=1 prefetch=-1 unroll=8 runs=10 batch=5  median=3.8610 ms  min=3.8514  
+max=3.8736  1112.404 Ginteractions/s  22248.1 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[9/100] --kernel allpairs_tuned --n 65536 --block 64 --unroll 16
+    # launch  grid=1024 block=64 q=1 prefetch=-1 unroll=16  regs=40 smem=1024 B  resident 24 blocks/SM (100% 
+occupancy)  blocks/SM=12.80 (busiest 13)  waves=0.53
+    kernel=allpairs_tuned n=65536 block=64 q=1 prefetch=-1 unroll=16 runs=10 batch=5  median=3.6434 ms  min=3.6284  
+max=3.6487  1178.838 Ginteractions/s  23576.8 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[10/100] --kernel allpairs_tuned --n 65536 --block 64 --unroll 0
+    # launch  grid=1024 block=64 q=1 prefetch=-1 unroll=0  regs=40 smem=1024 B  resident 24 blocks/SM (100% occupancy) 
+ blocks/SM=12.80 (busiest 13)  waves=0.53
+    kernel=allpairs_tuned n=65536 block=64 q=1 prefetch=-1 unroll=0 runs=10 batch=5  median=3.5201 ms  min=3.5146  
+max=3.5315  1220.126 Ginteractions/s  24402.5 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[11/100] --kernel allpairs_tuned --n 65536 --block 128 --unroll 1
+    # launch  grid=512 block=128 q=1 prefetch=-1 unroll=1  regs=19 smem=2048 B  resident 12 blocks/SM (100% occupancy) 
+ blocks/SM=6.40 (busiest 7)  waves=0.53
+    kernel=allpairs_tuned n=65536 block=128 q=1 prefetch=-1 unroll=1 runs=10 batch=5  median=4.8048 ms  min=4.8040  
+max=4.8131  893.888 Ginteractions/s  17877.8 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[12/100] --kernel allpairs_tuned --n 65536 --block 128 --unroll 4
+    # launch  grid=512 block=128 q=1 prefetch=-1 unroll=4  regs=37 smem=2048 B  resident 12 blocks/SM (100% occupancy) 
+ blocks/SM=6.40 (busiest 7)  waves=0.53
+    kernel=allpairs_tuned n=65536 block=128 q=1 prefetch=-1 unroll=4 runs=10 batch=5  median=3.7770 ms  min=3.7716  
+max=3.7829  1137.126 Ginteractions/s  22742.5 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[13/100] --kernel allpairs_tuned --n 65536 --block 128 --unroll 8
+    # launch  grid=512 block=128 q=1 prefetch=-1 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy) 
+ blocks/SM=6.40 (busiest 7)  waves=0.53
+    kernel=allpairs_tuned n=65536 block=128 q=1 prefetch=-1 unroll=8 runs=10 batch=5  median=3.8161 ms  min=3.8146  
+max=3.8193  1125.482 Ginteractions/s  22509.6 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[14/100] --kernel allpairs_tuned --n 65536 --block 128 --unroll 16
+    # launch  grid=512 block=128 q=1 prefetch=-1 unroll=16  regs=40 smem=2048 B  resident 12 blocks/SM (100% 
+occupancy)  blocks/SM=6.40 (busiest 7)  waves=0.53
+    kernel=allpairs_tuned n=65536 block=128 q=1 prefetch=-1 unroll=16 runs=10 batch=5  median=3.5822 ms  min=3.5701  
+max=3.5867  1198.989 Ginteractions/s  23979.8 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[15/100] --kernel allpairs_tuned --n 65536 --block 128 --unroll 0
+    # launch  grid=512 block=128 q=1 prefetch=-1 unroll=0  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy) 
+ blocks/SM=6.40 (busiest 7)  waves=0.53
+    kernel=allpairs_tuned n=65536 block=128 q=1 prefetch=-1 unroll=0 runs=10 batch=5  median=3.4521 ms  min=3.4511  
+max=3.4693  1244.160 Ginteractions/s  24883.2 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[16/100] --kernel allpairs_tuned --n 65536 --block 256 --unroll 1
+    # launch  grid=256 block=256 q=1 prefetch=-1 unroll=1  regs=19 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=3.20 (busiest 4)  waves=0.53
+    kernel=allpairs_tuned n=65536 block=256 q=1 prefetch=-1 unroll=1 runs=10 batch=5  median=5.1973 ms  min=5.1964  
+max=5.2007  826.387 Ginteractions/s  16527.7 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[17/100] --kernel allpairs_tuned --n 65536 --block 256 --unroll 4
+    # launch  grid=256 block=256 q=1 prefetch=-1 unroll=4  regs=37 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=3.20 (busiest 4)  waves=0.53
+    kernel=allpairs_tuned n=65536 block=256 q=1 prefetch=-1 unroll=4 runs=10 batch=5  median=4.0931 ms  min=4.0610  
+max=4.1130  1049.310 Ginteractions/s  20986.2 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[18/100] --kernel allpairs_tuned --n 65536 --block 256 --unroll 8
+    # launch  grid=256 block=256 q=1 prefetch=-1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=3.20 (busiest 4)  waves=0.53
+    kernel=allpairs_tuned n=65536 block=256 q=1 prefetch=-1 unroll=8 runs=10 batch=5  median=4.1385 ms  min=4.1121  
+max=4.1691  1037.817 Ginteractions/s  20756.3 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[19/100] --kernel allpairs_tuned --n 65536 --block 256 --unroll 16
+    # launch  grid=256 block=256 q=1 prefetch=-1 unroll=16  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy) 
+ blocks/SM=3.20 (busiest 4)  waves=0.53
+    kernel=allpairs_tuned n=65536 block=256 q=1 prefetch=-1 unroll=16 runs=10 batch=5  median=3.9048 ms  min=3.8815  
+max=3.9170  1099.929 Ginteractions/s  21998.6 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[20/100] --kernel allpairs_tuned --n 65536 --block 256 --unroll 0
+    # launch  grid=256 block=256 q=1 prefetch=-1 unroll=0  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=3.20 (busiest 4)  waves=0.53
+    kernel=allpairs_tuned n=65536 block=256 q=1 prefetch=-1 unroll=0 runs=10 batch=5  median=3.7923 ms  min=3.7896  
+max=3.7974  1132.560 Ginteractions/s  22651.2 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[21/100] --kernel allpairs_tuned --n 65536 --block 512 --unroll 1
+    # launch  grid=128 block=512 q=1 prefetch=-1 unroll=1  regs=19 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=1.60 (busiest 2)  waves=0.53
+    kernel=allpairs_tuned n=65536 block=512 q=1 prefetch=-1 unroll=1 runs=10 batch=5  median=4.8178 ms  min=4.8126  
+max=4.8425  891.481 Ginteractions/s  17829.6 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[22/100] --kernel allpairs_tuned --n 65536 --block 512 --unroll 4
+    # launch  grid=128 block=512 q=1 prefetch=-1 unroll=4  regs=37 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=1.60 (busiest 2)  waves=0.53
+    kernel=allpairs_tuned n=65536 block=512 q=1 prefetch=-1 unroll=4 runs=10 batch=5  median=3.9549 ms  min=3.9334  
+max=3.9586  1085.988 Ginteractions/s  21719.8 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[23/100] --kernel allpairs_tuned --n 65536 --block 512 --unroll 8
+    # launch  grid=128 block=512 q=1 prefetch=-1 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=1.60 (busiest 2)  waves=0.53
+    kernel=allpairs_tuned n=65536 block=512 q=1 prefetch=-1 unroll=8 runs=10 batch=5  median=4.0486 ms  min=4.0325  
+max=4.0772  1060.846 Ginteractions/s  21216.9 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[24/100] --kernel allpairs_tuned --n 65536 --block 512 --unroll 16
+    # launch  grid=128 block=512 q=1 prefetch=-1 unroll=16  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy) 
+ blocks/SM=1.60 (busiest 2)  waves=0.53
+    kernel=allpairs_tuned n=65536 block=512 q=1 prefetch=-1 unroll=16 runs=10 batch=5  median=3.8112 ms  min=3.8101  
+max=3.8150  1126.925 Ginteractions/s  22538.5 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[25/100] --kernel allpairs_tuned --n 65536 --block 512 --unroll 0
+    # launch  grid=128 block=512 q=1 prefetch=-1 unroll=0  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=1.60 (busiest 2)  waves=0.53
+    kernel=allpairs_tuned n=65536 block=512 q=1 prefetch=-1 unroll=0 runs=10 batch=5  median=4.0861 ms  min=4.0835  
+max=4.1050  1051.122 Ginteractions/s  21022.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[26/100] --kernel allpairs_tuned --n 65536 --block 1024 --unroll 1
+    # launch  grid=64 block=1024 q=1 prefetch=-1 unroll=1  regs=20 smem=16384 B  resident 1 blocks/SM (67% occupancy)  
+blocks/SM=0.80 (busiest 1)  waves=0.80
+    kernel=allpairs_tuned n=65536 block=1024 q=1 prefetch=-1 unroll=1 runs=10 batch=5  median=4.5305 ms  min=4.5138  
+max=4.5414  948.007 Ginteractions/s  18960.1 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[27/100] --kernel allpairs_tuned --n 65536 --block 1024 --unroll 4
+    # launch  grid=64 block=1024 q=1 prefetch=-1 unroll=4  regs=37 smem=16384 B  resident 1 blocks/SM (67% occupancy)  
+blocks/SM=0.80 (busiest 1)  waves=0.80
+    kernel=allpairs_tuned n=65536 block=1024 q=1 prefetch=-1 unroll=4 runs=10 batch=5  median=3.9807 ms  min=3.9377  
+max=3.9840  1078.948 Ginteractions/s  21579.0 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[28/100] --kernel allpairs_tuned --n 65536 --block 1024 --unroll 8
+    # launch  grid=64 block=1024 q=1 prefetch=-1 unroll=8  regs=53 smem=16384 B  resident 1 blocks/SM (67% occupancy)  
+blocks/SM=0.80 (busiest 1)  waves=0.80
+    kernel=allpairs_tuned n=65536 block=1024 q=1 prefetch=-1 unroll=8 runs=10 batch=5  median=3.9510 ms  min=3.9105  
+max=3.9535  1087.067 Ginteractions/s  21741.3 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[29/100] --kernel allpairs_tuned --n 65536 --block 1024 --unroll 16
+    # launch  grid=64 block=1024 q=1 prefetch=-1 unroll=16  regs=56 smem=16384 B  resident 1 blocks/SM (67% occupancy) 
+ blocks/SM=0.80 (busiest 1)  waves=0.80
+    kernel=allpairs_tuned n=65536 block=1024 q=1 prefetch=-1 unroll=16 runs=10 batch=5  median=3.8624 ms  min=3.8195  
+max=3.8668  1111.997 Ginteractions/s  22239.9 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[30/100] --kernel allpairs_tuned --n 65536 --block 1024 --unroll 0
+    # launch  grid=64 block=1024 q=1 prefetch=-1 unroll=0  regs=56 smem=16384 B  resident 1 blocks/SM (67% occupancy)  
+blocks/SM=0.80 (busiest 1)  waves=0.80
+    kernel=allpairs_tuned n=65536 block=1024 q=1 prefetch=-1 unroll=0 runs=10 batch=5  median=4.8123 ms  min=4.7729  
+max=4.8517  892.506 Ginteractions/s  17850.1 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[31/100] --kernel allpairs_multi --n 65536 --block 64 --q 0 --prefetch 0
+    # launch  grid=1024 block=64 q=1 prefetch=0 unroll=8  regs=39 smem=1024 B  resident 24 blocks/SM (100% occupancy)  
+blocks/SM=12.80 (busiest 13)  waves=0.53
+    kernel=allpairs_multi n=65536 block=64 q=1 prefetch=0 unroll=8 runs=10 batch=5  median=3.7149 ms  min=3.7118  
+max=3.7204  1156.157 Ginteractions/s  23123.1 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[32/100] --kernel allpairs_multi --n 65536 --block 64 --q 0 --prefetch 1
+    # launch  grid=1024 block=64 q=1 prefetch=1 unroll=8  regs=40 smem=1024 B  resident 24 blocks/SM (100% occupancy)  
+blocks/SM=12.80 (busiest 13)  waves=0.53
+    kernel=allpairs_multi n=65536 block=64 q=1 prefetch=1 unroll=8 runs=10 batch=5  median=3.6923 ms  min=3.6772  
+max=3.7023  1163.218 Ginteractions/s  23264.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[33/100] --kernel allpairs_multi --n 65536 --block 64 --q 1 --prefetch 0
+    # launch  grid=1024 block=64 q=1 prefetch=0 unroll=8  regs=39 smem=1024 B  resident 24 blocks/SM (100% occupancy)  
+blocks/SM=12.80 (busiest 13)  waves=0.53
+    kernel=allpairs_multi n=65536 block=64 q=1 prefetch=0 unroll=8 runs=10 batch=5  median=3.7136 ms  min=3.6858  
+max=3.7277  1156.556 Ginteractions/s  23131.1 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[34/100] --kernel allpairs_multi --n 65536 --block 64 --q 1 --prefetch 1
+    # launch  grid=1024 block=64 q=1 prefetch=1 unroll=8  regs=40 smem=1024 B  resident 24 blocks/SM (100% occupancy)  
+blocks/SM=12.80 (busiest 13)  waves=0.53
+    kernel=allpairs_multi n=65536 block=64 q=1 prefetch=1 unroll=8 runs=10 batch=5  median=3.6917 ms  min=3.6876  
+max=3.6977  1163.416 Ginteractions/s  23268.3 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[35/100] --kernel allpairs_multi --n 65536 --block 64 --q 2 --prefetch 0
+    # launch  grid=2048 block=64 q=2 prefetch=0 unroll=8  regs=39 smem=1024 B  resident 24 blocks/SM (100% occupancy)  
+blocks/SM=25.60 (busiest 26)  waves=1.07
+    kernel=allpairs_multi n=65536 block=64 q=2 prefetch=0 unroll=8 runs=10 batch=5  median=3.7010 ms  min=3.6941  
+max=3.7114  1160.489 Ginteractions/s  23209.8 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.854e-05  rms 4.498e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 1.971e-06 max 7.538e-06 norm 5.521e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 5.521e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.85e-05 <= 1e-02)  => PASS
+[36/100] --kernel allpairs_multi --n 65536 --block 64 --q 2 --prefetch 1
+    # launch  grid=2048 block=64 q=2 prefetch=1 unroll=8  regs=40 smem=1024 B  resident 24 blocks/SM (100% occupancy)  
+blocks/SM=25.60 (busiest 26)  waves=1.07
+    kernel=allpairs_multi n=65536 block=64 q=2 prefetch=1 unroll=8 runs=10 batch=5  median=3.4594 ms  min=3.4563  
+max=3.4717  1241.543 Ginteractions/s  24830.9 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.854e-05  rms 4.498e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 1.971e-06 max 7.538e-06 norm 5.521e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 5.521e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.85e-05 <= 1e-02)  => PASS
+[37/100] --kernel allpairs_multi --n 65536 --block 64 --q 4 --prefetch 0
+    # launch  grid=4096 block=64 q=4 prefetch=0 unroll=8  regs=39 smem=1024 B  resident 24 blocks/SM (100% occupancy)  
+blocks/SM=51.20 (busiest 52)  waves=2.13
+    kernel=allpairs_multi n=65536 block=64 q=4 prefetch=0 unroll=8 runs=10 batch=5  median=3.7737 ms  min=3.7706  
+max=3.7767  1138.132 Ginteractions/s  22762.6 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.602e-05  rms 3.934e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 1.051e-06 max 5.993e-06 norm 1.927e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 1.927e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.60e-05 <= 1e-02)  => PASS
+[38/100] --kernel allpairs_multi --n 65536 --block 64 --q 4 --prefetch 1
+    # launch  grid=4096 block=64 q=4 prefetch=1 unroll=8  regs=40 smem=1024 B  resident 24 blocks/SM (100% occupancy)  
+blocks/SM=51.20 (busiest 52)  waves=2.13
+    kernel=allpairs_multi n=65536 block=64 q=4 prefetch=1 unroll=8 runs=10 batch=5  median=3.7190 ms  min=3.7177  
+max=3.7306  1154.885 Ginteractions/s  23097.7 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.602e-05  rms 3.934e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 1.051e-06 max 5.993e-06 norm 1.927e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 1.927e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.60e-05 <= 1e-02)  => PASS
+[39/100] --kernel allpairs_multi --n 65536 --block 64 --q 8 --prefetch 0
+    # launch  grid=8192 block=64 q=8 prefetch=0 unroll=8  regs=40 smem=1024 B  resident 24 blocks/SM (100% occupancy)  
+blocks/SM=102.40 (busiest 103)  waves=4.27
+    kernel=allpairs_multi n=65536 block=64 q=8 prefetch=0 unroll=8 runs=10 batch=5  median=4.3178 ms  min=4.3166  
+max=4.3239  994.712 Ginteractions/s  19894.2 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.548e-05  rms 3.766e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 5.733e-07 max 2.587e-06 norm 8.430e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 8.430e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.55e-05 <= 1e-02)  => PASS
+[40/100] --kernel allpairs_multi --n 65536 --block 64 --q 8 --prefetch 1
+    # launch  grid=8192 block=64 q=8 prefetch=1 unroll=8  regs=40 smem=1024 B  resident 24 blocks/SM (100% occupancy)  
+blocks/SM=102.40 (busiest 103)  waves=4.27
+    kernel=allpairs_multi n=65536 block=64 q=8 prefetch=1 unroll=8 runs=10 batch=5  median=4.2114 ms  min=4.2095  
+max=4.2299  1019.842 Ginteractions/s  20396.8 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.548e-05  rms 3.766e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 5.733e-07 max 2.587e-06 norm 8.430e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 8.430e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.55e-05 <= 1e-02)  => PASS
+[41/100] --kernel allpairs_multi --n 65536 --block 64 --q 16 --prefetch 0
+    # launch  grid=16384 block=64 q=16 prefetch=0 unroll=8  regs=39 smem=1024 B  resident 24 blocks/SM (100% 
+occupancy)  blocks/SM=204.80 (busiest 205)  waves=8.53
+    kernel=allpairs_multi n=65536 block=64 q=16 prefetch=0 unroll=8 runs=10 batch=5  median=5.3702 ms  min=5.3619  
+max=5.3964  799.773 Ginteractions/s  15995.5 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.466e-05  rms 3.725e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.445e-07 max 3.805e-06 norm 5.854e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 5.854e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.47e-05 <= 1e-02)  => PASS
+[42/100] --kernel allpairs_multi --n 65536 --block 64 --q 16 --prefetch 1
+    # launch  grid=16384 block=64 q=16 prefetch=1 unroll=8  regs=40 smem=1024 B  resident 24 blocks/SM (100% 
+occupancy)  blocks/SM=204.80 (busiest 205)  waves=8.53
+    kernel=allpairs_multi n=65536 block=64 q=16 prefetch=1 unroll=8 runs=10 batch=5  median=5.3217 ms  min=5.2902  
+max=5.3275  807.066 Ginteractions/s  16141.3 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.466e-05  rms 3.725e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.445e-07 max 3.805e-06 norm 5.854e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 5.854e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.47e-05 <= 1e-02)  => PASS
+[43/100] --kernel allpairs_multi --n 65536 --block 64 --q 32 --prefetch 0
+    # launch  grid=32768 block=64 q=32 prefetch=0 unroll=8  regs=40 smem=1024 B  resident 24 blocks/SM (100% 
+occupancy)  blocks/SM=409.60 (busiest 410)  waves=17.07
+    kernel=allpairs_multi n=65536 block=64 q=32 prefetch=0 unroll=8 runs=10 batch=5  median=8.1078 ms  min=8.0783  
+max=8.1238  529.731 Ginteractions/s  10594.6 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.463e-05  rms 3.714e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 2.022e-07 max 1.827e-06 norm 2.207e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 2.207e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.46e-05 <= 1e-02)  => PASS
+[44/100] --kernel allpairs_multi --n 65536 --block 64 --q 32 --prefetch 1
+    # launch  grid=32768 block=64 q=32 prefetch=1 unroll=8  regs=44 smem=1024 B  resident 20 blocks/SM (83% occupancy) 
+ blocks/SM=409.60 (busiest 410)  waves=20.48
+    kernel=allpairs_multi n=65536 block=64 q=32 prefetch=1 unroll=8 runs=10 batch=5  median=7.2146 ms  min=7.2100  
+max=7.2559  595.319 Ginteractions/s  11906.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.463e-05  rms 3.714e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 2.022e-07 max 1.827e-06 norm 2.207e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 2.207e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.46e-05 <= 1e-02)  => PASS
+[45/100] --kernel allpairs_multi --n 65536 --block 128 --q 0 --prefetch 0
+    # launch  grid=1024 block=128 q=2 prefetch=0 unroll=8  regs=39 smem=2048 B  resident 12 blocks/SM (100% occupancy) 
+ blocks/SM=12.80 (busiest 13)  waves=1.07
+    kernel=allpairs_multi n=65536 block=128 q=2 prefetch=0 unroll=8 runs=10 batch=5  median=3.3930 ms  min=3.3915  
+max=3.3976  1265.823 Ginteractions/s  25316.5 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.854e-05  rms 4.498e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 1.971e-06 max 7.538e-06 norm 5.521e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 5.521e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.85e-05 <= 1e-02)  => PASS
+[46/100] --kernel allpairs_multi --n 65536 --block 128 --q 0 --prefetch 1
+    # launch  grid=1024 block=128 q=2 prefetch=1 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy) 
+ blocks/SM=12.80 (busiest 13)  waves=1.07
+    kernel=allpairs_multi n=65536 block=128 q=2 prefetch=1 unroll=8 runs=10 batch=5  median=3.4082 ms  min=3.4068  
+max=3.4103  1260.195 Ginteractions/s  25203.9 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.854e-05  rms 4.498e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 1.971e-06 max 7.538e-06 norm 5.521e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 5.521e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.85e-05 <= 1e-02)  => PASS
+[47/100] --kernel allpairs_multi --n 65536 --block 128 --q 1 --prefetch 0
+    # launch  grid=512 block=128 q=1 prefetch=0 unroll=8  regs=39 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=6.40 (busiest 7)  waves=0.53
+    kernel=allpairs_multi n=65536 block=128 q=1 prefetch=0 unroll=8 runs=10 batch=5  median=3.6696 ms  min=3.6553  
+max=3.6807  1170.425 Ginteractions/s  23408.5 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[48/100] --kernel allpairs_multi --n 65536 --block 128 --q 1 --prefetch 1
+    # launch  grid=512 block=128 q=1 prefetch=1 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  
+blocks/SM=6.40 (busiest 7)  waves=0.53
+    kernel=allpairs_multi n=65536 block=128 q=1 prefetch=1 unroll=8 runs=10 batch=5  median=3.6624 ms  min=3.6487  
+max=3.6667  1172.721 Ginteractions/s  23454.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[49/100] --kernel allpairs_multi --n 65536 --block 128 --q 2 --prefetch 0
+    # launch  grid=1024 block=128 q=2 prefetch=0 unroll=8  regs=39 smem=2048 B  resident 12 blocks/SM (100% occupancy) 
+ blocks/SM=12.80 (busiest 13)  waves=1.07
+    kernel=allpairs_multi n=65536 block=128 q=2 prefetch=0 unroll=8 runs=10 batch=5  median=3.3927 ms  min=3.3923  
+max=3.3962  1265.937 Ginteractions/s  25318.7 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.854e-05  rms 4.498e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 1.971e-06 max 7.538e-06 norm 5.521e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 5.521e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.85e-05 <= 1e-02)  => PASS
+[50/100] --kernel allpairs_multi --n 65536 --block 128 --q 2 --prefetch 1
+    # launch  grid=1024 block=128 q=2 prefetch=1 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy) 
+ blocks/SM=12.80 (busiest 13)  waves=1.07
+    kernel=allpairs_multi n=65536 block=128 q=2 prefetch=1 unroll=8 runs=10 batch=5  median=3.4092 ms  min=3.4068  
+max=3.4152  1259.818 Ginteractions/s  25196.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.854e-05  rms 4.498e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 1.971e-06 max 7.538e-06 norm 5.521e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 5.521e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.85e-05 <= 1e-02)  => PASS
+[51/100] --kernel allpairs_multi --n 65536 --block 128 --q 4 --prefetch 0
+    # launch  grid=2048 block=128 q=4 prefetch=0 unroll=8  regs=39 smem=2048 B  resident 12 blocks/SM (100% occupancy) 
+ blocks/SM=25.60 (busiest 26)  waves=2.13
+    kernel=allpairs_multi n=65536 block=128 q=4 prefetch=0 unroll=8 runs=10 batch=5  median=3.5191 ms  min=3.5170  
+max=3.5260  1220.487 Ginteractions/s  24409.7 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.602e-05  rms 3.934e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 1.051e-06 max 5.993e-06 norm 1.927e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 1.927e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.60e-05 <= 1e-02)  => PASS
+[52/100] --kernel allpairs_multi --n 65536 --block 128 --q 4 --prefetch 1
+    # launch  grid=2048 block=128 q=4 prefetch=1 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy) 
+ blocks/SM=25.60 (busiest 26)  waves=2.13
+    kernel=allpairs_multi n=65536 block=128 q=4 prefetch=1 unroll=8 runs=10 batch=5  median=3.5012 ms  min=3.5006  
+max=3.5238  1226.728 Ginteractions/s  24534.6 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.602e-05  rms 3.934e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 1.051e-06 max 5.993e-06 norm 1.927e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 1.927e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.60e-05 <= 1e-02)  => PASS
+[53/100] --kernel allpairs_multi --n 65536 --block 128 --q 8 --prefetch 0
+    # launch  grid=4096 block=128 q=8 prefetch=0 unroll=8  regs=39 smem=2048 B  resident 12 blocks/SM (100% occupancy) 
+ blocks/SM=51.20 (busiest 52)  waves=4.27
+    kernel=allpairs_multi n=65536 block=128 q=8 prefetch=0 unroll=8 runs=10 batch=5  median=3.7811 ms  min=3.7788  
+max=3.8044  1135.901 Ginteractions/s  22718.0 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.548e-05  rms 3.766e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 5.733e-07 max 2.587e-06 norm 8.430e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 8.430e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.55e-05 <= 1e-02)  => PASS
+[54/100] --kernel allpairs_multi --n 65536 --block 128 --q 8 --prefetch 1
+    # launch  grid=4096 block=128 q=8 prefetch=1 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy) 
+ blocks/SM=51.20 (busiest 52)  waves=4.27
+    kernel=allpairs_multi n=65536 block=128 q=8 prefetch=1 unroll=8 runs=10 batch=5  median=3.7949 ms  min=3.7941  
+max=3.7981  1131.760 Ginteractions/s  22635.2 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.548e-05  rms 3.766e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 5.733e-07 max 2.587e-06 norm 8.430e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 8.430e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.55e-05 <= 1e-02)  => PASS
+[55/100] --kernel allpairs_multi --n 65536 --block 128 --q 16 --prefetch 0
+    # launch  grid=8192 block=128 q=16 prefetch=0 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% 
+occupancy)  blocks/SM=102.40 (busiest 103)  waves=8.53
+    kernel=allpairs_multi n=65536 block=128 q=16 prefetch=0 unroll=8 runs=10 batch=5  median=4.3273 ms  min=4.3258  
+max=4.3303  992.531 Ginteractions/s  19850.6 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.466e-05  rms 3.725e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.445e-07 max 3.805e-06 norm 5.854e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 5.854e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.47e-05 <= 1e-02)  => PASS
+[56/100] --kernel allpairs_multi --n 65536 --block 128 --q 16 --prefetch 1
+    # launch  grid=8192 block=128 q=16 prefetch=1 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% 
+occupancy)  blocks/SM=102.40 (busiest 103)  waves=8.53
+    kernel=allpairs_multi n=65536 block=128 q=16 prefetch=1 unroll=8 runs=10 batch=5  median=4.2895 ms  min=4.2658  
+max=4.2952  1001.268 Ginteractions/s  20025.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.466e-05  rms 3.725e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.445e-07 max 3.805e-06 norm 5.854e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 5.854e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.47e-05 <= 1e-02)  => PASS
+[57/100] --kernel allpairs_multi --n 65536 --block 128 --q 32 --prefetch 0
+    # launch  grid=16384 block=128 q=32 prefetch=0 unroll=8  regs=39 smem=2048 B  resident 12 blocks/SM (100% 
+occupancy)  blocks/SM=204.80 (busiest 205)  waves=17.07
+    kernel=allpairs_multi n=65536 block=128 q=32 prefetch=0 unroll=8 runs=10 batch=5  median=5.4588 ms  min=5.4568  
+max=5.4774  786.795 Ginteractions/s  15735.9 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.463e-05  rms 3.714e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 2.022e-07 max 1.827e-06 norm 2.207e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 2.207e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.46e-05 <= 1e-02)  => PASS
+[58/100] --kernel allpairs_multi --n 65536 --block 128 --q 32 --prefetch 1
+    # launch  grid=16384 block=128 q=32 prefetch=1 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% 
+occupancy)  blocks/SM=204.80 (busiest 205)  waves=17.07
+    kernel=allpairs_multi n=65536 block=128 q=32 prefetch=1 unroll=8 runs=10 batch=5  median=5.4590 ms  min=5.4217  
+max=5.4673  786.765 Ginteractions/s  15735.3 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.463e-05  rms 3.714e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 2.022e-07 max 1.827e-06 norm 2.207e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 2.207e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.46e-05 <= 1e-02)  => PASS
+[59/100] --kernel allpairs_multi --n 65536 --block 256 --q 0 --prefetch 0
+    # launch  grid=1024 block=256 q=4 prefetch=0 unroll=8  regs=39 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=12.80 (busiest 13)  waves=2.13
+    kernel=allpairs_multi n=65536 block=256 q=4 prefetch=0 unroll=8 runs=10 batch=5  median=3.4180 ms  min=3.4165  
+max=3.4208  1256.576 Ginteractions/s  25131.5 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.602e-05  rms 3.934e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 1.051e-06 max 5.993e-06 norm 1.927e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 1.927e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.60e-05 <= 1e-02)  => PASS
+[60/100] --kernel allpairs_multi --n 65536 --block 256 --q 0 --prefetch 1
+    # launch  grid=1024 block=256 q=4 prefetch=1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=12.80 (busiest 13)  waves=2.13
+    kernel=allpairs_multi n=65536 block=256 q=4 prefetch=1 unroll=8 runs=10 batch=5  median=3.4179 ms  min=3.4159  
+max=3.4212  1256.620 Ginteractions/s  25132.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.602e-05  rms 3.934e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 1.051e-06 max 5.993e-06 norm 1.927e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 1.927e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.60e-05 <= 1e-02)  => PASS
+[61/100] --kernel allpairs_multi --n 65536 --block 256 --q 1 --prefetch 0
+    # launch  grid=256 block=256 q=1 prefetch=0 unroll=8  regs=39 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=3.20 (busiest 4)  waves=0.53
+    kernel=allpairs_multi n=65536 block=256 q=1 prefetch=0 unroll=8 runs=10 batch=5  median=3.9934 ms  min=3.9721  
+max=4.0102  1075.520 Ginteractions/s  21510.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[62/100] --kernel allpairs_multi --n 65536 --block 256 --q 1 --prefetch 1
+    # launch  grid=256 block=256 q=1 prefetch=1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=3.20 (busiest 4)  waves=0.53
+    kernel=allpairs_multi n=65536 block=256 q=1 prefetch=1 unroll=8 runs=10 batch=5  median=4.0150 ms  min=3.9844  
+max=4.0347  1069.734 Ginteractions/s  21394.7 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[63/100] --kernel allpairs_multi --n 65536 --block 256 --q 2 --prefetch 0
+    # launch  grid=512 block=256 q=2 prefetch=0 unroll=8  regs=39 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=6.40 (busiest 7)  waves=1.07
+    kernel=allpairs_multi n=65536 block=256 q=2 prefetch=0 unroll=8 runs=10 batch=5  median=3.5173 ms  min=3.5047  
+max=3.5303  1221.105 Ginteractions/s  24422.1 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.854e-05  rms 4.498e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 1.971e-06 max 7.538e-06 norm 5.521e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 5.521e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.85e-05 <= 1e-02)  => PASS
+[64/100] --kernel allpairs_multi --n 65536 --block 256 --q 2 --prefetch 1
+    # launch  grid=512 block=256 q=2 prefetch=1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=6.40 (busiest 7)  waves=1.07
+    kernel=allpairs_multi n=65536 block=256 q=2 prefetch=1 unroll=8 runs=10 batch=5  median=3.5555 ms  min=3.5504  
+max=3.5592  1207.971 Ginteractions/s  24159.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.854e-05  rms 4.498e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 1.971e-06 max 7.538e-06 norm 5.521e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 5.521e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.85e-05 <= 1e-02)  => PASS
+[65/100] --kernel allpairs_multi --n 65536 --block 256 --q 4 --prefetch 0
+    # launch  grid=1024 block=256 q=4 prefetch=0 unroll=8  regs=39 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=12.80 (busiest 13)  waves=2.13
+    kernel=allpairs_multi n=65536 block=256 q=4 prefetch=0 unroll=8 runs=10 batch=5  median=3.3976 ms  min=3.3966  
+max=3.4029  1264.112 Ginteractions/s  25282.2 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.602e-05  rms 3.934e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 1.051e-06 max 5.993e-06 norm 1.927e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 1.927e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.60e-05 <= 1e-02)  => PASS
+[66/100] --kernel allpairs_multi --n 65536 --block 256 --q 4 --prefetch 1
+    # launch  grid=1024 block=256 q=4 prefetch=1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=12.80 (busiest 13)  waves=2.13
+    kernel=allpairs_multi n=65536 block=256 q=4 prefetch=1 unroll=8 runs=10 batch=5  median=3.4184 ms  min=3.4171  
+max=3.4467  1256.419 Ginteractions/s  25128.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.602e-05  rms 3.934e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 1.051e-06 max 5.993e-06 norm 1.927e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 1.927e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.60e-05 <= 1e-02)  => PASS
+[67/100] --kernel allpairs_multi --n 65536 --block 256 --q 8 --prefetch 0
+    # launch  grid=2048 block=256 q=8 prefetch=0 unroll=8  regs=39 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=25.60 (busiest 26)  waves=4.27
+    kernel=allpairs_multi n=65536 block=256 q=8 prefetch=0 unroll=8 runs=10 batch=5  median=3.5378 ms  min=3.5366  
+max=3.5600  1214.031 Ginteractions/s  24280.6 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.548e-05  rms 3.766e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 5.733e-07 max 2.587e-06 norm 8.430e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 8.430e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.55e-05 <= 1e-02)  => PASS
+[68/100] --kernel allpairs_multi --n 65536 --block 256 --q 8 --prefetch 1
+    # launch  grid=2048 block=256 q=8 prefetch=1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  
+blocks/SM=25.60 (busiest 26)  waves=4.27
+    kernel=allpairs_multi n=65536 block=256 q=8 prefetch=1 unroll=8 runs=10 batch=5  median=3.5589 ms  min=3.5394  
+max=3.5606  1206.834 Ginteractions/s  24136.7 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.548e-05  rms 3.766e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 5.733e-07 max 2.587e-06 norm 8.430e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 8.430e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.55e-05 <= 1e-02)  => PASS
+[69/100] --kernel allpairs_multi --n 65536 --block 256 --q 16 --prefetch 0
+    # launch  grid=4096 block=256 q=16 prefetch=0 unroll=8  regs=39 smem=4096 B  resident 6 blocks/SM (100% occupancy) 
+ blocks/SM=51.20 (busiest 52)  waves=8.53
+    kernel=allpairs_multi n=65536 block=256 q=16 prefetch=0 unroll=8 runs=10 batch=5  median=3.8294 ms  min=3.8277  
+max=3.8355  1121.592 Ginteractions/s  22431.8 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.466e-05  rms 3.725e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.445e-07 max 3.805e-06 norm 5.854e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 5.854e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.47e-05 <= 1e-02)  => PASS
+[70/100] --kernel allpairs_multi --n 65536 --block 256 --q 16 --prefetch 1
+    # launch  grid=4096 block=256 q=16 prefetch=1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy) 
+ blocks/SM=51.20 (busiest 52)  waves=8.53
+    kernel=allpairs_multi n=65536 block=256 q=16 prefetch=1 unroll=8 runs=10 batch=5  median=3.8110 ms  min=3.8100  
+max=3.8142  1126.993 Ginteractions/s  22539.9 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.466e-05  rms 3.725e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.445e-07 max 3.805e-06 norm 5.854e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 5.854e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.47e-05 <= 1e-02)  => PASS
+[71/100] --kernel allpairs_multi --n 65536 --block 256 --q 32 --prefetch 0
+    # launch  grid=8192 block=256 q=32 prefetch=0 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy) 
+ blocks/SM=102.40 (busiest 103)  waves=17.07
+    kernel=allpairs_multi n=65536 block=256 q=32 prefetch=0 unroll=8 runs=10 batch=5  median=4.3977 ms  min=4.3973  
+max=4.4003  976.646 Ginteractions/s  19532.9 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.463e-05  rms 3.714e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 2.022e-07 max 1.827e-06 norm 2.207e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 2.207e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.46e-05 <= 1e-02)  => PASS
+[72/100] --kernel allpairs_multi --n 65536 --block 256 --q 32 --prefetch 1
+    # launch  grid=8192 block=256 q=32 prefetch=1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy) 
+ blocks/SM=102.40 (busiest 103)  waves=17.07
+    kernel=allpairs_multi n=65536 block=256 q=32 prefetch=1 unroll=8 runs=10 batch=5  median=4.3121 ms  min=4.3100  
+max=4.3151  996.038 Ginteractions/s  19920.8 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.463e-05  rms 3.714e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 2.022e-07 max 1.827e-06 norm 2.207e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 2.207e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.46e-05 <= 1e-02)  => PASS
+[73/100] --kernel allpairs_multi --n 65536 --block 512 --q 0 --prefetch 0
+    # launch  grid=1024 block=512 q=8 prefetch=0 unroll=8  regs=39 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=12.80 (busiest 13)  waves=4.27
+    kernel=allpairs_multi n=65536 block=512 q=8 prefetch=0 unroll=8 runs=10 batch=5  median=3.4247 ms  min=3.4148  
+max=3.4377  1254.098 Ginteractions/s  25082.0 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.548e-05  rms 3.766e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 5.733e-07 max 2.587e-06 norm 8.430e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 8.430e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.55e-05 <= 1e-02)  => PASS
+[74/100] --kernel allpairs_multi --n 65536 --block 512 --q 0 --prefetch 1
+    # launch  grid=1024 block=512 q=8 prefetch=1 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=12.80 (busiest 13)  waves=4.27
+    kernel=allpairs_multi n=65536 block=512 q=8 prefetch=1 unroll=8 runs=10 batch=5  median=3.4095 ms  min=3.4089  
+max=3.4130  1259.702 Ginteractions/s  25194.0 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.548e-05  rms 3.766e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 5.733e-07 max 2.587e-06 norm 8.430e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 8.430e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.55e-05 <= 1e-02)  => PASS
+[75/100] --kernel allpairs_multi --n 65536 --block 512 --q 1 --prefetch 0
+    # launch  grid=128 block=512 q=1 prefetch=0 unroll=8  regs=39 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=1.60 (busiest 2)  waves=0.53
+    kernel=allpairs_multi n=65536 block=512 q=1 prefetch=0 unroll=8 runs=10 batch=5  median=3.8942 ms  min=3.8676  
+max=3.8955  1102.923 Ginteractions/s  22058.5 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[76/100] --kernel allpairs_multi --n 65536 --block 512 --q 1 --prefetch 1
+    # launch  grid=128 block=512 q=1 prefetch=1 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=1.60 (busiest 2)  waves=0.53
+    kernel=allpairs_multi n=65536 block=512 q=1 prefetch=1 unroll=8 runs=10 batch=5  median=3.9060 ms  min=3.8774  
+max=3.9127  1099.595 Ginteractions/s  21991.9 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[77/100] --kernel allpairs_multi --n 65536 --block 512 --q 2 --prefetch 0
+    # launch  grid=256 block=512 q=2 prefetch=0 unroll=8  regs=39 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=3.20 (busiest 4)  waves=1.07
+    kernel=allpairs_multi n=65536 block=512 q=2 prefetch=0 unroll=8 runs=10 batch=5  median=3.8786 ms  min=3.8535  
+max=3.8814  1107.360 Ginteractions/s  22147.2 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.854e-05  rms 4.498e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 1.971e-06 max 7.538e-06 norm 5.521e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 5.521e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.85e-05 <= 1e-02)  => PASS
+[78/100] --kernel allpairs_multi --n 65536 --block 512 --q 2 --prefetch 1
+    # launch  grid=256 block=512 q=2 prefetch=1 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=3.20 (busiest 4)  waves=1.07
+    kernel=allpairs_multi n=65536 block=512 q=2 prefetch=1 unroll=8 runs=10 batch=5  median=3.9050 ms  min=3.8877  
+max=3.9135  1099.862 Ginteractions/s  21997.2 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.854e-05  rms 4.498e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 1.971e-06 max 7.538e-06 norm 5.521e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 5.521e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.85e-05 <= 1e-02)  => PASS
+[79/100] --kernel allpairs_multi --n 65536 --block 512 --q 4 --prefetch 0
+    # launch  grid=512 block=512 q=4 prefetch=0 unroll=8  regs=39 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=6.40 (busiest 7)  waves=2.13
+    kernel=allpairs_multi n=65536 block=512 q=4 prefetch=0 unroll=8 runs=10 batch=5  median=3.5269 ms  min=3.5250  
+max=3.5287  1217.788 Ginteractions/s  24355.8 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.602e-05  rms 3.934e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 1.051e-06 max 5.993e-06 norm 1.927e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 1.927e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.60e-05 <= 1e-02)  => PASS
+[80/100] --kernel allpairs_multi --n 65536 --block 512 --q 4 --prefetch 1
+    # launch  grid=512 block=512 q=4 prefetch=1 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=6.40 (busiest 7)  waves=2.13
+    kernel=allpairs_multi n=65536 block=512 q=4 prefetch=1 unroll=8 runs=10 batch=5  median=3.5368 ms  min=3.5355  
+max=3.5576  1214.368 Ginteractions/s  24287.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.602e-05  rms 3.934e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 1.051e-06 max 5.993e-06 norm 1.927e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 1.927e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.60e-05 <= 1e-02)  => PASS
+[81/100] --kernel allpairs_multi --n 65536 --block 512 --q 8 --prefetch 0
+    # launch  grid=1024 block=512 q=8 prefetch=0 unroll=8  regs=39 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=12.80 (busiest 13)  waves=4.27
+    kernel=allpairs_multi n=65536 block=512 q=8 prefetch=0 unroll=8 runs=10 batch=5  median=3.4189 ms  min=3.4161  
+max=3.4376  1256.246 Ginteractions/s  25124.9 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.548e-05  rms 3.766e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 5.733e-07 max 2.587e-06 norm 8.430e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 8.430e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.55e-05 <= 1e-02)  => PASS
+[82/100] --kernel allpairs_multi --n 65536 --block 512 --q 8 --prefetch 1
+    # launch  grid=1024 block=512 q=8 prefetch=1 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  
+blocks/SM=12.80 (busiest 13)  waves=4.27
+    kernel=allpairs_multi n=65536 block=512 q=8 prefetch=1 unroll=8 runs=10 batch=5  median=3.4101 ms  min=3.4091  
+max=3.4161  1259.475 Ginteractions/s  25189.5 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.548e-05  rms 3.766e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 5.733e-07 max 2.587e-06 norm 8.430e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 8.430e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.55e-05 <= 1e-02)  => PASS
+[83/100] --kernel allpairs_multi --n 65536 --block 512 --q 16 --prefetch 0
+    # launch  grid=2048 block=512 q=16 prefetch=0 unroll=8  regs=39 smem=8192 B  resident 3 blocks/SM (100% occupancy) 
+ blocks/SM=25.60 (busiest 26)  waves=8.53
+    kernel=allpairs_multi n=65536 block=512 q=16 prefetch=0 unroll=8 runs=10 batch=5  median=3.5946 ms  min=3.5770  
+max=3.5977  1194.822 Ginteractions/s  23896.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.466e-05  rms 3.725e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.445e-07 max 3.805e-06 norm 5.854e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 5.854e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.47e-05 <= 1e-02)  => PASS
+[84/100] --kernel allpairs_multi --n 65536 --block 512 --q 16 --prefetch 1
+    # launch  grid=2048 block=512 q=16 prefetch=1 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy) 
+ blocks/SM=25.60 (busiest 26)  waves=8.53
+    kernel=allpairs_multi n=65536 block=512 q=16 prefetch=1 unroll=8 runs=10 batch=5  median=3.5584 ms  min=3.5564  
+max=3.5836  1207.000 Ginteractions/s  24140.0 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.466e-05  rms 3.725e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.445e-07 max 3.805e-06 norm 5.854e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 5.854e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.47e-05 <= 1e-02)  => PASS
+[85/100] --kernel allpairs_multi --n 65536 --block 512 --q 32 --prefetch 0
+    # launch  grid=4096 block=512 q=32 prefetch=0 unroll=8  regs=39 smem=8192 B  resident 3 blocks/SM (100% occupancy) 
+ blocks/SM=51.20 (busiest 52)  waves=17.07
+    kernel=allpairs_multi n=65536 block=512 q=32 prefetch=0 unroll=8 runs=10 batch=5  median=3.9292 ms  min=3.9272  
+max=3.9332  1093.101 Ginteractions/s  21862.0 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.463e-05  rms 3.714e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 2.022e-07 max 1.827e-06 norm 2.207e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 2.207e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.46e-05 <= 1e-02)  => PASS
+[86/100] --kernel allpairs_multi --n 65536 --block 512 --q 32 --prefetch 1
+    # launch  grid=4096 block=512 q=32 prefetch=1 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy) 
+ blocks/SM=51.20 (busiest 52)  waves=17.07
+    kernel=allpairs_multi n=65536 block=512 q=32 prefetch=1 unroll=8 runs=10 batch=5  median=3.8911 ms  min=3.8883  
+max=3.8937  1103.793 Ginteractions/s  22075.9 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.463e-05  rms 3.714e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 2.022e-07 max 1.827e-06 norm 2.207e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 2.207e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.46e-05 <= 1e-02)  => PASS
+[87/100] --kernel allpairs_multi --n 65536 --block 1024 --q 0 --prefetch 0
+    # launch  grid=1024 block=1024 q=16 prefetch=0 unroll=8  regs=53 smem=16384 B  resident 1 blocks/SM (67% 
+occupancy)  blocks/SM=12.80 (busiest 13)  waves=12.80
+    kernel=allpairs_multi n=65536 block=1024 q=16 prefetch=0 unroll=8 runs=10 batch=5  median=3.6937 ms  min=3.6921  
+max=3.6978  1162.770 Ginteractions/s  23255.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.466e-05  rms 3.725e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.445e-07 max 3.805e-06 norm 5.854e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 5.854e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.47e-05 <= 1e-02)  => PASS
+[88/100] --kernel allpairs_multi --n 65536 --block 1024 --q 0 --prefetch 1
+    # launch  grid=1024 block=1024 q=16 prefetch=1 unroll=8  regs=55 smem=16384 B  resident 1 blocks/SM (67% 
+occupancy)  blocks/SM=12.80 (busiest 13)  waves=12.80
+    kernel=allpairs_multi n=65536 block=1024 q=16 prefetch=1 unroll=8 runs=10 batch=5  median=3.5558 ms  min=3.5543  
+max=3.5582  1207.891 Ginteractions/s  24157.8 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.466e-05  rms 3.725e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.445e-07 max 3.805e-06 norm 5.854e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 5.854e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.47e-05 <= 1e-02)  => PASS
+[89/100] --kernel allpairs_multi --n 65536 --block 1024 --q 1 --prefetch 0
+    # launch  grid=64 block=1024 q=1 prefetch=0 unroll=8  regs=53 smem=16384 B  resident 1 blocks/SM (67% occupancy)  
+blocks/SM=0.80 (busiest 1)  waves=0.80
+    kernel=allpairs_multi n=65536 block=1024 q=1 prefetch=0 unroll=8 runs=10 batch=5  median=3.8772 ms  min=3.8762  
+max=3.8810  1107.736 Ginteractions/s  22154.7 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[90/100] --kernel allpairs_multi --n 65536 --block 1024 --q 1 --prefetch 1
+    # launch  grid=64 block=1024 q=1 prefetch=1 unroll=8  regs=55 smem=16384 B  resident 1 blocks/SM (67% occupancy)  
+blocks/SM=0.80 (busiest 1)  waves=0.80
+    kernel=allpairs_multi n=65536 block=1024 q=1 prefetch=1 unroll=8 runs=10 batch=5  median=3.8519 ms  min=3.8506  
+max=3.8754  1115.035 Ginteractions/s  22300.7 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+[91/100] --kernel allpairs_multi --n 65536 --block 1024 --q 2 --prefetch 0
+    # launch  grid=128 block=1024 q=2 prefetch=0 unroll=8  regs=53 smem=16384 B  resident 1 blocks/SM (67% occupancy)  
+blocks/SM=1.60 (busiest 2)  waves=1.60
+    kernel=allpairs_multi n=65536 block=1024 q=2 prefetch=0 unroll=8 runs=10 batch=5  median=3.9045 ms  min=3.9032  
+max=3.9098  1100.004 Ginteractions/s  22000.1 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.854e-05  rms 4.498e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 1.971e-06 max 7.538e-06 norm 5.521e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 5.521e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.85e-05 <= 1e-02)  => PASS
+[92/100] --kernel allpairs_multi --n 65536 --block 1024 --q 2 --prefetch 1
+    # launch  grid=128 block=1024 q=2 prefetch=1 unroll=8  regs=55 smem=16384 B  resident 1 blocks/SM (67% occupancy)  
+blocks/SM=1.60 (busiest 2)  waves=1.60
+    kernel=allpairs_multi n=65536 block=1024 q=2 prefetch=1 unroll=8 runs=10 batch=5  median=3.8858 ms  min=3.8850  
+max=3.8901  1105.304 Ginteractions/s  22106.1 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.854e-05  rms 4.498e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 1.971e-06 max 7.538e-06 norm 5.521e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 5.521e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.85e-05 <= 1e-02)  => PASS
+[93/100] --kernel allpairs_multi --n 65536 --block 1024 --q 4 --prefetch 0
+    # launch  grid=256 block=1024 q=4 prefetch=0 unroll=8  regs=53 smem=16384 B  resident 1 blocks/SM (67% occupancy)  
+blocks/SM=3.20 (busiest 4)  waves=3.20
+    kernel=allpairs_multi n=65536 block=1024 q=4 prefetch=0 unroll=8 runs=10 batch=5  median=4.0104 ms  min=4.0019  
+max=4.0147  1070.967 Ginteractions/s  21419.3 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.602e-05  rms 3.934e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 1.051e-06 max 5.993e-06 norm 1.927e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 1.927e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.60e-05 <= 1e-02)  => PASS
+[94/100] --kernel allpairs_multi --n 65536 --block 1024 --q 4 --prefetch 1
+    # launch  grid=256 block=1024 q=4 prefetch=1 unroll=8  regs=55 smem=16384 B  resident 1 blocks/SM (67% occupancy)  
+blocks/SM=3.20 (busiest 4)  waves=3.20
+    kernel=allpairs_multi n=65536 block=1024 q=4 prefetch=1 unroll=8 runs=10 batch=5  median=3.9399 ms  min=3.9387  
+max=3.9442  1090.120 Ginteractions/s  21802.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.602e-05  rms 3.934e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 1.051e-06 max 5.993e-06 norm 1.927e-06  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 1.927e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.60e-05 <= 1e-02)  => PASS
+[95/100] --kernel allpairs_multi --n 65536 --block 1024 --q 8 --prefetch 0
+    # launch  grid=512 block=1024 q=8 prefetch=0 unroll=8  regs=53 smem=16384 B  resident 1 blocks/SM (67% occupancy)  
+blocks/SM=6.40 (busiest 7)  waves=6.40
+    kernel=allpairs_multi n=65536 block=1024 q=8 prefetch=0 unroll=8 runs=10 batch=5  median=3.7101 ms  min=3.7068  
+max=3.7200  1157.656 Ginteractions/s  23153.1 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.548e-05  rms 3.766e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 5.733e-07 max 2.587e-06 norm 8.430e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 8.430e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.55e-05 <= 1e-02)  => PASS
+[96/100] --kernel allpairs_multi --n 65536 --block 1024 --q 8 --prefetch 1
+    # launch  grid=512 block=1024 q=8 prefetch=1 unroll=8  regs=55 smem=16384 B  resident 1 blocks/SM (67% occupancy)  
+blocks/SM=6.40 (busiest 7)  waves=6.40
+    kernel=allpairs_multi n=65536 block=1024 q=8 prefetch=1 unroll=8 runs=10 batch=5  median=3.6108 ms  min=3.5983  
+max=3.6233  1189.472 Ginteractions/s  23789.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.548e-05  rms 3.766e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 5.733e-07 max 2.587e-06 norm 8.430e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 8.430e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.55e-05 <= 1e-02)  => PASS
+[97/100] --kernel allpairs_multi --n 65536 --block 1024 --q 16 --prefetch 0
+    # launch  grid=1024 block=1024 q=16 prefetch=0 unroll=8  regs=53 smem=16384 B  resident 1 blocks/SM (67% 
+occupancy)  blocks/SM=12.80 (busiest 13)  waves=12.80
+    kernel=allpairs_multi n=65536 block=1024 q=16 prefetch=0 unroll=8 runs=10 batch=5  median=3.6928 ms  min=3.6727  
+max=3.6957  1163.057 Ginteractions/s  23261.1 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.466e-05  rms 3.725e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.445e-07 max 3.805e-06 norm 5.854e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 5.854e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.47e-05 <= 1e-02)  => PASS
+[98/100] --kernel allpairs_multi --n 65536 --block 1024 --q 16 --prefetch 1
+    # launch  grid=1024 block=1024 q=16 prefetch=1 unroll=8  regs=55 smem=16384 B  resident 1 blocks/SM (67% 
+occupancy)  blocks/SM=12.80 (busiest 13)  waves=12.80
+    kernel=allpairs_multi n=65536 block=1024 q=16 prefetch=1 unroll=8 runs=10 batch=5  median=3.5571 ms  min=3.5550  
+max=3.5600  1207.447 Ginteractions/s  24148.9 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.466e-05  rms 3.725e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.445e-07 max 3.805e-06 norm 5.854e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 5.854e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.47e-05 <= 1e-02)  => PASS
+[99/100] --kernel allpairs_multi --n 65536 --block 1024 --q 32 --prefetch 0
+    # launch  grid=2048 block=1024 q=32 prefetch=0 unroll=8  regs=53 smem=16384 B  resident 1 blocks/SM (67% 
+occupancy)  blocks/SM=25.60 (busiest 26)  waves=25.60
+    kernel=allpairs_multi n=65536 block=1024 q=32 prefetch=0 unroll=8 runs=10 batch=5  median=4.1277 ms  min=4.1252  
+max=4.1300  1040.518 Ginteractions/s  20810.4 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.463e-05  rms 3.714e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 2.022e-07 max 1.827e-06 norm 2.207e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 2.207e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.46e-05 <= 1e-02)  => PASS
+[100/100] --kernel allpairs_multi --n 65536 --block 1024 --q 32 --prefetch 1
+    # launch  grid=2048 block=1024 q=32 prefetch=1 unroll=8  regs=55 smem=16384 B  resident 1 blocks/SM (67% 
+occupancy)  blocks/SM=25.60 (busiest 26)  waves=25.60
+    kernel=allpairs_multi n=65536 block=1024 q=32 prefetch=1 unroll=8 runs=10 batch=5  median=3.8429 ms  min=3.8411  
+max=3.8470  1117.623 Ginteractions/s  22352.5 GFLOP/s (@20 FLOP/interaction)
+    validate vs allpairs_naive: max rel err 1.463e-05  rms 3.714e-06
+    validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 2.022e-07 max 1.827e-06 norm 2.207e-07  | naive rms 
+3.761e-06 max 9.990e-06 norm 6.749e-06
+    gates (D-009): G1 PASS (normMax 2.207e-07 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x 
+naive = 1.012e-05)  G0 PASS (max rel vs naive 1.46e-05 <= 1e-02)  => PASS
+wrote results\2026-10-17_round2\sweep\sweep.csv

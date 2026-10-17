@@ -1,0 +1,9 @@
+E1_tiled_dt1e-3.csv: kernel=allpairs_tiled q=1 dt=0.001 steps=100000 t_end=100.0
+   dE/E(t_end) = +6.189e-07   max|dE/E| = 9.639e-07   envelope slope alpha (t in [1, t_end]) = 0.98
+   virial 2K/|W|: start 0.9977 end 1.0031 (min 0.9802, max 1.0148)
+E2_tiled_dt5e-4.csv: kernel=allpairs_tiled q=1 dt=0.0005 steps=200000 t_end=100.0
+   dE/E(t_end) = +1.088e-06   max|dE/E| = 1.278e-06   envelope slope alpha (t in [1, t_end]) = 0.71
+   virial 2K/|W|: start 0.9977 end 0.9962 (min 0.9837, max 1.0157)
+E3_multi_b512q8_dt1e-3.csv: kernel=allpairs_multi q=8 dt=0.001 steps=100000 t_end=100.0
+   dE/E(t_end) = +1.602e-06   max|dE/E| = 1.602e-06   envelope slope alpha (t in [1, t_end]) = 0.84
+   virial 2K/|W|: start 0.9977 end 1.0034 (min 0.9807, max 1.0154)

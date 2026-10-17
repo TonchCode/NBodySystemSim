@@ -42,9 +42,11 @@ if ($BuildOnly) { return }
 
 # Clock / power log in the background for the whole probe run.
 $log = Join-Path $OutDir "gpu_clock_log.csv"
-$smi = Start-Process -FilePath "nvidia-smi" -PassThru -WindowStyle Hidden -ArgumentList @(
+# stdout redirection, not "-f": with -f nvidia-smi buffers and Stop-Process kills it before the
+# flush (first run on 2026-10-17 produced an empty log).
+$smi = Start-Process -FilePath "nvidia-smi" -PassThru -WindowStyle Hidden -RedirectStandardOutput $log -ArgumentList @(
     "--query-gpu=timestamp,clocks.sm,clocks.mem,power.draw,power.limit,temperature.gpu,utilization.gpu",
-    "--format=csv", "-lms", "100", "-f", $log)
+    "--format=csv", "-lms", "100")
 Start-Sleep -Milliseconds 1500   # idle baseline in the log
 try {
     & $exe | Tee-Object -FilePath (Join-Path $OutDir "probe_out.txt")

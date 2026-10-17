@@ -1,0 +1,9 @@
+﻿pass 0  base   median 3.406 ms  1261 G int/s  ratio vs base 1.000
+pass 0  ftz    median 3.061 ms  1403 G int/s  ratio vs base 0.899
+pass 0  mufu2  median 4.065 ms  1057 G int/s  ratio vs base 1.193
+pass 0  fmul3  median 4.048 ms  1061 G int/s  ratio vs base 1.188
+pass 1  base   median 3.434 ms  1251 G int/s  ratio vs base 1.000
+pass 1  ftz    median 3.089 ms  1390 G int/s  ratio vs base 0.900
+pass 1  mufu2  median 4.061 ms  1058 G int/s  ratio vs base 1.182
+pass 1  fmul3  median 4.053 ms  1060 G int/s  ratio vs base 1.180
+no error

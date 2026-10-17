@@ -1,0 +1,2 @@
+selftest: 1810 cases, 0 failed, 0 timeline-record failures (1 of the analytic accelerations are 0)
+selftest: PASS

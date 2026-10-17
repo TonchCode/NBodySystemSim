@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="800" font-family="sans-serif" font-size="10">
+<rect width="100%" height="100%" fill="white"/>
+<text x="60" y="16" font-size="12">allpairs_multi n=10000 b=1024 q=8 pf=1 u=8  launch 0 (first)</text>
+<text x="60" y="30" fill="#555">x: time since first block start (86.2 us total); y: SM id; colour: block id mod 8; grey lanes = idle SMs</text>
+<text x="54" y="48" text-anchor="end">0</text>
+<text x="54" y="138" text-anchor="end">10</text>
+<text x="54" y="228" text-anchor="end">20</text>
+<text x="54" y="318" text-anchor="end">30</text>
+<text x="54" y="408" text-anchor="end">40</text>
+<text x="54" y="498" text-anchor="end">50</text>
+<text x="54" y="588" text-anchor="end">60</text>
+<text x="54" y="678" text-anchor="end">70</text>
+<rect x="60" y="751" width="1000" height="8" fill="#eee"/>
+<rect x="61.07" y="40.00" width="974.86" height="7.80" fill="#4e79a7"><title>block 0 SM 0 0.09-84.08 us</title></rect>
+<rect x="61.97" y="58.00" width="974.74" height="7.80" fill="#f28e2b"><title>block 1 SM 2 0.17-84.15 us</title></rect>
+<rect x="60.00" y="76.00" width="973.41" height="7.80" fill="#59a14f"><title>block 2 SM 4 0.00-83.87 us</title></rect>
+<rect x="68.18" y="94.00" width="974.44" height="7.80" fill="#e15759"><title>block 3 SM 6 0.70-84.66 us</title></rect>
+<rect x="64.87" y="112.00" width="974.16" height="7.80" fill="#76b7b2"><title>block 4 SM 8 0.42-84.35 us</title></rect>
+<rect x="60.77" y="130.00" width="973.82" height="7.80" fill="#edc948"><title>block 5 SM 10 0.07-83.97 us</title></rect>
+<rect x="81.83" y="148.00" width="976.89" height="7.80" fill="#b07aa1"><title>block 6 SM 12 1.88-86.05 us</title></rect>
+<rect x="61.47" y="166.00" width="976.11" height="7.80" fill="#9c755f"><title>block 7 SM 14 0.13-84.23 us</title></rect>
+<rect x="62.28" y="184.00" width="979.69" height="7.80" fill="#4e79a7"><title>block 8 SM 16 0.20-84.60 us</title></rect>
+<rect x="60.25" y="202.00" width="977.18" height="7.80" fill="#f28e2b"><title>block 9 SM 18 0.02-84.21 us</title></rect>
+<rect x="68.49" y="220.00" width="973.89" height="7.80" fill="#59a14f"><title>block 10 SM 20 0.73-84.64 us</title></rect>
+<rect x="65.27" y="238.00" width="974.57" height="7.80" fill="#e15759"><title>block 11 SM 22 0.45-84.42 us</title></rect>
+<rect x="61.08" y="256.00" width="973.78" height="7.80" fill="#76b7b2"><title>block 12 SM 24 0.09-83.99 us</title></rect>
+<rect x="61.35" y="274.00" width="977.58" height="7.80" fill="#edc948"><title>block 13 SM 26 0.12-84.34 us</title></rect>
+<rect x="62.19" y="292.00" width="973.33" height="7.80" fill="#b07aa1"><title>block 14 SM 28 0.19-84.05 us</title></rect>
+<rect x="60.22" y="310.00" width="974.62" height="7.80" fill="#9c755f"><title>block 15 SM 30 0.02-83.99 us</title></rect>
+<rect x="68.40" y="328.00" width="971.96" height="7.80" fill="#4e79a7"><title>block 16 SM 32 0.72-84.46 us</title></rect>
+<rect x="65.09" y="346.00" width="973.45" height="7.80" fill="#f28e2b"><title>block 17 SM 34 0.44-84.31 us</title></rect>
+<rect x="61.27" y="364.00" width="973.31" height="7.80" fill="#59a14f"><title>block 18 SM 36 0.11-83.97 us</title></rect>
+<rect x="81.96" y="382.00" width="976.10" height="7.80" fill="#e15759"><title>block 19 SM 38 1.89-85.99 us</title></rect>
+<rect x="61.19" y="400.00" width="974.32" height="7.80" fill="#76b7b2"><title>block 20 SM 40 0.10-84.05 us</title></rect>
+<rect x="62.08" y="418.00" width="974.32" height="7.80" fill="#edc948"><title>block 21 SM 42 0.18-84.12 us</title></rect>
+<rect x="60.10" y="436.00" width="972.96" height="7.80" fill="#b07aa1"><title>block 22 SM 44 0.01-83.84 us</title></rect>
+<rect x="68.28" y="454.00" width="973.84" height="7.80" fill="#9c755f"><title>block 23 SM 46 0.71-84.62 us</title></rect>
+<rect x="65.06" y="472.00" width="974.77" height="7.80" fill="#4e79a7"><title>block 24 SM 48 0.44-84.42 us</title></rect>
+<rect x="60.81" y="490.00" width="974.29" height="7.80" fill="#f28e2b"><title>block 25 SM 50 0.07-84.01 us</title></rect>
+<rect x="81.62" y="508.00" width="975.01" height="7.80" fill="#59a14f"><title>block 26 SM 52 1.86-85.87 us</title></rect>
+<rect x="61.31" y="526.00" width="974.63" height="7.80" fill="#e15759"><title>block 27 SM 54 0.11-84.08 us</title></rect>
+<rect x="62.21" y="544.00" width="972.53" height="7.80" fill="#76b7b2"><title>block 28 SM 56 0.19-83.98 us</title></rect>
+<rect x="60.09" y="562.00" width="972.37" height="7.80" fill="#edc948"><title>block 29 SM 58 0.01-83.78 us</title></rect>
+<rect x="68.41" y="580.00" width="973.02" height="7.80" fill="#b07aa1"><title>block 30 SM 60 0.72-84.56 us</title></rect>
+<rect x="65.11" y="598.00" width="975.39" height="7.80" fill="#9c755f"><title>block 31 SM 62 0.44-84.48 us</title></rect>
+<rect x="60.95" y="616.00" width="973.03" height="7.80" fill="#4e79a7"><title>block 32 SM 64 0.08-83.91 us</title></rect>
+<rect x="81.64" y="634.00" width="973.70" height="7.80" fill="#f28e2b"><title>block 33 SM 66 1.86-85.76 us</title></rect>
+<rect x="61.29" y="652.00" width="974.32" height="7.80" fill="#59a14f"><title>block 34 SM 68 0.11-84.06 us</title></rect>
+<rect x="62.22" y="670.00" width="975.65" height="7.80" fill="#e15759"><title>block 35 SM 70 0.19-84.25 us</title></rect>
+<rect x="60.22" y="688.00" width="977.97" height="7.80" fill="#76b7b2"><title>block 36 SM 72 0.02-84.28 us</title></rect>
+<rect x="68.35" y="706.00" width="974.02" height="7.80" fill="#edc948"><title>block 37 SM 74 0.72-84.64 us</title></rect>
+<rect x="65.24" y="724.00" width="974.91" height="7.80" fill="#b07aa1"><title>block 38 SM 76 0.45-84.45 us</title></rect>
+<rect x="60.92" y="742.00" width="975.80" height="7.80" fill="#9c755f"><title>block 39 SM 78 0.08-84.15 us</title></rect>
+<rect x="61.19" y="49.00" width="974.28" height="7.80" fill="#4e79a7"><title>block 40 SM 1 0.10-84.04 us</title></rect>
+<rect x="62.08" y="67.00" width="975.72" height="7.80" fill="#f28e2b"><title>block 41 SM 3 0.18-84.24 us</title></rect>
+<rect x="60.05" y="85.00" width="975.75" height="7.80" fill="#59a14f"><title>block 42 SM 5 0.00-84.07 us</title></rect>
+<rect x="68.22" y="103.00" width="974.84" height="7.80" fill="#e15759"><title>block 43 SM 7 0.71-84.70 us</title></rect>
+<rect x="65.00" y="121.00" width="974.60" height="7.80" fill="#76b7b2"><title>block 44 SM 9 0.43-84.40 us</title></rect>
+<rect x="60.82" y="139.00" width="975.69" height="7.80" fill="#edc948"><title>block 45 SM 11 0.07-84.13 us</title></rect>
+<rect x="81.85" y="157.00" width="975.33" height="7.80" fill="#b07aa1"><title>block 46 SM 13 1.88-85.91 us</title></rect>
+<rect x="61.23" y="175.00" width="972.94" height="7.80" fill="#9c755f"><title>block 47 SM 15 0.11-83.93 us</title></rect>
+<rect x="62.13" y="193.00" width="973.30" height="7.80" fill="#4e79a7"><title>block 48 SM 17 0.18-84.04 us</title></rect>
+<rect x="60.01" y="211.00" width="973.97" height="7.80" fill="#f28e2b"><title>block 49 SM 19 0.00-83.92 us</title></rect>
+<rect x="68.34" y="229.00" width="973.69" height="7.80" fill="#59a14f"><title>block 50 SM 21 0.72-84.61 us</title></rect>
+<rect x="65.03" y="247.00" width="975.12" height="7.80" fill="#e15759"><title>block 51 SM 23 0.43-84.45 us</title></rect>
+<rect x="60.85" y="265.00" width="973.05" height="7.80" fill="#76b7b2"><title>block 52 SM 25 0.07-83.91 us</title></rect>
+<rect x="61.37" y="283.00" width="973.40" height="7.80" fill="#edc948"><title>block 53 SM 27 0.12-83.98 us</title></rect>
+<rect x="62.27" y="301.00" width="972.60" height="7.80" fill="#b07aa1"><title>block 54 SM 29 0.20-83.99 us</title></rect>
+<rect x="60.23" y="319.00" width="973.88" height="7.80" fill="#9c755f"><title>block 55 SM 31 0.02-83.93 us</title></rect>
+<rect x="68.41" y="337.00" width="973.76" height="7.80" fill="#4e79a7"><title>block 56 SM 33 0.72-84.62 us</title></rect>
+<rect x="65.17" y="355.00" width="975.93" height="7.80" fill="#f28e2b"><title>block 57 SM 35 0.45-84.53 us</title></rect>
+<rect x="60.92" y="373.00" width="975.28" height="7.80" fill="#59a14f"><title>block 58 SM 37 0.08-84.11 us</title></rect>
+<rect x="81.68" y="391.00" width="978.32" height="7.80" fill="#e15759"><title>block 59 SM 39 1.87-86.16 us</title></rect>
+<rect x="61.24" y="409.00" width="974.90" height="7.80" fill="#76b7b2"><title>block 60 SM 41 0.11-84.10 us</title></rect>
+<rect x="62.14" y="427.00" width="977.40" height="7.80" fill="#edc948"><title>block 61 SM 43 0.18-84.39 us</title></rect>
+<rect x="60.10" y="445.00" width="971.34" height="7.80" fill="#b07aa1"><title>block 62 SM 45 0.01-83.70 us</title></rect>
+<rect x="68.28" y="463.00" width="973.94" height="7.80" fill="#9c755f"><title>block 63 SM 47 0.71-84.62 us</title></rect>
+<rect x="65.12" y="481.00" width="973.99" height="7.80" fill="#4e79a7"><title>block 64 SM 49 0.44-84.36 us</title></rect>
+<rect x="60.98" y="499.00" width="972.29" height="7.80" fill="#f28e2b"><title>block 65 SM 51 0.08-83.85 us</title></rect>
+<rect x="81.92" y="517.00" width="975.15" height="7.80" fill="#59a14f"><title>block 66 SM 53 1.89-85.90 us</title></rect>
+<rect x="61.55" y="535.00" width="973.65" height="7.80" fill="#e15759"><title>block 67 SM 55 0.13-84.02 us</title></rect>
+<rect x="62.44" y="553.00" width="974.17" height="7.80" fill="#76b7b2"><title>block 68 SM 57 0.21-84.14 us</title></rect>
+<rect x="60.47" y="571.00" width="974.63" height="7.80" fill="#edc948"><title>block 69 SM 59 0.04-84.01 us</title></rect>
+<rect x="68.65" y="589.00" width="973.42" height="7.80" fill="#b07aa1"><title>block 70 SM 61 0.75-84.61 us</title></rect>
+<rect x="65.42" y="607.00" width="973.14" height="7.80" fill="#9c755f"><title>block 71 SM 63 0.47-84.31 us</title></rect>
+<rect x="60.93" y="625.00" width="971.94" height="7.80" fill="#4e79a7"><title>block 72 SM 65 0.08-83.82 us</title></rect>
+<rect x="81.61" y="643.00" width="977.51" height="7.80" fill="#f28e2b"><title>block 73 SM 67 1.86-86.08 us</title></rect>
+<rect x="61.37" y="661.00" width="975.31" height="7.80" fill="#59a14f"><title>block 74 SM 69 0.12-84.15 us</title></rect>
+<rect x="62.21" y="679.00" width="974.36" height="7.80" fill="#e15759"><title>block 75 SM 71 0.19-84.14 us</title></rect>
+<rect x="60.15" y="697.00" width="976.26" height="7.80" fill="#76b7b2"><title>block 76 SM 73 0.01-84.12 us</title></rect>
+<rect x="68.33" y="715.00" width="972.98" height="7.80" fill="#edc948"><title>block 77 SM 75 0.72-84.55 us</title></rect>
+<rect x="65.17" y="733.00" width="972.81" height="7.80" fill="#b07aa1"><title>block 78 SM 77 0.45-84.26 us</title></rect>
+<line x1="60.0" y1="40" x2="60.0" y2="765" stroke="#999" stroke-width="0.5"/>
+<text x="60.0" y="778" text-anchor="middle">0.0 us</text>
+<line x1="260.0" y1="40" x2="260.0" y2="765" stroke="#999" stroke-width="0.5"/>
+<text x="260.0" y="778" text-anchor="middle">17.2 us</text>
+<line x1="460.0" y1="40" x2="460.0" y2="765" stroke="#999" stroke-width="0.5"/>
+<text x="460.0" y="778" text-anchor="middle">34.5 us</text>
+<line x1="660.0" y1="40" x2="660.0" y2="765" stroke="#999" stroke-width="0.5"/>
+<text x="660.0" y="778" text-anchor="middle">51.7 us</text>
+<line x1="860.0" y1="40" x2="860.0" y2="765" stroke="#999" stroke-width="0.5"/>
+<text x="860.0" y="778" text-anchor="middle">68.9 us</text>
+<line x1="1060.0" y1="40" x2="1060.0" y2="765" stroke="#999" stroke-width="0.5"/>
+<text x="1060.0" y="778" text-anchor="middle">86.2 us</text>
+</svg>

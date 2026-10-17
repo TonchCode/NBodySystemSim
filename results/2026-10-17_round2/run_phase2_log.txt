@@ -1,0 +1,332 @@
+== allpairs_tiled 256 N=1000
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=4 block=256 q=1 prefetch=-1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  blocks/SM=0.05 (busiest 1)  waves=0.01
+# timeline grid=4 block=256 q=1 prefetch=-1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  blocks/SM=0.05 (busiest 1)  waves=0.01
+kernel=allpairs_tiled n=1000 block=256 q=1 prefetch=-1 unroll=8 runs=21 batch=50  median=0.0197 ms  min=0.0197  max=0.0201  50.811 Ginteractions/s  1016.2 GFLOP/s (@20 FLOP/interaction)
+timeline: instrumented median 0.0207 ms vs production 0.0197 ms  overhead +5.21%
+timeline: 5 launches x 4 blocks -> results/2026-10-17_round2/timeline/tl_tiled_256_n1000.csv
+validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+validate vs FP64 (519 bodies, kappa_max 2.4e+01): this rms 4.834e-07 max 1.664e-06 norm 1.013e-06  | naive rms 4.834e-07 max 1.664e-06 norm 1.013e-06
+gates (D-009): G1 PASS (normMax 1.013e-06 <= 1.885e-06 = 1.0 u sqrtN; naive 1.013e-06 passes)  G2 PASS (<= 1.5 x naive = 1.520e-06)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+exit=0
+== allpairs_tuned b128u0 N=1000
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=8 block=128 q=1 prefetch=-1 unroll=0  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  blocks/SM=0.10 (busiest 1)  waves=0.01
+# timeline grid=8 block=128 q=1 prefetch=-1 unroll=0  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  blocks/SM=0.10 (busiest 1)  waves=0.01
+kernel=allpairs_tuned n=1000 block=128 q=1 prefetch=-1 unroll=0 runs=21 batch=50  median=0.0133 ms  min=0.0133  max=0.0138  75.120 Ginteractions/s  1502.4 GFLOP/s (@20 FLOP/interaction)
+timeline: instrumented median 0.0130 ms vs production 0.0133 ms  overhead -2.31%
+timeline: 5 launches x 8 blocks -> results/2026-10-17_round2/timeline/tl_tuned_b128u0_n1000.csv
+validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+validate vs FP64 (519 bodies, kappa_max 2.4e+01): this rms 4.834e-07 max 1.664e-06 norm 1.013e-06  | naive rms 4.834e-07 max 1.664e-06 norm 1.013e-06
+gates (D-009): G1 PASS (normMax 1.013e-06 <= 1.885e-06 = 1.0 u sqrtN; naive 1.013e-06 passes)  G2 PASS (<= 1.5 x naive = 1.520e-06)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+exit=0
+== allpairs_multi b512q32 N=1000
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=63 block=512 q=32 prefetch=1 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  blocks/SM=0.79 (busiest 1)  waves=0.26
+# timeline grid=63 block=512 q=32 prefetch=1 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  blocks/SM=0.79 (busiest 1)  waves=0.26
+kernel=allpairs_multi n=1000 block=512 q=32 prefetch=1 unroll=8 runs=21 batch=50  median=0.0056 ms  min=0.0052  max=0.0069  177.557 Ginteractions/s  3551.1 GFLOP/s (@20 FLOP/interaction)
+timeline: instrumented median 0.0058 ms vs production 0.0056 ms  overhead +2.17%
+timeline: 5 launches x 63 blocks -> results/2026-10-17_round2/timeline/tl_multi_b512q32_n1000.csv
+validate vs allpairs_naive: max rel err 1.683e-06  rms 4.757e-07
+validate vs FP64 (519 bodies, kappa_max 2.4e+01): this rms 8.126e-08 max 5.463e-07 norm 1.136e-07  | naive rms 4.834e-07 max 1.664e-06 norm 1.013e-06
+gates (D-009): G1 PASS (normMax 1.136e-07 <= 1.885e-06 = 1.0 u sqrtN; naive 1.013e-06 passes)  G2 PASS (<= 1.5 x naive = 1.520e-06)  G0 PASS (max rel vs naive 1.68e-06 <= 1e-02)  => PASS
+exit=0
+== allpairs_tiled 256 N=4096
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=16 block=256 q=1 prefetch=-1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  blocks/SM=0.20 (busiest 1)  waves=0.03
+# timeline grid=16 block=256 q=1 prefetch=-1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  blocks/SM=0.20 (busiest 1)  waves=0.03
+kernel=allpairs_tiled n=4096 block=256 q=1 prefetch=-1 unroll=8 runs=21 batch=50  median=0.0732 ms  min=0.0731  max=0.0739  229.147 Ginteractions/s  4582.9 GFLOP/s (@20 FLOP/interaction)
+timeline: instrumented median 0.0778 ms vs production 0.0732 ms  overhead +6.21%
+timeline: 5 launches x 16 blocks -> results/2026-10-17_round2/timeline/tl_tiled_256_n4096.csv
+validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+validate vs FP64 (526 bodies, kappa_max 3.2e+01): this rms 9.402e-07 max 3.060e-06 norm 2.598e-06  | naive rms 9.402e-07 max 3.060e-06 norm 2.598e-06
+gates (D-009): G1 PASS (normMax 2.598e-06 <= 3.815e-06 = 1.0 u sqrtN; naive 2.598e-06 passes)  G2 PASS (<= 1.5 x naive = 3.896e-06)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+exit=0
+== allpairs_tuned b128u0 N=4096
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=32 block=128 q=1 prefetch=-1 unroll=0  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  blocks/SM=0.40 (busiest 1)  waves=0.03
+# timeline grid=32 block=128 q=1 prefetch=-1 unroll=0  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  blocks/SM=0.40 (busiest 1)  waves=0.03
+kernel=allpairs_tuned n=4096 block=128 q=1 prefetch=-1 unroll=0 runs=21 batch=50  median=0.0481 ms  min=0.0480  max=0.0485  349.041 Ginteractions/s  6980.8 GFLOP/s (@20 FLOP/interaction)
+timeline: instrumented median 0.0465 ms vs production 0.0481 ms  overhead -3.20%
+timeline: 5 launches x 32 blocks -> results/2026-10-17_round2/timeline/tl_tuned_b128u0_n4096.csv
+validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+validate vs FP64 (526 bodies, kappa_max 3.2e+01): this rms 9.402e-07 max 3.060e-06 norm 2.598e-06  | naive rms 9.402e-07 max 3.060e-06 norm 2.598e-06
+gates (D-009): G1 PASS (normMax 2.598e-06 <= 3.815e-06 = 1.0 u sqrtN; naive 2.598e-06 passes)  G2 PASS (<= 1.5 x naive = 3.896e-06)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+exit=0
+== allpairs_multi b512q8 N=4096
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=64 block=512 q=8 prefetch=1 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  blocks/SM=0.80 (busiest 1)  waves=0.27
+# timeline grid=64 block=512 q=8 prefetch=1 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  blocks/SM=0.80 (busiest 1)  waves=0.27
+kernel=allpairs_multi n=4096 block=512 q=8 prefetch=1 unroll=8 runs=21 batch=50  median=0.0188 ms  min=0.0188  max=0.0190  890.616 Ginteractions/s  17812.3 GFLOP/s (@20 FLOP/interaction)
+timeline: instrumented median 0.0192 ms vs production 0.0188 ms  overhead +2.18%
+timeline: 5 launches x 64 blocks -> results/2026-10-17_round2/timeline/tl_multi_b512q8_n4096.csv
+validate vs allpairs_naive: max rel err 3.091e-06  rms 9.461e-07
+validate vs FP64 (526 bodies, kappa_max 3.2e+01): this rms 1.847e-07 max 1.818e-06 norm 2.716e-07  | naive rms 9.402e-07 max 3.060e-06 norm 2.598e-06
+gates (D-009): G1 PASS (normMax 2.716e-07 <= 3.815e-06 = 1.0 u sqrtN; naive 2.598e-06 passes)  G2 PASS (<= 1.5 x naive = 3.896e-06)  G0 PASS (max rel vs naive 3.09e-06 <= 1e-02)  => PASS
+exit=0
+== allpairs_tiled 256 N=10000
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=40 block=256 q=1 prefetch=-1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  blocks/SM=0.50 (busiest 1)  waves=0.08
+# timeline grid=40 block=256 q=1 prefetch=-1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  blocks/SM=0.50 (busiest 1)  waves=0.08
+kernel=allpairs_tiled n=10000 block=256 q=1 prefetch=-1 unroll=8 runs=21 batch=50  median=0.1813 ms  min=0.1811  max=0.1816  551.481 Ginteractions/s  11029.6 GFLOP/s (@20 FLOP/interaction)
+timeline: instrumented median 0.1924 ms vs production 0.1813 ms  overhead +6.11%
+timeline: 5 launches x 40 blocks -> results/2026-10-17_round2/timeline/tl_tiled_256_n10000.csv
+validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+validate vs FP64 (528 bodies, kappa_max 1.0e+02): this rms 1.535e-06 max 4.341e-06 norm 2.836e-06  | naive rms 1.535e-06 max 4.341e-06 norm 2.836e-06
+gates (D-009): G1 PASS (normMax 2.836e-06 <= 5.960e-06 = 1.0 u sqrtN; naive 2.836e-06 passes)  G2 PASS (<= 1.5 x naive = 4.254e-06)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+exit=0
+== allpairs_tuned b128u0 N=10000
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=79 block=128 q=1 prefetch=-1 unroll=0  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  blocks/SM=0.99 (busiest 1)  waves=0.08
+# timeline grid=79 block=128 q=1 prefetch=-1 unroll=0  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  blocks/SM=0.99 (busiest 1)  waves=0.08
+kernel=allpairs_tuned n=10000 block=128 q=1 prefetch=-1 unroll=0 runs=21 batch=50  median=0.1174 ms  min=0.1171  max=0.1176  852.028 Ginteractions/s  17040.6 GFLOP/s (@20 FLOP/interaction)
+timeline: instrumented median 0.1134 ms vs production 0.1174 ms  overhead -3.35%
+timeline: 5 launches x 79 blocks -> results/2026-10-17_round2/timeline/tl_tuned_b128u0_n10000.csv
+validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+validate vs FP64 (528 bodies, kappa_max 1.0e+02): this rms 1.535e-06 max 4.341e-06 norm 2.836e-06  | naive rms 1.535e-06 max 4.341e-06 norm 2.836e-06
+gates (D-009): G1 PASS (normMax 2.836e-06 <= 5.960e-06 = 1.0 u sqrtN; naive 2.836e-06 passes)  G2 PASS (<= 1.5 x naive = 4.254e-06)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+exit=0
+== allpairs_multi b1024q8 N=10000
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=79 block=1024 q=8 prefetch=1 unroll=8  regs=55 smem=16384 B  resident 1 blocks/SM (67% occupancy)  blocks/SM=0.99 (busiest 1)  waves=0.99
+# timeline grid=79 block=1024 q=8 prefetch=1 unroll=8  regs=57 smem=16384 B  resident 1 blocks/SM (67% occupancy)  blocks/SM=0.99 (busiest 1)  waves=0.99
+kernel=allpairs_multi n=10000 block=1024 q=8 prefetch=1 unroll=8 runs=21 batch=50  median=0.0838 ms  min=0.0836  max=0.0842  1193.012 Ginteractions/s  23860.2 GFLOP/s (@20 FLOP/interaction)
+timeline: instrumented median 0.0864 ms vs production 0.0838 ms  overhead +3.06%
+timeline: 5 launches x 79 blocks -> results/2026-10-17_round2/timeline/tl_multi_b1024q8_n10000.csv
+validate vs allpairs_naive: max rel err 5.892e-06  rms 1.485e-06
+validate vs FP64 (528 bodies, kappa_max 1.0e+02): this rms 2.815e-07 max 2.656e-06 norm 3.617e-07  | naive rms 1.535e-06 max 4.341e-06 norm 2.836e-06
+gates (D-009): G1 PASS (normMax 3.617e-07 <= 5.960e-06 = 1.0 u sqrtN; naive 2.836e-06 passes)  G2 PASS (<= 1.5 x naive = 4.254e-06)  G0 PASS (max rel vs naive 5.89e-06 <= 1e-02)  => PASS
+exit=0
+== allpairs_tiled 256 N=65536
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=256 block=256 q=1 prefetch=-1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  blocks/SM=3.20 (busiest 4)  waves=0.53
+# timeline grid=256 block=256 q=1 prefetch=-1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  blocks/SM=3.20 (busiest 4)  waves=0.53
+kernel=allpairs_tiled n=65536 block=256 q=1 prefetch=-1 unroll=8 runs=21 batch=5  median=3.9227 ms  min=3.9119  max=3.9534  1094.908 Ginteractions/s  21898.2 GFLOP/s (@20 FLOP/interaction)
+timeline: instrumented median 4.0067 ms vs production 3.9227 ms  overhead +2.14%
+timeline: 5 launches x 256 blocks -> results/2026-10-17_round2/timeline/tl_tiled_256_n65536.csv
+validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 3.761e-06 max 9.990e-06 norm 6.749e-06
+gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+exit=0
+== allpairs_tuned b128u0 N=65536
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=512 block=128 q=1 prefetch=-1 unroll=0  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  blocks/SM=6.40 (busiest 7)  waves=0.53
+# timeline grid=512 block=128 q=1 prefetch=-1 unroll=0  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  blocks/SM=6.40 (busiest 7)  waves=0.53
+kernel=allpairs_tuned n=65536 block=128 q=1 prefetch=-1 unroll=0 runs=21 batch=5  median=3.4531 ms  min=3.4515  max=3.5135  1243.789 Ginteractions/s  24875.8 GFLOP/s (@20 FLOP/interaction)
+timeline: instrumented median 3.4647 ms vs production 3.4531 ms  overhead +0.34%
+timeline: 5 launches x 512 blocks -> results/2026-10-17_round2/timeline/tl_tuned_b128u0_n65536.csv
+validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 3.761e-06 max 9.990e-06 norm 6.749e-06
+gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+exit=0
+== allpairs_multi b256q4 N=65536
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=1024 block=256 q=4 prefetch=1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  blocks/SM=12.80 (busiest 13)  waves=2.13
+# timeline grid=1024 block=256 q=4 prefetch=1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  blocks/SM=12.80 (busiest 13)  waves=2.13
+kernel=allpairs_multi n=65536 block=256 q=4 prefetch=1 unroll=8 runs=21 batch=5  median=3.4001 ms  min=3.3964  max=3.4992  1263.192 Ginteractions/s  25263.8 GFLOP/s (@20 FLOP/interaction)
+timeline: instrumented median 3.3518 ms vs production 3.4001 ms  overhead -1.42%
+timeline: 5 launches x 1024 blocks -> results/2026-10-17_round2/timeline/tl_multi_b256q4_n65536.csv
+validate vs allpairs_naive: max rel err 1.602e-05  rms 3.934e-06
+validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 1.051e-06 max 5.993e-06 norm 1.927e-06  | naive rms 3.761e-06 max 9.990e-06 norm 6.749e-06
+gates (D-009): G1 PASS (normMax 1.927e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x naive = 1.012e-05)  G0 PASS (max rel vs naive 1.60e-05 <= 1e-02)  => PASS
+exit=0
+== tuned u8 control N=4096 b64
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=64 block=64 q=1 prefetch=-1 unroll=8  regs=40 smem=1024 B  resident 24 blocks/SM (100% occupancy)  blocks/SM=0.80 (busiest 1)  waves=0.03
+kernel=allpairs_tuned n=4096 block=64 q=1 prefetch=-1 unroll=8 runs=21 batch=50  median=0.0650 ms  min=0.0649  max=0.0654  258.016 Ginteractions/s  5160.3 GFLOP/s (@20 FLOP/interaction)
+validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+validate vs FP64 (526 bodies, kappa_max 3.2e+01): this rms 9.402e-07 max 3.060e-06 norm 2.598e-06  | naive rms 9.402e-07 max 3.060e-06 norm 2.598e-06
+gates (D-009): G1 PASS (normMax 2.598e-06 <= 3.815e-06 = 1.0 u sqrtN; naive 2.598e-06 passes)  G2 PASS (<= 1.5 x naive = 3.896e-06)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+exit=0
+== multi N=4096 b64 q1 pf0
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=64 block=64 q=1 prefetch=0 unroll=8  regs=39 smem=1024 B  resident 24 blocks/SM (100% occupancy)  blocks/SM=0.80 (busiest 1)  waves=0.03
+kernel=allpairs_multi n=4096 block=64 q=1 prefetch=0 unroll=8 runs=21 batch=50  median=0.0640 ms  min=0.0638  max=0.0643  262.333 Ginteractions/s  5246.7 GFLOP/s (@20 FLOP/interaction)
+validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+validate vs FP64 (526 bodies, kappa_max 3.2e+01): this rms 9.402e-07 max 3.060e-06 norm 2.598e-06  | naive rms 9.402e-07 max 3.060e-06 norm 2.598e-06
+gates (D-009): G1 PASS (normMax 2.598e-06 <= 3.815e-06 = 1.0 u sqrtN; naive 2.598e-06 passes)  G2 PASS (<= 1.5 x naive = 3.896e-06)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+exit=0
+== multi N=4096 b64 q1 pf1
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=64 block=64 q=1 prefetch=1 unroll=8  regs=40 smem=1024 B  resident 24 blocks/SM (100% occupancy)  blocks/SM=0.80 (busiest 1)  waves=0.03
+kernel=allpairs_multi n=4096 block=64 q=1 prefetch=1 unroll=8 runs=21 batch=50  median=0.0551 ms  min=0.0549  max=0.0555  304.535 Ginteractions/s  6090.7 GFLOP/s (@20 FLOP/interaction)
+validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+validate vs FP64 (526 bodies, kappa_max 3.2e+01): this rms 9.402e-07 max 3.060e-06 norm 2.598e-06  | naive rms 9.402e-07 max 3.060e-06 norm 2.598e-06
+gates (D-009): G1 PASS (normMax 2.598e-06 <= 3.815e-06 = 1.0 u sqrtN; naive 2.598e-06 passes)  G2 PASS (<= 1.5 x naive = 3.896e-06)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+exit=0
+== multi N=4096 b64 q8 pf0
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=512 block=64 q=8 prefetch=0 unroll=8  regs=40 smem=1024 B  resident 24 blocks/SM (100% occupancy)  blocks/SM=6.40 (busiest 7)  waves=0.27
+kernel=allpairs_multi n=4096 block=64 q=8 prefetch=0 unroll=8 runs=21 batch=50  median=0.0238 ms  min=0.0238  max=0.0243  704.991 Ginteractions/s  14099.8 GFLOP/s (@20 FLOP/interaction)
+validate vs allpairs_naive: max rel err 3.091e-06  rms 9.461e-07
+validate vs FP64 (526 bodies, kappa_max 3.2e+01): this rms 1.847e-07 max 1.818e-06 norm 2.716e-07  | naive rms 9.402e-07 max 3.060e-06 norm 2.598e-06
+gates (D-009): G1 PASS (normMax 2.716e-07 <= 3.815e-06 = 1.0 u sqrtN; naive 2.598e-06 passes)  G2 PASS (<= 1.5 x naive = 3.896e-06)  G0 PASS (max rel vs naive 3.09e-06 <= 1e-02)  => PASS
+exit=0
+== multi N=4096 b64 q8 pf1
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=512 block=64 q=8 prefetch=1 unroll=8  regs=40 smem=1024 B  resident 24 blocks/SM (100% occupancy)  blocks/SM=6.40 (busiest 7)  waves=0.27
+kernel=allpairs_multi n=4096 block=64 q=8 prefetch=1 unroll=8 runs=21 batch=50  median=0.0221 ms  min=0.0219  max=0.0224  760.830 Ginteractions/s  15216.6 GFLOP/s (@20 FLOP/interaction)
+validate vs allpairs_naive: max rel err 3.091e-06  rms 9.461e-07
+validate vs FP64 (526 bodies, kappa_max 3.2e+01): this rms 1.847e-07 max 1.818e-06 norm 2.716e-07  | naive rms 9.402e-07 max 3.060e-06 norm 2.598e-06
+gates (D-009): G1 PASS (normMax 2.716e-07 <= 3.815e-06 = 1.0 u sqrtN; naive 2.598e-06 passes)  G2 PASS (<= 1.5 x naive = 3.896e-06)  G0 PASS (max rel vs naive 3.09e-06 <= 1e-02)  => PASS
+exit=0
+== tuned u8 control N=4096 b128
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=32 block=128 q=1 prefetch=-1 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  blocks/SM=0.40 (busiest 1)  waves=0.03
+kernel=allpairs_tuned n=4096 block=128 q=1 prefetch=-1 unroll=8 runs=21 batch=50  median=0.0614 ms  min=0.0613  max=0.0618  273.158 Ginteractions/s  5463.2 GFLOP/s (@20 FLOP/interaction)
+validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+validate vs FP64 (526 bodies, kappa_max 3.2e+01): this rms 9.402e-07 max 3.060e-06 norm 2.598e-06  | naive rms 9.402e-07 max 3.060e-06 norm 2.598e-06
+gates (D-009): G1 PASS (normMax 2.598e-06 <= 3.815e-06 = 1.0 u sqrtN; naive 2.598e-06 passes)  G2 PASS (<= 1.5 x naive = 3.896e-06)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+exit=0
+== multi N=4096 b128 q1 pf0
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=32 block=128 q=1 prefetch=0 unroll=8  regs=39 smem=2048 B  resident 12 blocks/SM (100% occupancy)  blocks/SM=0.40 (busiest 1)  waves=0.03
+kernel=allpairs_multi n=4096 block=128 q=1 prefetch=0 unroll=8 runs=21 batch=50  median=0.0610 ms  min=0.0608  max=0.0614  275.009 Ginteractions/s  5500.2 GFLOP/s (@20 FLOP/interaction)
+validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+validate vs FP64 (526 bodies, kappa_max 3.2e+01): this rms 9.402e-07 max 3.060e-06 norm 2.598e-06  | naive rms 9.402e-07 max 3.060e-06 norm 2.598e-06
+gates (D-009): G1 PASS (normMax 2.598e-06 <= 3.815e-06 = 1.0 u sqrtN; naive 2.598e-06 passes)  G2 PASS (<= 1.5 x naive = 3.896e-06)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+exit=0
+== multi N=4096 b128 q1 pf1
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=32 block=128 q=1 prefetch=1 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  blocks/SM=0.40 (busiest 1)  waves=0.03
+kernel=allpairs_multi n=4096 block=128 q=1 prefetch=1 unroll=8 runs=21 batch=50  median=0.0554 ms  min=0.0553  max=0.0558  302.847 Ginteractions/s  6056.9 GFLOP/s (@20 FLOP/interaction)
+validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+validate vs FP64 (526 bodies, kappa_max 3.2e+01): this rms 9.402e-07 max 3.060e-06 norm 2.598e-06  | naive rms 9.402e-07 max 3.060e-06 norm 2.598e-06
+gates (D-009): G1 PASS (normMax 2.598e-06 <= 3.815e-06 = 1.0 u sqrtN; naive 2.598e-06 passes)  G2 PASS (<= 1.5 x naive = 3.896e-06)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+exit=0
+== multi N=4096 b128 q16 pf0
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=512 block=128 q=16 prefetch=0 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  blocks/SM=6.40 (busiest 7)  waves=0.53
+kernel=allpairs_multi n=4096 block=128 q=16 prefetch=0 unroll=8 runs=21 batch=50  median=0.0208 ms  min=0.0207  max=0.0213  807.890 Ginteractions/s  16157.8 GFLOP/s (@20 FLOP/interaction)
+validate vs allpairs_naive: max rel err 3.168e-06  rms 9.359e-07
+validate vs FP64 (526 bodies, kappa_max 3.2e+01): this rms 1.467e-07 max 1.956e-06 norm 1.377e-07  | naive rms 9.402e-07 max 3.060e-06 norm 2.598e-06
+gates (D-009): G1 PASS (normMax 1.377e-07 <= 3.815e-06 = 1.0 u sqrtN; naive 2.598e-06 passes)  G2 PASS (<= 1.5 x naive = 3.896e-06)  G0 PASS (max rel vs naive 3.17e-06 <= 1e-02)  => PASS
+exit=0
+== multi N=4096 b128 q16 pf1
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=512 block=128 q=16 prefetch=1 unroll=8  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  blocks/SM=6.40 (busiest 7)  waves=0.53
+kernel=allpairs_multi n=4096 block=128 q=16 prefetch=1 unroll=8 runs=21 batch=50  median=0.0197 ms  min=0.0196  max=0.0198  853.333 Ginteractions/s  17066.7 GFLOP/s (@20 FLOP/interaction)
+validate vs allpairs_naive: max rel err 3.168e-06  rms 9.359e-07
+validate vs FP64 (526 bodies, kappa_max 3.2e+01): this rms 1.467e-07 max 1.956e-06 norm 1.377e-07  | naive rms 9.402e-07 max 3.060e-06 norm 2.598e-06
+gates (D-009): G1 PASS (normMax 1.377e-07 <= 3.815e-06 = 1.0 u sqrtN; naive 2.598e-06 passes)  G2 PASS (<= 1.5 x naive = 3.896e-06)  G0 PASS (max rel vs naive 3.17e-06 <= 1e-02)  => PASS
+exit=0
+== tuned u8 control N=4096 b256
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=16 block=256 q=1 prefetch=-1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  blocks/SM=0.20 (busiest 1)  waves=0.03
+kernel=allpairs_tuned n=4096 block=256 q=1 prefetch=-1 unroll=8 runs=21 batch=50  median=0.0752 ms  min=0.0750  max=0.0756  223.160 Ginteractions/s  4463.2 GFLOP/s (@20 FLOP/interaction)
+validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+validate vs FP64 (526 bodies, kappa_max 3.2e+01): this rms 9.402e-07 max 3.060e-06 norm 2.598e-06  | naive rms 9.402e-07 max 3.060e-06 norm 2.598e-06
+gates (D-009): G1 PASS (normMax 2.598e-06 <= 3.815e-06 = 1.0 u sqrtN; naive 2.598e-06 passes)  G2 PASS (<= 1.5 x naive = 3.896e-06)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+exit=0
+== multi N=4096 b256 q1 pf0
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=16 block=256 q=1 prefetch=0 unroll=8  regs=39 smem=4096 B  resident 6 blocks/SM (100% occupancy)  blocks/SM=0.20 (busiest 1)  waves=0.03
+kernel=allpairs_multi n=4096 block=256 q=1 prefetch=0 unroll=8 runs=21 batch=50  median=0.0774 ms  min=0.0771  max=0.0778  216.854 Ginteractions/s  4337.1 GFLOP/s (@20 FLOP/interaction)
+validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+validate vs FP64 (526 bodies, kappa_max 3.2e+01): this rms 9.402e-07 max 3.060e-06 norm 2.598e-06  | naive rms 9.402e-07 max 3.060e-06 norm 2.598e-06
+gates (D-009): G1 PASS (normMax 2.598e-06 <= 3.815e-06 = 1.0 u sqrtN; naive 2.598e-06 passes)  G2 PASS (<= 1.5 x naive = 3.896e-06)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+exit=0
+== multi N=4096 b256 q1 pf1
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=16 block=256 q=1 prefetch=1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  blocks/SM=0.20 (busiest 1)  waves=0.03
+kernel=allpairs_multi n=4096 block=256 q=1 prefetch=1 unroll=8 runs=21 batch=50  median=0.0718 ms  min=0.0717  max=0.0722  233.523 Ginteractions/s  4670.5 GFLOP/s (@20 FLOP/interaction)
+validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+validate vs FP64 (526 bodies, kappa_max 3.2e+01): this rms 9.402e-07 max 3.060e-06 norm 2.598e-06  | naive rms 9.402e-07 max 3.060e-06 norm 2.598e-06
+gates (D-009): G1 PASS (normMax 2.598e-06 <= 3.815e-06 = 1.0 u sqrtN; naive 2.598e-06 passes)  G2 PASS (<= 1.5 x naive = 3.896e-06)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+exit=0
+== multi N=4096 b256 q8 pf0
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=128 block=256 q=8 prefetch=0 unroll=8  regs=39 smem=4096 B  resident 6 blocks/SM (100% occupancy)  blocks/SM=1.60 (busiest 2)  waves=0.27
+kernel=allpairs_multi n=4096 block=256 q=8 prefetch=0 unroll=8 runs=21 batch=50  median=0.0201 ms  min=0.0201  max=0.0204  834.216 Ginteractions/s  16684.3 GFLOP/s (@20 FLOP/interaction)
+validate vs allpairs_naive: max rel err 3.091e-06  rms 9.461e-07
+validate vs FP64 (526 bodies, kappa_max 3.2e+01): this rms 1.847e-07 max 1.818e-06 norm 2.716e-07  | naive rms 9.402e-07 max 3.060e-06 norm 2.598e-06
+gates (D-009): G1 PASS (normMax 2.716e-07 <= 3.815e-06 = 1.0 u sqrtN; naive 2.598e-06 passes)  G2 PASS (<= 1.5 x naive = 3.896e-06)  G0 PASS (max rel vs naive 3.09e-06 <= 1e-02)  => PASS
+exit=0
+== multi N=4096 b256 q8 pf1
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=128 block=256 q=8 prefetch=1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  blocks/SM=1.60 (busiest 2)  waves=0.27
+kernel=allpairs_multi n=4096 block=256 q=8 prefetch=1 unroll=8 runs=21 batch=50  median=0.0199 ms  min=0.0198  max=0.0202  843.666 Ginteractions/s  16873.3 GFLOP/s (@20 FLOP/interaction)
+validate vs allpairs_naive: max rel err 3.091e-06  rms 9.461e-07
+validate vs FP64 (526 bodies, kappa_max 3.2e+01): this rms 1.847e-07 max 1.818e-06 norm 2.716e-07  | naive rms 9.402e-07 max 3.060e-06 norm 2.598e-06
+gates (D-009): G1 PASS (normMax 2.716e-07 <= 3.815e-06 = 1.0 u sqrtN; naive 2.598e-06 passes)  G2 PASS (<= 1.5 x naive = 3.896e-06)  G0 PASS (max rel vs naive 3.09e-06 <= 1e-02)  => PASS
+exit=0
+== tuned u8 control N=4096 b512
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=8 block=512 q=1 prefetch=-1 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  blocks/SM=0.10 (busiest 1)  waves=0.03
+kernel=allpairs_tuned n=4096 block=512 q=1 prefetch=-1 unroll=8 runs=21 batch=50  median=0.1274 ms  min=0.1271  max=0.1276  131.704 Ginteractions/s  2634.1 GFLOP/s (@20 FLOP/interaction)
+validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+validate vs FP64 (526 bodies, kappa_max 3.2e+01): this rms 9.402e-07 max 3.060e-06 norm 2.598e-06  | naive rms 9.402e-07 max 3.060e-06 norm 2.598e-06
+gates (D-009): G1 PASS (normMax 2.598e-06 <= 3.815e-06 = 1.0 u sqrtN; naive 2.598e-06 passes)  G2 PASS (<= 1.5 x naive = 3.896e-06)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+exit=0
+== multi N=4096 b512 q1 pf0
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=8 block=512 q=1 prefetch=0 unroll=8  regs=39 smem=8192 B  resident 3 blocks/SM (100% occupancy)  blocks/SM=0.10 (busiest 1)  waves=0.03
+kernel=allpairs_multi n=4096 block=512 q=1 prefetch=0 unroll=8 runs=21 batch=50  median=0.1215 ms  min=0.1213  max=0.1218  138.075 Ginteractions/s  2761.5 GFLOP/s (@20 FLOP/interaction)
+validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+validate vs FP64 (526 bodies, kappa_max 3.2e+01): this rms 9.402e-07 max 3.060e-06 norm 2.598e-06  | naive rms 9.402e-07 max 3.060e-06 norm 2.598e-06
+gates (D-009): G1 PASS (normMax 2.598e-06 <= 3.815e-06 = 1.0 u sqrtN; naive 2.598e-06 passes)  G2 PASS (<= 1.5 x naive = 3.896e-06)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+exit=0
+== multi N=4096 b512 q1 pf1
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=8 block=512 q=1 prefetch=1 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  blocks/SM=0.10 (busiest 1)  waves=0.03
+kernel=allpairs_multi n=4096 block=512 q=1 prefetch=1 unroll=8 runs=21 batch=50  median=0.1209 ms  min=0.1207  max=0.1214  138.824 Ginteractions/s  2776.5 GFLOP/s (@20 FLOP/interaction)
+validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+validate vs FP64 (526 bodies, kappa_max 3.2e+01): this rms 9.402e-07 max 3.060e-06 norm 2.598e-06  | naive rms 9.402e-07 max 3.060e-06 norm 2.598e-06
+gates (D-009): G1 PASS (normMax 2.598e-06 <= 3.815e-06 = 1.0 u sqrtN; naive 2.598e-06 passes)  G2 PASS (<= 1.5 x naive = 3.896e-06)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+exit=0
+== multi N=4096 b512 q8 pf0
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=64 block=512 q=8 prefetch=0 unroll=8  regs=39 smem=8192 B  resident 3 blocks/SM (100% occupancy)  blocks/SM=0.80 (busiest 1)  waves=0.27
+kernel=allpairs_multi n=4096 block=512 q=8 prefetch=0 unroll=8 runs=21 batch=50  median=0.0200 ms  min=0.0200  max=0.0203  837.869 Ginteractions/s  16757.4 GFLOP/s (@20 FLOP/interaction)
+validate vs allpairs_naive: max rel err 3.091e-06  rms 9.461e-07
+validate vs FP64 (526 bodies, kappa_max 3.2e+01): this rms 1.847e-07 max 1.818e-06 norm 2.716e-07  | naive rms 9.402e-07 max 3.060e-06 norm 2.598e-06
+gates (D-009): G1 PASS (normMax 2.716e-07 <= 3.815e-06 = 1.0 u sqrtN; naive 2.598e-06 passes)  G2 PASS (<= 1.5 x naive = 3.896e-06)  G0 PASS (max rel vs naive 3.09e-06 <= 1e-02)  => PASS
+exit=0
+== multi N=4096 b512 q8 pf1
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=64 block=512 q=8 prefetch=1 unroll=8  regs=40 smem=8192 B  resident 3 blocks/SM (100% occupancy)  blocks/SM=0.80 (busiest 1)  waves=0.27
+kernel=allpairs_multi n=4096 block=512 q=8 prefetch=1 unroll=8 runs=21 batch=50  median=0.0188 ms  min=0.0187  max=0.0192  894.323 Ginteractions/s  17886.5 GFLOP/s (@20 FLOP/interaction)
+validate vs allpairs_naive: max rel err 3.091e-06  rms 9.461e-07
+validate vs FP64 (526 bodies, kappa_max 3.2e+01): this rms 1.847e-07 max 1.818e-06 norm 2.716e-07  | naive rms 9.402e-07 max 3.060e-06 norm 2.598e-06
+gates (D-009): G1 PASS (normMax 2.716e-07 <= 3.815e-06 = 1.0 u sqrtN; naive 2.598e-06 passes)  G2 PASS (<= 1.5 x naive = 3.896e-06)  G0 PASS (max rel vs naive 3.09e-06 <= 1e-02)  => PASS
+exit=0
+== tuned u8 control N=65536 b256
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=256 block=256 q=1 prefetch=-1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  blocks/SM=3.20 (busiest 4)  waves=0.53
+kernel=allpairs_tuned n=65536 block=256 q=1 prefetch=-1 unroll=8 runs=21 batch=5  median=4.1119 ms  min=4.0997  max=4.1224  1044.525 Ginteractions/s  20890.5 GFLOP/s (@20 FLOP/interaction)
+validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 3.761e-06 max 9.990e-06 norm 6.749e-06
+gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+exit=0
+== multi N=65536 b256 q1 pf0
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=256 block=256 q=1 prefetch=0 unroll=8  regs=39 smem=4096 B  resident 6 blocks/SM (100% occupancy)  blocks/SM=3.20 (busiest 4)  waves=0.53
+kernel=allpairs_multi n=65536 block=256 q=1 prefetch=0 unroll=8 runs=21 batch=5  median=3.9639 ms  min=3.9594  max=3.9927  1083.519 Ginteractions/s  21670.4 GFLOP/s (@20 FLOP/interaction)
+validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 3.761e-06 max 9.990e-06 norm 6.749e-06
+gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+exit=0
+== multi N=65536 b256 q1 pf1
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=256 block=256 q=1 prefetch=1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  blocks/SM=3.20 (busiest 4)  waves=0.53
+kernel=allpairs_multi n=65536 block=256 q=1 prefetch=1 unroll=8 runs=21 batch=5  median=3.9776 ms  min=3.9725  max=3.9917  1079.782 Ginteractions/s  21595.6 GFLOP/s (@20 FLOP/interaction)
+validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 3.761e-06 max 9.990e-06 norm 6.749e-06  | naive rms 3.761e-06 max 9.990e-06 norm 6.749e-06
+gates (D-009): G1 PASS (normMax 6.749e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x naive = 1.012e-05)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS
+exit=0
+== multi N=65536 b256 q4 pf0
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=1024 block=256 q=4 prefetch=0 unroll=8  regs=39 smem=4096 B  resident 6 blocks/SM (100% occupancy)  blocks/SM=12.80 (busiest 13)  waves=2.13
+kernel=allpairs_multi n=65536 block=256 q=4 prefetch=0 unroll=8 runs=21 batch=5  median=3.3976 ms  min=3.3966  max=3.4017  1264.106 Ginteractions/s  25282.1 GFLOP/s (@20 FLOP/interaction)
+validate vs allpairs_naive: max rel err 1.602e-05  rms 3.934e-06
+validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 1.051e-06 max 5.993e-06 norm 1.927e-06  | naive rms 3.761e-06 max 9.990e-06 norm 6.749e-06
+gates (D-009): G1 PASS (normMax 1.927e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x naive = 1.012e-05)  G0 PASS (max rel vs naive 1.60e-05 <= 1e-02)  => PASS
+exit=0
+== multi N=65536 b256 q4 pf1
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=1024 block=256 q=4 prefetch=1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  blocks/SM=12.80 (busiest 13)  waves=2.13
+kernel=allpairs_multi n=65536 block=256 q=4 prefetch=1 unroll=8 runs=21 batch=5  median=3.3974 ms  min=3.3960  max=3.4017  1264.182 Ginteractions/s  25283.6 GFLOP/s (@20 FLOP/interaction)
+validate vs allpairs_naive: max rel err 1.602e-05  rms 3.934e-06
+validate vs FP64 (528 bodies, kappa_max 1.1e+02): this rms 1.051e-06 max 5.993e-06 norm 1.927e-06  | naive rms 3.761e-06 max 9.990e-06 norm 6.749e-06
+gates (D-009): G1 PASS (normMax 1.927e-06 <= 1.526e-05 = 1.0 u sqrtN; naive 6.749e-06 passes)  G2 PASS (<= 1.5 x naive = 1.012e-05)  G0 PASS (max rel vs naive 1.60e-05 <= 1e-02)  => PASS
+exit=0

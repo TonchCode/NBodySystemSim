@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="800" font-family="sans-serif" font-size="10">
+<rect width="100%" height="100%" fill="white"/>
+<text x="60" y="16" font-size="12">allpairs_tiled n=4096 b=256 q=1 pf=-1 u=8  launch 0 (first)</text>
+<text x="60" y="30" fill="#555">x: time since first block start (76.0 us total); y: SM id; colour: block id mod 8; grey lanes = idle SMs</text>
+<text x="54" y="48" text-anchor="end">0</text>
+<rect x="60" y="49" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="67" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="85" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="103" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="121" width="1000" height="8" fill="#eee"/>
+<text x="54" y="138" text-anchor="end">10</text>
+<rect x="60" y="139" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="157" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="175" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="193" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="211" width="1000" height="8" fill="#eee"/>
+<text x="54" y="228" text-anchor="end">20</text>
+<rect x="60" y="229" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="247" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="265" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="283" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="301" width="1000" height="8" fill="#eee"/>
+<text x="54" y="318" text-anchor="end">30</text>
+<rect x="60" y="319" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="328" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="337" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="346" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="355" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="364" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="373" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="382" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="391" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="400" width="1000" height="8" fill="#eee"/>
+<text x="54" y="408" text-anchor="end">40</text>
+<rect x="60" y="409" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="418" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="427" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="436" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="445" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="454" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="463" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="472" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="481" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="490" width="1000" height="8" fill="#eee"/>
+<text x="54" y="498" text-anchor="end">50</text>
+<rect x="60" y="499" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="508" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="517" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="526" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="535" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="544" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="553" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="562" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="571" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="580" width="1000" height="8" fill="#eee"/>
+<text x="54" y="588" text-anchor="end">60</text>
+<rect x="60" y="589" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="598" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="607" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="616" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="625" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="634" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="643" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="652" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="661" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="670" width="1000" height="8" fill="#eee"/>
+<text x="54" y="678" text-anchor="end">70</text>
+<rect x="60" y="679" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="688" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="697" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="706" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="715" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="724" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="733" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="742" width="1000" height="8" fill="#eee"/>
+<rect x="60" y="751" width="1000" height="8" fill="#eee"/>
+<rect x="60.66" y="40.00" width="991.77" height="7.80" fill="#4e79a7"><title>block 0 SM 0 0.05-75.40 us</title></rect>
+<rect x="60.47" y="58.00" width="995.46" height="7.80" fill="#f28e2b"><title>block 1 SM 2 0.04-75.67 us</title></rect>
+<rect x="60.00" y="76.00" width="990.48" height="7.80" fill="#59a14f"><title>block 2 SM 4 0.00-75.25 us</title></rect>
+<rect x="60.15" y="94.00" width="991.42" height="7.80" fill="#e15759"><title>block 3 SM 6 0.01-75.34 us</title></rect>
+<rect x="61.52" y="112.00" width="993.06" height="7.80" fill="#76b7b2"><title>block 4 SM 8 0.12-75.57 us</title></rect>
+<rect x="61.62" y="130.00" width="993.75" height="7.80" fill="#edc948"><title>block 5 SM 10 0.12-75.63 us</title></rect>
+<rect x="68.69" y="148.00" width="991.31" height="7.80" fill="#b07aa1"><title>block 6 SM 12 0.66-75.98 us</title></rect>
+<rect x="60.62" y="166.00" width="992.65" height="7.80" fill="#9c755f"><title>block 7 SM 14 0.05-75.47 us</title></rect>
+<rect x="60.54" y="184.00" width="993.13" height="7.80" fill="#4e79a7"><title>block 8 SM 16 0.04-75.50 us</title></rect>
+<rect x="60.07" y="202.00" width="989.57" height="7.80" fill="#f28e2b"><title>block 9 SM 18 0.00-75.19 us</title></rect>
+<rect x="60.15" y="220.00" width="990.59" height="7.80" fill="#59a14f"><title>block 10 SM 20 0.01-75.27 us</title></rect>
+<rect x="61.43" y="238.00" width="991.49" height="7.80" fill="#e15759"><title>block 11 SM 22 0.11-75.44 us</title></rect>
+<rect x="61.69" y="256.00" width="993.25" height="7.80" fill="#76b7b2"><title>block 12 SM 24 0.13-75.59 us</title></rect>
+<rect x="60.65" y="274.00" width="992.32" height="7.80" fill="#edc948"><title>block 13 SM 26 0.05-75.44 us</title></rect>
+<rect x="60.58" y="292.00" width="992.89" height="7.80" fill="#b07aa1"><title>block 14 SM 28 0.04-75.48 us</title></rect>
+<rect x="60.02" y="310.00" width="990.81" height="7.80" fill="#9c755f"><title>block 15 SM 30 0.00-75.28 us</title></rect>
+<line x1="60.0" y1="40" x2="60.0" y2="765" stroke="#999" stroke-width="0.5"/>
+<text x="60.0" y="778" text-anchor="middle">0.0 us</text>
+<line x1="260.0" y1="40" x2="260.0" y2="765" stroke="#999" stroke-width="0.5"/>
+<text x="260.0" y="778" text-anchor="middle">15.2 us</text>
+<line x1="460.0" y1="40" x2="460.0" y2="765" stroke="#999" stroke-width="0.5"/>
+<text x="460.0" y="778" text-anchor="middle">30.4 us</text>
+<line x1="660.0" y1="40" x2="660.0" y2="765" stroke="#999" stroke-width="0.5"/>
+<text x="660.0" y="778" text-anchor="middle">45.6 us</text>
+<line x1="860.0" y1="40" x2="860.0" y2="765" stroke="#999" stroke-width="0.5"/>
+<text x="860.0" y="778" text-anchor="middle">60.8 us</text>
+<line x1="1060.0" y1="40" x2="1060.0" y2="765" stroke="#999" stroke-width="0.5"/>
+<text x="1060.0" y="778" text-anchor="middle">76.0 us</text>
+</svg>

@@ -45,6 +45,16 @@ assumption, and the probe below is consistent with it.
   is therefore ≈ 45% busy at the issue ceiling [D].
 - FP32 ceiling: 128 / 14 = 9.1 interactions/clk/SM [D].
 
+> **Round-2 status of P0** (critic #2; probe SASS + clock log, `results/2026-10-17_round2/probe/`):
+> the honest wording is **"issue-limited with a significant XU co-limit"**. Static SASS per
+> interaction (probe, full-unroll b128): base 17.38 slots, ftz 14.38 (−3), mufu2 19.38 (+2:
+> MUFU + FSEL), fmul3 20.38 (+3). Measured ratios (power-capped run, 2610–2640 MHz, two passes):
+> ftz 0.90, mufu2 1.19, fmul3 1.185. Against the pure-issue model (0.827 / 1.115 / 1.173), only
+> fmul3 fits. mufu2's +7 pp excess is the XU (XU ≈ 83% busy in mufu2 vs 46% in base [D]).
+> ftz's shortfall says a non-issue limiter (latency, dependencies or register banks) appears
+> once the guard is gone. ncu is needed to name it. The 1 inst/clk/scheduler issue rate is
+> still unsourced. The text below is the original pre-registration, kept as written.
+
 **Prediction P0 (MUFU hypothesis from the smoke test):** *wrong*. The kernel is
 **issue-bound with FP32 the dominant pipe**, not MUFU-bound. In Nsight Compute I expect
 `Issue Slots Busy` at ≈ 70–80%, the FMA/FP32 pipe the hottest, and the XU pipe ≈ 30–40%.
@@ -138,11 +148,22 @@ as `resident N blocks/SM`) are in §6.
 
 | BLOCK | U=1 | U=4 | U=8 | U=16 | U=full | regs-limited warps | blocks/SM | occupancy | limiter |
 |---|---|---|---|---|---|---|---|---|---|
-| 64 | 19 | 37 | 40 | 40 | 40 | 102 / 51 | **24** | 100% | **24-block limit** (24 × 64 = 1536, exactly) |
-| 128 | 19 | 37 | 40 | 40 | 40 | 102 / 51 | 12 | 100% | warps (48) |
-| 256 | 19 | 37 | 40 | 40 | 40 | 102 / 51 | 6 | 100% | warps; at 40 regs also registers (6 × 10,240 = 61,440) |
-| 512 | 19 | 37 | 40 | 40 | 40 | 102 / 51 | 3 | 100% | warps |
-| 1024 | 20 | 37 | 53 | 56 | 56 | 102 / 51 / 36 | **1** | **67%** | **thread limit: 1536 / 1024 = 1.5 → 1 block**, regardless of registers |
+| 64 | 19 | 37 | 40 | 40 | 40 | 85 / 51 (84 / 48) | **24** | 100% | **24-block limit** (24 × 64 = 1536, exactly) |
+| 128 | 19 | 37 | 40 | 40 | 40 | 85 / 51 (84 / 48) | 12 | 100% | warps (48) |
+| 256 | 19 | 37 | 40 | 40 | 40 | 85 / 51 (84 / 48) | 6 | 100% | warps; at 40 regs also registers (per partition: exactly 12 warps × 1280 = 15,360 ≤ 16,384) |
+| 512 | 19 | 37 | 40 | 40 | 40 | 85 / 51 (84 / 48) | 3 | 100% | warps |
+| 1024 | 20 | 37 | 53 | 56 | 56 | 85 / 51 / 36 (84 / 48 / 36) | **1** | **67%** | **thread limit: 1536 / 1024 = 1.5 → 1 block**, regardless of registers |
+
+**Correction (round 2, critic #11).** The first version of this column said "102 warps" at
+19 regs. At 19 regs a warp needs 19 × 32 = 608 registers, rounded up to 768, and
+65,536 / 768 = **85** warps from the whole-SM pool, not 102. **The register file is
+allocated per SM sub-partition** (4 × 16,384 registers, one per scheduler), and a warp's
+registers come from its own partition [D from M]. That is the model the runtime follows. b64
+q32 at 44 regs (1536 per warp) gives floor(16,384 / 1536) = 10 warps per partition = 40 warps
+= **20 blocks** (83%). The runtime occupancy API returns 20; the whole-SM pool would give
+floor(65,536 / 1536) = 42 warps = 21 blocks (§6, round-1 summary). The values in brackets are
+per partition (× 4): 84 / 48 / 36 warps at 19–20 / 37–40 / 53–56 regs. None of them changes a
+blocks/SM entry above, because every block size is limited by warps, blocks or threads first.
 
 Shared memory never limits: the worst case is 24 × (1 KB + 1 KB) = 48 KB (b64), and b1024 needs 17 KB.
 **BLOCK = 1024 is the only configuration below 100%.** Its cause is not registers: 1536 is
@@ -158,6 +179,27 @@ With ≥ 8 warps per busy SM, time ∝ ceil(B/80). Efficiency = (B/80) / ceil(B/
 | 10000 | 157 → 98% (2 blk/SM) | 79 → 99% | 40 → 50% | 20 → 25% | 10 → 12.5% |
 | 65536 | 1024 → 12.8/13 = **98%** | 512 → 6.4/7 = **91%** | 256 → 3.2/4 = **80%** | 128 → 1.6/2 = **80%** | 64 → **80%** |
 | 131072 | 2048 → 99% | 1024 → 98% | 512 → 91% | 256 → 80% | 128 → 80% |
+
+> **Round-2 qualification of M1 (measured, `results/2026-10-17_round2`, timeline method D-011).**
+> The ceil(B/80) step is an idealization [P:zhang2026wavetune]. The tail penalty is at most one
+> wave, and block-latency variance plus greedy dispatch smooth the steps. Our timelines bound
+> where it holds on this GPU:
+> - *Single-wave launches (all B blocks co-resident):* the step is **exact**. tiled b256 at
+>   N = 65536 had 16 SMs × 4 blocks and 64 × 3, a 23.5% tail, SM efficiency 0.81 (M1: 0.80).
+>   tuned b64 had SM efficiency 0.97 (M1: 0.98). Every B ≤ 80 launch got exactly one block per
+>   SM.
+> - *Multi-wave launches (B > resident slots, dynamic refill):* the step is **smoothed far
+>   below one block**. multi q4 at 65536 (1024 blocks, 480 slots) had a 0.1% tail. This is
+>   the smoothing WaveTune describes.
+> - The **P2a miss is not a step-model failure.** b64 removes the tail exactly as predicted
+>   (0.97 vs 0.81 SM efficiency), but each b64 SM is ≈ 12% slower per interaction (4× the
+>   barriers and tile loads). So M1's per-block cost term (c = 2 interaction units per tile) is
+>   too small for block 64. M1 is kept as a *structural* model (which SMs idle, how long the
+>   tail is) and is not used to rank block sizes. Block sizes are ranked by measurement (D-012).
+>
+> Supporting 2025–26 work for this technique: wave quantization is a first-order loss, fixed
+> by refining the tail wave [P:zhang2025hytis, transferable: GEMM tiles, full text not read];
+> occupancy-aware launch decisions on an RTX 4090 [P:shi2025libra, transferable: sparse].
 
 Two failure modes in one table. **Starvation**: B < 80, idle SMs, the small-N problem that R3 #3
 targets. **Wave quantization**: B slightly above a multiple of 80, so one extra block per SM is
@@ -221,6 +263,14 @@ Next-tile register prefetch: the global load for tile t+1 is issued before tile 
 consumed, so the L2 latency overlaps compute. This matters when BLOCK/Q is small (8 at Q=32).
 Q ∈ {1, 2, 4, 8, 16, 32} × BLOCK ∈ {64 … 1024}: 30 instantiations. `Params::threadsPerBody`
 (`--q`, 0 = auto).
+
+Related 2025–26 work: splitting the work of the partial wave into finer pieces recovers the
+idle SMs [P:zhang2025hytis, transferable]. Splitting only heavy items above a threshold, with an
+occupancy-aware launch, is the same trade-off of split cost against balance
+[P:shi2025libra, transferable: sparse SpMM on an RTX 4090]. Libra combines the pieces with
+atomics. Our register-only shuffle butterfly (§4.2) has no atomic cost and is deterministic.
+Prefetch is a separate template switch since round 2 (`Params::prefetch`), so its effect is
+measured apart from q (§8.2).
 
 **Load-balancing problem addressed:** *starvation across SMs* at small N (B = N/BLOCK < 80), and
 more generally *wave quantization*. Q multiplies the number of work items (blocks) without
@@ -298,6 +348,11 @@ Changing Q changes the summation order, so results are no longer bitwise equal t
   dividing by a tiny |a| inflates the *relative* error by κ. **That is why max-rel spikes on a
   few bodies while the force field is fine.** It is a property of the problem, not of the
   kernel. The same body spikes against FP64 for naive too.
+- **Superseded by D-009 (round 2).** The rms-based G1 below is κ-inflated (rms-rel divides
+  by |a_i|, like max-rel). The thresholds sat 6–8× above the measured noise, and a dropped body
+  would pass them. The current gates are normMax ≤ 1.0·u·√N (calibrated to naive's measured
+  0.44–0.68), normMax ≤ 1.5 × naive's, and max-rel ≤ 1e-2, all evaluated in the bench (exit code
+  3). Missed interactions are caught by the exact `--selftest`. Original text kept:
 - **Gates (PASS):**
   - **G1, primary: rms relative error vs naive ≤ 4·u·√N** (N=1000: 7.5e-6; 4096: 1.5e-5;
     10000: 2.4e-5; 65536: 6.1e-5).
@@ -339,9 +394,10 @@ before the runs, SM clock median 2760 MHz under load. Sanity only, not the offic
 The predictions in §0–§4 above are left exactly as written.
 
 **Scorecard (short):**
-- **P0 HIT.** ncu was blocked (ERR_NVGPUCTRPERM), so a probe was run instead: +1 MUFU per
-  interaction = +19%, +3 FMUL = +18.5%, −3 non-MUFU instructions (`rsqrt.approx.ftz`) = −10%.
-  The kernel is issue-bound, not MUFU-bound, at ≈ 78% of the issue ceiling. The `-ftz` gain is
+- **P0: partial HIT** (revised in round 2, see the note in §0.1). It is not MUFU-*bound*, but it
+  is "issue-limited with a significant XU co-limit". ncu was blocked (ERR_NVGPUCTRPERM), so a
+  probe was run instead: +2 slots incl. 1 MUFU = +19% (issue model +11.5%), +3 slots (FFMA + 2 FMUL)
+  = +18.5%, −3 slots (`rsqrt.approx.ftz`) = −10%. The `-ftz` gain is
   half of what I predicted (+10–11% vs +15–20%).
 - **A1 wrong.** The per-SM rate is linear up to ~6 warps (≈ 2.1 G/s per warp), then saturates:
   8 warps ≈ 14 G/s, 32 warps ≈ 17 G/s. Consequences:
@@ -349,14 +405,18 @@ The predictions in §0–§4 above are left exactly as written.
   - P2b and P2c miss: b128 beats b256 at N = 4096 and 10000 by 23–24%.
   - Absolute rates are 4–26% above the model, which was calibrated on the loaded smoke-test GPU.
 - Unroll: u1 −21%, u16 +5%, full +8% (b ≤ 256). Full unroll at b1024 is −18% (P2d HIT, I-cache).
-- **P3a HIT.** N=4096 multi q4 = 771 G/s (predicted 700), best 893 = **3.9× tiled**.
+- **P3a HIT.** N=4096 multi q4 = 771 G/s (predicted 700), best 893. That is 3.9× tiled b256,
+  but **2.56× the best-tuned 1-thread/body baseline** (tuned b128 full, 349 G/s), which is the
+  figure to quote (rule 8; §8.3 has every N).
   Validation: tuned is bitwise equal to naive. multi passes G1–G3 at every N, q and block,
   including odd N, and is **more accurate than naive vs FP64** (error ∝ 1/q).
   Energy drift: −2.76e-8 (tiled/tuned), −2.97e-8 / −3.14e-8 (multi q4 / q32).
 - **P3e MISS at b256.** auto loses 7–9% at N = 4096 and 10000. Over all (N, block) cells, the cost
   model still beats the thread-saturation rule: mean loss 1.8% / 0.9% (in- / out-of-sample) vs
   6.8% / 4.8%. A v2 model fitted to the measured r(w) did better in-sample and worse
-  out-of-sample, so it was rejected.
+  out-of-sample, so it was rejected. **Withdrawn in round 2 (D-010):** the round-1 v2 code was
+  never saved. A reconstruction (`tools/autoq_models.py`) gives 1.0% / 0.6%, better than v1
+  out-of-sample, so the rejection reason is not supported.
 - Methodology: small-N timings need `--warmup-ms` and `--batch` (cold clocks and event jitter
   made them bimodal). Both flags are added to the bench and to `tools/sweep.ps1`.
 
@@ -366,7 +426,10 @@ The predictions in §0–§4 above are left exactly as written.
 - Search (block, q) jointly. The winners at N = 4096–20000 are ≈ one fat block (16–32 warps)
   per SM, with B ≈ 64–79.
 - Unroll as a template parameter in multi (tuned shows +5–8% from u16 or full).
-- tuned b256 u8 is 2–4% *slower* than tiled b256 despite the identical algorithm. A SASS diff is needed.
+- tuned b256 u8 is 2–4% *slower* than tiled b256 despite the identical algorithm. **Likely
+  explained (round 2):** ptxas schedule sensitivity. The instrumented tiled twin has the
+  same opcode multiset in its loop but a different schedule and register assignment, and runs
+  +2…+6% differently (§8.1). Confirming this needs the same opcode-sequence diff for tuned vs tiled.
 - Enable GPU performance counters (admin / NVIDIA Control Panel), then run ncu to confirm P0 and
   separate the Q=32 LDS bottleneck from the L2 one.
 - Check max-rel spikes on an evolved, centrally concentrated snapshot (κ_max was only 15 in the ICs).
@@ -374,3 +437,87 @@ The predictions in §0–§4 above are left exactly as written.
 - Tile larger than the block (each thread loads 2–4 bodies per tile) to cut barriers at
   high Q.
 - AD103 L2 bandwidth figure (§2). TODO(source).
+- Unroll is still confounded in the R3 #3 gain: multi is u8, the baseline is full unroll (§8.2).
+- Power cap: at 272 W the faster kernels run at lower SM clocks (2.52 vs 2.70 GHz at N = 65536).
+  Report G interactions per clock next to G/s once the power-limit decision is made.
+
+---
+
+## 8. Round 2 outcome (2026-10-17)
+
+Predictions: `docs/predictions/2026-10-17-round2.md`, committed as 9bae5fa before these runs.
+Data: `results/2026-10-17_round2/` (environment controlled: idle 0% before and after, 272 W
+cap reached under load). Scorecard: 25 rows, 18 HIT and 7 MISS (two of the misses better than
+predicted).
+
+### 8.1 Load imbalance, measured without ncu (critic #1)
+
+Method (D-011): an instrumented twin of each kernel records `%smid` plus `%globaltimer` and
+`clock64` at block entry and exit. The globaltimer ticks in 1.024 µs steps on this board, so
+clock64 is anchored to tick edges before and after the launches. Raw and calibrated metrics
+agree within about 1%. The twin's force loop gets a different ptxas schedule (same opcodes),
+so its speed differs from production by −3.4…+6.2%. Structure (placement, idle SMs, tail
+fraction) carries over; absolute time comes from the production kernels.
+
+| N | config | idle SMs | max/mean SM busy (80 SMs) | SM eff (mean busy / span) | tail % |
+|---|---|---|---|---|---|
+| 4096 | tiled b256 | 64 | 5.02 | 0.20 | 0.6 |
+| 4096 | tuned b128 full (best 1 thread/body) | 48 | 2.52 | 0.40 | 0.7 |
+| 4096 | multi b512 q8 | 16 | 1.27 | 0.79 | 1.4 |
+| 65536 | tiled b256 | 0 | 1.23 | 0.81 | 23.5 |
+| 65536 | tuned b128 full | 0 | 1.09 | 0.91 | 13.8 |
+| 65536 | multi b256 q4 | 0 | 1.016 | 0.98 | 0.1 |
+
+N = 1000 and 10000 are in the results summary. Two imbalance regimes, both now measured:
+- **Starvation (B ≤ 80):** exactly one block per SM, 80 − B SMs idle for the whole kernel.
+  R3 #3 removes it.
+- **Wave tail (B > 80, single wave):** the ceil(B/80) step, exact. R3 #2 (smaller blocks) and
+  #3 (more blocks, multi-wave refill) remove it.
+
+### 8.2 Prefetch vs q (critic #4)
+
+At N = 4096, `multi` with prefetch off equals `tuned u8` within −2.8…+4.8%. Prefetch is
+worth +16% / +10% / +8% / +0.5% at q = 1 for 2 / 4 / 8 / 16 warps per SM. At the best config
+(b512 q8) it is worth +6.7%. The N = 4096 gain of 2.56× over the best-tuned baseline is
+**q ×2.40 × prefetch ×1.067**. At N = 65536, prefetch is worth 0%.
+
+### 8.3 Speedups vs the best-tuned baseline (rule 8; round-2 sweep)
+
+Baseline = the best 1-thread/body config over tiled, tuned (all block × unroll) and multi q = 1:
+
+| N | baseline (G/s) | best R3 #3 (G/s) | speedup |
+|---|---|---|---|
+| 1000 | tuned b128 full (75) | multi b256 q16 (180) | **2.40×** |
+| 4096 | tuned b128 full (348) | multi b512 q8 (894) | **2.56×** |
+| 10000 | tuned b128 full (850) | multi b1024 q8 (1188) | **1.40×** |
+| 65536 | tuned b128 full (1244) | multi b128 q2 (1266) | **1.02×** |
+
+### 8.4 Validation and energy
+
+- **Gates (D-009):** all 4000 sweep runs PASS. The exact `--selftest` passes 1810 cases and
+  catches injected missed-interaction bugs.
+- **Long-run energy:** N = 4096, 100 time units. |ΔE/E| = 6.2e-7 at dt = 1e-3 and 1.1e-6 at
+  dt = 5e-4: a *smaller* dt drifts *more*, so FP32 round-off dominates (D-014). multi and
+  tiled are the same order of magnitude.
+
+---
+
+## 9. Design inputs for R3 #6–#8 (from literature-scout round 3, `references/R3-evidence-map.md`)
+
+Recorded now so that the #6–#8 predictions can be pre-registered against them. These are not
+results.
+- **#6 has three arms; name the one implemented.** (a) Static count-based mapping of work to
+  blocks, no runtime scheduler [P:li2025staticbatching, transferable]. (b) A persistent kernel
+  with a precomputed balanced partition [P:xia2025voltrix, transferable]. (c) A persistent
+  kernel where each SM claims the next item through `atomicAdd` on a global counter
+  [P:huang2026weave, transferable; the claiming mechanism is identical].
+- **#7 vs #6: pre-register the gain as small.** With an atomic-counter pool of fine tasks,
+  most of the balancing is already done, and stealing is supplementary [P:chen2026gmatch, RTX 4090,
+  graph DFS]. In an FMM traversal, stealing gave ≈ 1.5× in the traversal phase but ≈ 1.05×
+  end to end [P:maeda2026gtap]. Report phase time and full-step time separately.
+- **#8: prefer a phase split (tree on the CPU, forces on the GPU) over a body split, and expect
+  modest gains.** The one direct 2026 gravity source for the phase split (OpenGadget3, Ragagnin et
+  al.) is not yet in `references.bib`, so it is not cited here. Dynamic CPU+GPU work stealing gave +12.9% over GPU-only
+  [P:xu2025tascell, transferable]. Same-kernel co-execution gave 1.31× over GPU-only
+  [P:nozal2025coexecution, transferable, T2: full text not read]. The 6P + 8E hybrid CPU
+  (01-hardware §1) has no 2025–26 source.
