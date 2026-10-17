@@ -55,22 +55,22 @@ counts, 128 KB L1/shared, 64 MB L2 and the FP64 1/64 rate. It covers only the no
 | VBIOS | 95.03.44.00.b8 | M |
 | Driver model | WDDM (display attached, display active) | M |
 | PCIe link | Gen 4 ×16 (host supports Gen 5; card max Gen 4) | M |
-| BAR1 aperture | 16384 MiB, so **Resizable BAR is enabled** | M |
+| BAR1 aperture | 16384 MiB [M], so **Resizable BAR is enabled** (inferred from the BAR1 size) | D |
 
 ### 2.2 Compute resources
 
 | Resource | Value | Src |
 |---|---|---|
 | Streaming Multiprocessors (SMs) | **80** | M |
-| GPCs | 7 | S |
+| GPCs | 7 on the full AD103 [S]; not measured on this board, but consistent with 80 SMs = full die | S |
 | CUDA cores (FP32) | 10,240 (128 per SM, 4 partitions × 32) | S |
 | Tensor cores | 320 (4th gen; FP8 support) | S |
 | RT cores | 80 (3rd gen) | S |
 | Base / Boost clock (NVIDIA reference) | 2295 / 2550 MHz | S |
 | Boost clock reported by CUDA runtime (this board) | **2610 MHz** | M |
 | Max SM clock reported by nvidia-smi | 3105 MHz (the ceiling; real sustained clocks are lower) | M |
-| Peak FP32 | ≈ **53.5 TFLOPS** @ 2610 MHz (10240 × 2 FMA × 2.61 GHz) | D |
-| Peak FP64 | ≈ 0.84 TFLOPS (1/64 of FP32) | S/D |
+| Peak FP32 | ≈ **53.5 TFLOPS** @ 2610 MHz (10240 × 2 FMA × 2.61 GHz). **Not an upper bound:** 2745 MHz was observed under load, and the board ceiling is 3105 MHz, which gives ≈ 63.6 TFLOPS | D |
+| Peak FP64 | ≈ 0.84 TFLOPS (1/64 of FP32: the ratio is [S], the TFLOPS figure is derived) | D |
 | Copy engines (`asyncEngineCount`) | **1**, so H2D and D2H copies cannot run at the same time | M |
 | Concurrent kernels / unified addressing | yes / yes | M |
 
@@ -87,17 +87,17 @@ Rows marked M were read via `cudaGetDeviceProperties` from a test program built 
 | 32-bit registers / SM | 65,536 (max 255 per thread) | M |
 | L1 + shared memory / SM | 128 KB unified | S |
 | Max shared memory / SM | 100 KB (102,400 B) | M |
-| Max shared memory / block | 99 KB (101,376 B; opt-in, 48 KB default) | M |
+| Max shared memory / block | 99 KB (101,376 B; opt-in) [M]; 48 KB default without opt-in [S] | M/S |
 | Warp size | 32 | M |
 
 ### 2.4 Memory hierarchy
 
 | Level | Value | Src |
 |---|---|---|
-| VRAM | 16 GB GDDR6X (16376 MiB visible, 331 MiB reserved) | M |
+| VRAM | 16 GB (16376 MiB visible, 331 MiB reserved) [M]; GDDR6X type [S], sourced for the non-SUPER 4080 only (TODO: 4080 SUPER page) | M/S |
 | Bus width | 256-bit | M |
-| Memory clock | 11501 MHz max reported, which is **23 Gbps effective** | M/D |
-| Bandwidth | **736 GB/s** (23 Gbps × 256 bit / 8) | D |
+| Memory clock | 11501 MHz reported as "max", but **11701 MHz reported as current** at capture time (above its own max: a factory OC or a reporting quirk) [M]. 23 Gbps is assumed | M/D |
+| Bandwidth | **736 GB/s** theoretical (23 Gbps × 256 bit / 8), **unverified**. TODO: measure with a device-to-device copy kernel (bench-profiler) | D |
 | L2 cache | 64 MB (67,108,864 B) | M |
 | Host ↔ device | PCIe 4.0 ×16, ≈ 32 GB/s theoretical per direction | D |
 
