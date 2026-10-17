@@ -754,3 +754,81 @@ are algorithmic, so they are identical for the production kernel.
   5–7 select the tree kernels.
 - CUB needs MSVC's conforming preprocessor: `-Xcompiler=/Zc:preprocessor`, scoped to
   `kernels_tree.cu` only.
+
+---
+
+## 16. Tree round-1 outcome (2026-10-17)
+
+Predictions: `docs/predictions/2026-10-17-tree-round1.md`, committed as 581fc47 before these
+runs. Data: `results/2026-10-17_tree_round1/` (272 W cap, idle 0% before and after; SM clock
+2.75 GHz during the traversal). The summary's content is in the architect's phase-2 report: the
+harness blocked the agent from writing `summary.md`. Scorecard: **91 HIT / 32 MISS** of 123
+scored items. §10–§15 above are left as written.
+
+### 16.1 What held and what didn't
+- **Held (relative structure):**
+  - IC ratios of work.
+  - Every imbalance metric's direction and most of their ranges.
+  - Error ∝ θ^2.13 and work ∝ θ^−2.52.
+  - Crossover vs the best all-pairs: ≈ 39,700 sorted, ≈ 59,600 naive.
+  - The timeline structure: #5 tail at single wave, absorbed by refill at 1M.
+  - The θ = 0 control: #4 = #5 within 0.3%, SIMT efficiency 1.000.
+- **Missed (absolute speed):**
+  - Traversal 2–4× slower than predicted.
+  - Speedups over all-pairs about 2× smaller: 1.73 / 5.72 / 21 (sorted) at 65536 / 262144 / 1M.
+  - The #5/#4 speedup is flat at ≈ 1.9× above 262144 instead of rising to 3.5×.
+  - The cause: the plateau rate came from an issue-slot model only. The measured rate barely
+    grows with occupancy (16 → 34 → 29 G/s at 4 / 26 / 48 warps per SM). The kernel is bound by
+    memory-side incoherence, which the model omitted.
+- **Work model:** interactions/body are flat in N (≈ 900–1060 for the Plummer, 8192 → 1M). The
+  log N growth is in node pops: 582 → 1612, pops/interaction 0.61 → 1.52. The binary radix
+  tree adds one level per doubling of N.
+
+### 16.2 Measured performance (Plummer, θ = 0.5, ms)
+
+| N | build | #4 traverse | #5 traverse | #5/#4 | best all-pairs | AP / #5 total |
+|---|---|---|---|---|---|---|
+| 65536 | 0.24 | 2.86 | 1.76 | 1.63 | 3.40 | 1.73 |
+| 262144 | 0.30–0.40 | 16.2 | 8.48 | 1.91 | 51.0 | 5.72 |
+| 1M | 0.62 | 73.0 | 38.6 | 1.89 | 822 [D] | 21.0 [D] |
+
+Interaction rates: #4 14–24, #5 27–43 G/s, i.e. 1–3% of the best all-pairs rate. The same
+kernel at θ = 0 (coherent) does 552 G/s.
+
+### 16.3 Imbalance, measured
+- **Inside warps:**
+  - Per-warp max/mean: #4 1.17–1.62 (core highest), #5 1.05–1.09.
+  - Pop-site SIMT efficiency: #4 0.55–0.82, #5 0.92–0.98.
+  - Interaction-site SIMT efficiency: #4 0.09–0.13, #5 0.13–0.22, i.e. 3–7 of 32 lanes. The
+    leaf-bucket loop serializes (§0 of the predictions explains why sorting cannot fix it).
+- **Between warps:** warp-cost max/mean #4 1.06–1.12, #5 1.15–1.60. Sorting moves the
+  imbalance there.
+- **SM level:**
+  - Single wave (65536): #5 core SM eff 0.810, tail 17.7%; #4 0.945.
+  - 8.5 waves (1M): 0.987–0.995 for both. The hardware scheduler hands each SM 92–132 blocks.
+- **Hilbert vs Morton:** per-warp max/mean lower by only 0.2–0.6%, traversal 1.5–4.4% slower,
+  plus a 0.13–0.24 ms order phase. Morton stays the #5 default (D-018).
+
+### 16.4 Loss decomposition (design input for #6 / #7; not pre-registered)
+Reference = the θ = 0 control. The achieved fraction F of the coherent throughput is factorised
+into idle lanes (issue-weighted SIMT efficiency), a memory-incoherence residual, and block-slot
+fill (timeline). Method: `tools/tree_analysis.py`.
+
+| | F | idle lanes (a) | memory incoherence (a′) | blocks + tail (b+c) |
+|---|---|---|---|---|
+| #4, 1M | 0.06 | 49–50% of the loss | 49–50% | 1% |
+| #5, 1M | 0.11–0.12 | 38–42% | 57–60% | 1% |
+| #5 core, 65536 (single wave) | 0.11 | 54% | 31% | 15% |
+
+**Decided input (D-019):** next round prioritises **#7 as warp-cooperative traversal**
+(warp-uniform walk or per-warp interaction lists) over #6. The persistent queue (#6) can recover
+≤ 2.4% at 1M. Its gain needs a single-wave clustered case to show at all.
+
+### 16.5 Open items (tree)
+- Separate the memory residual (a′) without ncu: an exploratory stack-in-shared-memory variant
+  would isolate the local-memory stack share.
+- Why interactions/body are flat in N with the bmax criterion. Split the counters into cell
+  accepts vs bucket bodies.
+- An octree (or a wider radix node) to cut the 1.5 pops/interaction.
+- Quadrupole (§11.3), deferred.
+- Karras, Skilling and Salmon & Warren are still TODO(source).

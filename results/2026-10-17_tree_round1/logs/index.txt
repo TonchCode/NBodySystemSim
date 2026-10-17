@@ -1,0 +1,380 @@
+selftest exit=0
+== A_bh_naive_plummer_65536: --kernel bh_naive --n 65536 --ic plummer --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setA.csv --tree-stats results/2026-10-17_tree_round1/warps/A_bh_naive_plummer_65536.csv
+   exit=0
+== A_bh_sorted_plummer_65536: --kernel bh_sorted --n 65536 --ic plummer --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setA.csv --tree-stats results/2026-10-17_tree_round1/warps/A_bh_sorted_plummer_65536.csv
+   exit=0
+== A_bh_hilbert_plummer_65536: --kernel bh_hilbert --n 65536 --ic plummer --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setA.csv --tree-stats results/2026-10-17_tree_round1/warps/A_bh_hilbert_plummer_65536.csv
+   exit=0
+== A_bh_naive_plummer_262144: --kernel bh_naive --n 262144 --ic plummer --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setA.csv --tree-stats results/2026-10-17_tree_round1/warps/A_bh_naive_plummer_262144.csv
+   exit=0
+== A_bh_sorted_plummer_262144: --kernel bh_sorted --n 262144 --ic plummer --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setA.csv --tree-stats results/2026-10-17_tree_round1/warps/A_bh_sorted_plummer_262144.csv
+   exit=0
+== A_bh_hilbert_plummer_262144: --kernel bh_hilbert --n 262144 --ic plummer --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setA.csv --tree-stats results/2026-10-17_tree_round1/warps/A_bh_hilbert_plummer_262144.csv
+   exit=0
+== A_bh_naive_plummer_1048576: --kernel bh_naive --n 1048576 --ic plummer --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setA.csv --tree-stats results/2026-10-17_tree_round1/warps/A_bh_naive_plummer_1048576.csv
+   exit=0
+== A_bh_sorted_plummer_1048576: --kernel bh_sorted --n 1048576 --ic plummer --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setA.csv --tree-stats results/2026-10-17_tree_round1/warps/A_bh_sorted_plummer_1048576.csv
+   exit=0
+== A_bh_hilbert_plummer_1048576: --kernel bh_hilbert --n 1048576 --ic plummer --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setA.csv --tree-stats results/2026-10-17_tree_round1/warps/A_bh_hilbert_plummer_1048576.csv
+   exit=0
+== A_bh_naive_collision_65536: --kernel bh_naive --n 65536 --ic collision --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setA.csv --tree-stats results/2026-10-17_tree_round1/warps/A_bh_naive_collision_65536.csv
+   exit=0
+== A_bh_sorted_collision_65536: --kernel bh_sorted --n 65536 --ic collision --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setA.csv --tree-stats results/2026-10-17_tree_round1/warps/A_bh_sorted_collision_65536.csv
+   exit=0
+== A_bh_hilbert_collision_65536: --kernel bh_hilbert --n 65536 --ic collision --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setA.csv --tree-stats results/2026-10-17_tree_round1/warps/A_bh_hilbert_collision_65536.csv
+   exit=0
+== A_bh_naive_collision_262144: --kernel bh_naive --n 262144 --ic collision --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setA.csv --tree-stats results/2026-10-17_tree_round1/warps/A_bh_naive_collision_262144.csv
+   exit=0
+== A_bh_sorted_collision_262144: --kernel bh_sorted --n 262144 --ic collision --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setA.csv --tree-stats results/2026-10-17_tree_round1/warps/A_bh_sorted_collision_262144.csv
+   exit=0
+== A_bh_hilbert_collision_262144: --kernel bh_hilbert --n 262144 --ic collision --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setA.csv --tree-stats results/2026-10-17_tree_round1/warps/A_bh_hilbert_collision_262144.csv
+   exit=0
+== A_bh_naive_collision_1048576: --kernel bh_naive --n 1048576 --ic collision --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setA.csv --tree-stats results/2026-10-17_tree_round1/warps/A_bh_naive_collision_1048576.csv
+   exit=0
+== A_bh_sorted_collision_1048576: --kernel bh_sorted --n 1048576 --ic collision --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setA.csv --tree-stats results/2026-10-17_tree_round1/warps/A_bh_sorted_collision_1048576.csv
+   exit=0
+== A_bh_hilbert_collision_1048576: --kernel bh_hilbert --n 1048576 --ic collision --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setA.csv --tree-stats results/2026-10-17_tree_round1/warps/A_bh_hilbert_collision_1048576.csv
+   exit=0
+== A_bh_naive_core_65536: --kernel bh_naive --n 65536 --ic core --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setA.csv --tree-stats results/2026-10-17_tree_round1/warps/A_bh_naive_core_65536.csv
+   exit=0
+== A_bh_sorted_core_65536: --kernel bh_sorted --n 65536 --ic core --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setA.csv --tree-stats results/2026-10-17_tree_round1/warps/A_bh_sorted_core_65536.csv
+   exit=0
+== A_bh_hilbert_core_65536: --kernel bh_hilbert --n 65536 --ic core --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setA.csv --tree-stats results/2026-10-17_tree_round1/warps/A_bh_hilbert_core_65536.csv
+   exit=0
+== A_bh_naive_core_262144: --kernel bh_naive --n 262144 --ic core --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setA.csv --tree-stats results/2026-10-17_tree_round1/warps/A_bh_naive_core_262144.csv
+   exit=0
+== A_bh_sorted_core_262144: --kernel bh_sorted --n 262144 --ic core --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setA.csv --tree-stats results/2026-10-17_tree_round1/warps/A_bh_sorted_core_262144.csv
+   exit=0
+== A_bh_hilbert_core_262144: --kernel bh_hilbert --n 262144 --ic core --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setA.csv --tree-stats results/2026-10-17_tree_round1/warps/A_bh_hilbert_core_262144.csv
+   exit=0
+== A_bh_naive_core_1048576: --kernel bh_naive --n 1048576 --ic core --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setA.csv --tree-stats results/2026-10-17_tree_round1/warps/A_bh_naive_core_1048576.csv
+   exit=0
+== A_bh_sorted_core_1048576: --kernel bh_sorted --n 1048576 --ic core --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setA.csv --tree-stats results/2026-10-17_tree_round1/warps/A_bh_sorted_core_1048576.csv
+   exit=0
+== A_bh_hilbert_core_1048576: --kernel bh_hilbert --n 1048576 --ic core --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setA.csv --tree-stats results/2026-10-17_tree_round1/warps/A_bh_hilbert_core_1048576.csv
+   exit=0
+== B_bh_naive_plummer_65536: --kernel bh_naive --n 65536 --ic plummer --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --no-validate --timeline results/2026-10-17_tree_round1/timeline/tl_bh_naive_plummer_65536.csv --timeline-launches 5
+   exit=0
+== B_bh_sorted_plummer_65536: --kernel bh_sorted --n 65536 --ic plummer --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --no-validate --timeline results/2026-10-17_tree_round1/timeline/tl_bh_sorted_plummer_65536.csv --timeline-launches 5
+   exit=0
+== B_bh_naive_plummer_1048576: --kernel bh_naive --n 1048576 --ic plummer --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --no-validate --timeline results/2026-10-17_tree_round1/timeline/tl_bh_naive_plummer_1048576.csv --timeline-launches 5
+   exit=0
+== B_bh_sorted_plummer_1048576: --kernel bh_sorted --n 1048576 --ic plummer --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --no-validate --timeline results/2026-10-17_tree_round1/timeline/tl_bh_sorted_plummer_1048576.csv --timeline-launches 5
+   exit=0
+== B_bh_naive_core_65536: --kernel bh_naive --n 65536 --ic core --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --no-validate --timeline results/2026-10-17_tree_round1/timeline/tl_bh_naive_core_65536.csv --timeline-launches 5
+   exit=0
+== B_bh_sorted_core_65536: --kernel bh_sorted --n 65536 --ic core --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --no-validate --timeline results/2026-10-17_tree_round1/timeline/tl_bh_sorted_core_65536.csv --timeline-launches 5
+   exit=0
+== B_bh_naive_core_1048576: --kernel bh_naive --n 1048576 --ic core --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --no-validate --timeline results/2026-10-17_tree_round1/timeline/tl_bh_naive_core_1048576.csv --timeline-launches 5
+   exit=0
+== B_bh_sorted_core_1048576: --kernel bh_sorted --n 1048576 --ic core --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --no-validate --timeline results/2026-10-17_tree_round1/timeline/tl_bh_sorted_core_1048576.csv --timeline-launches 5
+   exit=0
+== C_bh_naive_th0.3: --kernel bh_naive --n 262144 --ic plummer --theta 0.3 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setC.csv --tree-stats results/2026-10-17_tree_round1/warps/C_bh_naive_th0.3.csv
+   exit=0
+== C_bh_sorted_th0.3: --kernel bh_sorted --n 262144 --ic plummer --theta 0.3 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setC.csv --tree-stats results/2026-10-17_tree_round1/warps/C_bh_sorted_th0.3.csv
+   exit=0
+== C_bh_naive_th0.5: --kernel bh_naive --n 262144 --ic plummer --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setC.csv --tree-stats results/2026-10-17_tree_round1/warps/C_bh_naive_th0.5.csv
+   exit=0
+== C_bh_sorted_th0.5: --kernel bh_sorted --n 262144 --ic plummer --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setC.csv --tree-stats results/2026-10-17_tree_round1/warps/C_bh_sorted_th0.5.csv
+   exit=0
+== C_bh_naive_th0.7: --kernel bh_naive --n 262144 --ic plummer --theta 0.7 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setC.csv --tree-stats results/2026-10-17_tree_round1/warps/C_bh_naive_th0.7.csv
+   exit=0
+== C_bh_sorted_th0.7: --kernel bh_sorted --n 262144 --ic plummer --theta 0.7 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setC.csv --tree-stats results/2026-10-17_tree_round1/warps/C_bh_sorted_th0.7.csv
+   exit=0
+== C_bh_naive_th1.0: --kernel bh_naive --n 262144 --ic plummer --theta 1.0 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setC.csv --tree-stats results/2026-10-17_tree_round1/warps/C_bh_naive_th1.0.csv
+   exit=0
+== C_bh_sorted_th1.0: --kernel bh_sorted --n 262144 --ic plummer --theta 1.0 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setC.csv --tree-stats results/2026-10-17_tree_round1/warps/C_bh_sorted_th1.0.csv
+   exit=0
+== C_bh_naive_th0_n65536: --kernel bh_naive --n 65536 --ic plummer --theta 0 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setC.csv --tree-stats results/2026-10-17_tree_round1/warps/C_bh_naive_th0_n65536.csv
+   exit=0
+== C_bh_sorted_th0_n65536: --kernel bh_sorted --n 65536 --ic plummer --theta 0 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setC.csv --tree-stats results/2026-10-17_tree_round1/warps/C_bh_sorted_th0_n65536.csv
+   exit=0
+== D_bh_naive_8192: --kernel bh_naive --n 8192 --ic plummer --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_tree.csv
+   exit=0
+== D_bh_sorted_8192: --kernel bh_sorted --n 8192 --ic plummer --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_tree.csv
+   exit=0
+== D_tuned_b128u0_8192: --kernel allpairs_tuned --n 8192 --block 128 --unroll 0 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q1_8192: --kernel allpairs_multi --n 8192 --block 128 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q2_8192: --kernel allpairs_multi --n 8192 --block 128 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q4_8192: --kernel allpairs_multi --n 8192 --block 128 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q8_8192: --kernel allpairs_multi --n 8192 --block 128 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q16_8192: --kernel allpairs_multi --n 8192 --block 128 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q1_8192: --kernel allpairs_multi --n 8192 --block 256 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q2_8192: --kernel allpairs_multi --n 8192 --block 256 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q4_8192: --kernel allpairs_multi --n 8192 --block 256 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q8_8192: --kernel allpairs_multi --n 8192 --block 256 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q16_8192: --kernel allpairs_multi --n 8192 --block 256 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q1_8192: --kernel allpairs_multi --n 8192 --block 512 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q2_8192: --kernel allpairs_multi --n 8192 --block 512 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q4_8192: --kernel allpairs_multi --n 8192 --block 512 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q8_8192: --kernel allpairs_multi --n 8192 --block 512 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q16_8192: --kernel allpairs_multi --n 8192 --block 512 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q1_8192: --kernel allpairs_multi --n 8192 --block 1024 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q2_8192: --kernel allpairs_multi --n 8192 --block 1024 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q4_8192: --kernel allpairs_multi --n 8192 --block 1024 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q8_8192: --kernel allpairs_multi --n 8192 --block 1024 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q16_8192: --kernel allpairs_multi --n 8192 --block 1024 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_bh_naive_16384: --kernel bh_naive --n 16384 --ic plummer --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_tree.csv
+   exit=0
+== D_bh_sorted_16384: --kernel bh_sorted --n 16384 --ic plummer --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_tree.csv
+   exit=0
+== D_tuned_b128u0_16384: --kernel allpairs_tuned --n 16384 --block 128 --unroll 0 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q1_16384: --kernel allpairs_multi --n 16384 --block 128 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q2_16384: --kernel allpairs_multi --n 16384 --block 128 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q4_16384: --kernel allpairs_multi --n 16384 --block 128 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q8_16384: --kernel allpairs_multi --n 16384 --block 128 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q16_16384: --kernel allpairs_multi --n 16384 --block 128 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q1_16384: --kernel allpairs_multi --n 16384 --block 256 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q2_16384: --kernel allpairs_multi --n 16384 --block 256 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q4_16384: --kernel allpairs_multi --n 16384 --block 256 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q8_16384: --kernel allpairs_multi --n 16384 --block 256 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q16_16384: --kernel allpairs_multi --n 16384 --block 256 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q1_16384: --kernel allpairs_multi --n 16384 --block 512 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q2_16384: --kernel allpairs_multi --n 16384 --block 512 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q4_16384: --kernel allpairs_multi --n 16384 --block 512 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q8_16384: --kernel allpairs_multi --n 16384 --block 512 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q16_16384: --kernel allpairs_multi --n 16384 --block 512 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q1_16384: --kernel allpairs_multi --n 16384 --block 1024 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q2_16384: --kernel allpairs_multi --n 16384 --block 1024 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q4_16384: --kernel allpairs_multi --n 16384 --block 1024 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q8_16384: --kernel allpairs_multi --n 16384 --block 1024 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q16_16384: --kernel allpairs_multi --n 16384 --block 1024 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_bh_naive_24576: --kernel bh_naive --n 24576 --ic plummer --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_tree.csv
+   exit=0
+== D_bh_sorted_24576: --kernel bh_sorted --n 24576 --ic plummer --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_tree.csv
+   exit=0
+== D_tuned_b128u0_24576: --kernel allpairs_tuned --n 24576 --block 128 --unroll 0 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q1_24576: --kernel allpairs_multi --n 24576 --block 128 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q2_24576: --kernel allpairs_multi --n 24576 --block 128 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q4_24576: --kernel allpairs_multi --n 24576 --block 128 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q8_24576: --kernel allpairs_multi --n 24576 --block 128 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q16_24576: --kernel allpairs_multi --n 24576 --block 128 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q1_24576: --kernel allpairs_multi --n 24576 --block 256 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q2_24576: --kernel allpairs_multi --n 24576 --block 256 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q4_24576: --kernel allpairs_multi --n 24576 --block 256 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q8_24576: --kernel allpairs_multi --n 24576 --block 256 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q16_24576: --kernel allpairs_multi --n 24576 --block 256 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q1_24576: --kernel allpairs_multi --n 24576 --block 512 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q2_24576: --kernel allpairs_multi --n 24576 --block 512 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q4_24576: --kernel allpairs_multi --n 24576 --block 512 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q8_24576: --kernel allpairs_multi --n 24576 --block 512 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q16_24576: --kernel allpairs_multi --n 24576 --block 512 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q1_24576: --kernel allpairs_multi --n 24576 --block 1024 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q2_24576: --kernel allpairs_multi --n 24576 --block 1024 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q4_24576: --kernel allpairs_multi --n 24576 --block 1024 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q8_24576: --kernel allpairs_multi --n 24576 --block 1024 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q16_24576: --kernel allpairs_multi --n 24576 --block 1024 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_bh_naive_32768: --kernel bh_naive --n 32768 --ic plummer --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_tree.csv
+   exit=0
+== D_bh_sorted_32768: --kernel bh_sorted --n 32768 --ic plummer --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_tree.csv
+   exit=0
+== D_tuned_b128u0_32768: --kernel allpairs_tuned --n 32768 --block 128 --unroll 0 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q1_32768: --kernel allpairs_multi --n 32768 --block 128 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q2_32768: --kernel allpairs_multi --n 32768 --block 128 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q4_32768: --kernel allpairs_multi --n 32768 --block 128 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q8_32768: --kernel allpairs_multi --n 32768 --block 128 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q16_32768: --kernel allpairs_multi --n 32768 --block 128 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q1_32768: --kernel allpairs_multi --n 32768 --block 256 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q2_32768: --kernel allpairs_multi --n 32768 --block 256 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q4_32768: --kernel allpairs_multi --n 32768 --block 256 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q8_32768: --kernel allpairs_multi --n 32768 --block 256 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q16_32768: --kernel allpairs_multi --n 32768 --block 256 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q1_32768: --kernel allpairs_multi --n 32768 --block 512 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q2_32768: --kernel allpairs_multi --n 32768 --block 512 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q4_32768: --kernel allpairs_multi --n 32768 --block 512 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q8_32768: --kernel allpairs_multi --n 32768 --block 512 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q16_32768: --kernel allpairs_multi --n 32768 --block 512 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q1_32768: --kernel allpairs_multi --n 32768 --block 1024 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q2_32768: --kernel allpairs_multi --n 32768 --block 1024 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q4_32768: --kernel allpairs_multi --n 32768 --block 1024 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q8_32768: --kernel allpairs_multi --n 32768 --block 1024 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q16_32768: --kernel allpairs_multi --n 32768 --block 1024 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_bh_naive_49152: --kernel bh_naive --n 49152 --ic plummer --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_tree.csv
+   exit=0
+== D_bh_sorted_49152: --kernel bh_sorted --n 49152 --ic plummer --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_tree.csv
+   exit=0
+== D_tuned_b128u0_49152: --kernel allpairs_tuned --n 49152 --block 128 --unroll 0 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q1_49152: --kernel allpairs_multi --n 49152 --block 128 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q2_49152: --kernel allpairs_multi --n 49152 --block 128 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q4_49152: --kernel allpairs_multi --n 49152 --block 128 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q8_49152: --kernel allpairs_multi --n 49152 --block 128 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q16_49152: --kernel allpairs_multi --n 49152 --block 128 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q1_49152: --kernel allpairs_multi --n 49152 --block 256 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q2_49152: --kernel allpairs_multi --n 49152 --block 256 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q4_49152: --kernel allpairs_multi --n 49152 --block 256 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q8_49152: --kernel allpairs_multi --n 49152 --block 256 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q16_49152: --kernel allpairs_multi --n 49152 --block 256 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q1_49152: --kernel allpairs_multi --n 49152 --block 512 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q2_49152: --kernel allpairs_multi --n 49152 --block 512 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q4_49152: --kernel allpairs_multi --n 49152 --block 512 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q8_49152: --kernel allpairs_multi --n 49152 --block 512 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q16_49152: --kernel allpairs_multi --n 49152 --block 512 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q1_49152: --kernel allpairs_multi --n 49152 --block 1024 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q2_49152: --kernel allpairs_multi --n 49152 --block 1024 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q4_49152: --kernel allpairs_multi --n 49152 --block 1024 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q8_49152: --kernel allpairs_multi --n 49152 --block 1024 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q16_49152: --kernel allpairs_multi --n 49152 --block 1024 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_bh_naive_65536: --kernel bh_naive --n 65536 --ic plummer --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_tree.csv
+   exit=0
+== D_bh_sorted_65536: --kernel bh_sorted --n 65536 --ic plummer --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_tree.csv
+   exit=0
+== D_tuned_b128u0_65536: --kernel allpairs_tuned --n 65536 --block 128 --unroll 0 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q1_65536: --kernel allpairs_multi --n 65536 --block 128 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q2_65536: --kernel allpairs_multi --n 65536 --block 128 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q4_65536: --kernel allpairs_multi --n 65536 --block 128 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q8_65536: --kernel allpairs_multi --n 65536 --block 128 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q16_65536: --kernel allpairs_multi --n 65536 --block 128 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q1_65536: --kernel allpairs_multi --n 65536 --block 256 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q2_65536: --kernel allpairs_multi --n 65536 --block 256 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q4_65536: --kernel allpairs_multi --n 65536 --block 256 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q8_65536: --kernel allpairs_multi --n 65536 --block 256 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q16_65536: --kernel allpairs_multi --n 65536 --block 256 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q1_65536: --kernel allpairs_multi --n 65536 --block 512 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q2_65536: --kernel allpairs_multi --n 65536 --block 512 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q4_65536: --kernel allpairs_multi --n 65536 --block 512 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q8_65536: --kernel allpairs_multi --n 65536 --block 512 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b512q16_65536: --kernel allpairs_multi --n 65536 --block 512 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q1_65536: --kernel allpairs_multi --n 65536 --block 1024 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q2_65536: --kernel allpairs_multi --n 65536 --block 1024 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q4_65536: --kernel allpairs_multi --n 65536 --block 1024 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q8_65536: --kernel allpairs_multi --n 65536 --block 1024 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b1024q16_65536: --kernel allpairs_multi --n 65536 --block 1024 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_tuned_b128u0_262144: --kernel allpairs_tuned --n 262144 --block 128 --unroll 0 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q2_262144: --kernel allpairs_multi --n 262144 --block 128 --q 2 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q4_262144: --kernel allpairs_multi --n 262144 --block 256 --q 4 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_tuned_b128u0_524288: --kernel allpairs_tuned --n 524288 --block 128 --unroll 0 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b128q2_524288: --kernel allpairs_multi --n 524288 --block 128 --q 2 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+== D_multi_b256q4_524288: --kernel allpairs_multi --n 524288 --block 256 --q 4 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-17_tree_round1/setD_ap.csv
+   exit=0
+ALL DONE

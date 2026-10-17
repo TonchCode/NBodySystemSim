@@ -172,3 +172,86 @@ by the same order of magnitude (6e-7 vs 1.6e-6; the trajectories diverge chaotic
 **Rules out:** shrinking dt to improve energy conservation. If better conservation is needed,
 the lever is the integrator's state precision (e.g. compensated position updates), which is an
 R2 decision for Toncho. FP32 in the force kernels is unaffected.
+
+## D-015 — Tree code: GPU-resident binary radix tree, monopole, bmax criterion (2026-10-17, cuda-architect, tree round 1)
+
+**Decided:** the Barnes-Hut build and traversal are fully GPU-resident:
+- Morton keys (63 bits), sorted with CUB radix sort from the CUDA 13.4 toolkit.
+- A binary radix tree in one kernel.
+- Bottom-up monopoles with atomic arrival counters.
+- The bmax opening criterion.
+- Leaf buckets of 16, traversal block 128.
+
+**Why:**
+- Measured build = 0.24 / 0.30–0.40 / 0.62 ms at N = 65536 / 262144 / 1M, i.e. 12.6% / 4.5% /
+  1.6% of the sorted step: never the bottleneck.
+- Monopole-only keeps a cell interaction identical to a body interaction (one work unit).
+- bmax opens every node whose box contains the body (for θ ≤ 1).
+- Measured error at θ = 0.5: rms 6.5e-3 (Plummer) to 1.0e-2 (core).
+
+**Rules out:** a CPU build in the R3 #4/#5 numbers (that is #8), and quoting our θ as the
+classic θ: it is a bmax-θ, ≈ 0.87 × the classic one.
+**Known cost:** 1.27–1.57 node pops per interaction at N ≥ 65536 (binary depth). That is an
+octree or wide-node question for later rounds.
+
+## D-016 — R3 #4 vs #5 differ only in the thread → body map (2026-10-17, cuda-architect)
+
+**Decided:** `bh_naive`, `bh_sorted` and `bh_hilbert` run one kernel on one tree. Only the
+`order[]` array differs (identity / Morton permutation / Hilbert permutation), so accelerations
+are bitwise identical (selftest).
+**Why:** D-005 requires #4 to leave out sorting and warp cooperation. The tree build sorts in
+every variant, so "unsorted" means the threads run in the original, spatially random order.
+The θ = 0 control (identical walk for every body) gives #4 = #5 within 0.3%. At θ = 0.5 the
+measured #5/#4 gain (1.6–2.1×) is therefore caused by the order alone.
+**Rules out:** comparing #5 against a #4 with a different tree or kernel.
+
+## D-017 — Tree validation gates TG1/TG2 adopted (2026-10-17, cuda-architect)
+
+**Decided:** for θ > 0, gate on rms rel error ≤ 0.03·(θ/0.5)² and p99 rel error ≤ 0.12·(θ/0.5)²
+over all bodies vs the chunked exact reference, plus zero stack overflows. θ = 0 uses D-009.
+Pre-registered in 581fc47.
+**Why:** all 49 tree runs pass with 2.3–4.6× margin on rms. Bug detection is the exact selftest's
+job: 720 θ = 0 lattice cases, `--selftest-drop`, and an injected leaf-loop bug that failed
+exactly its 486 visible cases. The statistical gates only catch gross approximation errors.
+**Rules out:** gating trees with D-009's FP32-roundoff thresholds (θ > 0 is truncation-limited
+by design), and gating on max rel (κ-inflated: 0.15–0.56 on a few near-centre bodies).
+
+## D-018 — Morton, not Hilbert, is the R3 #5 default (2026-10-17, cuda-architect)
+
+**Measured:**
+- Hilbert lowers per-warp max/mean by only 0.2–0.6%.
+- Its traversal is 1.5–4.4% slower in 8 of 9 cells.
+- It needs an extra 0.13–0.24 ms key + sort phase.
+
+The Morton order is free: the build already produced it.
+**Decided:** `bh_sorted` (Morton) is the #5 result to quote; `bh_hilbert` stays registered as
+the measured sub-variant. Thaler & Keller's compactness argument [thaler2026sfcneighbor] does
+not translate into a traversal gain here. That is the new data point the evidence map (§5) said
+was missing.
+
+## D-019 — Next round: #7 (warp-cooperative traversal) before #6 (2026-10-17, cuda-architect)
+
+**Decomposition** (not pre-registered; `results/2026-10-17_tree_round1`, `tools/tree_analysis.py`,
+θ = 0 control as the coherent reference):
+- The sorted traversal reaches only 11–13% of the kernel's coherent throughput.
+- Of the loss, at N = 1M: 38–42% is idle lanes inside warps (interaction-site SIMT eff ≈ 0.2),
+  57–60% is memory-side incoherence, and 1% is blocks + tail (slot fill 0.976–0.978, SM eff
+  ≥ 0.987, no idle SMs). The naive variant is 49–50% / 49–50% / 1%.
+- Only single-wave clustered launches show a real SM-level loss (sorted core at 65536: 15% of
+  the loss, tail 17.7%).
+
+**Decided:** R3 #7 is implemented first, as a warp-cooperative walk (warp vote over the union of
+the lanes' decisions [burtscher2011barneshut], or per-warp interaction lists). Work stealing is
+not the first choice: the loop-level imbalance it targets is ≈ 2.4% for #5. R3 #6 is still built
+(it is a graded technique), but pre-registered as small (≤ 3% at N ≥ 262144), with its test case
+in the single-wave clustered regime. The extra work of the union walk is the quantity to
+pre-register for #7.
+
+## D-020 — How tree speedups over all-pairs are quoted (2026-10-17, cuda-architect)
+
+**Decided:** tree totals (build + traversal, one force evaluation) are compared with the best
+all-pairs configuration measured in the same session at the same N (rule 8: max over tuned
+b128 u0 and multi b × q). Measured: 1.73× at 65536 and 5.72× at 262144 (sorted); 1.11× and 3.08×
+(naive). At N = 1M all-pairs is not run (≈ 0.82 s per launch, too close to the TDR margin), so
+it is extrapolated as 4 × T(524288) = 822 ms and every 1M speedup (21.0× sorted, 11.2× naive)
+carries the [D] tag. Crossover: N ≈ 39,700 (sorted) and ≈ 59,600 (naive).
