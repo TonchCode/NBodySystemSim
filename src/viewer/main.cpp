@@ -12,6 +12,8 @@
 //                [--mass-spectrum equal|salpeter|heavy-few] [--bh-mass 0.01]
 //                [--theta 0.5 --leaf 16] [--dist 4 --yaw 0.6 --pitch 0.35]   (camera)
 //                [--test-keys "F:up,F:ic,..."]   (scripted key presses for smoke tests: up down ic spectrum mass)
+//                [--steps-per-frame 2 --vsync 1 --mass-color 1 --brightness 1]   (figure runs: simulated time
+//                 at the last frame = frames x steps-per-frame x dt, printed on exit)
 //   The title shows IC, mass spectrum, N, kernel, ms/step and the REAL interaction rate: all-pairs
 //   N^2 per step; tree kernels the interactions counted by one instrumented launch (refreshed every
 //   2 s), divided by the measured ms/step (which includes the build and the two kicks).
@@ -178,6 +180,7 @@ struct App {
     // real interaction count per force evaluation (tree: counted; all-pairs: N^2)
     double interPerEval = -1.0;
     double countTimer = -1e9;
+    double simTime = 0.0;   // simulated time since the last reset
 };
 
 bool isTree(const nbody::KernelInfo* k, const nbody::Params& p)
@@ -194,6 +197,7 @@ void resetSim(App& a)
     CUDA_CHECK(cudaDeviceSynchronize());
     a.statsReset = true;
     a.countTimer = -1e9;
+    a.simTime = 0.0;
 }
 
 // (Re)size the two interop vertex buffers to n bodies: unregister, reallocate, register again.
@@ -385,6 +389,10 @@ int main(int argc, char** argv)
         else if (k == "--yaw")       a.yaw = float(atof(argv[i + 1]));
         else if (k == "--pitch")     a.pitch = float(atof(argv[i + 1]));
         else if (k == "--test-keys") testKeys = argv[i + 1];
+        else if (k == "--steps-per-frame") a.stepsPerFrame = std::max(1, atoi(argv[i + 1]));
+        else if (k == "--vsync")     a.vsync = atoi(argv[i + 1]) != 0;
+        else if (k == "--mass-color") a.massColor = atoi(argv[i + 1]) != 0;
+        else if (k == "--brightness") a.intensity = float(atof(argv[i + 1]));
         else { fprintf(stderr, "unknown argument %s\n", k.c_str()); return 2; }
     }
     if (!(a.params.softening > 0.f)) { fprintf(stderr, "--softening must be > 0\n"); return 2; }
@@ -411,7 +419,7 @@ int main(int argc, char** argv)
     if (!win) { fprintf(stderr, "glfwCreateWindow failed\n"); return 1; }
     glfwMakeContextCurrent(win);
     if (!gladLoadGL(glfwGetProcAddress)) { fprintf(stderr, "gladLoadGL failed\n"); return 1; }
-    glfwSwapInterval(1);
+    glfwSwapInterval(a.vsync ? 1 : 0);
     glfwSetWindowUserPointer(win, &a);
     glfwSetKeyCallback(win, onKey);
     glfwSetMouseButtonCallback(win, onMouseButton);
@@ -508,6 +516,7 @@ int main(int argc, char** argv)
             CUDA_CHECK(cudaEventRecord(e0));
             stepsThisFrame = a.stepsPerFrame;
             for (int s = 0; s < stepsThisFrame; ++s) nbody::step(a.state, a.params, *a.kernel, 0);
+            a.simTime += stepsThisFrame * double(a.params.dt);
             CUDA_CHECK(cudaEventRecord(e1));
         }
 
@@ -577,7 +586,8 @@ int main(int argc, char** argv)
             simMsAcc = 0.0;
         }
         if (last) {
-            printf("%s\n", lastTitle);
+            printf("%s\nsimulated time t = %.4f (dt %g, %d frames, camera dist %.3f yaw %.3f pitch %.3f)\n", lastTitle,
+                   a.simTime, a.params.dt, totalFrames, a.dist, a.yaw, a.pitch);
             glfwSetWindowShouldClose(win, 1);
         }
     }

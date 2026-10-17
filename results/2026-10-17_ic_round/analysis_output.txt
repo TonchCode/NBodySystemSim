@@ -1,0 +1,88 @@
+== set A (best-tuned, theta 0.5), traversal ms (median of 11), work, imbalance, error  [BACKGROUND-LOAD LABEL]
+ic                n |      T#4      T#5      T#6      T#7 |    I#4    I#5    I#7 |   wmm4   wmm5 |    wc5    wc7 |   #7/#5   #5/#6 |  push depth   dup%
+plummer       65536 |    2.861    1.831    2.182    0.574 |    916   1671   1695 |  1.197  1.094 |   1.24   1.51 |    3.19   0.839 |    22    30  0.000
+plummer      262144 |   17.408    7.881    9.404    1.598 |    976   1433   1748 |  1.197  1.084 |   1.20   1.51 |    4.93   0.838 |    24    32  0.000
+plummer     1048576 |   77.382   36.969   41.941    6.017 |   1415   1415   1455 |  1.189  1.076 |   1.25   1.51 |    6.14   0.881 |    26    34  0.000
+disk          65536 |    1.780    1.284    1.328    0.425 |    589    937   1083 |  1.807  1.155 |   2.22   2.10 |    3.02   0.967 |    23    30  0.000
+disk         262144 |   10.575    4.526    5.686    1.070 |    785   1376   1402 |  1.487  1.127 |   1.79   1.89 |    4.23   0.796 |    25    32  0.000
+disk        1048576 |   60.237   26.633   31.524    4.474 |   1532   1532   1185 |  1.353  1.115 |   1.49   1.83 |    5.95   0.845 |    27    35  0.000
+galaxies      65536 |    1.573    0.967    1.010    0.423 |    540    857    992 |  1.946  1.164 |   2.61   2.44 |    2.29   0.957 |    24    31  0.000
+galaxies     262144 |   10.504    3.971    4.967    1.053 |    736   1224   1323 |  1.598  1.131 |   1.79   2.13 |    3.77   0.799 |    27    34  0.000
+galaxies    1048576 |   59.479   24.999   29.488    4.495 |   1535   1535   1159 |  1.448  1.118 |   1.54   1.78 |    5.56   0.848 |    29    37  0.000
+cube_shell    65536 |    0.464    0.173    0.200    0.109 |    165    263    330 |  1.216  1.174 |   1.35   1.51 |    1.59   0.867 |    15    24  0.000
+cube_shell   262144 |    2.329    0.586    0.756    0.272 |    180    277    341 |  1.191  1.154 |   1.36   1.51 |    2.15   0.775 |    18    27  0.000
+cube_shell  1048576 |   10.518    2.268    3.003    1.039 |    289    289    290 |  1.211  1.142 |   1.42   1.50 |    2.18   0.755 |    22    31  0.000
+cube_edges    65536 |    0.139    0.037    0.039    0.035 |     63     84     96 |  1.234  1.152 |   1.43   1.58 |    1.06   0.947 |    27    38  0.105
+cube_edges   262144 |    0.690    0.105    0.116    0.087 |     67     88     99 |  1.226  1.143 |   1.58   1.62 |    1.21   0.912 |    34    44  0.507
+cube_edges  1048576 |    2.979    0.423    0.441    0.407 |     92     92     93 |  1.292  1.138 |   1.54   1.48 |    1.04   0.958 |    38    48  2.078
+uniform       65536 |    0.998    0.723    0.755    0.269 |    377    700    922 |  1.297  1.224 |   1.33   1.64 |    2.68   0.958 |    12    20  0.000
+uniform      262144 |    6.150    2.639    3.519    0.800 |    468    807   1117 |  1.272  1.174 |   1.28   1.78 |    3.30   0.750 |    14    22  0.000
+uniform     1048576 |   31.918   13.133   17.066    3.058 |    773    773    855 |  1.219  1.143 |   1.26   1.67 |    4.30   0.770 |    16    24  0.000
+
+rates (traversal G int/s) and errors (normalised rms #5/#7; legacy TG1 #5/#7; gates #4,#5,#6,#7; #6 exact/counts)
+plummer       65536  rate #5   59.8 #7  193.4 | #4/#5 1.56 | norm rms 3.08e-03 / 2.34e-03 p99 8.07e-03 / 6.50e-03 | TG1 PASS/PASS | PASS,PASS,PASS,PASS | yes/yes | full-step #7/#5 2.65
+plummer      262144  rate #5   47.7 #7  286.6 | #4/#5 2.21 | norm rms 3.06e-03 / 2.45e-03 p99 7.86e-03 / 6.42e-03 | TG1 PASS/PASS | PASS,PASS,PASS,PASS | yes/yes | full-step #7/#5 4.48
+plummer     1048576  rate #5   40.1 #7  253.6 | #4/#5 2.09 | norm rms 3.04e-03 / 2.58e-03 p99 7.71e-03 / 6.67e-03 | TG1 PASS/PASS | PASS,PASS,PASS,PASS | yes/yes | full-step #7/#5 5.73
+disk          65536  rate #5   47.8 #7  167.0 | #4/#5 1.39 | norm rms 5.49e-03 / 3.93e-03 p99 1.66e-02 / 1.19e-02 | TG1 PASS/PASS | PASS,PASS,PASS,PASS | yes/yes | full-step #7/#5 2.42
+disk         262144  rate #5   79.7 #7  343.3 | #4/#5 2.34 | norm rms 5.06e-03 / 4.19e-03 p99 1.50e-02 / 1.30e-02 | TG1 PASS/PASS | PASS,PASS,PASS,PASS | yes/yes | full-step #7/#5 3.59
+disk        1048576  rate #5   60.3 #7  277.8 | #4/#5 2.26 | norm rms 4.74e-03 / 4.17e-03 p99 1.40e-02 / 1.25e-02 | TG1 PASS/PASS | PASS,PASS,PASS,PASS | yes/yes | full-step #7/#5 5.37
+galaxies      65536  rate #5   58.1 #7  153.8 | #4/#5 1.63 | norm rms 5.95e-03 / 4.06e-03 p99 1.56e-02 / 1.15e-02 | TG1 PASS/PASS | PASS,PASS,PASS,PASS | yes/yes | full-step #7/#5 1.85
+galaxies     262144  rate #5   80.8 #7  329.4 | #4/#5 2.65 | norm rms 5.63e-03 / 4.36e-03 p99 1.45e-02 / 1.16e-02 | TG1 PASS/PASS | PASS,PASS,PASS,PASS | yes/yes | full-step #7/#5 3.16
+galaxies    1048576  rate #5   64.4 #7  270.2 | #4/#5 2.38 | norm rms 5.43e-03 / 4.59e-03 p99 1.41e-02 / 1.21e-02 | TG1 PASS/PASS | PASS,PASS,PASS,PASS | yes/yes | full-step #7/#5 5.01
+cube_shell    65536  rate #5   99.5 #7  199.1 | #4/#5 2.68 | norm rms 6.35e-03 / 5.48e-03 p99 1.01e-02 / 9.11e-03 | TG1 FAIL/FAIL | PASS,PASS,PASS,PASS | yes/yes | full-step #7/#5 1.20
+cube_shell   262144  rate #5  123.9 #7  328.3 | #4/#5 3.98 | norm rms 6.53e-03 / 5.83e-03 p99 9.98e-03 / 9.26e-03 | TG1 FAIL/FAIL | PASS,PASS,PASS,PASS | yes/yes | full-step #7/#5 1.60
+cube_shell  1048576  rate #5  133.7 #7  292.4 | #4/#5 4.64 | norm rms 6.60e-03 / 6.04e-03 p99 1.01e-02 / 9.36e-03 | TG1 FAIL/FAIL | PASS,PASS,PASS,PASS | yes/yes | full-step #7/#5 1.80
+cube_edges    65536  rate #5  149.8 #7  181.2 | #4/#5 3.78 | norm rms 9.80e-03 / 8.11e-03 p99 2.36e-02 / 2.13e-02 | TG1 FAIL/FAIL | PASS,PASS,PASS,PASS | yes/yes | full-step #7/#5 0.99
+cube_edges   262144  rate #5  219.0 #7  297.4 | #4/#5 6.54 | norm rms 9.42e-03 / 7.18e-03 p99 2.21e-02 / 1.88e-02 | TG1 FAIL/FAIL | PASS,PASS,PASS,PASS | yes/yes | full-step #7/#5 1.04
+cube_edges  1048576  rate #5  228.5 #7  239.5 | #4/#5 7.04 | norm rms 9.80e-03 / 9.08e-03 p99 2.24e-02 / 2.13e-02 | TG1 FAIL/FAIL | PASS,PASS,PASS,PASS | yes/yes | full-step #7/#5 1.04
+uniform       65536  rate #5   63.5 #7  224.4 | #4/#5 1.38 | norm rms 3.14e-03 / 2.13e-03 p99 6.18e-03 / 4.31e-03 | TG1 PASS/PASS | PASS,PASS,PASS,PASS | yes/yes | full-step #7/#5 2.12
+uniform      262144  rate #5   80.2 #7  366.2 | #4/#5 2.33 | norm rms 3.21e-03 / 2.33e-03 p99 6.28e-03 / 4.76e-03 | TG1 PASS/PASS | PASS,PASS,PASS,PASS | yes/yes | full-step #7/#5 2.67
+uniform     1048576  rate #5   61.7 #7  293.3 | #4/#5 2.43 | norm rms 3.28e-03 / 2.52e-03 p99 6.53e-03 / 4.96e-03 | TG1 PASS/PASS | PASS,PASS,PASS,PASS | yes/yes | full-step #7/#5 3.79
+
+== set B (leaf 16 b128): #5 / #7 traversal, work, union ratio, normalised rms
+plummer       65536  T5    1.821 T7   0.574 (x3.17) | I5    916 I7   1695 union x1.852 | norm rms 3.134e-03 / 2.340e-03 | push 23 dup 0
+plummer      262144  T5    9.724 T7   1.587 (x6.13) | I5    976 I7   1748 union x1.790 | norm rms 3.091e-03 / 2.446e-03 | push 26 dup 0
+plummer     1048576  T5   44.197 T7   6.703 (x6.59) | I5   1063 I7   1837 union x1.728 | norm rms 3.052e-03 / 2.572e-03 | push 28 dup 0
+disk          65536  T5    1.038 T7   0.427 (x2.43) | I5    589 I7   1083 union x1.837 | norm rms 5.561e-03 / 3.934e-03 | push 24 dup 0
+disk         262144  T5    5.297 T7   1.095 (x4.84) | I5    785 I7   1402 union x1.785 | norm rms 5.085e-03 / 4.192e-03 | push 26 dup 0
+disk        1048576  T5   32.488 T7   4.790 (x6.78) | I5    910 I7   1619 union x1.779 | norm rms 4.744e-03 / 4.170e-03 | push 28 dup 0
+galaxies      65536  T5    0.813 T7   0.423 (x1.92) | I5    540 I7    992 union x1.838 | norm rms 6.079e-03 / 4.059e-03 | push 26 dup 0
+galaxies     262144  T5    4.627 T7   1.051 (x4.40) | I5    736 I7   1323 union x1.796 | norm rms 5.653e-03 / 4.356e-03 | push 28 dup 0
+galaxies    1048576  T5   30.675 T7   5.323 (x5.76) | I5    907 I7   1599 union x1.764 | norm rms 5.417e-03 / 4.599e-03 | push 30 dup 0
+cube_shell    65536  T5    0.154 T7   0.108 (x1.43) | I5    165 I7    330 union x1.999 | norm rms 6.719e-03 / 5.478e-03 | push 17 dup 0
+cube_shell   262144  T5    0.655 T7   0.270 (x2.42) | I5    180 I7    341 union x1.894 | norm rms 6.697e-03 / 5.831e-03 | push 20 dup 0
+cube_shell  1048576  T5    2.778 T7   1.005 (x2.77) | I5    195 I7    354 union x1.816 | norm rms 6.630e-03 / 6.047e-03 | push 23 dup 0
+cube_edges    65536  T5    0.037 T7   0.035 (x1.06) | I5     63 I7     96 union x1.520 | norm rms 9.543e-03 / 8.107e-03 | push 30 dup 69
+cube_edges   262144  T5    0.114 T7   0.088 (x1.29) | I5     67 I7     99 union x1.468 | norm rms 9.417e-03 / 7.182e-03 | push 37 dup 1330
+cube_edges  1048576  T5    0.457 T7   0.370 (x1.24) | I5     72 I7    103 union x1.435 | norm rms 9.799e-03 / 9.077e-03 | push 41 dup 21793
+uniform       65536  T5    0.553 T7   0.269 (x2.05) | I5    377 I7    922 union x2.445 | norm rms 3.199e-03 / 2.132e-03 | push 13 dup 0
+uniform      262144  T5    2.987 T7   0.801 (x3.73) | I5    468 I7   1117 union x2.385 | norm rms 3.269e-03 / 2.331e-03 | push 15 dup 0
+uniform     1048576  T5   17.020 T7   3.297 (x5.16) | I5    536 I7   1238 union x2.309 | norm rms 3.300e-03 / 2.515e-03 | push 17 dup 0
+
+== set K (262144, leaf 16 b128): mass spectrum
+plummer  salpeter  bh_sorted T  10.305 I   1071 norm rms 3.065e-03 p99 7.904e-03 heavy max 0.0136423 mass max/min 99.8411 gates PASS
+plummer  salpeter  bh_warp   T   1.736 I   1943 norm rms 2.444e-03 p99 6.435e-03 heavy max 0.0126891 mass max/min 99.8411 gates PASS
+plummer  heavy-few bh_sorted T   9.889 I    990 norm rms 3.001e-03 p99 7.795e-03 heavy max 0.00624884 mass max/min 3120.57 gates PASS
+plummer  heavy-few bh_warp   T   1.631 I   1763 norm rms 2.406e-03 p99 6.448e-03 heavy max 0.00613301 mass max/min 3120.57 gates PASS
+disk     salpeter  bh_sorted T   6.126 I    868 norm rms 5.030e-03 p99 1.507e-02 heavy max 0.0204537 mass max/min 8193.79 gates PASS
+disk     salpeter  bh_warp   T   1.189 I   1542 norm rms 4.146e-03 p99 1.301e-02 heavy max 0.0169546 mass max/min 8193.79 gates PASS
+
+== X: pre-round binary vs this binary (kStack 64 -> 96), 262144, leaf 16 b128, traversal ms
+bh_naive   core     old [23.8152, 23.895] new [24.0169, 24.1275]  new/old 1.0091
+bh_naive   plummer  old [18.5252, 19.0331] new [19.1078, 17.6005]  new/old 0.9774
+bh_sorted  core     old [12.157, 11.8774] new [12.03, 12.6444]  new/old 1.0266
+bh_sorted  plummer  old [9.4331, 9.5007] new [9.4853, 9.7485]  new/old 1.0158
+
+== timelines (galaxies 65536, warp units): T_bh_persistent_galaxies_65536.csv sm_eff 0.8687144697066485 tail 0.12915246353522283; T_bh_sorted_galaxies_65536.csv sm_eff 0.6221297964940818 tail 0.37029567189660856; T_bh_warp_galaxies_65536.csv sm_eff 0.6133450012411714 tail 0.3865999230017757
+
+== scorecard: 130 HIT / 43 MISS of 173 rows
+  I: 36/47 HIT; MISS: I1-5-262144 (1376 vs 780-1320), I2-5-262144 (1224 vs 700-1220), I3-4-65536 (164.9 vs 136-160), I3-5-65536 (262.7 vs 180-260), I3-4-262144 (180.1 vs 129-176), I4-4-65536 (63.34 vs 52-60), I4-4-262144 (67.42 vs 49-67), I5-5-65536 (700.3 vs 440-640), I5-5-262144 (806.8 vs 480-800), I6 (65536: plummer 1671 disk 937 galaxies 857 uniform 700 cube_shell 263 cube_edges 84; 262144: plummer 1433 disk 1376 galaxies 1224 uniform 807 cube_shell 277 cube_edges 88; 1048576: plummer 1415 disk 1532 galaxies 1535 uniform 773 cube_shell 289 cube_edges 92 vs holds), I7 (cube_shell 1.074 cube_edges 1.067 plummer 1.083 vs holds)
+  M: 16/32 HIT; MISS: M1-4-65536 (1.807 vs 1.35-1.8), M1-5-65536 (1.155 vs 1.06-1.15), M2-4-65536 (1.946 vs 1.35-1.8), M2-5-65536 (1.164 vs 1.06-1.15), M3-4-65536 (1.216 vs 1.25-1.7), M3-4-262144 (1.191 vs 1.25-1.7), M3-4-1048576 (1.211 vs 1.25-1.7), M4-4-65536 (1.234 vs 1.4-2.3), M4-4-262144 (1.226 vs 1.4-2.3), M4-4-1048576 (1.292 vs 1.4-2.3), M5-4-65536 (1.297 vs 1.08-1.25), M5-5-65536 (1.224 vs 1.02-1.1), M5-4-262144 (1.272 vs 1.08-1.25), M5-5-262144 (1.174 vs 1.02-1.1), M5-5-1048576 (1.143 vs 1.02-1.1), M6 (plummer 1.197 disk 1.487 galaxies 1.598 cube_shell 1.191 cube_edges 1.226 uniform 1.272 vs holds)
+  W: 12/16 HIT; MISS: W1-65536 (2.61 vs 1.6-2.2), W1-1048576 (1.543 vs 1.6-2.2), W2-65536 (2.218 vs 1.5-2.1), W2-1048576 (1.488 vs 1.5-2.1)
+  S: 14/17 HIT; MISS: S2-65536 (2.286 vs 2.5-4.5), S2-262144 (3.772 vs 4-7), S4-1048576 (1.04 vs 1.5-5)
+  Q: 10/17 HIT; MISS: Q2 (0.7994 vs 0.86-0.97), Q3 (0.8478 vs 0.86-0.97), Q4-disk-262144 (0.796 vs 0.84-0.99), Q4-cube_shell-262144 (0.7751 vs 0.84-0.99), Q4-cube_shell-1048576 (0.7552 vs 0.84-0.99), Q4-uniform-262144 (0.7498 vs 0.84-0.99), Q4-uniform-1048576 (0.7695 vs 0.84-0.99)
+  E: 24/24 HIT; MISS: 
+  K: 9/9 HIT; MISS: 
+  D: 5/5 HIT; MISS: 
+  C: 2/4 HIT; MISS: C3 (65536: plummer 1.85 disk 1.84 galaxies 1.84 cube_shell 2.00 cube_edges 1.52 uniform 2.45; 262144: plummer 1.79 disk 1.79 galaxies 1.80 cube_shell 1.89 cube_edges 1.47 uniform 2.39; 1048576: plummer 1.73 disk 1.78 galaxies 1.76 cube_shell 1.82 cube_edges 1.44 uniform 2.31 vs holds), C4 (depth 48, wmm4 1.226, dup 2.08% vs holds)
+  V: 2/2 HIT; MISS: 

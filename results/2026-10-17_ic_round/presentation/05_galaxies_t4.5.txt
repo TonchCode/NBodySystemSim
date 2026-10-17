@@ -1,0 +1,5 @@
+GL 3.3.0 NVIDIA 617.42 | NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2
+ic=galaxies mass_spectrum=equal N=262144
+screenshot -> results/2026-10-17_ic_round/presentation/05_galaxies_t4.5.bmp (1600x900)
+N-body | galaxies (equal) | N=262144 | bh_warp | 2.137 ms/step | 253.6 G int/s real (counted, incl. build + integrator) | 2067 int/body | 10 steps/frame | 45 FPS | no vsync
+simulated time t = 4.5000 (dt 0.001, 450 frames, camera dist 6.000 yaw 0.600 pitch 0.700)

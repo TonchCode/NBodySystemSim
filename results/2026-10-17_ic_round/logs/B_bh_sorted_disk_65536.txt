@@ -1,0 +1,14 @@
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=512 block=128 q=1 prefetch=-1 unroll=-1  regs=40 smem=0 B  resident 12 blocks/SM (100% occupancy)  blocks/SM=6.40 (busiest 7)  waves=0.53
+# ic=disk seed=42 theta=0.5 leaf=16 mass_spectrum=equal bh_mass=0.01 ic_hash=b3196fc5ab800ce8 | mass total 0.999999983, min 1.511e-05, max 1.000e-02 (max/min 662) | dt advisory 1.61e-03 (dt 0.001)
+kernel=bh_sorted n=65536 block=128 q=1 prefetch=-1 unroll=-1 runs=11 batch=5  median=1.3963 ms  min=1.2409  max=1.6134  3075.905 G N^2-equivalent interactions/s (not the tree rate; see the work: line)
+phases (median of 11, ms):  keys 0.0165  sort 0.1597  tree 0.0461  order 0.0010  traverse 1.0383  | build(keys+sort+tree) 0.2223  order 0.0010  traverse 1.0383  sum 1.2616  (production total 1.3963)
+work: 589.4 interactions/body (3.863e+07 total), 626.1 nodes popped/body | per-warp max/mean 1.139 (median warp 1.128) | SIMT eff interactions 0.137, pops 0.926 | warp-cost max/mean 1.76 | traversal 37.2 G interactions/s
+rates: real 27.66 G interactions/s over the full pipeline (1.3963 ms), 37.20 over the traversal; N^2-equivalent 3075.9 G/s
+tree: max depth 30, push depth 24 -> stack bound 26 (capacity: per-thread 96, warp 64), duplicate keys 0 (0.000% of bodies)
+validate vs allpairs_naive: max rel err 2.543e-01  rms 1.044e-02
+validate vs FP64 (527 bodies, kappa_max 1.7e+02): this rms 1.526e-02 max 2.543e-01 norm 2.248e-02  | naive rms 5.934e-06 max 4.545e-05 norm 1.806e-05
+tree error vs exact (all 65536 bodies), per-body relative (legacy): rms 1.044e-02  p50 8.095e-03  p99 2.365e-02  max 2.543e-01
+tree error vs exact, normalised |da|/sum|f| (all bodies): rms 5.561e-03  p99 1.695e-02  max 2.415e-02 | global |da|/|a|_rms: rms 7.518e-03  p99 2.921e-02
+normalised error by mass: heavy (m >= 10 x median, 1 bodies) rms 1.486e-03 max 1.486e-03 | light (65535) rms 5.561e-03 p99 1.695e-02 max 2.415e-02
+gates (tree, theta=0.50): TN1 PASS (norm rms 5.561e-03 <= 2.000e-02)  TN2 PASS (norm p99 1.695e-02 <= 4.500e-02)  stack ok  => PASS  | legacy TG1 PASS (rms 1.044e-02 <= 3.000e-02) TG2 PASS (p99 2.365e-02 <= 1.200e-01), not gating

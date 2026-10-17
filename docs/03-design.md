@@ -1186,3 +1186,63 @@ instrumented launch (bitwise-equal accelerations, so the integration is undistur
 2 s, divided by the measured ms/step (which includes the build and the integrator). N caps: 262144 for
 all-pairs, 4,194,304 for tree kernels (TDR margin). Default kernel `bh_warp` (D-022). `--test-keys`
 scripts key presses for smoke tests; `--dist/--yaw/--pitch` frame screenshots.
+
+---
+
+## 20. IC-round outcome (2026-10-17)
+
+Predictions committed before the runs (`docs/predictions/2026-10-17-ic-round.md`, plus a dated
+post-registration note on the V2 reading and the load label). Data: `results/2026-10-17_ic_round/`
+(the harness blocked the agent from writing `summary.md`; its content is in the architect's phase-2
+report). **Session label: 30% (before) / 37% (after) idle GPU utilisation from desktop applications.**
+Same-session plummer, leaf 16 b128, 262144: #5 +11% slower than in tree round 2, #7 −1%, so #7/#5
+ratios in this session are inflated by up to ~10%. Scorecard (`scorecard.csv`): **130 HIT / 43 MISS
+of 173**. §19 is left as written.
+
+### 20.1 The IC decides which technique matters
+| IC class | #4 → #5 (order) | #5 → #7 (warp walk) at N ≥ 262144 | why |
+|---|---|---|---|
+| 3D clustered (plummer, disk, galaxies) | 2.1–2.7× | 3.8–6.1× | random warps diverge; Morton warps still diverge inside (bucket loops, different depths) |
+| 3D uniform | 2.3–2.4× | 3.3–4.3× | the same, with the largest union overhead (×2.3–2.4) |
+| sheet (cube_shell) | 4.0–4.6× | 2.2× | a Morton warp is a compact patch: nearly one path |
+| line (cube_edges) | **6.5–7.0×** | **1.04–1.21×** | a Morton warp is a segment of one edge: #5 runs at 220–230 G int/s, like #7 on 3D ICs |
+
+So intra-warp incoherence, the loss #7 removes, is a property of the *dimensionality* of the
+distribution, not just of clustering: on lines and sheets the space-filling-curve sort alone already
+removes it, and #7 is left with only its union overhead. This is the cleanest demonstration in the
+project that #5 and #7 attack the same loss.
+
+### 20.2 Imbalance, measured
+- Intra-warp (#4 per-warp max/mean): the disks are the most imbalanced at every N (1.81–1.95 at 65536,
+  1.35–1.60 above), then uniform (1.22–1.30: the boundary matters more than predicted), plummer
+  (1.19–1.20), cube_edges (1.23–1.29) and cube_shell (1.19–1.22). The predicted corner/edge hot spots
+  of the cube ICs do not appear (M4, M6 MISS).
+- Between warps (#5 warp-cost max/mean): galaxies 2.61 and disk 2.22 at 65536 (core in round 2: 1.59),
+  falling to 1.49–1.54 at 1M.
+- SM level (warp-unit timelines, galaxies 65536, a single wave): #5 SM efficiency 0.62, tail 37%;
+  #7 0.61, tail 39%: the largest SM-level losses measured in this project.
+
+### 20.3 R3 #6 on the most imbalanced launch
+The warp queue lifts galaxies-65536 SM efficiency from 0.62 to 0.87 (tail 37% → 13%), but the mean SM
+busy time rises 53% (674 → 1029 µs) and the traversal is 0.96× of #5. At N ≥ 262144 it loses 15–25%
+at the best-tuned block 256 (0.75–0.85×), more than round 2's 7–11% at block 128: a 256-thread block
+holds 8 Morton-adjacent warps sharing L1, and the warp queue scatters them (D-023's mechanism, growing
+with block size). Exploratory (not pre-registered): a block-granular queue and the queue on the #7
+walk reach parity (0.996–1.010×) on galaxies 65536, and only there. **No #6 arm wins on any IC.**
+
+### 20.4 Errors, mass spectrum, trees
+- Normalised errors flat in N (±10%), #7 < #5 on every IC; TN1/TN2 PASS in all 133 runs; legacy TG1 FAILs
+  on cube_shell and cube_edges at every N (the reason for D-027).
+- Mass spectrum: salpeter +10–11% #5 work (COM pulled off-centre → larger bmax), heavy-few +1%; errors
+  unchanged; heavy bodies not worse than light ones.
+- 1M trees: push depth ≤ 38, stack bound ≤ 40 (warp stack 64 is enough, D-028); cube_edges 2.08%
+  duplicate keys, max depth 48. The per-thread stack change is not measurable (0.98–1.03× old/new under
+  load).
+
+### 20.5 Open items
+- Re-run the S and Q items with the desktop applications closed (30–37% load this session).
+- The single-wave tail (37–39% at galaxies 65536) is now the largest loss for both #5 and #7. The two
+  arms that reached parity (the block queue on #5 and the queue on #7) are the starting point;
+  splitting expensive units (sub-warp work items for the dense bulges) would attack the tail directly.
+- The disks fragment within a rotation (no halo): a halo potential would make the evolved-state
+  workload (2857 int/body at t = 3 vs 1619 at t = 0) a stable benchmark too.

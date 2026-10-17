@@ -1,0 +1,5 @@
+GL 3.3.0 NVIDIA 617.42 | NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2
+ic=plummer mass_spectrum=equal N=262144
+screenshot -> results/2026-10-17_ic_round/presentation/14_plummer_t0.5.bmp (1600x900)
+N-body | plummer (equal) | N=262144 | bh_warp | 2.206 ms/step | 207.7 G int/s real (counted, incl. build + integrator) | 1748 int/body | 10 steps/frame | 43 FPS | no vsync
+simulated time t = 0.5000 (dt 0.001, 50 frames, camera dist 4.000 yaw 0.600 pitch 0.350)

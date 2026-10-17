@@ -1,0 +1,5 @@
+GL 3.3.0 NVIDIA 617.42 | NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2
+ic=plummer mass_spectrum=heavy-few N=65536
+screenshot -> results/2026-10-17_ic_round/presentation/15_heavyfew_mass_t0.2.bmp (1600x900)
+N-body | plummer (heavy-few) | N=65536 | bh_warp | 0.910 ms/step | 123.4 G int/s real (counted, incl. build + integrator) | 1714 int/body | 10 steps/frame | 105 FPS | no vsync
+simulated time t = 0.2000 (dt 0.001, 20 frames, camera dist 3.500 yaw 0.600 pitch 0.350)

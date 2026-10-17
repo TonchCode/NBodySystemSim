@@ -1,0 +1,5 @@
+GL 3.3.0 NVIDIA 617.42 | NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2
+ic=disk mass_spectrum=salpeter N=65536
+screenshot -> results/2026-10-17_ic_round/presentation/16_disk_salpeter_mass_t0.2.bmp (1600x900)
+N-body | disk (salpeter) | N=65536 | bh_warp | 0.730 ms/step | 106.1 G int/s real (counted, incl. build + integrator) | 1181 int/body | 10 steps/frame | 129 FPS | no vsync
+simulated time t = 0.2000 (dt 0.001, 20 frames, camera dist 3.000 yaw 0.000 pitch 0.500)

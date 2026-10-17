@@ -1,0 +1,267 @@
+selftest exit=0
+== A_bh_naive_plummer_65536: ./build/nbody_bench.exe --kernel bh_naive --n 65536 --ic plummer --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 16 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_naive_plummer_65536.csv
+   exit=0
+== A_bh_sorted_plummer_65536: ./build/nbody_bench.exe --kernel bh_sorted --n 65536 --ic plummer --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_sorted_plummer_65536.csv
+   exit=0
+== A_bh_persistent_plummer_65536: ./build/nbody_bench.exe --kernel bh_persistent --n 65536 --ic plummer --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_warp_plummer_65536: ./build/nbody_bench.exe --kernel bh_warp --n 65536 --ic plummer --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_naive_plummer_262144: ./build/nbody_bench.exe --kernel bh_naive --n 262144 --ic plummer --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_naive_plummer_262144.csv
+   exit=0
+== A_bh_sorted_plummer_262144: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic plummer --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_sorted_plummer_262144.csv
+   exit=0
+== A_bh_persistent_plummer_262144: ./build/nbody_bench.exe --kernel bh_persistent --n 262144 --ic plummer --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_warp_plummer_262144: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic plummer --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_naive_plummer_1048576: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic plummer --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_naive_plummer_1048576.csv
+   exit=0
+== A_bh_sorted_plummer_1048576: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_sorted_plummer_1048576.csv
+   exit=0
+== A_bh_persistent_plummer_1048576: ./build/nbody_bench.exe --kernel bh_persistent --n 1048576 --ic plummer --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_warp_plummer_1048576: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic plummer --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 8 --block 256 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_naive_disk_65536: ./build/nbody_bench.exe --kernel bh_naive --n 65536 --ic disk --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 16 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_naive_disk_65536.csv
+   exit=0
+== A_bh_sorted_disk_65536: ./build/nbody_bench.exe --kernel bh_sorted --n 65536 --ic disk --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_sorted_disk_65536.csv
+   exit=0
+== A_bh_persistent_disk_65536: ./build/nbody_bench.exe --kernel bh_persistent --n 65536 --ic disk --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_warp_disk_65536: ./build/nbody_bench.exe --kernel bh_warp --n 65536 --ic disk --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_naive_disk_262144: ./build/nbody_bench.exe --kernel bh_naive --n 262144 --ic disk --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_naive_disk_262144.csv
+   exit=0
+== A_bh_sorted_disk_262144: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic disk --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_sorted_disk_262144.csv
+   exit=0
+== A_bh_persistent_disk_262144: ./build/nbody_bench.exe --kernel bh_persistent --n 262144 --ic disk --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_warp_disk_262144: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic disk --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_naive_disk_1048576: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic disk --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_naive_disk_1048576.csv
+   exit=0
+== A_bh_sorted_disk_1048576: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic disk --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_sorted_disk_1048576.csv
+   exit=0
+== A_bh_persistent_disk_1048576: ./build/nbody_bench.exe --kernel bh_persistent --n 1048576 --ic disk --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_warp_disk_1048576: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic disk --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 8 --block 256 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_naive_galaxies_65536: ./build/nbody_bench.exe --kernel bh_naive --n 65536 --ic galaxies --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 16 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_naive_galaxies_65536.csv
+   exit=0
+== A_bh_sorted_galaxies_65536: ./build/nbody_bench.exe --kernel bh_sorted --n 65536 --ic galaxies --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_sorted_galaxies_65536.csv
+   exit=0
+== A_bh_persistent_galaxies_65536: ./build/nbody_bench.exe --kernel bh_persistent --n 65536 --ic galaxies --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_warp_galaxies_65536: ./build/nbody_bench.exe --kernel bh_warp --n 65536 --ic galaxies --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_naive_galaxies_262144: ./build/nbody_bench.exe --kernel bh_naive --n 262144 --ic galaxies --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_naive_galaxies_262144.csv
+   exit=0
+== A_bh_sorted_galaxies_262144: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic galaxies --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_sorted_galaxies_262144.csv
+   exit=0
+== A_bh_persistent_galaxies_262144: ./build/nbody_bench.exe --kernel bh_persistent --n 262144 --ic galaxies --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_warp_galaxies_262144: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic galaxies --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_naive_galaxies_1048576: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic galaxies --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_naive_galaxies_1048576.csv
+   exit=0
+== A_bh_sorted_galaxies_1048576: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic galaxies --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_sorted_galaxies_1048576.csv
+   exit=0
+== A_bh_persistent_galaxies_1048576: ./build/nbody_bench.exe --kernel bh_persistent --n 1048576 --ic galaxies --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_warp_galaxies_1048576: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic galaxies --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 8 --block 256 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_naive_cube_shell_65536: ./build/nbody_bench.exe --kernel bh_naive --n 65536 --ic cube_shell --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 16 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_naive_cube_shell_65536.csv
+   exit=0
+== A_bh_sorted_cube_shell_65536: ./build/nbody_bench.exe --kernel bh_sorted --n 65536 --ic cube_shell --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_sorted_cube_shell_65536.csv
+   exit=0
+== A_bh_persistent_cube_shell_65536: ./build/nbody_bench.exe --kernel bh_persistent --n 65536 --ic cube_shell --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_warp_cube_shell_65536: ./build/nbody_bench.exe --kernel bh_warp --n 65536 --ic cube_shell --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_naive_cube_shell_262144: ./build/nbody_bench.exe --kernel bh_naive --n 262144 --ic cube_shell --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_naive_cube_shell_262144.csv
+   exit=0
+== A_bh_sorted_cube_shell_262144: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic cube_shell --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_sorted_cube_shell_262144.csv
+   exit=0
+== A_bh_persistent_cube_shell_262144: ./build/nbody_bench.exe --kernel bh_persistent --n 262144 --ic cube_shell --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_warp_cube_shell_262144: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic cube_shell --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_naive_cube_shell_1048576: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic cube_shell --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_naive_cube_shell_1048576.csv
+   exit=0
+== A_bh_sorted_cube_shell_1048576: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic cube_shell --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_sorted_cube_shell_1048576.csv
+   exit=0
+== A_bh_persistent_cube_shell_1048576: ./build/nbody_bench.exe --kernel bh_persistent --n 1048576 --ic cube_shell --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_warp_cube_shell_1048576: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic cube_shell --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 8 --block 256 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_naive_cube_edges_65536: ./build/nbody_bench.exe --kernel bh_naive --n 65536 --ic cube_edges --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 16 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_naive_cube_edges_65536.csv
+   exit=0
+== A_bh_sorted_cube_edges_65536: ./build/nbody_bench.exe --kernel bh_sorted --n 65536 --ic cube_edges --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_sorted_cube_edges_65536.csv
+   exit=0
+== A_bh_persistent_cube_edges_65536: ./build/nbody_bench.exe --kernel bh_persistent --n 65536 --ic cube_edges --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_warp_cube_edges_65536: ./build/nbody_bench.exe --kernel bh_warp --n 65536 --ic cube_edges --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_naive_cube_edges_262144: ./build/nbody_bench.exe --kernel bh_naive --n 262144 --ic cube_edges --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_naive_cube_edges_262144.csv
+   exit=0
+== A_bh_sorted_cube_edges_262144: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic cube_edges --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_sorted_cube_edges_262144.csv
+   exit=0
+== A_bh_persistent_cube_edges_262144: ./build/nbody_bench.exe --kernel bh_persistent --n 262144 --ic cube_edges --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_warp_cube_edges_262144: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic cube_edges --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_naive_cube_edges_1048576: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic cube_edges --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_naive_cube_edges_1048576.csv
+   exit=0
+== A_bh_sorted_cube_edges_1048576: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic cube_edges --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_sorted_cube_edges_1048576.csv
+   exit=0
+== A_bh_persistent_cube_edges_1048576: ./build/nbody_bench.exe --kernel bh_persistent --n 1048576 --ic cube_edges --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_warp_cube_edges_1048576: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic cube_edges --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 8 --block 256 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_naive_uniform_65536: ./build/nbody_bench.exe --kernel bh_naive --n 65536 --ic uniform --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 16 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_naive_uniform_65536.csv
+   exit=0
+== A_bh_sorted_uniform_65536: ./build/nbody_bench.exe --kernel bh_sorted --n 65536 --ic uniform --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_sorted_uniform_65536.csv
+   exit=0
+== A_bh_persistent_uniform_65536: ./build/nbody_bench.exe --kernel bh_persistent --n 65536 --ic uniform --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_warp_uniform_65536: ./build/nbody_bench.exe --kernel bh_warp --n 65536 --ic uniform --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_naive_uniform_262144: ./build/nbody_bench.exe --kernel bh_naive --n 262144 --ic uniform --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_naive_uniform_262144.csv
+   exit=0
+== A_bh_sorted_uniform_262144: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic uniform --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_sorted_uniform_262144.csv
+   exit=0
+== A_bh_persistent_uniform_262144: ./build/nbody_bench.exe --kernel bh_persistent --n 262144 --ic uniform --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_warp_uniform_262144: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic uniform --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_naive_uniform_1048576: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic uniform --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_naive_uniform_1048576.csv
+   exit=0
+== A_bh_sorted_uniform_1048576: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic uniform --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv --tree-stats results/2026-10-17_ic_round/warps/A_bh_sorted_uniform_1048576.csv
+   exit=0
+== A_bh_persistent_uniform_1048576: ./build/nbody_bench.exe --kernel bh_persistent --n 1048576 --ic uniform --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 32 --block 256 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== A_bh_warp_uniform_1048576: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic uniform --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 8 --block 256 --csv results/2026-10-17_ic_round/setA.csv
+   exit=0
+== B_bh_sorted_plummer_65536: ./build/nbody_bench.exe --kernel bh_sorted --n 65536 --ic plummer --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_warp_plummer_65536: ./build/nbody_bench.exe --kernel bh_warp --n 65536 --ic plummer --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_sorted_plummer_262144: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic plummer --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_warp_plummer_262144: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic plummer --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_sorted_plummer_1048576: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_warp_plummer_1048576: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic plummer --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_sorted_disk_65536: ./build/nbody_bench.exe --kernel bh_sorted --n 65536 --ic disk --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_warp_disk_65536: ./build/nbody_bench.exe --kernel bh_warp --n 65536 --ic disk --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_sorted_disk_262144: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic disk --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_warp_disk_262144: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic disk --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_sorted_disk_1048576: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic disk --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_warp_disk_1048576: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic disk --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_sorted_galaxies_65536: ./build/nbody_bench.exe --kernel bh_sorted --n 65536 --ic galaxies --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_warp_galaxies_65536: ./build/nbody_bench.exe --kernel bh_warp --n 65536 --ic galaxies --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_sorted_galaxies_262144: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic galaxies --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_warp_galaxies_262144: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic galaxies --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_sorted_galaxies_1048576: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic galaxies --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_warp_galaxies_1048576: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic galaxies --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_sorted_cube_shell_65536: ./build/nbody_bench.exe --kernel bh_sorted --n 65536 --ic cube_shell --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_warp_cube_shell_65536: ./build/nbody_bench.exe --kernel bh_warp --n 65536 --ic cube_shell --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_sorted_cube_shell_262144: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic cube_shell --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_warp_cube_shell_262144: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic cube_shell --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_sorted_cube_shell_1048576: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic cube_shell --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_warp_cube_shell_1048576: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic cube_shell --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_sorted_cube_edges_65536: ./build/nbody_bench.exe --kernel bh_sorted --n 65536 --ic cube_edges --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_warp_cube_edges_65536: ./build/nbody_bench.exe --kernel bh_warp --n 65536 --ic cube_edges --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_sorted_cube_edges_262144: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic cube_edges --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_warp_cube_edges_262144: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic cube_edges --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_sorted_cube_edges_1048576: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic cube_edges --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_warp_cube_edges_1048576: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic cube_edges --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_sorted_uniform_65536: ./build/nbody_bench.exe --kernel bh_sorted --n 65536 --ic uniform --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_warp_uniform_65536: ./build/nbody_bench.exe --kernel bh_warp --n 65536 --ic uniform --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_sorted_uniform_262144: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic uniform --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_warp_uniform_262144: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic uniform --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_sorted_uniform_1048576: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic uniform --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== B_bh_warp_uniform_1048576: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic uniform --warmup-ms 300 --runs 11 --theta 0.5 --batch 1 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setB.csv
+   exit=0
+== K_bh_sorted_plummer_salpeter: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic plummer --mass-spectrum salpeter --warmup-ms 300 --runs 11 --theta 0.5 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setK.csv
+   exit=0
+== K_bh_warp_plummer_salpeter: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic plummer --mass-spectrum salpeter --warmup-ms 300 --runs 11 --theta 0.5 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setK.csv
+   exit=0
+== K_bh_sorted_plummer_heavy-few: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic plummer --mass-spectrum heavy-few --warmup-ms 300 --runs 11 --theta 0.5 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setK.csv
+   exit=0
+== K_bh_warp_plummer_heavy-few: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic plummer --mass-spectrum heavy-few --warmup-ms 300 --runs 11 --theta 0.5 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setK.csv
+   exit=0
+== K_bh_sorted_disk_salpeter: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic disk --mass-spectrum salpeter --warmup-ms 300 --runs 11 --theta 0.5 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setK.csv
+   exit=0
+== K_bh_warp_disk_salpeter: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic disk --mass-spectrum salpeter --warmup-ms 300 --runs 11 --theta 0.5 --leaf 16 --block 128 --csv results/2026-10-17_ic_round/setK.csv
+   exit=0
+== T_bh_sorted_galaxies_65536: ./build/nbody_bench.exe --kernel bh_sorted --n 65536 --ic galaxies --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 32 --block 256 --no-validate --timeline-unit warp --timeline results/2026-10-17_ic_round/timeline/T_bh_sorted_galaxies_65536.csv
+   exit=0
+== T_bh_persistent_galaxies_65536: ./build/nbody_bench.exe --kernel bh_persistent --n 65536 --ic galaxies --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 32 --block 256 --no-validate --timeline-unit warp --timeline results/2026-10-17_ic_round/timeline/T_bh_persistent_galaxies_65536.csv
+   exit=0
+== T_bh_warp_galaxies_65536: ./build/nbody_bench.exe --kernel bh_warp --n 65536 --ic galaxies --warmup-ms 300 --runs 11 --theta 0.5 --batch 5 --leaf 16 --block 128 --no-validate --timeline-unit warp --timeline results/2026-10-17_ic_round/timeline/T_bh_warp_galaxies_65536.csv
+   exit=0
+== X_old_bh_naive_plummer_r1: /c/Users/petya/AppData/Local/Temp/claude/D--life-system/cf99499d-78af-474a-80e1-0ba28ceb4299/scratchpad/nbody_bench_before.exe --kernel bh_naive --n 262144 --ic plummer --warmup-ms 300 --runs 11 --theta 0.5 --leaf 16 --block 128 --no-validate
+   exit=0
+== X_new_bh_naive_plummer_r1: ./build/nbody_bench.exe --kernel bh_naive --n 262144 --ic plummer --warmup-ms 300 --runs 11 --theta 0.5 --leaf 16 --block 128 --no-validate
+   exit=0
+== X_old_bh_sorted_plummer_r1: /c/Users/petya/AppData/Local/Temp/claude/D--life-system/cf99499d-78af-474a-80e1-0ba28ceb4299/scratchpad/nbody_bench_before.exe --kernel bh_sorted --n 262144 --ic plummer --warmup-ms 300 --runs 11 --theta 0.5 --leaf 16 --block 128 --no-validate
+   exit=0
+== X_new_bh_sorted_plummer_r1: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic plummer --warmup-ms 300 --runs 11 --theta 0.5 --leaf 16 --block 128 --no-validate
+   exit=0
+== X_old_bh_naive_core_r1: /c/Users/petya/AppData/Local/Temp/claude/D--life-system/cf99499d-78af-474a-80e1-0ba28ceb4299/scratchpad/nbody_bench_before.exe --kernel bh_naive --n 262144 --ic core --warmup-ms 300 --runs 11 --theta 0.5 --leaf 16 --block 128 --no-validate
+   exit=0
+== X_new_bh_naive_core_r1: ./build/nbody_bench.exe --kernel bh_naive --n 262144 --ic core --warmup-ms 300 --runs 11 --theta 0.5 --leaf 16 --block 128 --no-validate
+   exit=0
+== X_old_bh_sorted_core_r1: /c/Users/petya/AppData/Local/Temp/claude/D--life-system/cf99499d-78af-474a-80e1-0ba28ceb4299/scratchpad/nbody_bench_before.exe --kernel bh_sorted --n 262144 --ic core --warmup-ms 300 --runs 11 --theta 0.5 --leaf 16 --block 128 --no-validate
+   exit=0
+== X_new_bh_sorted_core_r1: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic core --warmup-ms 300 --runs 11 --theta 0.5 --leaf 16 --block 128 --no-validate
+   exit=0
+== X_old_bh_naive_plummer_r2: /c/Users/petya/AppData/Local/Temp/claude/D--life-system/cf99499d-78af-474a-80e1-0ba28ceb4299/scratchpad/nbody_bench_before.exe --kernel bh_naive --n 262144 --ic plummer --warmup-ms 300 --runs 11 --theta 0.5 --leaf 16 --block 128 --no-validate
+   exit=0
+== X_new_bh_naive_plummer_r2: ./build/nbody_bench.exe --kernel bh_naive --n 262144 --ic plummer --warmup-ms 300 --runs 11 --theta 0.5 --leaf 16 --block 128 --no-validate
+   exit=0
+== X_old_bh_sorted_plummer_r2: /c/Users/petya/AppData/Local/Temp/claude/D--life-system/cf99499d-78af-474a-80e1-0ba28ceb4299/scratchpad/nbody_bench_before.exe --kernel bh_sorted --n 262144 --ic plummer --warmup-ms 300 --runs 11 --theta 0.5 --leaf 16 --block 128 --no-validate
+   exit=0
+== X_new_bh_sorted_plummer_r2: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic plummer --warmup-ms 300 --runs 11 --theta 0.5 --leaf 16 --block 128 --no-validate
+   exit=0
+== X_old_bh_naive_core_r2: /c/Users/petya/AppData/Local/Temp/claude/D--life-system/cf99499d-78af-474a-80e1-0ba28ceb4299/scratchpad/nbody_bench_before.exe --kernel bh_naive --n 262144 --ic core --warmup-ms 300 --runs 11 --theta 0.5 --leaf 16 --block 128 --no-validate
+   exit=0
+== X_new_bh_naive_core_r2: ./build/nbody_bench.exe --kernel bh_naive --n 262144 --ic core --warmup-ms 300 --runs 11 --theta 0.5 --leaf 16 --block 128 --no-validate
+   exit=0
+== X_old_bh_sorted_core_r2: /c/Users/petya/AppData/Local/Temp/claude/D--life-system/cf99499d-78af-474a-80e1-0ba28ceb4299/scratchpad/nbody_bench_before.exe --kernel bh_sorted --n 262144 --ic core --warmup-ms 300 --runs 11 --theta 0.5 --leaf 16 --block 128 --no-validate
+   exit=0
+== X_new_bh_sorted_core_r2: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic core --warmup-ms 300 --runs 11 --theta 0.5 --leaf 16 --block 128 --no-validate
+   exit=0

@@ -427,3 +427,31 @@ sink by dynamical friction over time.
 visual). This round's measurements are force snapshots and do not integrate.
 **Rules out:** labelling `cube_shell`/`cube_edges` as physical systems, or the disk as an equilibrium
 model.
+
+## D-030 — The IC workload suite result: order (#5) and warp walk (#7) attack the same loss, and dimensionality decides which one is needed (2026-10-17, cuda-architect, IC round)
+
+**Measured** (`results/2026-10-17_ic_round`, label 30–37% background load): #4 → #5 gains 2.1–2.7× on
+the 3D ICs but 4.0–4.6× on cube_shell and 6.5–7.0× on cube_edges; #5 → #7 gains 3.8–6.1× on the 3D
+clustered ICs (N ≥ 262144) but only 2.2× on cube_shell and 1.04–1.21× on cube_edges, where #5 already
+runs at 220–230 G int/s. Scorecard 130 HIT / 43 MISS of 173.
+**Decided:** the suite is part of every later timing round: plummer (reference), galaxies (most
+imbalanced: per-warp, between-warp and SM level), uniform (control), cube_edges (the case where #7 is
+not needed). Quote #7's gain *per IC class*, not as a single number. The cube ICs stay labelled as
+stress tests.
+**Why:** a technique's gain is a property of the workload; one IC overstates or understates it. On a
+line, a Morton warp is one contiguous segment and walks one path, so the space-filling-curve order
+alone removes the intra-warp incoherence.
+**Rules out:** quoting the plummer 5–6× as "the" #7 speedup without the IC; the predicted corner
+hot-spot model for the cube ICs (M4/M6 missed).
+
+## D-031 — R3 #6 at block 256 loses more; parity only on the clustered single wave (2026-10-17, cuda-architect, IC round)
+
+**Measured:** the warp queue is 0.75–0.97× of #5 at the best-tuned leaf 32 b256 (0.75–0.85× at
+N ≥ 262144), against 0.89–0.93× at leaf 16 b128 in round 2. On galaxies 65536 it lifts SM efficiency
+0.62 → 0.87, while the mean SM busy time rises 53%. Exploratory: the block-granular queue and the #7
+queue reach 0.996–1.010× there.
+**Decided:** D-023 stands and gets a sharper statement: the warp-granular queue's locality loss grows
+with block size (8 Morton-adjacent warps share L1 at b256). Any further #6 work uses block-granular
+claims, and targets the single-wave clustered tail (37–39% on galaxies 65536), which is the only place
+a scheduler gain exists on this GPU.
+**Rules out:** claiming a #6 speedup; quoting the warp queue's SM-efficiency gain as a time gain.

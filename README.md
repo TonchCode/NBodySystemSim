@@ -38,7 +38,7 @@ for tree kernels (TDR margin).
 ICs: `--ic plummer|collision|core|disk|galaxies|cube_shell|cube_edges|uniform`,
 `--mass-spectrum equal|salpeter|heavy-few`, `--bh-mass 0.01` (viewer and bench; design §19).
 `--frames F --screenshot out.bmp` renders F frames, saves the last one and exits (for figures;
-`--dist/--yaw/--pitch` set the camera, `python tools/bmp2png.py out.bmp` converts to PNG).
+`--dist/--yaw/--pitch` set the camera, `--steps-per-frame`/`--vsync 0` fast-forward, the simulated time is printed on exit, `python tools/bmp2png.py out.bmp` converts to PNG).
 
 ![viewer](docs/img/viewer_plummer_32k_2026-10-17.png)
 

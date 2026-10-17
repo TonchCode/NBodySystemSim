@@ -1,0 +1,5 @@
+GL 3.3.0 NVIDIA 617.42 | NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2
+ic=cube_shell mass_spectrum=equal N=262144
+screenshot -> results/2026-10-17_ic_round/presentation/11_cube_shell_t1.2.bmp (1600x900)
+N-body | cube_shell (equal) | N=262144 | bh_warp | 0.848 ms/step | 105.4 G int/s real (counted, incl. build + integrator) | 341 int/body | 10 steps/frame | 98 FPS | no vsync
+simulated time t = 1.2000 (dt 0.001, 120 frames, camera dist 5.000 yaw 0.600 pitch 0.350)

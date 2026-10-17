@@ -1,0 +1,12 @@
+bh_warp l16 r1 exit=0
+bh_persistent_warp l16 r1 exit=0
+bh_sorted l32 r1 exit=0
+bh_persistent_block l32 r1 exit=0
+bh_persistent l32 r1 exit=0
+bh_warp l16 r2 exit=0
+bh_persistent_warp l16 r2 exit=0
+bh_sorted l32 r2 exit=0
+bh_persistent_block l32 r2 exit=0
+bh_persistent l32 r2 exit=0
+T bh_warp exit=0
+T bh_persistent_warp exit=0
