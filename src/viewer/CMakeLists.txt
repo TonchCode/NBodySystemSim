@@ -1,3 +1,5 @@
-# OpenGL interop viewer. Not built until docs/decisions.md D-004 (GLFW+glad vs raw WGL)
-# is decided. Enable with -DNBODY_BUILD_VIEWER=ON once main.cpp exists.
-message(FATAL_ERROR "Viewer not implemented yet: decide D-004 in docs/decisions.md first.")
+find_package(OpenGL REQUIRED)
+
+add_executable(nbody_viewer main.cpp gl_loader.c)
+target_include_directories(nbody_viewer PRIVATE ${PROJECT_SOURCE_DIR}/third_party/glad/include)
+target_link_libraries(nbody_viewer PRIVATE nbody_core glfw OpenGL::GL)

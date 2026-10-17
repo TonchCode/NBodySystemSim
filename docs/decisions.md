@@ -24,12 +24,19 @@ Leapfrog KDK integrator. Plummer-sphere initial conditions in N-body units (G = 
 Energy is checked in double on the host. FLOP convention: 20 per interaction (GPU Gems 3
 ch. 31), always stated next to any GFLOP/s figure.
 
-## D-004 — Viewer windowing/GL loader: OPEN
+## D-004 — Viewer: GLFW 3.4 + glad, vendored (2026-10-17)
 
-Options: **(a)** GLFW + glad fetched by CMake `FetchContent`. Standard, about 20 lines of
-setup, but it downloads third-party code at configure time. **(b)** Raw Win32 + WGL, loading
-the ~15 GL functions we need by hand. No dependencies, more boilerplate, Windows-only (fine:
-one machine by brief). Needs Toncho's call.
+**Decided by Toncho**, on the recommendation. GLFW handles the window, context and input.
+glad is the GL 3.3 loader, taken from GLFW's own `deps/`, so there was one download, not two.
+Both are **committed into `third_party/`** (pinned, sha256 recorded in
+`third_party/README.md`), so builds need no network.
+**Why not raw Win32/WGL:** about 300–400 lines of window boilerplate worth zero grade. The
+interop code is identical either way.
+**Interop design:** the core keeps its own `cudaMalloc` buffers. Each frame does a
+VRAM→VRAM `cudaMemcpyAsync` into the mapped VBOs: 1 MB per buffer at N = 32k, microseconds
+at 736 GB/s. The bench and the viewer therefore run the exact same core code.
+Verified: GL 3.3 core on the RTX 4080 SUPER, N = 32,768 at 180 FPS (vsync = monitor 180 Hz),
+1.2 ms/step including the integrator. Screenshot: `docs/img/viewer_plummer_32k_2026-10-17.png`.
 
 ## D-005 — Literature first pass accepted, with caveats (2026-10-17)
 

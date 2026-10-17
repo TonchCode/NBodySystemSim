@@ -27,6 +27,7 @@ build\nbody_bench.exe --kernel allpairs_tiled --n 4096 --steps 2000 --energy
 | `references/` | verified papers + NVIDIA docs (literature-scout) |
 | `src/core/` | kernels, integrator, initial conditions (`nbody_core` lib) |
 | `src/bench/` | benchmark/validation CLI |
-| `src/viewer/` | OpenGL interop viewer (pending D-004) |
+| `src/viewer/` | CUDA-OpenGL interop viewer (GLFW + glad) |
+| `third_party/` | vendored GLFW 3.4 + glad (pinned, see its README) |
 | `results/` | benchmark sessions: env + CSV + summary |
 | `.claude/agents/` | role agents: architect, scout, critic, profiler, writer |
