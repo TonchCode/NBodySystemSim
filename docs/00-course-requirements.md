@@ -1,12 +1,11 @@
 # 00 — Course Requirements (what the professor actually asked for)
 
 Source: the audio transcript of the consultation with the professor (Bulgarian), plus a
-summary of it. Both files are in `C:\Users\petya\Downloads\`. The transcript is
-speech-to-text and partly garbled. Items I inferred rather than heard clearly are marked
-*(inferred)*.
+summary of it (kept locally, not in this repo). The transcript is speech-to-text and partly
+garbled. Items inferred rather than heard clearly are marked *(inferred)*.
 
-**Topic assigned to Toncho: the N-body problem.** (Another student was
-discussing a shortest-path-in-graph topic. Two different projects, two different devices.)
+**Topic assigned to Toncho: the N-body problem.** (A different student has a different topic,
+shortest paths in graphs, on a different device.)
 
 ---
 
