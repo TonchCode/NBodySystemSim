@@ -1,0 +1,14 @@
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+selftest: exact dyadic lattice, eps = 1, masses {1,2}
+selftest: 5170 cases, 0 failed, 0 timeline-record failures (1 of the analytic accelerations are 0)
+  tree plummer   n=65536: depth 31, 65535 internal nodes, 5992 leaf buckets, root mass err 0.0e+00, COM err 2.9e-08
+  tree collision n=65536: depth 32, 65535 internal nodes, 6073 leaf buckets, root mass err 0.0e+00, COM err 4.1e-09
+  tree core      n=65536: depth 43, 65535 internal nodes, 6051 leaf buckets, root mass err 0.0e+00, COM err 5.0e-08
+  exact host check plummer n=10007 #5 walk: 10006 nodes (max mass rel 1.6e-07, COM abs 9.5e-07, bmax abs 5.4e-07), 10007 bodies, count mismatches 0, max |da|/sum|f| = 0.050 of (I+10)u
+  exact host check plummer n=10007 union walk: 10006 nodes (max mass rel 1.6e-07, COM abs 9.5e-07, bmax abs 5.4e-07), 10007 bodies, count mismatches 0, max |da|/sum|f| = 0.027 of (I+10)u
+  union plummer   n=65536: rms 4.398e-03 vs #5 6.669e-03, p99 1.064e-02 vs 1.766e-02
+  union collision n=65536: rms 5.618e-03 vs #5 8.450e-03, p99 1.512e-02 vs 2.085e-02
+  union core      n=65536: rms 7.287e-03 vs #5 1.012e-02, p99 2.513e-02 vs 2.838e-02
+selftest (tree round 2): 1953 checks, 0 failed; exact host check worst |da|/sum|f| = 0.274 of its (I+10)u bound
+selftest (tree): 2063 checks, 0 failed
+selftest: PASS

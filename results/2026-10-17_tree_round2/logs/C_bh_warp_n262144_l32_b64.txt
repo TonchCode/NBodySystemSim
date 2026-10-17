@@ -1,0 +1,13 @@
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=4096 block=64 q=1 prefetch=-1 unroll=-1  regs=40 smem=0 B  resident 24 blocks/SM (100% occupancy)  blocks/SM=51.20 (busiest 52)  waves=2.13
+# ic=plummer seed=42 theta=0.5 leaf=32
+kernel=bh_warp n=262144 block=64 q=1 prefetch=-1 unroll=-1 runs=11 batch=1  median=2.2149 ms  min=1.9455  max=3.0730  31025.828 G N^2-equivalent interactions/s (not the tree rate; see the work: line)
+phases (median of 11, ms):  keys 0.0328  sort 0.1723  tree 0.0891  order 0.0010  traverse 1.7019  | build(keys+sort+tree) 0.2941  order 0.0010  traverse 1.7019  sum 2.0132  (production total 2.2149)
+work: 2627.7 interactions/body (6.888e+08 total), 1674.2 nodes popped/body | per-warp max/mean 1.000 (median warp 1.000) | SIMT eff interactions 1.000, pops 1.000 | warp-cost max/mean 1.60 | traversal 404.8 G interactions/s
+rates: real 311.00 G interactions/s over the full pipeline (2.2149 ms), 404.75 over the traversal; N^2-equivalent 31025.8 G/s
+validate vs allpairs_naive: max rel err 1.329e-01  rms 4.542e-03
+validate vs FP64 (528 bodies, kappa_max 8.8e+01): this rms 1.635e-02 max 1.329e-01 norm 1.118e-02  | naive rms 7.253e-06 max 2.286e-05 norm 1.668e-05
+tree error vs exact (all 262144 bodies): rms 4.542e-03  p50 3.752e-03  p99 1.073e-02  max 1.329e-01
+gates (tree, theta=0.50): TG1 PASS (rms 4.542e-03 <= 3.000e-02)  TG2 PASS (p99 1.073e-02 <= 1.200e-01)  stack ok  => PASS
+TG3 (error <= bh_sorted at theta=0.50): rms 4.542e-03 vs 6.397e-03 (ratio 0.710), p99 1.073e-02 vs 1.698e-02 (ratio 0.632) => PASS
+work vs bh_sorted: interactions x1.8342, pops x1.2338 | slots with fewer pops or interactions than bh_sorted: 0 (must be 0)

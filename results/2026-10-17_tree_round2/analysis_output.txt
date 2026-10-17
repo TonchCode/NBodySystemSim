@@ -1,0 +1,356 @@
+## Set A (theta 0.5, leaf 16, block 128): traverse ms | total | ipb vpb | eff_i eff_v | wmm | trav G/s | rms p99 | checks
+bh_naive                 plummer    65536 |    2.822 |    3.148 |   915.5  1166.4 | 0.092 0.752 | 1.197 |   21.3 | 6.67e-03 1.77e-02 | PASS 
+bh_persistent_lane_naive plummer    65536 |    4.177 |    4.471 |   915.5  1166.4 | 0.092 0.756 | 1.197 |   14.4 | 6.67e-03 1.77e-02 | PASS work x1.000/x1.000; exact ok
+bh_sorted                plummer    65536 |    1.804 |    2.042 |   915.5  1166.4 | 0.149 0.938 | 1.079 |   33.3 | 6.67e-03 1.77e-02 | PASS 
+bh_persistent            plummer    65536 |    2.017 |    2.262 |   915.5  1166.4 | 0.149 0.938 | 1.079 |   29.7 | 6.67e-03 1.77e-02 | PASS work x1.000/x1.000; exact ok
+bh_persistent_lane       plummer    65536 |    2.824 |    3.132 |   915.5  1166.4 | 0.149 0.940 | 1.079 |   21.2 | 6.67e-03 1.77e-02 | PASS work x1.000/x1.000; exact ok
+bh_persistent_static     plummer    65536 |    2.089 |    2.456 |   915.5  1166.4 | 0.149 0.938 | 1.079 |   28.7 | 6.67e-03 1.77e-02 | PASS work x1.000/x1.000; exact ok
+bh_coherent              plummer    65536 |    0.348 |    0.582 |   914.7  1164.9 | 1.000 1.000 | 1.000 |  172.2 | nan nan | na 
+bh_warp                  plummer    65536 |    0.576 |    0.780 |  1695.1  1529.7 | 1.000 1.000 | 1.000 |  193.0 | 4.40e-03 1.06e-02 | PASS TG3 PASS rms x0.659 p99 x0.602; work x1.851/x1.312
+bh_warp_list             plummer    65536 |    0.590 |    0.799 |  1695.1  1529.7 | 1.000 1.000 | 1.000 |  188.3 | 4.40e-03 1.06e-02 | PASS TG3 PASS rms x0.659 p99 x0.602; work x1.851/x1.312; exact ok
+bh_persistent_warp       plummer    65536 |    0.646 |    0.841 |  1695.1  1529.7 | 1.000 1.000 | 1.000 |  171.9 | 4.40e-03 1.06e-02 | PASS TG3 PASS rms x0.659 p99 x0.602; work x1.851/x1.312; exact ok
+bh_warp_naive            plummer    65536 |    2.357 |    2.604 | 11785.7  6363.8 | 1.000 1.000 | 1.000 |  327.7 | 3.81e-03 1.31e-02 | PASS TG3 PASS rms x0.572 p99 x0.743; work x12.873/x5.456
+bh_naive                 plummer   262144 |   16.569 |   17.056 |   976.2  1424.2 | 0.110 0.794 | 1.197 |   15.4 | 6.54e-03 1.74e-02 | PASS 
+bh_persistent_lane_naive plummer   262144 |   19.306 |   19.791 |   976.2  1424.2 | 0.108 0.823 | 1.197 |   13.3 | 6.54e-03 1.74e-02 | PASS work x1.000/x1.000; exact ok
+bh_sorted                plummer   262144 |    8.723 |    9.277 |   976.2  1424.2 | 0.184 0.963 | 1.063 |   29.3 | 6.54e-03 1.74e-02 | PASS 
+bh_persistent            plummer   262144 |    9.714 |   10.022 |   976.2  1424.2 | 0.184 0.963 | 1.063 |   26.3 | 6.54e-03 1.74e-02 | PASS work x1.000/x1.000; exact ok
+bh_persistent_lane       plummer   262144 |   11.728 |   12.208 |   976.2  1424.2 | 0.181 0.974 | 1.063 |   21.8 | 6.54e-03 1.74e-02 | PASS work x1.000/x1.000; exact ok
+bh_persistent_static     plummer   262144 |    9.764 |   10.670 |   976.2  1424.2 | 0.184 0.963 | 1.063 |   26.2 | 6.54e-03 1.74e-02 | PASS work x1.000/x1.000; exact ok
+bh_coherent              plummer   262144 |    1.061 |    1.329 |   976.2  1423.8 | 1.000 1.000 | 1.000 |  241.2 | nan nan | na 
+bh_warp                  plummer   262144 |    1.607 |    2.049 |  1747.7  1836.7 | 1.000 1.000 | 1.000 |  285.2 | 4.59e-03 1.10e-02 | PASS TG3 PASS rms x0.701 p99 x0.630; work x1.790/x1.290
+bh_warp_list             plummer   262144 |    1.697 |    2.120 |  1747.7  1836.7 | 1.000 1.000 | 1.000 |  270.0 | 4.59e-03 1.10e-02 | PASS TG3 PASS rms x0.701 p99 x0.630; work x1.790/x1.290; exact ok
+bh_persistent_warp       plummer   262144 |    1.715 |    1.977 |  1747.7  1836.7 | 1.000 1.000 | 1.000 |  267.1 | 4.59e-03 1.10e-02 | PASS TG3 PASS rms x0.701 p99 x0.630; work x1.790/x1.290; exact ok
+bh_warp_naive            plummer   262144 |   10.452 |   10.786 | 13655.3 10809.4 | 1.000 1.000 | 1.000 |  342.5 | 3.61e-03 1.25e-02 | PASS TG3 PASS rms x0.552 p99 x0.719; work x13.989/x7.590
+bh_naive                 plummer  1048576 |   78.537 |   79.727 |  1062.6  1611.8 | 0.118 0.816 | 1.186 |   14.2 | 6.60e-03 1.74e-02 | PASS 
+bh_persistent_lane_naive plummer  1048576 |   86.385 |   87.162 |  1062.6  1611.8 | 0.116 0.935 | 1.186 |   12.9 | 6.60e-03 1.74e-02 | PASS work x1.000/x1.000; exact ok
+bh_sorted                plummer  1048576 |   39.527 |   40.289 |  1062.6  1611.8 | 0.201 0.976 | 1.053 |   28.2 | 6.60e-03 1.74e-02 | PASS 
+bh_persistent            plummer  1048576 |   43.062 |   43.563 |  1062.6  1611.8 | 0.201 0.976 | 1.053 |   25.9 | 6.60e-03 1.74e-02 | PASS work x1.000/x1.000; exact ok
+bh_persistent_lane       plummer  1048576 |   58.335 |   58.961 |  1062.6  1611.8 | 0.187 0.991 | 1.053 |   19.1 | 6.60e-03 1.74e-02 | PASS work x1.000/x1.000; exact ok
+bh_persistent_static     plummer  1048576 |   47.297 |   48.280 |  1062.6  1611.8 | 0.201 0.976 | 1.053 |   23.6 | 6.60e-03 1.74e-02 | PASS work x1.000/x1.000; exact ok
+bh_coherent              plummer  1048576 |    4.300 |    4.936 |  1062.8  1611.9 | 1.000 1.000 | 1.000 |  259.2 | nan nan | na 
+bh_warp                  plummer  1048576 |    5.982 |    6.668 |  1836.6  2035.6 | 1.000 1.000 | 1.000 |  321.9 | 4.71e-03 1.10e-02 | PASS TG3 PASS rms x0.713 p99 x0.629; work x1.728/x1.263
+bh_warp_list             plummer  1048576 |    6.467 |    7.109 |  1836.6  2035.6 | 1.000 1.000 | 1.000 |  297.8 | 4.71e-03 1.10e-02 | PASS TG3 PASS rms x0.713 p99 x0.629; work x1.728/x1.263; exact ok
+bh_persistent_warp       plummer  1048576 |    6.311 |    6.947 |  1836.6  2035.6 | 1.000 1.000 | 1.000 |  305.2 | 4.71e-03 1.10e-02 | PASS TG3 PASS rms x0.713 p99 x0.629; work x1.728/x1.263; exact ok
+bh_warp_naive            plummer  1048576 |   49.382 |   50.191 | 15676.1 15035.4 | 1.000 1.000 | 1.000 |  332.9 | 3.64e-03 1.24e-02 | PASS TG3 PASS rms x0.551 p99 x0.711; work x14.752/x9.329
+bh_naive                 core       65536 |    3.964 |    4.316 |  1077.7  1404.0 | 0.091 0.552 | 1.619 |   17.8 | 1.01e-02 2.84e-02 | PASS 
+bh_persistent_lane_naive core       65536 |    5.621 |    5.896 |  1077.7  1404.0 | 0.091 0.565 | 1.619 |   12.6 | 1.01e-02 2.84e-02 | PASS work x1.000/x1.000; exact ok
+bh_sorted                core       65536 |    2.511 |    2.761 |  1077.7  1404.0 | 0.150 0.940 | 1.075 |   28.1 | 1.01e-02 2.84e-02 | PASS 
+bh_persistent            core       65536 |    2.767 |    3.099 |  1077.7  1404.0 | 0.150 0.940 | 1.075 |   25.5 | 1.01e-02 2.84e-02 | PASS work x1.000/x1.000; exact ok
+bh_persistent_lane       core       65536 |    3.590 |    3.897 |  1077.7  1404.0 | 0.149 0.942 | 1.075 |   19.7 | 1.01e-02 2.84e-02 | PASS work x1.000/x1.000; exact ok
+bh_persistent_static     core       65536 |    2.553 |    2.875 |  1077.7  1404.0 | 0.150 0.940 | 1.075 |   27.7 | 1.01e-02 2.84e-02 | PASS work x1.000/x1.000; exact ok
+bh_coherent              core       65536 |    0.552 |    0.777 |  1077.1  1403.7 | 1.000 1.000 | 1.000 |  127.9 | nan nan | na 
+bh_warp                  core       65536 |    0.729 |    0.949 |  1865.4  1750.1 | 1.000 1.000 | 1.000 |  167.7 | 7.29e-03 2.51e-02 | PASS TG3 PASS rms x0.720 p99 x0.886; work x1.731/x1.246
+bh_warp_list             core       65536 |    0.753 |    0.971 |  1865.4  1750.1 | 1.000 1.000 | 1.000 |  162.4 | 7.29e-03 2.51e-02 | PASS TG3 PASS rms x0.720 p99 x0.886; work x1.731/x1.246; exact ok
+bh_persistent_warp       core       65536 |    0.797 |    1.029 |  1865.4  1750.1 | 1.000 1.000 | 1.000 |  153.5 | 7.29e-03 2.51e-02 | PASS TG3 PASS rms x0.720 p99 x0.886; work x1.731/x1.246; exact ok
+bh_naive                 core      262144 |   21.829 |   22.116 |  1119.1  1693.1 | 0.110 0.587 | 1.541 |   13.4 | 1.01e-02 2.86e-02 | PASS 
+bh_persistent_lane_naive core      262144 |   24.904 |   25.146 |  1119.1  1693.1 | 0.111 0.694 | 1.541 |   11.8 | 1.01e-02 2.86e-02 | PASS work x1.000/x1.000; exact ok
+bh_sorted                core      262144 |   11.194 |   11.379 |  1119.1  1693.1 | 0.196 0.964 | 1.057 |   26.2 | 1.01e-02 2.86e-02 | PASS 
+bh_persistent            core      262144 |   12.092 |   12.644 |  1119.1  1693.1 | 0.196 0.964 | 1.057 |   24.3 | 1.01e-02 2.86e-02 | PASS work x1.000/x1.000; exact ok
+bh_persistent_lane       core      262144 |   15.435 |   15.237 |  1119.1  1693.1 | 0.192 0.975 | 1.057 |   19.0 | 1.01e-02 2.86e-02 | PASS work x1.000/x1.000; exact ok
+bh_persistent_static     core      262144 |   12.483 |   12.775 |  1119.1  1693.1 | 0.196 0.964 | 1.057 |   23.5 | 1.01e-02 2.86e-02 | PASS work x1.000/x1.000; exact ok
+bh_coherent              core      262144 |    1.300 |    1.583 |  1119.0  1693.2 | 1.000 1.000 | 1.000 |  225.6 | nan nan | na 
+bh_warp                  core      262144 |    1.759 |    2.015 |  1895.9  2103.0 | 1.000 1.000 | 1.000 |  282.5 | 7.95e-03 2.55e-02 | PASS TG3 PASS rms x0.790 p99 x0.893; work x1.694/x1.242
+bh_warp_list             core      262144 |    1.875 |    2.149 |  1895.9  2103.0 | 1.000 1.000 | 1.000 |  265.1 | 7.95e-03 2.55e-02 | PASS TG3 PASS rms x0.790 p99 x0.893; work x1.694/x1.242; exact ok
+bh_persistent_warp       core      262144 |    1.891 |    2.179 |  1895.9  2103.0 | 1.000 1.000 | 1.000 |  262.8 | 7.95e-03 2.55e-02 | PASS TG3 PASS rms x0.790 p99 x0.893; work x1.694/x1.242; exact ok
+bh_naive                 core     1048576 |   93.549 |   94.220 |  1214.4  1909.3 | 0.116 0.608 | 1.510 |   13.6 | 1.02e-02 2.84e-02 | PASS 
+bh_persistent_lane_naive core     1048576 |  106.657 |  107.083 |  1214.4  1909.3 | 0.124 0.906 | 1.510 |   11.9 | 1.02e-02 2.84e-02 | PASS work x1.000/x1.000; exact ok
+bh_sorted                core     1048576 |   49.541 |   50.092 |  1214.4  1909.3 | 0.215 0.977 | 1.048 |   25.7 | 1.02e-02 2.84e-02 | PASS 
+bh_persistent            core     1048576 |   53.208 |   53.854 |  1214.4  1909.3 | 0.215 0.977 | 1.048 |   23.9 | 1.02e-02 2.84e-02 | PASS work x1.000/x1.000; exact ok
+bh_persistent_lane       core     1048576 |   70.221 |   71.060 |  1214.4  1909.3 | 0.199 0.991 | 1.048 |   18.1 | 1.02e-02 2.84e-02 | PASS work x1.000/x1.000; exact ok
+bh_persistent_static     core     1048576 |   55.843 |   57.382 |  1214.4  1909.3 | 0.215 0.977 | 1.048 |   22.8 | 1.02e-02 2.84e-02 | PASS work x1.000/x1.000; exact ok
+bh_coherent              core     1048576 |    5.111 |    5.736 |  1214.5  1909.3 | 1.000 1.000 | 1.000 |  249.2 | nan nan | na 
+bh_warp                  core     1048576 |    6.774 |    7.415 |  1994.6  2337.7 | 1.000 1.000 | 1.000 |  308.8 | 8.64e-03 2.57e-02 | PASS TG3 PASS rms x0.845 p99 x0.905; work x1.642/x1.224
+bh_warp_list             core     1048576 |    7.310 |    7.953 |  1994.6  2337.7 | 1.000 1.000 | 1.000 |  286.1 | 8.64e-03 2.57e-02 | PASS TG3 PASS rms x0.845 p99 x0.905; work x1.642/x1.224; exact ok
+bh_persistent_warp       core     1048576 |    7.125 |    7.811 |  1994.6  2337.7 | 1.000 1.000 | 1.000 |  293.5 | 8.64e-03 2.57e-02 | PASS TG3 PASS rms x0.845 p99 x0.905; work x1.642/x1.224; exact ok
+
+## Derived (A)
+  P1_core_1048576              0.9311
+  P1_core_262144               0.9257
+  P1_core_65536                0.9075
+  P1_plummer_1048576           0.9179
+  P1_plummer_262144            0.8981
+  P1_plummer_65536             0.8944
+  P3_core_1048576              0.7055
+  P3_core_262144               0.7253
+  P3_core_65536                0.6994
+  P3_plummer_1048576           0.6776
+  P3_plummer_262144            0.7438
+  P3_plummer_65536             0.6389
+  P4_core_1048576              0.8771
+  P4_core_262144               0.8765
+  P4_core_65536                0.7052
+  P4_plummer_1048576           0.9092
+  P4_plummer_262144            0.8582
+  P4_plummer_65536             0.6756
+  P6eff4_core_1048576          0.6080
+  P6eff4_core_262144           0.5870
+  P6eff4_core_65536            0.5520
+  P6eff4_plummer_1048576       0.8160
+  P6eff4_plummer_262144        0.7940
+  P6eff4_plummer_65536         0.7520
+  P6eff_core_1048576           0.9060
+  P6eff_core_262144            0.6940
+  P6eff_core_65536             0.5650
+  P6eff_plummer_1048576        0.9350
+  P6eff_plummer_262144         0.8230
+  P6eff_plummer_65536          0.7560
+  P7_core_1048576              0.9507
+  P7_core_262144               0.9302
+  P7_core_65536                0.9151
+  P7_plummer_1048576           0.9479
+  P7_plummer_262144            0.9367
+  P7_plummer_65536             0.8907
+  P8_core_1048576              0.8872
+  P8_core_262144               0.8968
+  P8_core_65536                0.9835
+  P8_plummer_1048576           0.8357
+  P8_plummer_262144            0.8935
+  P8_plummer_65536             0.8637
+  T5_T7_core_1048576           7.3136
+  T5_T7_core_262144            6.3633
+  T5_T7_core_65536             3.4437
+  T5_T7_plummer_1048576        6.6075
+  T5_T7_plummer_262144         5.4295
+  T5_T7_plummer_65536          3.1352
+  T5_TC_core_1048576           9.6934
+  T5_TC_core_262144            8.6078
+  T5_TC_core_65536             4.5494
+  T5_TC_plummer_1048576        9.1928
+  T5_TC_plummer_262144         8.2227
+  T5_TC_plummer_65536          5.1818
+  T7_TC_core_1048576           1.3254
+  T7_TC_core_262144            1.3527
+  T7_TC_core_65536             1.3211
+  T7_TC_plummer_1048576        1.3913
+  T7_TC_plummer_262144         1.5145
+  T7_TC_plummer_65536          1.6528
+  Tw_Tl_core_1048576           0.9266
+  Tw_Tl_core_262144            0.9383
+  Tw_Tl_core_65536             0.9688
+  Tw_Tl_plummer_1048576        0.9251
+  Tw_Tl_plummer_262144         0.9469
+  Tw_Tl_plummer_65536          0.9758
+  W16I_1048576                 14.7526
+  W16I_262144                  13.9882
+  W16I_65536                   12.8735
+  W16T_1048576                 1.5904
+  W16T_262144                  1.5853
+  W16T_65536                   1.1972
+  W17_1048576                  8.2549
+  W17_262144                   6.5053
+  W17_65536                    4.0959
+  eff7_core_1048576            1.0000
+  eff7_core_262144             1.0000
+  eff7_core_65536              1.0000
+  eff7_plummer_1048576         1.0000
+  eff7_plummer_262144          1.0000
+  eff7_plummer_65536           1.0000
+  effC_core_1048576            1.0000
+  effC_core_262144             1.0000
+  effC_core_65536              1.0000
+  effC_plummer_1048576         1.0000
+  effC_plummer_262144          1.0000
+  effC_plummer_65536           1.0000
+  f_core_1048576               0.8760
+  f_core_262144                0.8597
+  f_core_65536                 0.8162
+  f_plummer_1048576            0.8511
+  f_plummer_262144             0.8030
+  f_plummer_65536              0.6946
+  rate7_core_1048576           308.8000
+  rate7_core_262144            282.5000
+  rate7_core_65536             167.7000
+  rate7_plummer_1048576        321.9000
+  rate7_plummer_262144         285.2000
+  rate7_plummer_65536          193.0000
+  rateC_core_1048576           249.2000
+  rateC_core_262144            225.6000
+  rateC_core_65536             127.9000
+  rateC_plummer_1048576        259.2000
+  rateC_plummer_262144         241.2000
+  rateC_plummer_65536          172.2000
+  static_vs_dyn_core_1048576   1.0495
+  static_vs_dyn_core_262144    1.0323
+  static_vs_dyn_core_65536     0.9227
+  static_vs_dyn_plummer_1048576 1.0983
+  static_vs_dyn_plummer_262144 1.0052
+  static_vs_dyn_plummer_65536  1.0355
+  tg3p99_core_1048576          0.9050
+  tg3p99_core_262144           0.8930
+  tg3p99_core_65536            0.8860
+  tg3p99_plummer_1048576       0.6290
+  tg3p99_plummer_262144        0.6300
+  tg3p99_plummer_65536         0.6020
+  tg3rms_core_1048576          0.8450
+  tg3rms_core_262144           0.7900
+  tg3rms_core_65536            0.7200
+  tg3rms_plummer_1048576       0.7130
+  tg3rms_plummer_262144        0.7010
+  tg3rms_plummer_65536         0.6590
+  tot5_tot7_core_1048576       6.7558
+  tot5_tot7_core_262144        5.6464
+  tot5_tot7_core_65536         2.9103
+  tot5_tot7_plummer_1048576    6.0419
+  tot5_tot7_plummer_262144     4.5278
+  tot5_tot7_plummer_65536      2.6164
+  uI_core_1048576              1.6425
+  uI_core_262144               1.6941
+  uI_core_65536                1.7309
+  uI_plummer_1048576           1.7284
+  uI_plummer_262144            1.7903
+  uI_plummer_65536             1.8516
+  uV_core_1048576              1.2244
+  uV_core_262144               1.2421
+  uV_core_65536                1.2465
+  uV_plummer_1048576           1.2629
+  uV_plummer_262144            1.2896
+  uV_plummer_65536             1.3115
+  wmmC_core_1048576            1.0000
+  wmmC_core_262144             1.0000
+  wmmC_core_65536              1.0000
+  wmmC_plummer_1048576         1.0000
+  wmmC_plummer_262144          1.0000
+  wmmC_plummer_65536           1.0000
+
+## A2 interleaved #6 repeats at 1M (ratio sibling/arm per repetition)
+  bh_naive-bh_persistent_lane_naive      core    ratios 0.8769 0.8784 0.8764  median 0.8769  spread 0.0020
+  bh_naive-bh_persistent_lane_naive      plummer ratios 0.9134 0.9127 0.8889  median 0.9127  spread 0.0245
+  bh_sorted-bh_persistent                core    ratios 0.9258 0.9279 0.9316  median 0.9279  spread 0.0057
+  bh_sorted-bh_persistent                plummer ratios 0.9265 0.9275 0.9293  median 0.9275  spread 0.0028
+  bh_sorted-bh_persistent_lane           core    ratios 0.6969 0.7060 0.6996  median 0.6996  spread 0.0091
+  bh_sorted-bh_persistent_lane           plummer ratios 0.6856 0.6777 0.6910  median 0.6856  spread 0.0133
+  bh_sorted-bh_persistent_static         core    ratios 0.8662 0.8974 0.8291  median 0.8662  spread 0.0683
+  bh_sorted-bh_persistent_static         plummer ratios 0.8383 0.8560 0.8521  median 0.8521  spread 0.0178
+  bh_warp-bh_persistent_warp             core    ratios 0.9450 0.9551 0.9475  median 0.9475  spread 0.0101
+  bh_warp-bh_persistent_warp             plummer ratios 0.9470 0.9463 0.9514  median 0.9470  spread 0.0052
+
+## Timelines (B): median over 5 launches
+tlb_bh_sorted_core_1048576.csv                 sm_eff 0.990 tail 0.9% | slot fill 0.977 | dur max/mean 2.04 | span 52151 us clk 2.75
+tlb_bh_sorted_core_65536.csv                   sm_eff 0.812 tail 17.1% | slot fill 0.722 | dur max/mean 1.39 | span 2509 us clk 2.75
+tlb_bh_sorted_plummer_1048576.csv              sm_eff 0.987 tail 1.0% | slot fill 0.977 | dur max/mean 1.66 | span 40755 us clk 2.74
+tlb_bh_sorted_plummer_65536.csv                sm_eff 0.886 tail 10.6% | slot fill 0.830 | dur max/mean 1.21 | span 1857 us clk 2.75
+tlb_bh_warp_core_1048576.csv                   sm_eff 0.980 tail 1.9% | slot fill 0.953 | dur max/mean 2.35 | span 9343 us clk 2.70
+tlb_bh_warp_core_65536.csv                     sm_eff 0.734 tail 26.7% | slot fill 0.594 | dur max/mean 1.68 | span 824 us clk 2.75
+tlb_bh_warp_plummer_1048576.csv                sm_eff 0.981 tail 1.8% | slot fill 0.951 | dur max/mean 1.86 | span 7896 us clk 2.67
+tlb_bh_warp_plummer_65536.csv                  sm_eff 0.808 tail 20.2% | slot fill 0.654 | dur max/mean 1.53 | span 660 us clk 2.74
+tlw_bh_coherent_core_1048576.csv               sm_eff 0.988 tail 1.3% | slot fill 0.930 | dur max/mean 2.00 | span 5713 us clk 2.66
+tlw_bh_coherent_core_65536.csv                 sm_eff 0.721 tail 25.5% | slot fill 0.530 | dur max/mean 1.89 | span 577 us clk 2.75
+tlw_bh_coherent_plummer_1048576.csv            sm_eff 0.984 tail 1.6% | slot fill 0.928 | dur max/mean 1.98 | span 5192 us clk 2.68
+tlw_bh_coherent_plummer_65536.csv              sm_eff 0.860 tail 13.6% | slot fill 0.679 | dur max/mean 1.47 | span 365 us clk 2.75
+tlw_bh_persistent_core_1048576.csv             sm_eff 0.994 tail 0.5% | slot fill 0.980 | dur max/mean 2.33 | span 56434 us clk 2.75
+tlw_bh_persistent_core_65536.csv               sm_eff 0.917 tail 6.6% | slot fill 0.721 | dur max/mean 1.39 | span 2845 us clk 2.75
+tlw_bh_persistent_lane_core_1048576.csv        sm_eff 0.983 tail 1.1% | slot fill 0.959 | dur max/mean 1.04 | span 74525 us clk 2.75
+tlw_bh_persistent_lane_core_65536.csv          sm_eff 0.753 tail 26.9% | slot fill 0.549 | dur max/mean 1.82 | span 3711 us clk 2.74
+tlw_bh_persistent_lane_naive_core_1048576.csv  sm_eff 0.987 tail 0.7% | slot fill 0.965 | dur max/mean 1.04 | span 114723 us clk 2.75
+tlw_bh_persistent_lane_naive_core_65536.csv    sm_eff 0.754 tail 30.7% | slot fill 0.642 | dur max/mean 1.56 | span 5732 us clk 2.74
+tlw_bh_persistent_lane_naive_plummer_1048576.csv sm_eff 0.985 tail 1.1% | slot fill 0.965 | dur max/mean 1.04 | span 93039 us clk 2.75
+tlw_bh_persistent_lane_naive_plummer_65536.csv sm_eff 0.738 tail 32.9% | slot fill 0.633 | dur max/mean 1.58 | span 4315 us clk 2.75
+tlw_bh_persistent_lane_plummer_1048576.csv     sm_eff 0.980 tail 1.0% | slot fill 0.957 | dur max/mean 1.04 | span 60279 us clk 2.75
+tlw_bh_persistent_lane_plummer_65536.csv       sm_eff 0.730 tail 32.0% | slot fill 0.588 | dur max/mean 1.70 | span 2982 us clk 2.75
+tlw_bh_persistent_plummer_1048576.csv          sm_eff 0.991 tail 0.6% | slot fill 0.975 | dur max/mean 1.69 | span 45254 us clk 2.75
+tlw_bh_persistent_plummer_65536.csv            sm_eff 0.925 tail 5.3% | slot fill 0.842 | dur max/mean 1.19 | span 2062 us clk 2.75
+tlw_bh_persistent_warp_core_1048576.csv        sm_eff 0.977 tail 2.3% | slot fill 0.942 | dur max/mean 3.87 | span 9163 us clk 2.67
+tlw_bh_persistent_warp_core_65536.csv          sm_eff 0.855 tail 14.4% | slot fill 0.575 | dur max/mean 1.74 | span 863 us clk 2.75
+tlw_bh_persistent_warp_plummer_1048576.csv     sm_eff 0.976 tail 2.5% | slot fill 0.939 | dur max/mean 3.51 | span 8446 us clk 2.70
+tlw_bh_persistent_warp_plummer_65536.csv       sm_eff 0.830 tail 17.3% | slot fill 0.639 | dur max/mean 1.56 | span 687 us clk 2.74
+tlw_bh_sorted_core_1048576.csv                 sm_eff 0.990 tail 1.1% | slot fill 0.946 | dur max/mean 2.32 | span 51303 us clk 2.74
+tlw_bh_sorted_core_65536.csv                   sm_eff 0.811 tail 18.3% | slot fill 0.691 | dur max/mean 1.45 | span 2494 us clk 2.75
+tlw_bh_sorted_plummer_1048576.csv              sm_eff 0.988 tail 1.0% | slot fill 0.945 | dur max/mean 1.71 | span 42668 us clk 2.74
+tlw_bh_sorted_plummer_65536.csv                sm_eff 0.897 tail 9.2% | slot fill 0.805 | dur max/mean 1.24 | span 1815 us clk 2.75
+tlw_bh_warp_core_1048576.csv                   sm_eff 0.985 tail 1.5% | slot fill 0.902 | dur max/mean 2.61 | span 8493 us clk 2.70
+tlw_bh_warp_core_65536.csv                     sm_eff 0.733 tail 27.3% | slot fill 0.556 | dur max/mean 1.80 | span 748 us clk 2.75
+tlw_bh_warp_plummer_1048576.csv                sm_eff 0.980 tail 1.9% | slot fill 0.892 | dur max/mean 2.25 | span 7534 us clk 2.70
+tlw_bh_warp_plummer_65536.csv                  sm_eff 0.792 tail 21.8% | slot fill 0.584 | dur max/mean 1.71 | span 617 us clk 2.75
+
+## Set C (leaf x block, plummer, theta 0.5): traversal ms
+  bh_naive   N=  262144 best leaf 16 block 256 trav 17.174 | l4b64=18.09 l4b128=18.20 l4b256=17.75 l8b64=17.82 l8b128=17.94 l8b256=17.58 l16b64=17.66 l16b128=17.91 l16b256=17.17 l32b64=18.29 l32b128=18.23 l32b256=17.35
+  bh_sorted  N=  262144 best leaf 32 block 256 trav 8.335 | l4b64=10.32 l4b128=9.78 l4b256=8.84 l8b64=10.15 l8b128=9.63 l8b256=8.41 l16b64=9.96 l16b128=9.04 l16b256=8.51 l32b64=10.03 l32b128=9.49 l32b256=8.34
+  bh_warp    N=  262144 best leaf 16 block 128 trav 1.597 | l4b64=1.67 l4b128=1.64 l4b256=1.68 l8b64=1.63 l8b128=1.62 l8b256=1.70 l16b64=1.61 l16b128=1.60 l16b256=1.61 l32b64=1.70 l32b128=1.75 l32b256=1.72
+  bh_naive   N= 1048576 best leaf 32 block 256 trav 77.068 | l4b64=83.02 l4b128=82.45 l4b256=80.65 l8b64=81.75 l8b128=81.37 l8b256=79.38 l16b64=80.46 l16b128=79.96 l16b256=77.95 l32b64=79.89 l32b128=79.45 l32b256=77.07
+  bh_sorted  N= 1048576 best leaf 32 block 256 trav 35.301 | l4b64=44.49 l4b128=44.05 l4b256=39.44 l8b64=44.60 l8b128=42.97 l8b256=38.92 l16b64=42.72 l16b128=42.18 l16b256=37.90 l32b64=42.80 l32b128=40.33 l32b256=35.30
+  bh_warp    N= 1048576 best leaf  8 block 256 trav 5.970 | l4b64=6.11 l4b128=6.12 l4b256=6.09 l8b64=5.98 l8b128=6.00 l8b256=5.97 l16b64=5.97 l16b128=5.99 l16b256=5.98 l32b64=6.24 l32b128=6.26 l32b256=6.27
+  best-vs-best T5/T7 at 1M = 5.913 (leaf-16 b128: 7.040)
+
+## Set D (occupancy, plummer 262144): lane rate G/s at padded blocks/SM
+  bh_sorted    B1(res 1): 12.4 B2(res 2): 19.9 B4(res 4): 20.7 B8(res 8): 19.9 B12(res 11): 19.2 | unpadded: 29.0
+  bh_coherent  B1(res 1): 33.0 B2(res 2): 60.3 B4(res 4): 106.8 B8(res 8): 170.6 B12(res 11): 186.8 | unpadded: 241.9
+  bh_warp      B1(res 1): 42.6 B2(res 2): 77.5 B4(res 4): 137.9 B8(res 8): 223.8 B12(res 11): 257.3 | unpadded: 288.6
+
+## Set E (crossover)
+  N=  8192 best AP E_multi_b256q16_8192 0.0657 ms | bh_warp 0.4426 (AP/tree 0.15) | list 0.4206
+  N= 16384 best AP E_multi_b256q8_16384 0.2390 ms | bh_warp 0.4956 (AP/tree 0.48) | list 0.5222
+  N= 24576 best AP E_multi_b512q8_24576 0.4968 ms | bh_warp 0.7186 (AP/tree 0.69) | list 0.6754
+  N= 32768 best AP E_multi_b256q8_32768 0.8899 ms | bh_warp 0.6922 (AP/tree 1.29) | list 0.7145
+  N= 49152 best AP E_tuned_b128u0_49152 1.9175 ms | bh_warp 0.7330 (AP/tree 2.62) | list 0.7759
+  N= 65536 best AP E_multi_b128q2_65536 3.4863 ms | bh_warp 0.7885 (AP/tree 4.42) | list 0.8328
+  crossover N (bh_warp) = 29164
+
+## Set F (theta sweep, plummer 262144) and G (theta 0)
+  theta 0.3: union I x1.553, T5/T7 8.082, TG3 PASS rms x0.809 p99 x0.769
+  theta 0.5: union I x1.790, T5/T7 5.429, TG3 PASS rms x0.701 p99 x0.630
+  theta 0.7: union I x2.076, T5/T7 3.995, TG3 PASS rms x0.888 p99 x0.964
+  theta 1.0: union I x2.113, T5/T7 3.049, TG3 PASS rms x0.567 p99 x0.532
+  theta 0: bh_warp D-009 PASS trav 7.617 vs bh_sorted 7.773
+
+## Scorecard: 39 HIT / 22 MISS (61 items) -> scorecard.csv
+  P2-C1    HIT    control lane-rate, Plummer (G/s)                             | rateC_plummer_65536=172.2; rateC_plummer_262144=241.2; rateC_plummer_1048576=259.2
+  P2-C2    HIT    control lane-rate, core (G/s)                                | rateC_core_65536=127.9; rateC_core_1048576=249.2
+  P2-C3    HIT    T5/TC Plummer                                                | T5_TC_plummer_65536=5.182; T5_TC_plummer_262144=8.223; T5_TC_plummer_1048576=9.193
+  P2-C4    HIT    T5/TC core                                                   | T5_TC_core_65536=4.549; T5_TC_core_1048576=9.693
+  P2-C5    HIT    T5/TC grows with N (Plummer)                                 | 5.182 < 8.223 < 9.193
+  P2-C6    HIT    (C) control SIMT eff 1.000 both sites, per-warp max/mean 1.0 | min 1.0000 max 1.0000
+  P2-W1    HIT  A union interactions ratio, Plummer                            | uI_plummer_65536=1.852; uI_plummer_262144=1.79; uI_plummer_1048576=1.728
+  P2-W2    HIT    union interactions ratio, core                               | uI_core_65536=1.731; uI_core_262144=1.694; uI_core_1048576=1.642
+  P2-W3    HIT  A union pops ratio, Plummer                                    | uV_plummer_65536=1.311; uV_plummer_262144=1.29; uV_plummer_1048576=1.263
+  P2-W4    HIT    union pops ratio, core                                       | uV_core_65536=1.247; uV_core_262144=1.242; uV_core_1048576=1.224
+  P2-W5    HIT  A union interaction ratio flat in N: |r(1M) - r(65536)| <= 0.1 | 0.1232
+  P2-W6    HIT    (C) bh_warp SIMT eff >= 0.999 both sites                     | min 1.0000
+  P2-W7    HIT  A T7/TC, Plummer and core, all N                               | T7_TC_plummer_65536=1.653; T7_TC_plummer_262144=1.514; T7_TC_plummer_1048576=1.391; T7_TC_core_65536=1.321; T7
+  P2-W8    HIT    #7 speedup T5/T7 Plummer                                     | T5_T7_plummer_65536=3.135; T5_T7_plummer_262144=5.429; T5_T7_plummer_1048576=6.608
+  P2-W9    HIT    #7 speedup T5/T7 core                                        | T5_T7_core_65536=3.444; T5_T7_core_262144=6.363; T5_T7_core_1048576=7.314
+  P2-W10   HIT    total speedup Plummer                                        | tot5_tot7_plummer_65536=2.616; tot5_tot7_plummer_262144=4.528; tot5_tot7_plummer_1048576=6.042
+  P2-W11   HIT    bh_warp real traversal rate Plummer (G/s)                    | rate7_plummer_65536=193; rate7_plummer_262144=285.2; rate7_plummer_1048576=321.9
+  P2-W12   HIT    T5/T7 grows with N (Plummer and core)                        | plummer 3.135 5.429 6.608; core 3.444 6.363 7.314
+  P2-W13   MISS A T(bh_warp)/T(bh_warp_list), 6 cells                          | Tw_Tl_plummer_65536=0.9758; Tw_Tl_plummer_262144=0.9469; Tw_Tl_plummer_1048576=0.9251; Tw_Tl_core_65536=0.9688
+  P2-W14a  HIT  A TG3 rms ratio Plummer (262144, 1M)                           | tg3rms_plummer_262144=0.701; tg3rms_plummer_1048576=0.713
+  P2-W14b  HIT  A TG3 rms ratio core                                           | tg3rms_core_262144=0.79; tg3rms_core_1048576=0.845
+  P2-W14c  HIT  A TG3 p99 ratio Plummer                                        | tg3p99_plummer_262144=0.63; tg3p99_plummer_1048576=0.629
+  P2-W14d  HIT  A TG3 p99 ratio core                                           | tg3p99_core_262144=0.893; tg3p99_core_1048576=0.905
+  P2-W15   HIT    TG3 passes in every run (A, F)                               | 60/60 PASS
+  P2-W16   MISS   warp_naive vs #4: interactions ratio (3 N) and T4/T(warp_nai | W16I_65536=12.87; W16I_262144=13.99; W16I_1048576=14.75; W16T_65536=1.197; W16T_1048576=1.59
+  P2-W17   HIT    T(warp_naive) > 3 T(bh_warp) at every N                      | 4.10 6.51 8.25
+  P2-W18   HIT    bh_warp core 65536 warp-unit SM eff                          | smeffw_bh_warp_core_65536=0.7332
+  P2-P1    MISS   warp queue on #5, Plummer                                    | P1_plummer_65536=0.8944; P1_plummer_262144=0.8981; P1_plummer_1048576=0.9179
+  P2-P2    MISS   warp queue on #5, core                                       | P1_core_65536=0.9075; P1_core_262144=0.9257; P1_core_1048576=0.9311
+  P2-P3    MISS A lane refill on #5, Plummer and core                          | P3_plummer_65536=0.6389; P3_plummer_262144=0.7438; P3_plummer_1048576=0.6776; P3_core_65536=0.6994; P3_core_26
+  P2-P4    MISS   lane refill on #4, Plummer                                   | P4_plummer_65536=0.6756; P4_plummer_262144=0.8582; P4_plummer_1048576=0.9092
+  P2-P5    MISS   lane refill on #4, core                                      | P4_core_65536=0.7052; P4_core_262144=0.8765; P4_core_1048576=0.8771
+  P2-P6    MISS   eff_pop of lane_naive: #4 +-0.05 / >= 0.88 / >= 0.93         | plummer: 0.756 (#4 0.752) / 0.823 / 0.935; core: 0.565 (#4 0.552) / 0.694 / 0.906
+  P2-P7    MISS   warp queue on #7, Plummer and core                           | P7_plummer_65536=0.8907; P7_plummer_262144=0.9367; P7_plummer_1048576=0.9479; P7_core_65536=0.9151; P7_core_26
+  P2-P8    MISS   static partition on #5, Plummer and core                     | P8_plummer_65536=0.8637; P8_plummer_262144=0.8935; P8_plummer_1048576=0.8357; P8_core_65536=0.9835; P8_core_26
+  P2-P9    MISS   lane-refill gain on #4: core > Plummer at 262144 and 1M      | core 0.877 0.877 vs plummer 0.858 0.909
+  P2-P10   HIT    lane-refill gain on #4: 1M >= 262144 > 65536 (both ICs)      | plummer 0.676 0.858 0.909; core 0.705 0.877 0.877
+  P2-P11   MISS   T(static) >= 0.99 T(warp queue) in every cell                | 1.036 1.005 1.098 0.923 1.032 1.050
+  P2-P12   HIT    (C) persistent runs bitwise equal + equal counts             | 36/36
+  P2-P13   HIT    1M warp-unit fill bh_sorted in [0.90, 0.98], < block fill; p | sorted w 0.945 b 0.977, persistent w 0.975; sorted w 0.946 b 0.977, persistent w 0.980
+  P2-L1    MISS   best leaf for bh_sorted in [8, 16] (both N)                  | 262144: 32, 1M: 32
+  P2-L2    MISS   best leaf for bh_naive in [8, 16] (both N)                   | 262144: 16, 1M: 32
+  P2-L3    MISS   best leaf for bh_warp in [16, 32] (both N)                   | 262144: 16, 1M: 8
+  P2-L4    MISS   best block at leaf 16 within 5% of block 128                 | 0.043 0.026 0.063 0.113 0.000 0.003
+  P2-L5    HIT    best-vs-best T5/T7 at 1M within +-25% of the leaf-16 b128 va | best-best 5.913 vs 7.040 (-16.0%)
+  P2-L6    MISS   bh_warp leaf 32/16: I ratio, V ratio (both N)                | L6I_262144=1.504; L6I_1048576=1.396; L6V_262144=0.9115; L6V_1048576=0.9284
+  P2-L7    MISS   bh_sorted leaf 8/16: I ratio, V ratio (both N)               | L7I_262144=0.8413; L7I_1048576=0.8587; L7V_262144=1.034; L7V_1048576=1.029
+  P2-O1    HIT    bh_sorted rate(12)/rate(4) <= 1.35                           | 0.928
+  P2-O2    MISS   bh_coherent rate(12)/rate(4) >= 1.8                          | 1.749
+  P2-O3    HIT    bh_warp rate(12)/rate(4) >= 1.6                              | 1.866
+  P2-O4    HIT    rate(2)/rate(1) >= 1.6 for each                              | 1.605 1.827 1.819
+  P2-O5    MISS   L1: unpadded/padded-12 speed, bh_sorted                      | O_L1_bh_sorted=1.512
+  P2-O6    MISS   L1: unpadded/padded-12 speed, bh_coherent and bh_warp        | O_L1_bh_coherent=1.295; O_L1_bh_warp=1.122
+  P2-D1    HIT    share of the #5-control gap closed by #7 (Plummer)           | f_plummer_65536=0.6946; f_plummer_1048576=0.8511
+  P2-D2    MISS   #7 SM-level loss at 1M (1 - warp-unit fill) <= 0.10          | 0.108 0.098
+  P2-X1    HIT    crossover N bh_warp vs best all-pairs                        | X1=2.916e+04
+  P2-X2    HIT    bh_warp crossover below 39,700                               | 29164
+  P2-X3    HIT    bh_warp total speedup over best all-pairs                    | X3_65536=4.421; X3_262144=24.88; X3_1048576=123.3
+  P2-X4    HIT    union ratio grows with theta (0.3 < 0.5 < 1.0) and T5/T7(0.3 | uI 1.553 1.790 2.113; T5/T7 8.082 vs 3.049
+  P2-X5    HIT    theta 0: bh_warp D-009 PASS, traversal within +-15% of bh_so | D-009 PASS, ratio 0.980
+  P2-G1    HIT    every A-G run exits 0 with all gates PASS                    | 395 runs, gate FAILs: []

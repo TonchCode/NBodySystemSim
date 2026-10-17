@@ -1,0 +1,9 @@
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# occupancy cap: --occ-blocks 4 -> 24576 B padding per block -> resident 4 blocks/SM
+# launch  grid=2048 block=128 q=1 prefetch=-1 unroll=-1  regs=40 smem=24576 B  resident 4 blocks/SM (33% occupancy)  blocks/SM=25.60 (busiest 26)  waves=6.40
+# ic=plummer seed=42 theta=0.5 leaf=16
+kernel=bh_warp n=262144 block=128 q=1 prefetch=-1 unroll=-1 runs=11 batch=1  median=3.5881 ms  min=3.5592  max=4.1633  19152.074 G N^2-equivalent interactions/s (not the tree rate; see the work: line)
+phases (median of 11, ms):  keys 0.0287  sort 0.1700  tree 0.0870  order 0.0010  traverse 3.3219  | build(keys+sort+tree) 0.2857  order 0.0010  traverse 3.3219  sum 3.6372  (production total 3.5881)
+work: 1747.7 interactions/body (4.582e+08 total), 1836.7 nodes popped/body | per-warp max/mean 1.000 (median warp 1.000) | SIMT eff interactions 1.000, pops 1.000 | warp-cost max/mean 1.51 | traversal 137.9 G interactions/s
+rates: real 127.69 G interactions/s over the full pipeline (3.5881 ms), 137.92 over the traversal; N^2-equivalent 19152.1 G/s
+gates: not evaluated (--no-validate)

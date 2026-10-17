@@ -1023,3 +1023,76 @@ The phase-2 scorecard is a committed table file (`results/<date>_tree_round2/sco
 per pre-registered item ID, with the range, the measured value, the source log, HIT/MISS, and an
 `anchored` flag for items built on a pre-registration observation. No item is split or reinterpreted
 after registration; a disputed reading is listed as disputed.
+
+---
+
+## 18. Tree round-2 outcome (2026-10-17)
+
+Predictions committed before the runs (`docs/predictions/2026-10-17-tree-round2.md`, with a dated
+post-registration note on scoring readings). Data: `results/2026-10-17_tree_round2/` (the harness
+blocked the agent from writing `summary.md`; its content is in the architect's phase-2 report).
+**Session label: 20–22% idle GPU utilisation from desktop applications**, measured cost +2.4–2.7%
+on round-1 reference points; ratios are taken from adjacent runs. Scorecard (committed table
+`scorecard.csv`, one row per ID): **39 HIT / 22 MISS of 61**. §17 above is left as written.
+
+### 18.1 R3 #7 held
+- Traversal T5/T7: Plummer 3.1 / 5.4 / 6.6×, core 3.4 / 6.4 / 7.3× at 65536 / 262144 / 1M; total
+  2.6 / 4.5 / 6.0× (Plummer). Best vs best (leaf × block, θ = 0.5): **5.9× at 1M** (#5 leaf 32
+  b256, 35.30 ms; #7 leaf 8 b256, 5.97 ms), 5.2× at 262144.
+- Union work: interactions ×1.64–1.85, pops ×1.22–1.31, flat in N (pre-registered, anchored, HIT).
+  SIMT efficiency 1.000 at both sites. Error drops (rms ×0.66–0.85, p99 ×0.60–0.91; TG3 60/60).
+- Real traversal rate 193 / 285 / 322 G/s (Plummer): about 11× #5's 28–33 G/s.
+- The list variant is 2–7% **slower** than the direct walk (W13 MISS): once the walk is
+  coherent, interleaving pops and interactions costs nothing, and the list adds STS/LDS traffic.
+- Without the space-filling-curve order the union walk does 13–15× #4's interactions, yet it is
+  still 1.2–1.6× faster than #4: divergence costs #4 more than an order of magnitude more work.
+
+### 18.2 The coherent control replaces the residual decomposition (critic review 2, #1)
+#5's own kernel with all 32 lanes on one body runs 5.2–9.7× faster than #5 on the same lane work
+(172–259 G lane-int/s). That ratio is the whole intra-warp penalty (idle lanes + scattered loads +
+divergent stack), measured, with no c_V or residual. #7 sits 1.32–1.65× above the control, i.e.
+about its extra work, and closes 69–88% of the #5 → control gap in log terms. The round-1 "8.4×
+ceiling" (D-019) was a residual-based estimate; the measured ceiling at 1M is 9.2× (Plummer) and
+9.7× (core).
+
+### 18.3 R3 #6 missed: balance improves, speed falls
+- Every arm is slower than its sibling in every cell: warp queue 0.89–0.93× (#5) and 0.89–0.95×
+  (#7); lane refill 0.64–0.74× (#5), 0.68–0.91× (#4); static partition 0.84–0.98×.
+- The balance metrics move as designed: the warp queue lifts the single-wave core SM efficiency
+  from 0.81 to 0.92 (tail 18% → 7%) and the 1M warp-slot fill from 0.95 to 0.98; lane refill lifts
+  #4 core's pop efficiency from 0.61 to 0.91 at 1M.
+- Exploratory diagnosis (not pre-registered): a block-granular queue (4 Morton-adjacent units per
+  claim) recovers most of the warp queue's loss (0.94–0.98×), so the loss is chiefly **intra-block
+  locality**: the hardware scheduler hands an SM four Morton-adjacent warps that share L1 lines; a
+  warp-granular queue scatters them. Lane refill checked every 8 pops is barely better than every
+  pop (0.65 vs 0.63× at 65536, where it does no refills), so its loss is the loop structure (most
+  likely the per-pop warp collectives forcing reconvergence; not verified in SASS).
+- Lesson for the design: on this GPU the hardware block scheduler is already a dynamic queue at
+  4-warp granularity with good locality. A software queue has to preserve that locality (claim
+  blocks of adjacent units) before it can win anything, and the remaining SM-level loss at
+  N ≥ 262144 is only 1–2%.
+
+### 18.4 What limits the walks (sets C, D)
+- **#5 is L1-capacity-bound:** with the L1 carve-out pinned small, its rate is flat from 2 to 11
+  blocks/SM (19.9–20.7 G/s); unpadded it does 29.0 G/s. Occupancy is not its limit (answers critic
+  review 2, #6; the round-1 "16 → 34 → 29 G/s" was N, not occupancy).
+- **The coherent walks are latency-bound:** the control and #7 scale ×1.75 and ×1.87 from 4 to 11
+  blocks/SM, and depend less on L1 (×1.30, ×1.12). Caveat: the padded "12" cell ran at 11
+  blocks/SM (256 B shared-memory allocation granule).
+- Leaf/block: #5 prefers leaf 32 and block 256 (11% faster than block 128 at 1M); #4 likewise; #7
+  is flat (±1%) over leaf 8–16 and all blocks. The pre-registered leaf directions missed (L1–L4).
+
+### 18.5 Crossover and θ
+- bh_warp crosses the best all-pairs at **N ≈ 29,200** (39,700 for #5). Total speedups over the
+  best all-pairs: 4.4× (65536), 24.9× (262144), 123× (1M, all-pairs extrapolated [D]).
+- θ sweep (262144): union overhead ×1.55 / 1.79 / 2.08 / 2.11 and #7 gain 8.1 / 5.4 / 4.0 / 3.0× at
+  θ = 0.3 / 0.5 / 0.7 / 1.0. At θ = 0, #7 = #5 within 2%, D-009 PASS.
+
+### 18.6 Open items
+- Lane refill: compare its SASS with `bhTraverseKernel`, to confirm the reconvergence explanation.
+- A block-granular queue on the #7 walk (the only #6 arm that might break even); #7's single-wave
+  tail (27% at core 65536) is now its largest loss, which is the case where a fine-grained queue
+  with locality could pay.
+- Re-run the #6 items with the desktop applications closed (load-sensitive), and fix the
+  `--occ-blocks` padding for the 256 B granule.
+- #7 with leaf 8 vs 16 and an octree / wide node (fewer pops: the coherent walk is pop-bound).

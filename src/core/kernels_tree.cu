@@ -683,7 +683,9 @@ __global__ void bhPersistentKernel(TreeView v, int* queue, const int* warpStart,
 // warp- or block-granular queue cannot touch. One loop iteration = one node pop (+ its leaf
 // bucket), identical per-body arithmetic to bhTraverseKernel (bitwise-equal accelerations).
 // TLW: one record per persistent warp (unit = global warp id; units are bodies here).
-template <bool TL, bool TLW>
+// K (EXPLORATORY, tree round 2 phase 2, not pre-registered): the warp checks for idle lanes only
+// every K pops (K = 1 is the pre-registered bh_persistent_lane; its code path is unchanged).
+template <bool TL, bool TLW, int K = 1>
 __global__ void bhLaneRefillKernel(TreeView v, int* queue, BlockStamp* tl, uint4* wc)
 {
     if constexpr (TL && !TLW) { if (tl) stampBlockStart<true>(tl); }
@@ -739,37 +741,98 @@ __global__ void bhLaneRefillKernel(TreeView v, int* queue, BlockStamp* tl, uint4
             idle = __ballot_sync(kFull, t < 0);
         }
         if (__all_sync(kFull, t < 0)) break;                        // only once drained
-        if (t >= 0) {
-            const int node = stack[--sp];
-            if constexpr (TL) { ++nVisit; lVisit += leaderInc(); }
-            if (node < 0) {
-                a = bodyBodyInteraction(bi, v.sortedPos[~node], a, v.eps2);
-                if constexpr (TL) { ++nInter; lInter += leaderInc(); }
-            } else {
-                const float4 c  = v.nodeCom[node];
-                const float  dx = c.x - bi.x, dy = c.y - bi.y, dz = c.z - bi.z;
-                const float  d2 = fmaf(dx, dx, fmaf(dy, dy, dz * dz));
-                if (d2 >= v.nodeRc2[node]) {
-                    a = bodyBodyInteraction(bi, c, a, v.eps2);
+        if constexpr (K == 1) {
+            if (t >= 0) {
+                const int node = stack[--sp];
+                if constexpr (TL) { ++nVisit; lVisit += leaderInc(); }
+                if (node < 0) {
+                    a = bodyBodyInteraction(bi, v.sortedPos[~node], a, v.eps2);
                     if constexpr (TL) { ++nInter; lInter += leaderInc(); }
                 } else {
-                    const int4 in = v.nodeInfo[node];
-                    if (in.w - in.z + 1 <= v.leafSize) {
-                        for (int k = in.z; k <= in.w; ++k) {
-                            a = bodyBodyInteraction(bi, v.sortedPos[k], a, v.eps2);
-                            if constexpr (TL) { ++nInter; lInter += leaderInc(); }
-                        }
-                    } else if (sp + 2 > kStack) {
-                        atomicAdd(v.overflow, 1); sp = 0;               // abandon this body (flagged)
+                    const float4 c  = v.nodeCom[node];
+                    const float  dx = c.x - bi.x, dy = c.y - bi.y, dz = c.z - bi.z;
+                    const float  d2 = fmaf(dx, dx, fmaf(dy, dy, dz * dz));
+                    if (d2 >= v.nodeRc2[node]) {
+                        a = bodyBodyInteraction(bi, c, a, v.eps2);
+                        if constexpr (TL) { ++nInter; lInter += leaderInc(); }
                     } else {
-                        stack[sp++] = in.y;
-                        stack[sp++] = in.x;
+                        const int4 in = v.nodeInfo[node];
+                        if (in.w - in.z + 1 <= v.leafSize) {
+                            for (int k = in.z; k <= in.w; ++k) {
+                                a = bodyBodyInteraction(bi, v.sortedPos[k], a, v.eps2);
+                                if constexpr (TL) { ++nInter; lInter += leaderInc(); }
+                            }
+                        } else if (sp + 2 > kStack) {
+                            atomicAdd(v.overflow, 1); sp = 0;               // abandon this body (flagged)
+                        } else {
+                            stack[sp++] = in.y;
+                            stack[sp++] = in.x;
+                        }
+                    }
+                }
+            }
+        } else {
+            for (int s_ = 0; s_ < K; ++s_) {
+                if (t < 0 || sp == 0) break;
+                const int node = stack[--sp];
+                if constexpr (TL) { ++nVisit; lVisit += leaderInc(); }
+                if (node < 0) {
+                    a = bodyBodyInteraction(bi, v.sortedPos[~node], a, v.eps2);
+                    if constexpr (TL) { ++nInter; lInter += leaderInc(); }
+                } else {
+                    const float4 c  = v.nodeCom[node];
+                    const float  dx = c.x - bi.x, dy = c.y - bi.y, dz = c.z - bi.z;
+                    const float  d2 = fmaf(dx, dx, fmaf(dy, dy, dz * dz));
+                    if (d2 >= v.nodeRc2[node]) {
+                        a = bodyBodyInteraction(bi, c, a, v.eps2);
+                        if constexpr (TL) { ++nInter; lInter += leaderInc(); }
+                    } else {
+                        const int4 in = v.nodeInfo[node];
+                        if (in.w - in.z + 1 <= v.leafSize) {
+                            for (int k = in.z; k <= in.w; ++k) {
+                                a = bodyBodyInteraction(bi, v.sortedPos[k], a, v.eps2);
+                                if constexpr (TL) { ++nInter; lInter += leaderInc(); }
+                            }
+                        } else if (sp + 2 > kStack) {
+                            atomicAdd(v.overflow, 1); sp = 0;               // abandon this body (flagged)
+                        } else {
+                            stack[sp++] = in.y;
+                            stack[sp++] = in.x;
+                        }
                     }
                 }
             }
         }
     }
     unitStampEnd<TLW>(tl, gw);
+    if constexpr (TL && !TLW) { if (tl) stampBlockEnd<true>(tl); }
+}
+
+// EXPLORATORY (tree round 2 phase 2, not pre-registered): BLOCK-granular persistent queue. Thread 0
+// claims blockDim/32 consecutive units for the whole block (one atomicAdd), so a block's warps walk
+// Morton-adjacent units, as in a normal grid, and the block waits for its slowest warp before the
+// next claim (the block-granular semantics). Tests whether the warp queue's loss is locality.
+template <bool TL, bool TLW>
+__global__ void bhPersistentBlockKernel(TreeView v, int* queue, BlockStamp* tl, uint4* wc)
+{
+    __shared__ int base;
+    if constexpr (TL && !TLW) { if (tl) stampBlockStart<true>(tl); }
+    const int lane = threadIdx.x & 31, wib = threadIdx.x >> 5, wpb = blockDim.x >> 5;
+    const int nUnits = (v.n + 31) >> 5;
+    for (;;) {
+        if (threadIdx.x == 0) base = atomicAdd(queue, wpb);
+        __syncthreads();
+        const int u0 = base;
+        __syncthreads();
+        if (u0 >= nUnits) break;
+        const int u = u0 + wib;
+        if (u < nUnits) {
+            unitStampStart<TLW>(tl, u);
+            const int t = u * 32 + lane;
+            if (t < v.n) threadWalk<TL>(v, t, wc, true);
+            unitStampEnd<TLW>(tl, u);
+        }
+    }
     if constexpr (TL && !TLW) { if (tl) stampBlockEnd<true>(tl); }
 }
 
@@ -820,9 +883,13 @@ void checkParams(const Params& p)
 }
 
 // Traversal variants (round 1: Thread; round 2: the rest). See registerTree() for the names.
-enum class Var { Thread, Warp, WarpList, PersUnit, PersLane, PersWarp, PersStatic };
+enum class Var { Thread, Warp, WarpList, PersUnit, PersLane, PersWarp, PersStatic, PersBlock, PersLane8 };
 
-bool isPersistent(Var v) { return v == Var::PersUnit || v == Var::PersLane || v == Var::PersWarp || v == Var::PersStatic; }
+bool isPersistent(Var v)
+{
+    return v == Var::PersUnit || v == Var::PersLane || v == Var::PersWarp || v == Var::PersStatic || v == Var::PersBlock ||
+           v == Var::PersLane8;
+}
 
 template <bool TL, bool TLW>
 const void* traverseFnT(Var v)
@@ -835,6 +902,8 @@ const void* traverseFnT(Var v)
     case Var::PersWarp:   return reinterpret_cast<const void*>(bhPersistentKernel<TL, TLW, true, false>);
     case Var::PersStatic: return reinterpret_cast<const void*>(bhPersistentKernel<TL, TLW, false, true>);
     case Var::PersLane:   return reinterpret_cast<const void*>(bhLaneRefillKernel<TL, TLW>);
+    case Var::PersBlock:  return reinterpret_cast<const void*>(bhPersistentBlockKernel<TL, TLW>);
+    case Var::PersLane8:  return reinterpret_cast<const void*>(bhLaneRefillKernel<TL, TLW, 8>);
     }
     return nullptr;
 }
@@ -922,7 +991,7 @@ void launchBH(const DeviceState& s, const Params& p, cudaStream_t st, Order ord,
     const int    grid   = gridOf(var, fn, n, p);
     const int    nUnits = ceilDiv(n, 32);
     if (dyn > 48 * 1024) residentBlocks(fn, p.blockSize, dyn);    // raises the opt-in limit once
-    if (var == Var::PersUnit || var == Var::PersLane || var == Var::PersWarp)
+    if (var == Var::PersUnit || var == Var::PersLane || var == Var::PersWarp || var == Var::PersBlock || var == Var::PersLane8)
         CUDA_CHECK(cudaMemsetAsync(g.queue, 0, 4, st));
     if (var == Var::PersStatic) {
         const int G = grid * p.blockSize / 32;
@@ -963,7 +1032,8 @@ void launchBH(const DeviceState& s, const Params& p, cudaStream_t st, Order ord,
         void* argsWarp[] = {&v, &tlp, &wcp};
         void* argsPers[] = {&v, &q, &ws, &uc, &tlp, &wcp};
         void* argsLane[] = {&v, &q, &tlp, &wcp};
-        void** args = (var == Var::Warp || var == Var::WarpList) ? argsWarp : (var == Var::PersLane ? argsLane : argsPers);
+        void** args = (var == Var::Warp || var == Var::WarpList) ? argsWarp
+                      : ((var == Var::PersLane || var == Var::PersLane8 || var == Var::PersBlock) ? argsLane : argsPers);
         CUDA_CHECK(cudaLaunchKernel(fn, G3, B3, args, dyn, st));
     }
     mark(5);
@@ -991,7 +1061,7 @@ LaunchInfo queryV(int n, const Params& p, Var var)
     li.dynSmem      = dyn;
     for (int k = 0; k < kPhases; ++k) li.phaseNames[k] = kPhaseNames[k];
     if (tlw) {
-        li.timelineRecords    = var == Var::PersLane ? grid * p.blockSize / 32 : ceilDiv(n, 32);
+        li.timelineRecords    = (var == Var::PersLane || var == Var::PersLane8) ? grid * p.blockSize / 32 : ceilDiv(n, 32);
         li.timelineSlotsPerSM = li.blocksPerSM * p.blockSize / 32;
     } else {
         li.timelineRecords    = grid;
@@ -1049,6 +1119,24 @@ LaunchInfo queryPersWarp(int n, const Params& p)
     LaunchInfo li = queryV(n, p, Var::PersWarp);
     li.exactSibling = "bh_warp";
     li.errorSibling = li.counterSibling = "bh_sorted";
+    return li;
+}
+LaunchInfo queryPersBlock(int n, const Params& p)
+{
+    LaunchInfo li = queryV(n, p, Var::PersBlock);
+    li.exactSibling = li.counterSibling = "bh_sorted";
+    return li;
+}
+LaunchInfo queryPersLane8(int n, const Params& p)
+{
+    LaunchInfo li = queryV(n, p, Var::PersLane8);
+    li.exactSibling = li.counterSibling = "bh_sorted";
+    return li;
+}
+LaunchInfo queryPersLane8Naive(int n, const Params& p)
+{
+    LaunchInfo li = queryV(n, p, Var::PersLane8);
+    li.exactSibling = li.counterSibling = "bh_naive";
     return li;
 }
 LaunchInfo queryPersStatic(int n, const Params& p)
@@ -1318,6 +1406,16 @@ void registerTree(std::vector<KernelInfo>& r)
     r.push_back({"bh_persistent_static",
                  "persistent blocks, static partition balanced on the previous launch's unit costs, #5 walk (R3 #6, static arm)",
                  launchV<Var::PersStatic, Order::Morton>, queryPersStatic});
+    // EXPLORATORY, added in phase 2 of tree round 2 after the pre-registered runs (not pre-registered)
+    r.push_back({"bh_persistent_block",
+                 "EXPLORATORY: persistent blocks, BLOCK-granular atomic queue (4 adjacent units per claim), #5 walk",
+                 launchV<Var::PersBlock, Order::Morton>, queryPersBlock});
+    r.push_back({"bh_persistent_lane8",
+                 "EXPLORATORY: bh_persistent_lane checking for idle lanes every 8 pops",
+                 launchV<Var::PersLane8, Order::Morton>, queryPersLane8});
+    r.push_back({"bh_persistent_lane8_naive",
+                 "EXPLORATORY: bh_persistent_lane8 on ORIGINAL body order",
+                 launchV<Var::PersLane8, Order::Identity>, queryPersLane8Naive});
     r.push_back({"bh_coherent",
                  "CONTROL: #5 kernel with order[t] = perm[t & ~31] (all 32 lanes walk one body; forces of 31/32 bodies not computed)",
                  launchV<Var::Thread, Order::Coherent>, queryCoherent});

@@ -1,0 +1,20 @@
+﻿date: 2026-10-17T14:42:02.2283709+03:00
+tag: before
+cl: Microsoft (R) C/C++ Optimizing Compiler Version 19.51.36248 for x64
+nvcc: Cuda compilation tools, release 13.4, V13.4.92
+nvidia-smi static (csv):
+name, driver_version, power.limit [W], power.default_limit [W], enforced.power.limit [W], clocks.max.sm [MHz], pstate
+NVIDIA GeForce RTX 4080 SUPER, 617.42, 272.00 W, 320.00 W, 272.00 W, 3105 MHz, P8
+idle samples (util %, VRAM MiB, SM MHz, W, C) x10 @200ms:
+21, 1512, 210, 10.17, 37
+22, 1512, 210, 10.19, 37
+22, 1512, 210, 10.19, 37
+22, 1512, 210, 10.14, 37
+22, 1513, 210, 10.14, 37
+21, 1513, 210, 10.01, 37
+21, 1513, 210, 10.01, 37
+22, 1513, 210, 9.97, 37
+22, 1513, 210, 9.97, 37
+22, 1513, 210, 9.90, 37
+median idle utilisation: 22 %
+UNCONTROLLED BACKGROUND LOAD: 22% (label every number from this session)

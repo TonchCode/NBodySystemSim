@@ -479,7 +479,8 @@ int runTreeSelftest(unsigned seed)
     //  (k) per-warp-unit timeline records: every unit written once with sane stamps.
     {
         const char* r2[] = {"bh_warp", "bh_warp_list", "bh_warp_naive", "bh_persistent", "bh_persistent_lane",
-                            "bh_persistent_lane_naive", "bh_persistent_warp", "bh_persistent_static"};
+                            "bh_persistent_lane_naive", "bh_persistent_warp", "bh_persistent_static",
+                            "bh_persistent_block", "bh_persistent_lane8", "bh_persistent_lane8_naive"};   // last 3: exploratory
         const int c0 = cases, f0 = fails;
         double worstExact = 0;
         for (const char* ic : ics)

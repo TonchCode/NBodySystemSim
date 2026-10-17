@@ -272,3 +272,69 @@ b128 u0 and multi b × q). Measured: 1.73× at 65536 and 5.72× at 262144 (sorte
 (naive). At N = 1M all-pairs is not run (≈ 0.82 s per launch, too close to the TDR margin), so
 it is extrapolated as 4 × T(524288) = 822 ms and every 1M speedup (21.0× sorted, 11.2× naive)
 carries the [D] tag. Crossover: N ≈ 39,700 (sorted) and ≈ 59,600 (naive).
+
+## D-021 — Tree rates are labelled; the CSV holds the real rate (2026-10-17, cuda-architect, tree round 2)
+
+**Decided:** for approximate (tree) kernels the bench headline says "G N^2-equivalent
+interactions/s (not the tree rate)" and drops GFLOP/s; a `rates:` line gives the real rate over the
+pipeline and over the traversal. In the round-2 CSV header `ginteractions_per_s` and `gflops` hold
+the **real** rate (all-pairs: N²; trees: counted interactions / pipeline time), and
+`n2equiv_ginter_per_s` and `trav_ginter_per_s` are separate columns.
+**Why:** critic review 2, #5: round-1 tree rows carry N²-equivalent values (e.g. 28,071 G/s) in
+the column every all-pairs row uses for its real rate.
+**Rules out:** reading `ginteractions_per_s` of a round-1 tree CSV as a tree rate. Historic CSVs are
+unchanged; the bench refuses to append to them (header check).
+
+## D-022 — R3 #7 is the warp-union walk; bh_warp is the tree to quote (2026-10-17, cuda-architect, tree round 2)
+
+**Measured** (`results/2026-10-17_tree_round2`, background-load label): traversal 3.1–7.3× faster
+than #5 (best vs best 5.9× at 1M, 5.2× at 262144, θ = 0.5), SIMT efficiency 1.000, 1.6–1.9×
+interactions, lower error (TG3 60/60), crossover vs the best all-pairs N ≈ 29,200.
+**Decided:** `bh_warp` (direct union walk, register stack, Morton warps) is the R3 #7 result and
+the tree to use in later rounds (making it the viewer default is a pending code change). `bh_warp_list` stays registered as a measured
+negative (2–7% slower). Quote #7 as "warp-cooperative traversal (union walk with a warp vote)",
+not as work stealing.
+**Rules out:** describing #7's gain as removing work: it adds work and removes incoherence.
+
+## D-023 — R3 #6 result: the software queues lose to the hardware block scheduler (2026-10-17, cuda-architect, tree round 2)
+
+**Measured:** warp-granular queue 0.89–0.95×, lane-granular refill 0.64–0.91×, static cost-balanced
+partition 0.84–0.98× of their siblings, in every cell, while the balance metrics they target improve
+(SM efficiency, warp-slot fill, pop efficiency). Exploratory: a block-granular queue recovers most
+of the warp queue's loss (0.94–0.98×); checking refill every 8 pops does not rescue lane refill.
+**Decided:** report #6 as a measured negative result with its mechanism: on sm_89 the block
+scheduler is already a dynamic, locality-preserving queue at 4-warp granularity, and the remaining
+SM-level loss at N ≥ 262144 is 1–2%. A software queue must claim Morton-adjacent units per block to
+keep L1 sharing. The pre-registered "≤ 3%" bound (D-019) was right in size for the block-granular
+gain and wrong in sign for the warp and lane arms. The critic's lane-granular arm was built and
+measured, so #6 is not a strawman.
+**Rules out:** claiming any #6 speedup; citing huang2026weave or chen2026gmatch as predicting a gain
+for this workload.
+
+## D-024 — The loss decomposition is measured with the coherent control (2026-10-17, cuda-architect, tree round 2)
+
+**Decided:** intra-warp loss is quoted as T(#5) / T(control), where the control is #5's kernel with
+`order[t] = perm[t & ~31]` (5.2–9.7× measured), and #7 as the share of that gap it closes (69–88%,
+log terms). The round-1 E_lanes × E_mem × E_sm split (D-019, §16.4) is kept only as a historical
+estimate.
+**Why:** critic review 2, #1: E_mem was a residual and the ceiling moved with c_V.
+
+## D-025 — Best-tuned tree configurations (rule 8) (2026-10-17, cuda-architect, tree round 2)
+
+**Measured** (set C, Plummer, θ = 0.5): #4 best leaf 32 b256 (1M) / leaf 16 b256 (262144); #5 best
+leaf 32 b256 at both N (11% faster than leaf 16 b128 at 1M); #7 flat within ±1% over leaf 8–16
+and all blocks (best leaf 8 b256 at 1M, leaf 16 b128 at 262144).
+**Decided:** tree speedups are quoted best vs best with θ stated: #5/#4 2.06× (262144), 2.18× (1M);
+#7/#5 5.2× and 5.9×. Leaf 16 block 128 stays the protocol default for cross-round comparability,
+always labelled as such.
+
+## D-026 — #5 is L1-capacity-bound; the coherent walks are latency-bound (2026-10-17, cuda-architect, tree round 2)
+
+**Measured** (set D, 262144): with the L1 carve-out pinned small, #5's rate is flat from 2 to 11
+blocks/SM, and the unpadded kernel is ×1.51 faster; the control and #7 scale ×1.75–1.87 from 4 to 11
+blocks/SM and gain ×1.12–1.30 from L1.
+**Decided:** design notes say "#5: L1-capacity-bound scattered accesses; #7: latency-bound pop
+chain", not "memory-bound". Next optimisations for #7 target pops per interaction (wider nodes),
+not occupancy.
+**Caveat:** padded "12" ran at 11 blocks/SM (256 B allocation granule); fix the padding formula
+before reusing `--occ-blocks`.
