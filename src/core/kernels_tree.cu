@@ -31,11 +31,16 @@
 // Phase timing (maeda2026gtap: report phases separately): when Params::phaseEvents is set,
 // the launcher records an event before phase 1 and after every phase (6 events, 5 phases).
 #include <algorithm>
+#include <atomic>
 #include <cfloat>
+#include <chrono>
 #include <cmath>
+#include <condition_variable>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <mutex>
+#include <thread>
 #include <vector>
 #include <cub/device/device_radix_sort.cuh>
 #include <cub/device/device_scan.cuh>
@@ -43,6 +48,7 @@
 #include "interaction.cuh"
 #include "internal.h"
 #include "timeline.cuh"
+#include "host.h"   // R3 #8: host tree build and walks for the CPU+GPU splits (end of this file)
 
 #ifndef WARP_STACK_ENTRIES
 #define WARP_STACK_ENTRIES 64
@@ -1466,6 +1472,532 @@ void registerTree(std::vector<KernelInfo>& r)
     r.push_back({"bh_coherent",
                  "CONTROL: #5 kernel with order[t] = perm[t & ~31] (all 32 lanes walk one body; forces of 31/32 bodies not computed)",
                  launchV<Var::Thread, Order::Coherent>, queryCoherent});
+}
+
+
+// =================================================================================================
+// R3 #8 (docs/03-design.md §23.5-§23.6): CPU+GPU splits of the tree code and the GPU-only control.
+// New launch sites of the existing kernels only (bbox, keys, CUB sort, gather, radix tree, multipoles,
+// bhWarpKernel); the one new kernel is a 16-byte scatter. Production SASS of every pre-existing kernel
+// is unchanged (tools/sass_diff.py).
+//
+//  hyb_bh         body split: GPU build; the GPU walks Morton slots [0, ng) with #7 (bhWarpKernel on a
+//                 TreeView whose n is ng), while the copy stream brings the tree to the host (sortedPos,
+//                 com, rc2, info, perm: 56 B/body) and the CPU group-walks slots [ng, N); its results come
+//                 back slot-ordered and are scattered by perm. ng: a multiple of 32 (whole #7 warps).
+//  hyb_phase      phase split with a lag: the GPU never builds a topology. Each launch it REFITS (gather
+//                 sortedPos = pos[perm], bottom-up multipoles: exact COM, AABB and bmax for the CURRENT
+//                 positions) the newest topology it has and walks it with #7. In the background the CPU
+//                 builds the next topology (keys, stable sort, radix tree) from the positions of the launch
+//                 that started its job; it is uploaded on the copy stream and swapped in once complete.
+//                 Any topology is a valid tree after the refit (every node's bmax bounds its bodies), so
+//                 the lag changes only tree quality (work), never the safety of the criterion; it is
+//                 measured (HybridStats lag) and gated after integration (--lag-check).
+//  bh_warp_refit  GPU-only control with the same refit: full GPU rebuild every refitEvery launches.
+//                 The phase split's gain over bh_warp splits into "refit instead of rebuild" (this
+//                 control gets it without the CPU) and "the CPU builds the topology" (hyb_phase vs this).
+// =================================================================================================
+namespace {
+
+__global__ void scatterSlotsKernel(const float4* __restrict__ staged, const int* __restrict__ perm, int s0, int s1,
+                                   float4* __restrict__ acc)
+{
+    const int t = s0 + blockIdx.x * blockDim.x + threadIdx.x;
+    if (t < s1) acc[perm[t]] = staged[t - s0];
+}
+
+// The build of launchBH (same kernels, same order).
+void gpuBuild(const DeviceState& s, const Params& p, cudaStream_t st)
+{
+    const int n = s.n;
+    ensureCapacity(n);
+    const int gb = ceilDiv(n, kBuildBlock);
+    bboxPartialKernel<<<kBboxBlocks, kBboxThreads, 0, st>>>(s.pos, n, g.bboxPartial);
+    bboxFinalKernel<<<1, kBboxBlocks, 0, st>>>(g.bboxPartial, kBboxBlocks, g.bbox);
+    keyKernel<false><<<gb, kBuildBlock, 0, st>>>(s.pos, g.bbox, n, g.keyIn);
+    size_t tmp = g.sortTmpBytes;
+    CUDA_CHECK(cub::DeviceRadixSort::SortPairs(g.sortTmp, tmp, g.keyIn, g.keySorted, g.iota, g.perm, n, 0, 63, st));
+    gatherKernel<<<gb, kBuildBlock, 0, st>>>(s.pos, g.perm, n, g.sortedPos);
+    if (n > 1) {
+        CUDA_CHECK(cudaMemsetAsync(g.arrive, 0, size_t(n - 1) * 4, st));
+        radixTreeKernel<<<ceilDiv(n - 1, kBuildBlock), kBuildBlock, 0, st>>>(g.keySorted, n, g.nodeInfo, g.leafParent,
+                                                                              g.nodeParent);
+        const float invT2 = p.theta > 0.f ? 1.f / (p.theta * p.theta) : 0.f;
+        multipoleKernel<<<gb, kBuildBlock, 0, st>>>(g.sortedPos, g.nodeInfo, g.leafParent, g.nodeParent, g.arrive,
+                                                    g.nodeCom, g.nodeLo, g.nodeHi, g.nodeRc2, n, invT2);
+    }
+    CUDA_CHECK(cudaGetLastError());
+}
+
+// Refit on the topology in g (perm, nodeInfo, leafParent, nodeParent): gather + multipoles.
+void gpuRefit(const DeviceState& s, const Params& p, cudaStream_t st)
+{
+    const int n = s.n;
+    const int gb = ceilDiv(n, kBuildBlock);
+    gatherKernel<<<gb, kBuildBlock, 0, st>>>(s.pos, g.perm, n, g.sortedPos);
+    if (n > 1) {
+        CUDA_CHECK(cudaMemsetAsync(g.arrive, 0, size_t(n - 1) * 4, st));
+        const float invT2 = p.theta > 0.f ? 1.f / (p.theta * p.theta) : 0.f;
+        multipoleKernel<<<gb, kBuildBlock, 0, st>>>(g.sortedPos, g.nodeInfo, g.leafParent, g.nodeParent, g.arrive,
+                                                    g.nodeCom, g.nodeLo, g.nodeHi, g.nodeRc2, n, invT2);
+    }
+    CUDA_CHECK(cudaGetLastError());
+}
+
+// #7 walk (bhWarpKernel, production or the counter twin) over Morton slots [0, ns).
+void gpuWarpTraverse(const DeviceState& s, const Params& p, cudaStream_t st, int ns)
+{
+    if (ns <= 0) return;
+    const float eps2 = p.softening * p.softening;
+    TreeView v{s.pos, s.acc, g.perm, ns, g.sortedPos, g.nodeCom, g.nodeRc2, g.nodeInfo, p.leafSize, eps2, p.G, g.overflow};
+    BlockStamp* tlp = nullptr;
+    uint4*      wcp = p.workCounters;
+    const void* fn  = wcp ? reinterpret_cast<const void*>(bhWarpKernel<true, false, false>)
+                          : reinterpret_cast<const void*>(bhWarpKernel<false, false, false>);
+    void* args[] = {&v, &tlp, &wcp};
+    CUDA_CHECK(cudaLaunchKernel(fn, dim3(ceilDiv(ns, p.blockSize)), dim3(p.blockSize), args, 0, st));
+}
+
+void noteTree(const DeviceState& s, const Params& p)
+{
+    g.lastN = s.n; g.lastTheta = p.theta; g.lastLeaf = p.leafSize; g.lastOrder = Order::Morton;
+    g.lastEps2 = p.softening * p.softening;
+}
+
+double evMs(cudaEvent_t a, cudaEvent_t b)
+{
+    float m = 0.f;
+    CUDA_CHECK(cudaEventElapsedTime(&m, a, b));
+    return m;
+}
+
+// ---- hyb_bh -----------------------------------------------------------------------------------------
+struct HybBH {
+    cudaStream_t cs = nullptr;
+    cudaEvent_t  evBuilt = nullptr, evTreeDone = nullptr, evTravEnd = nullptr, evUp = nullptr;
+    host::Pinned<float4> spos, com, stage;
+    host::Pinned<float>  rc2;
+    host::Pinned<int4>   info;
+    host::Pinned<int>    perm;
+    host::Pinned<uint4>  wc;
+    float4* dStage = nullptr;
+    int     dStageCap = 0;
+    int     n = -1, launches = 0;
+    double  frac = 0.97, rg = -1, rc = -1;
+} hb;
+
+void launchHybBH(const DeviceState& s, const Params& p, cudaStream_t st)
+{
+    checkParams(p);
+    if (!hb.cs) {
+        CUDA_CHECK(cudaStreamCreateWithFlags(&hb.cs, cudaStreamNonBlocking));
+        CUDA_CHECK(cudaEventCreateWithFlags(&hb.evBuilt, cudaEventDefault));
+        CUDA_CHECK(cudaEventCreateWithFlags(&hb.evTreeDone, cudaEventBlockingSync));
+        CUDA_CHECK(cudaEventCreateWithFlags(&hb.evTravEnd, cudaEventBlockingSync));
+        CUDA_CHECK(cudaEventCreateWithFlags(&hb.evUp, cudaEventDisableTiming));
+    }
+    const int n = s.n;
+    if (n != hb.n) { hb.n = n; hb.launches = 0; hb.frac = 0.97; hb.rg = hb.rc = -1; }
+    const bool dynamic = p.hybFrac < 0.f && !(p.hybFrac <= -1.5f && hb.launches >= 4);
+    const double f = p.hybFrac >= 0.f ? std::min(1.0, double(p.hybFrac)) : hb.frac;
+    const int W = cpuSetSize(p.cpuSet, p.cpuThreads);
+    int ng = f >= 1.0 ? n : std::min(n, int(std::floor(f * n / 32.0)) * 32);
+    const int minCpu = 2 * W * p.cpuGroup;   // two groups per worker
+    if (p.hybFrac < 0.f) {
+        if (hb.rc < 0) ng = std::max(0, std::min(ng, (n - minCpu) / 32 * 32));   // CPU rate unknown: probe it once
+        else if (n - ng < minCpu) ng = n;                                         // model: CPU share too small to pay
+    }
+    const int nc = n - ng;
+    const double t0 = host::nowMs();
+    gpuBuild(s, p, st);
+    CUDA_CHECK(cudaEventRecord(hb.evBuilt, st));
+    const int I = n > 1 ? n - 1 : 0;
+    if (nc > 0) {
+        CUDA_CHECK(cudaStreamWaitEvent(hb.cs, hb.evBuilt, 0));
+        CUDA_CHECK(cudaMemcpyAsync(hb.spos.ensure(size_t(n)), g.sortedPos, size_t(n) * 16, cudaMemcpyDeviceToHost, hb.cs));
+        CUDA_CHECK(cudaMemcpyAsync(hb.perm.ensure(size_t(n)), g.perm, size_t(n) * 4, cudaMemcpyDeviceToHost, hb.cs));
+        if (I) {
+            CUDA_CHECK(cudaMemcpyAsync(hb.com.ensure(size_t(I)), g.nodeCom, size_t(I) * 16, cudaMemcpyDeviceToHost, hb.cs));
+            CUDA_CHECK(cudaMemcpyAsync(hb.rc2.ensure(size_t(I)), g.nodeRc2, size_t(I) * 4, cudaMemcpyDeviceToHost, hb.cs));
+            CUDA_CHECK(cudaMemcpyAsync(hb.info.ensure(size_t(I)), g.nodeInfo, size_t(I) * 16, cudaMemcpyDeviceToHost, hb.cs));
+        }
+        CUDA_CHECK(cudaEventRecord(hb.evTreeDone, hb.cs));
+    }
+    gpuWarpTraverse(s, p, st, ng);
+    CUDA_CHECK(cudaEventRecord(hb.evTravEnd, st));
+    double tc = 0, tx = 0;
+    if (nc > 0) {
+        CUDA_CHECK(cudaEventSynchronize(hb.evTreeDone));
+        const double c0 = host::nowMs();
+        host::TreeArrays ta;
+        ta.n = n; ta.sortedPos = hb.spos.p; ta.com = hb.com.p; ta.rc2 = hb.rc2.p; ta.info = hb.info.p; ta.leaf = p.leafSize;
+        float4* stg = hb.stage.ensure(size_t(nc));
+        uint4*  wch = p.workCounters ? hb.wc.ensure(size_t(nc)) : nullptr;
+        host::walkGroups(ta, ng, n, p, stg, nullptr, wch);
+        tc = host::nowMs() - c0;
+        if (hb.dStageCap < nc) {
+            if (hb.dStage) CUDA_CHECK(cudaFree(hb.dStage));
+            CUDA_CHECK(cudaMalloc(&hb.dStage, size_t(nc) * 16));
+            hb.dStageCap = nc;
+        }
+        CUDA_CHECK(cudaMemcpyAsync(hb.dStage, stg, size_t(nc) * 16, cudaMemcpyHostToDevice, hb.cs));
+        if (wch) CUDA_CHECK(cudaMemcpyAsync(p.workCounters + ng, wch, size_t(nc) * 16, cudaMemcpyHostToDevice, hb.cs));
+        CUDA_CHECK(cudaEventRecord(hb.evUp, hb.cs));
+        CUDA_CHECK(cudaStreamWaitEvent(st, hb.evUp, 0));
+        scatterSlotsKernel<<<ceilDiv(nc, 256), 256, 0, st>>>(hb.dStage, g.perm, ng, n, s.acc);
+        CUDA_CHECK(cudaGetLastError());
+    }
+    noteTree(s, p);
+    double gms = 0;
+    if (dynamic || p.hybStats) {
+        CUDA_CHECK(cudaEventSynchronize(hb.evTravEnd));
+        gms = evMs(hb.evBuilt, hb.evTravEnd);
+        if (nc > 0) tx = evMs(hb.evBuilt, hb.evTreeDone);
+        CUDA_CHECK(cudaStreamSynchronize(st));
+    }
+    if (dynamic) {
+        if (ng > 0 && gms > 0) hb.rg = ng / gms;
+        if (nc > 0 && tc > 0) hb.rc = nc / tc;
+        if (hb.rg > 0 && hb.rc > 0) {
+            // both parts start when the build ends; the CPU's starts after the tree transfer tx:
+            // ng / rg = tx + (N - ng) / rc
+            const double fs = (tx + n / hb.rc) / (n / hb.rg + n / hb.rc);
+            hb.frac = std::clamp(hb.launches == 0 ? fs : 0.5 * hb.frac + 0.5 * fs, 0.0, 1.0);
+        }
+    }
+    ++hb.launches;
+    if (HybridStats* hs = p.hybStats) {
+        hs->launches++;
+        hs->fracSum += double(ng) / n; hs->lastFrac = double(ng) / n;
+        hs->gpuMs += gms; hs->cpuMs += tc; hs->xferMs += tx;
+        hs->wallMs += host::nowMs() - t0;
+        if (nc == 0) hs->gpuOnlyLaunches++;
+    }
+}
+
+// ---- hyb_phase ----------------------------------------------------------------------------------------
+struct HybPhase {
+    cudaStream_t cs = nullptr;
+    cudaEvent_t  evPos = nullptr, evPosDone = nullptr, evTopoUp = nullptr, evSwapped = nullptr, evG0 = nullptr, evG1 = nullptr;
+    host::Pinned<float4> pos;
+    host::Pinned<unsigned long long> key;
+    host::Pinned<int> perm, lp, np;
+    host::Pinned<int4> info;
+    unsigned long long* dKey = nullptr;
+    int *dPerm = nullptr, *dLP = nullptr, *dNP = nullptr;
+    int4* dInfo = nullptr;
+    int  dCap = 0;
+    int  n = -1;
+    long long launch = 0, jobLaunch = 0;
+    bool haveTopo = false, uploadPending = false;
+    Params jobParams;
+    host::Tree tree;
+    // background job (one at a time): wait for the positions, build the topology, stage it in pinned memory
+    std::mutex m;
+    std::condition_variable cv;
+    std::thread th;
+    bool request = false, running = false, done = false, quit = false;
+    double jobMs = 0;
+    ~HybPhase()
+    {
+        if (th.joinable()) {
+            { std::lock_guard<std::mutex> lk(m); quit = true; }
+            cv.notify_all();
+            th.join();
+        }
+    }
+} hph;
+
+void stageTopology(HybPhase& h, int n)
+{
+    const int I = n > 1 ? n - 1 : 0;
+    std::memcpy(h.key.ensure(size_t(n)), h.tree.key.data(), size_t(n) * 8);
+    std::memcpy(h.perm.ensure(size_t(n)), h.tree.perm.data(), size_t(n) * 4);
+    std::memcpy(h.lp.ensure(size_t(n)), h.tree.leafParent.data(), size_t(n) * 4);
+    if (I) {
+        std::memcpy(h.info.ensure(size_t(I)), h.tree.info.data(), size_t(I) * 16);
+        std::memcpy(h.np.ensure(size_t(I)), h.tree.nodeParent.data(), size_t(I) * 4);
+    }
+}
+
+void jobThread()
+{
+    HybPhase& h = hph;
+    for (;;) {
+        Params p;
+        {
+            std::unique_lock<std::mutex> lk(h.m);
+            h.cv.wait(lk, [&] { return h.request || h.quit; });
+            if (h.quit) return;
+            h.request = false;
+            p = h.jobParams;
+        }
+        if (cudaEventSynchronize(h.evPosDone) != cudaSuccess) return;   // positions on the host
+        const double t0 = host::nowMs();
+        host::buildTree(h.pos.p, h.n, p, h.tree, false, nullptr);
+        stageTopology(h, h.n);
+        const double ms = host::nowMs() - t0;
+        std::lock_guard<std::mutex> lk(h.m);
+        h.jobMs = ms;
+        h.running = false;
+        h.done = true;
+    }
+}
+
+void uploadTopology(HybPhase& h, int n, cudaStream_t cs)
+{
+    const int I = n > 1 ? n - 1 : 0;
+    CUDA_CHECK(cudaMemcpyAsync(h.dKey, h.key.p, size_t(n) * 8, cudaMemcpyHostToDevice, cs));
+    CUDA_CHECK(cudaMemcpyAsync(h.dPerm, h.perm.p, size_t(n) * 4, cudaMemcpyHostToDevice, cs));
+    CUDA_CHECK(cudaMemcpyAsync(h.dLP, h.lp.p, size_t(n) * 4, cudaMemcpyHostToDevice, cs));
+    if (I) {
+        CUDA_CHECK(cudaMemcpyAsync(h.dInfo, h.info.p, size_t(I) * 16, cudaMemcpyHostToDevice, cs));
+        CUDA_CHECK(cudaMemcpyAsync(h.dNP, h.np.p, size_t(I) * 4, cudaMemcpyHostToDevice, cs));
+    }
+}
+
+void swapInTopology(HybPhase& h, int n, cudaStream_t st)
+{
+    const int I = n > 1 ? n - 1 : 0;
+    CUDA_CHECK(cudaMemcpyAsync(g.keySorted, h.dKey, size_t(n) * 8, cudaMemcpyDeviceToDevice, st));
+    CUDA_CHECK(cudaMemcpyAsync(g.perm, h.dPerm, size_t(n) * 4, cudaMemcpyDeviceToDevice, st));
+    CUDA_CHECK(cudaMemcpyAsync(g.leafParent, h.dLP, size_t(n) * 4, cudaMemcpyDeviceToDevice, st));
+    if (I) {
+        CUDA_CHECK(cudaMemcpyAsync(g.nodeInfo, h.dInfo, size_t(I) * 16, cudaMemcpyDeviceToDevice, st));
+        CUDA_CHECK(cudaMemcpyAsync(g.nodeParent, h.dNP, size_t(I) * 4, cudaMemcpyDeviceToDevice, st));
+    }
+}
+
+void launchHybPhase(const DeviceState& s, const Params& p, cudaStream_t st)
+{
+    checkParams(p);
+    HybPhase& h = hph;
+    if (!h.cs) {
+        CUDA_CHECK(cudaStreamCreateWithFlags(&h.cs, cudaStreamNonBlocking));
+        CUDA_CHECK(cudaEventCreateWithFlags(&h.evPos, cudaEventDisableTiming));
+        CUDA_CHECK(cudaEventCreateWithFlags(&h.evPosDone, cudaEventBlockingSync | cudaEventDisableTiming));
+        CUDA_CHECK(cudaEventCreateWithFlags(&h.evTopoUp, cudaEventDisableTiming));
+        CUDA_CHECK(cudaEventCreateWithFlags(&h.evSwapped, cudaEventDisableTiming));
+        CUDA_CHECK(cudaEventCreateWithFlags(&h.evG0, cudaEventDefault));
+        CUDA_CHECK(cudaEventCreateWithFlags(&h.evG1, cudaEventBlockingSync));
+        h.th = std::thread(jobThread);
+    }
+    const int n = s.n;
+    ensureCapacity(n);
+    if (n != h.n) {   // new N: drain the job, drop every topology
+        {
+            std::unique_lock<std::mutex> lk(h.m);
+            while (h.running || h.request) { lk.unlock(); std::this_thread::sleep_for(std::chrono::milliseconds(1)); lk.lock(); }
+            h.done = false;
+        }
+        CUDA_CHECK(cudaStreamSynchronize(h.cs));
+        if (h.dCap < n) {
+            for (void* q : {(void*)h.dKey, (void*)h.dPerm, (void*)h.dLP, (void*)h.dNP, (void*)h.dInfo}) if (q) CUDA_CHECK(cudaFree(q));
+            CUDA_CHECK(cudaMalloc(&h.dKey, size_t(n) * 8));
+            CUDA_CHECK(cudaMalloc(&h.dPerm, size_t(n) * 4));
+            CUDA_CHECK(cudaMalloc(&h.dLP, size_t(n) * 4));
+            CUDA_CHECK(cudaMalloc(&h.dNP, size_t(std::max(1, n - 1)) * 4));
+            CUDA_CHECK(cudaMalloc(&h.dInfo, size_t(std::max(1, n - 1)) * 16));
+            h.dCap = n;
+        }
+        h.n = n; h.haveTopo = false; h.uploadPending = false; h.launch = 0;
+    }
+    const double t0 = host::nowMs();
+    HybridStats* hs = p.hybStats;
+    bool started = false;
+    if (p.hybSync) {
+        // lag 0, no overlap: positions D2H, CPU topology, H2D straight into the tree context
+        float4* hp = h.pos.ensure(size_t(n));
+        CUDA_CHECK(cudaMemcpyAsync(hp, s.pos, size_t(n) * 16, cudaMemcpyDeviceToHost, st));
+        CUDA_CHECK(cudaStreamSynchronize(st));
+        const double c0 = host::nowMs();
+        host::buildTree(hp, n, p, h.tree, false, nullptr);
+        stageTopology(h, n);
+        if (hs) { hs->cpuBuildMs += host::nowMs() - c0; hs->topoUpdates++; }
+        uploadTopology(h, n, st);
+        swapInTopology(h, n, st);
+        h.haveTopo = true;
+    } else if (!p.hybFreeze) {
+        if (h.uploadPending && cudaEventQuery(h.evTopoUp) == cudaSuccess) {      // (a) swap in a finished upload
+            swapInTopology(h, n, st);
+            CUDA_CHECK(cudaEventRecord(h.evSwapped, st));
+            h.uploadPending = false;
+            h.haveTopo = true;
+            if (hs) { hs->topoUpdates++; hs->lagSum += double(h.launch - h.jobLaunch); }
+        }
+        {
+            std::lock_guard<std::mutex> lk(h.m);
+            if (h.done && !h.uploadPending) {                                   // (b) upload a finished job
+                CUDA_CHECK(cudaStreamWaitEvent(h.cs, h.evSwapped, 0));         //     the staging is free again
+                uploadTopology(h, n, h.cs);
+                CUDA_CHECK(cudaEventRecord(h.evTopoUp, h.cs));
+                h.uploadPending = true;
+                h.done = false;
+                if (hs) hs->cpuBuildMs += h.jobMs;
+            }
+            started = !h.running && !h.done && !h.uploadPending && !h.request;  // (c) start the next job
+            if (started) {
+                h.running = true;
+                h.jobParams = p;
+                h.jobParams.hostPhases = nullptr; h.jobParams.cpuStats = nullptr; h.jobParams.hybStats = nullptr;
+            }
+        }
+        if (started) {
+            CUDA_CHECK(cudaEventRecord(h.evPos, st));
+            CUDA_CHECK(cudaStreamWaitEvent(h.cs, h.evPos, 0));
+            CUDA_CHECK(cudaMemcpyAsync(h.pos.ensure(size_t(n)), s.pos, size_t(n) * 16, cudaMemcpyDeviceToHost, h.cs));
+            CUDA_CHECK(cudaEventRecord(h.evPosDone, h.cs));
+            h.jobLaunch = h.launch;
+            { std::lock_guard<std::mutex> lk(h.m); h.request = true; }
+            h.cv.notify_all();
+        }
+    }
+    CUDA_CHECK(cudaEventRecord(h.evG0, st));
+    if (!h.haveTopo) { gpuBuild(s, p, st); h.haveTopo = true; }   // first launch at this N: GPU topology
+    else gpuRefit(s, p, st);
+    gpuWarpTraverse(s, p, st, n);
+    CUDA_CHECK(cudaEventRecord(h.evG1, st));
+    // the next kick-drift (stream order) must not overwrite pos while the copy stream still reads it
+    if (started) CUDA_CHECK(cudaStreamWaitEvent(st, h.evPosDone, 0));
+    noteTree(s, p);
+    ++h.launch;
+    if (hs) {
+        CUDA_CHECK(cudaEventSynchronize(h.evG1));
+        hs->launches++;
+        hs->fracSum += 1.0; hs->lastFrac = 1.0;
+        hs->gpuMs += evMs(h.evG0, h.evG1);
+        hs->wallMs += host::nowMs() - t0;
+    }
+}
+
+// ---- bh_warp_refit (GPU-only control) -------------------------------------------------------------------
+struct Refit { int n = -1; long long count = 0; } rf;
+
+void launchWarpRefit(const DeviceState& s, const Params& p, cudaStream_t st)
+{
+    checkParams(p);
+    const int n = s.n;
+    const int every = std::max(1, p.refitEvery);
+    if (n != rf.n) { rf.n = n; rf.count = 0; }
+    const bool full = g.lastN != n || rf.count == 0 || (!p.hybFreeze && rf.count % every == 0);
+    if (full) gpuBuild(s, p, st); else gpuRefit(s, p, st);
+    gpuWarpTraverse(s, p, st, n);
+    noteTree(s, p);
+    ++rf.count;
+}
+
+LaunchInfo queryWarpLike(int n, const Params& p)
+{
+    Params q = p;
+    q.timeline = nullptr;   // no per-block timeline in these launchers (work counters only)
+    LaunchInfo li = queryV(n, q, Var::Warp);
+    li.instrumented = false;
+    li.nPhases = 0;
+    return li;
+}
+LaunchInfo queryHybBH(int n, const Params& p)
+{
+    LaunchInfo li = queryWarpLike(n, p);
+    li.hostTimed = true; li.hybrid = true;
+    li.cpuWorkers = cpuSetSize(p.cpuSet, p.cpuThreads);
+    li.counterSibling = "bh_warp";
+    if (p.cpuGroup == 32) li.countsSibling = "bh_warp";
+    return li;
+}
+LaunchInfo queryHybPhase(int n, const Params& p)
+{
+    LaunchInfo li = queryWarpLike(n, p);
+    li.hostTimed = true; li.hybrid = true;
+    li.cpuWorkers = cpuSetSize(p.cpuSet, p.cpuThreads);
+    li.exactSibling = li.counterSibling = "bh_warp";   // force-only bench: the same positions give the same tree
+    return li;
+}
+LaunchInfo queryWarpRefit(int n, const Params& p)
+{
+    LaunchInfo li = queryWarpLike(n, p);
+    li.exactSibling = li.counterSibling = "bh_warp";
+    return li;
+}
+
+} // namespace
+
+// Most recent host tree (cpu_bh*) vs most recent GPU tree (same positions): see nbody.h.
+TreeCompare compareHostGpuTree()
+{
+    TreeCompare r;
+    const host::Tree& t = host::lastHostTree();
+    const int n = g.lastN;
+    r.n = n;
+    auto fail = [&](const std::string& m) { if (r.ok) { r.ok = false; r.msg = m; } };
+    if (n <= 0 || t.n != n) { fail("no host and GPU tree of the same N"); return r; }
+    CUDA_CHECK(cudaDeviceSynchronize());
+    const int I = n > 1 ? n - 1 : 0;
+    const size_t I1 = size_t(std::max(1, I));
+    std::vector<unsigned long long> key(static_cast<size_t>(n));
+    std::vector<int> perm(static_cast<size_t>(n)), lp(static_cast<size_t>(n)), np(I1);
+    std::vector<float4> spos(static_cast<size_t>(n)), com(I1), lo(I1), hi(I1);
+    std::vector<float> rc2(I1);
+    std::vector<int4> info(I1);
+    CUDA_CHECK(cudaMemcpy(key.data(), g.keySorted, size_t(n) * 8, cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaMemcpy(perm.data(), g.perm, size_t(n) * 4, cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaMemcpy(spos.data(), g.sortedPos, size_t(n) * 16, cudaMemcpyDeviceToHost));
+    if (I) {
+        CUDA_CHECK(cudaMemcpy(lp.data(), g.leafParent, size_t(n) * 4, cudaMemcpyDeviceToHost));
+        CUDA_CHECK(cudaMemcpy(np.data(), g.nodeParent, size_t(I) * 4, cudaMemcpyDeviceToHost));
+        CUDA_CHECK(cudaMemcpy(info.data(), g.nodeInfo, size_t(I) * 16, cudaMemcpyDeviceToHost));
+        CUDA_CHECK(cudaMemcpy(com.data(), g.nodeCom, size_t(I) * 16, cudaMemcpyDeviceToHost));
+        CUDA_CHECK(cudaMemcpy(lo.data(), g.nodeLo, size_t(I) * 16, cudaMemcpyDeviceToHost));
+        CUDA_CHECK(cudaMemcpy(hi.data(), g.nodeHi, size_t(I) * 16, cudaMemcpyDeviceToHost));
+        CUDA_CHECK(cudaMemcpy(rc2.data(), g.nodeRc2, size_t(I) * 4, cudaMemcpyDeviceToHost));
+    }
+    const bool full = t.com.size() >= size_t(I) && t.sortedPos.size() >= size_t(n);
+    for (int k = 0; k < n; ++k) {
+        r.keyDiff  += key[size_t(k)] != t.key[size_t(k)];
+        r.permDiff += perm[size_t(k)] != t.perm[size_t(k)];
+        if (full) r.posDiff += std::memcmp(&spos[size_t(k)], &t.sortedPos[size_t(k)], 16) != 0;
+        if (I) r.parentDiff += lp[size_t(k)] != t.leafParent[size_t(k)];
+    }
+    auto ne4 = [](const float4& a, const float4& b, bool w) {   // numeric (== treats -0 and +0 as equal)
+        return a.x != b.x || a.y != b.y || a.z != b.z || (w && a.w != b.w);
+    };
+    for (int i = 0; i < I; ++i) {
+        const int4 a = info[size_t(i)], b = t.info[size_t(i)];
+        r.infoDiff   += a.x != b.x || a.y != b.y || a.z != b.z || a.w != b.w;
+        r.parentDiff += np[size_t(i)] != t.nodeParent[size_t(i)];
+        if (!full) continue;
+        r.comDiff += ne4(com[size_t(i)], t.com[size_t(i)], true);
+        r.boxDiff += ne4(lo[size_t(i)], t.lo[size_t(i)], false) || ne4(hi[size_t(i)], t.hi[size_t(i)], false);
+        r.rc2Diff += !(rc2[size_t(i)] == t.rc2[size_t(i)]);
+        for (int c = 0; c < 3; ++c) {
+            const float x = (&com[size_t(i)].x)[c], y = (&t.com[size_t(i)].x)[c];
+            r.maxComAbs = std::max(r.maxComAbs, double(std::fabs(x - y)));
+        }
+    }
+    if (r.keyDiff || r.permDiff || r.posDiff || r.infoDiff || r.parentDiff) fail("topology differs");
+    else if (r.comDiff || r.boxDiff || r.rc2Diff) fail("node data differs");
+    return r;
+}
+
+void hybridShutdown()
+{
+    HybPhase& h = hph;
+    if (!h.th.joinable()) return;
+    { std::lock_guard<std::mutex> lk(h.m); h.quit = true; }
+    h.cv.notify_all();
+    h.th.join();
+}
+
+void registerTreeHybrid(std::vector<KernelInfo>& r)
+{
+    r.push_back({"hyb_bh",
+                 "CPU+GPU body split, Barnes-Hut: GPU build + #7 on slots [0, fN), tree D2H, CPU group walk on the rest; --hyb-frac (R3 #8)",
+                 launchHybBH, queryHybBH});
+    r.push_back({"hyb_phase",
+                 "CPU+GPU phase split: CPU builds the topology in the background (lagged), GPU refits + #7 every launch (R3 #8)",
+                 launchHybPhase, queryHybPhase});
+    r.push_back({"bh_warp_refit",
+                 "CONTROL for hyb_phase: GPU-only, full rebuild every --refit-every launches, refit + #7 otherwise",
+                 launchWarpRefit, queryWarpRefit});
 }
 
 } // namespace nbody

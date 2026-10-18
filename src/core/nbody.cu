@@ -12,6 +12,9 @@ void registerAllPairs(std::vector<KernelInfo>& r);
 void registerTuned(std::vector<KernelInfo>& r);
 void registerMulti(std::vector<KernelInfo>& r);
 void registerTree(std::vector<KernelInfo>& r);
+void registerHost(std::vector<KernelInfo>& r);          // host_kernels.cpp   (R3 #8 CPU baselines)
+void registerHybridAllPairs(std::vector<KernelInfo>& r); // kernels_hybrid.cu  (R3 #8 body split, all-pairs)
+void registerTreeHybrid(std::vector<KernelInfo>& r);     // kernels_tree.cu    (R3 #8 tree splits + GPU control)
 
 int deviceSMCount()
 {
@@ -54,6 +57,26 @@ const std::vector<KernelInfo>& kernelRegistry()
 const KernelInfo* findKernel(const std::string& name)
 {
     for (const auto& k : kernelRegistry())
+        if (name == k.name) return &k;
+    return nullptr;
+}
+
+const std::vector<KernelInfo>& hybridRegistry()
+{
+    static const std::vector<KernelInfo> registry = [] {
+        std::vector<KernelInfo> r;
+        registerHost(r);
+        registerHybridAllPairs(r);
+        registerTreeHybrid(r);
+        return r;
+    }();
+    return registry;
+}
+
+const KernelInfo* findAnyKernel(const std::string& name)
+{
+    if (const KernelInfo* k = findKernel(name)) return k;
+    for (const auto& k : hybridRegistry())
         if (name == k.name) return &k;
     return nullptr;
 }

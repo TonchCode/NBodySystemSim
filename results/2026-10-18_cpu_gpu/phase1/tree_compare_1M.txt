@@ -1,0 +1,18 @@
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+tree-compare plummer    equal    n=1048576: IDENTICAL | keys 0 perm 0 sortedPos 0 info 0 parents 0 | com 0 box 0 rc2 0 (max |dCOM| 0.00e+00)
+tree-compare plummer    salpeter n=1048576: IDENTICAL | keys 0 perm 0 sortedPos 0 info 0 parents 0 | com 0 box 0 rc2 0 (max |dCOM| 0.00e+00)
+tree-compare collision  equal    n=1048576: IDENTICAL | keys 0 perm 0 sortedPos 0 info 0 parents 0 | com 0 box 0 rc2 0 (max |dCOM| 0.00e+00)
+tree-compare collision  salpeter n=1048576: IDENTICAL | keys 0 perm 0 sortedPos 0 info 0 parents 0 | com 0 box 0 rc2 0 (max |dCOM| 0.00e+00)
+tree-compare core       equal    n=1048576: IDENTICAL | keys 0 perm 0 sortedPos 0 info 0 parents 0 | com 0 box 0 rc2 0 (max |dCOM| 0.00e+00)
+tree-compare core       salpeter n=1048576: IDENTICAL | keys 0 perm 0 sortedPos 0 info 0 parents 0 | com 0 box 0 rc2 0 (max |dCOM| 0.00e+00)
+tree-compare disk       equal    n=1048576: IDENTICAL | keys 0 perm 0 sortedPos 0 info 0 parents 0 | com 0 box 0 rc2 0 (max |dCOM| 0.00e+00)
+tree-compare disk       salpeter n=1048576: IDENTICAL | keys 0 perm 0 sortedPos 0 info 0 parents 0 | com 0 box 0 rc2 0 (max |dCOM| 0.00e+00)
+tree-compare galaxies   equal    n=1048576: IDENTICAL | keys 0 perm 0 sortedPos 0 info 0 parents 0 | com 0 box 0 rc2 0 (max |dCOM| 0.00e+00)
+tree-compare galaxies   salpeter n=1048576: IDENTICAL | keys 0 perm 0 sortedPos 0 info 0 parents 0 | com 0 box 0 rc2 0 (max |dCOM| 0.00e+00)
+tree-compare cube_shell equal    n=1048576: IDENTICAL | keys 0 perm 0 sortedPos 0 info 0 parents 0 | com 0 box 0 rc2 0 (max |dCOM| 0.00e+00)
+tree-compare cube_shell salpeter n=1048576: IDENTICAL | keys 0 perm 0 sortedPos 0 info 0 parents 0 | com 0 box 0 rc2 0 (max |dCOM| 0.00e+00)
+tree-compare cube_edges equal    n=1048576: IDENTICAL | keys 0 perm 0 sortedPos 0 info 0 parents 0 | com 0 box 0 rc2 0 (max |dCOM| 0.00e+00)
+tree-compare cube_edges salpeter n=1048576: IDENTICAL | keys 0 perm 0 sortedPos 0 info 0 parents 0 | com 0 box 0 rc2 0 (max |dCOM| 0.00e+00)
+tree-compare uniform    equal    n=1048576: IDENTICAL | keys 0 perm 0 sortedPos 0 info 0 parents 0 | com 0 box 0 rc2 0 (max |dCOM| 0.00e+00)
+tree-compare uniform    salpeter n=1048576: IDENTICAL | keys 0 perm 0 sortedPos 0 info 0 parents 0 | com 0 box 0 rc2 0 (max |dCOM| 0.00e+00)
+exit 0

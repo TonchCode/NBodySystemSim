@@ -18,6 +18,29 @@ struct BlockStamp {
     unsigned           smid, block;
 };
 
+// R3 #8 (docs/03-design.md §23): host-side statistics filled by the CPU and CPU+GPU paths when the
+// corresponding Params pointer is non-null (accumulated over launches; the caller zeroes them).
+// CpuStats: one entry per parallel region of the host thread pool. busy = time a worker spent inside
+// its items; the region's wall time is set by the slowest worker, so sumMaxBusy / sumMeanBusy is the
+// between-worker load imbalance (1 = perfect), and pBusy vs eBusy shows which core type straggles.
+struct CpuStats {
+    int       regions = 0, workers = 0, pWorkers = 0, eWorkers = 0;
+    double    wallMs = 0, sumMaxBusyMs = 0, sumMeanBusyMs = 0, sumPBusyMs = 0, sumEBusyMs = 0;
+    long long pItems = 0, eItems = 0;
+};
+// HybridStats: per launch of a hyb_* kernel (sums; divide by launches).
+//   frac      GPU share of the bodies actually used (body splits; 1 for the phase split)
+//   gpuMs     GPU traversal / force kernel time of the GPU part (events)
+//   cpuMs     CPU compute time of the CPU part (host clock)
+//   xferMs    time from the start of the GPU part to the CPU's input being on the host (events)
+//   wallMs    whole launch (host clock, launch entry to all results in place)
+//   topoUpdates / lagSum   phase split: CPU topologies swapped in, and their age in launches
+struct HybridStats {
+    int    launches = 0, topoUpdates = 0, gpuOnlyLaunches = 0;
+    double fracSum = 0, gpuMs = 0, cpuMs = 0, xferMs = 0, wallMs = 0, lagSum = 0, cpuBuildMs = 0;
+    double lastFrac = -1;
+};
+
 struct Params {
     int   n          = 1 << 14;
     float dt         = 1e-3f;
@@ -56,6 +79,33 @@ struct Params {
     // Occupancy sweep: extra dynamic shared memory per traversal block (bytes, unused by the
     // kernel) to cap resident blocks/SM at fixed N (critic review 2, #6). 0 = off.
     int smemPad = 0;
+    // ---- R3 #8: CPU baselines and CPU+GPU splits (docs/03-design.md §23). Ignored by GPU kernels.
+    // cpuSet: logical processors the host pool runs on: 0 all (P-core LPs first, then E-cores),
+    //         1 P-core LPs (both hyper-threads), 2 one LP per P-core, 3 E-cores, 4 one LP per
+    //         physical core (P + E). Detected with GetLogicalProcessorInformationEx (EfficiencyClass).
+    // cpuThreads: 0 = every LP of the set, else the first k of them (one pinned worker per LP).
+    // cpuSched: 0 static even split, 1 dynamic (atomic counter, cpuChunk items per claim; 0 = auto),
+    //           2 static weighted by each worker's measured speed on the previous region at that site.
+    int   cpuSet = 0, cpuThreads = 0, cpuSched = 1, cpuChunk = 0;
+    // cpuRsqrt: 1 = _mm256_rsqrt_ps + one Newton step (production), 0 = sqrt + div (correctly rounded;
+    // used by the exact lattice selftest). cpuGroup: bodies per group walk (8, 16, 32, 64; 32 = the
+    // #7 warp, identical work counts). cpuTile: j-tile of the CPU all-pairs loop (bodies).
+    // cpuIV: 8-wide body vectors per CPU all-pairs register block (1 or 2).
+    int   cpuRsqrt = 1, cpuGroup = 32, cpuTile = 2048, cpuIV = 2;
+    // hybFrac: GPU share of the bodies in the body splits: [0, 1] static; -1 dynamic (re-balanced every
+    // launch from the previous launch's measured rates); -2 calibrate on 4 launches, then frozen.
+    float hybFrac = -1.f;
+    // bh_warp_refit (GPU-only control of the phase split): full rebuild every refitEvery launches,
+    // otherwise refit (gather + multipoles) on the existing topology.
+    int   refitEvery = 8;
+    // hyb_phase: hybFreeze = 1 keeps the current topology (no swap, no new CPU job); hybSync = 1 runs
+    // the CPU topology build synchronously inside the launch (lag 0; selftest and the no-overlap arm).
+    int   hybFreeze = 0, hybSync = 0;
+    // Host-timed kernels: if non-null, an array of >= 8 doubles; each launch ADDS its phase times (ms,
+    // host clock) in the order of LaunchInfo::phaseNames, then [6] = D2H, [7] = H2D.
+    double*      hostPhases = nullptr;
+    CpuStats*    cpuStats   = nullptr;
+    HybridStats* hybStats   = nullptr;
 };
 
 // Device buffers. pos.w = mass, vel.w unused (padding for 16-byte loads).
@@ -99,6 +149,13 @@ struct LaunchInfo {
     const char* exactSibling      = nullptr;  // kernel this one must equal bitwise (+ equal counters)
     const char* counterSibling    = nullptr;  // kernel whose work counters are the overhead baseline
     size_t      dynSmem           = 0;        // dynamic shared memory of the traversal launch
+    // R3 #8 (§23).
+    bool        hostTimed         = false;    // CPU or CPU+GPU path: time with the host clock (+ device sync)
+    bool        hostTree          = false;    // the tree diagnostics come from the host tree (cpu_bh*)
+    bool        hybrid            = false;    // fills Params::hybStats
+    const char* countsSibling     = nullptr;  // per-slot pop/interaction counts must EQUAL this kernel's;
+                                              // accelerations within the per-body roundoff bound (2I + 64) u
+    int         cpuWorkers        = 0;        // host pool workers used
 };
 using LaunchQuery = LaunchInfo (*)(int n, const Params&);
 
@@ -111,6 +168,27 @@ struct KernelInfo {
 
 const std::vector<KernelInfo>& kernelRegistry();
 const KernelInfo*              findKernel(const std::string& name);
+// R3 #8 (§23): CPU baselines, CPU+GPU splits and their GPU-only controls. Bench only: they are NOT in
+// kernelRegistry(), so the viewer (which iterates it) never sees them.
+const std::vector<KernelInfo>& hybridRegistry();
+const KernelInfo*              findAnyKernel(const std::string& name);   // kernelRegistry, then hybridRegistry
+
+// Host CPU facts (R3 #8). Core types from GetLogicalProcessorInformationEx (EfficiencyClass).
+struct HostCpuInfo {
+    int pCores = 0, eCores = 0, logical = 0, pLogical = 0;
+    std::vector<int> pLPs, eLPs;   // logical processor indices
+    std::string brand;             // CPUID brand string
+};
+const HostCpuInfo& hostCpuInfo();
+const char* cpuSetName(int set);                 // all | p | p1 | e | cores
+int         parseCpuSet(const std::string& s);   // -1 if unknown
+const char* cpuSchedName(int sched);             // static | dynamic | weighted
+int         parseCpuSched(const std::string& s);
+int         cpuSetSize(int set, int threads);    // workers a (set, threads) pair gives
+bool        cpuSetWorkerIsP(int set, int threads, int worker);
+// Effective clock (GHz) of each LP in lps while all of them run a dependent integer-add chain at the
+// same time for about ms milliseconds (16 one-cycle ops per iteration; [M] frequency, not the TSC).
+std::vector<double> probeCpuClocks(const std::vector<int>& lps, double ms = 300.0);
 
 // Lifecycle
 DeviceState allocate(int n);
@@ -195,6 +273,8 @@ int       treeStackOverflows(bool reset);
 // dupKeys = adjacent equal sorted Morton keys (bodies sharing a 21-bit cell with their neighbour).
 struct TreeDepth { int maxDepth = 0, pushDepth = 0, stackBound = 0, dupKeys = 0, threadStack = 0, warpStack = 0; };
 TreeDepth lastTreeDepth();
+int       hostTreeOverflows(bool reset);   // R3 #8: CPU walk stack overflows (must be 0)
+TreeDepth hostLastTreeDepth();             // R3 #8: depth diagnostics of the most recent host tree (cpu_bh*)
 // Exact theta > 0 check (critic review 2, #7), host, FP64, for the most recent tree:
 //  (1) every node's mass, COM and AABB recomputed from its [first, last] range of sortedPos and
 //      compared with the device values (mass/COM at FP32-roundoff tolerance, AABB bitwise), and
@@ -211,6 +291,16 @@ struct TreeExactCheck {
 };
 TreeExactCheck checkLastTreeExact(const std::vector<float4>& acc, const std::vector<uint4>* wc, float eps2, float G,
                                   bool unionWalk);   // traversal stack overflows since the last reset (must be 0)
+// R3 #8: the most recent host tree (cpu_bh*) against the most recent GPU tree built on the same positions:
+// topology (keys, perm, info, parents) and sortedPos bitwise, node data (COM, mass, AABB, rc2) numerically equal.
+struct TreeCompare {
+    bool ok = true; std::string msg;
+    int n = 0, keyDiff = 0, permDiff = 0, posDiff = 0, infoDiff = 0, parentDiff = 0, comDiff = 0, boxDiff = 0, rc2Diff = 0;
+    double maxComAbs = 0;
+};
+TreeCompare compareHostGpuTree();
+// R3 #8: stop the phase split's background CPU job (call before the CUDA context goes away).
+void hybridShutdown();
 unsigned long long hostHilbertKey(unsigned x, unsigned y, unsigned z);   // 21-bit coords (for --selftest)
 
 // Conditioning pre-filter (device, FP32, O(N^2), diagnostic only, not a force kernel):

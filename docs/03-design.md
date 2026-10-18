@@ -1,4 +1,4 @@
-# 03 — Kernel design: all-pairs variants (R3 #1–#3) and the Barnes-Hut tree code (R3 #4–#5, §10–§15)
+# 03 — Kernel design: all-pairs variants (R3 #1–#3), the Barnes-Hut tree code (R3 #4–#7, §10–§22) and CPU vs GPU (R3 #8, §23)
 
 Owner: `cuda-architect`. Target: the device in [`01-hardware.md`](01-hardware.md) (RTX 4080
 SUPER, sm_89, 80 SMs). Tags: [M] measured · [S] spec · [D] derived · [P:key] paper ·
@@ -1323,3 +1323,268 @@ the viewer round (SASS md5 8e3d4a22…); `src/` frozen; 272 W cap; idle utilisat
 
   Both are logged in `flagged_cells.txt`. Future sessions: kill by process, and never edit a running
   script; copy it first.
+
+---
+
+## 23. R3 #8: CPU vs GPU, and the heterogeneous CPU+GPU split (2026-10-18)
+
+Written by `cuda-architect` **before any timing run of this round**. What was observed while building
+(selftest, the host/GPU tree comparison, one functional run per new path at N = 8192) is listed in §0 of
+`docs/predictions/2026-10-18-cpu-gpu.md`, so the reader can tell which numbers below are predictions. Code:
+`src/core/host_pool.cpp`, `src/core/host_kernels.cpp`, `src/core/kernels_hybrid.cu`, the end of
+`src/core/kernels_tree.cu`, `src/bench/main.cpp`. **No production kernel changed:** `tools/sass_diff.py`
+before/after: 222 of 222 pre-existing functions instruction-for-instruction identical, 3 new
+(`results/2026-10-18_cpu_gpu/phase1/sass_diff.txt`). The viewer is untouched: the new paths live in a
+separate registry (`hybridRegistry()`) that only `nbody_bench` reads.
+
+### 23.1 What R3 #8 asks, and the two questions it hides
+R3 #8 is "the i5-13600K has P-cores and E-cores, so the split itself needs balancing"
+(`00-course-requirements.md`). Two different measurements are needed, and the second is meaningless
+without the first:
+1. **Honest CPU baselines.** Any "the GPU is X× faster" claim is quoted against the best-tuned CPU code
+   (rule 8 applies to the CPU too). A scalar single-thread loop would make every speedup 100× larger and
+   worthless. So the CPU codes are vectorised (AVX2 + FMA; Raptor Lake has no AVX-512, 01-hardware §1),
+   multithreaded over all 20 logical processors, and use **the same algorithm and arithmetic** as the GPU
+   codes, so the comparison is hardware against hardware, not algorithm against algorithm.
+2. **The split.** Once both rates are known, does using both devices beat the faster one alone? The 2025
+   evidence expects modest gains: dynamic CPU+GPU work stealing +12.9% over GPU-only on a workstation
+   [P:xu2025tascell, transferable], same-kernel co-execution 1.31× over GPU-only on average
+   [P:nozal2025coexecution, transferable, T2: abstract only], profile-then-split with equal finish times as
+   the objective [P:zhong2025hybrimoe, analogy]. Those gains come from systems where the two devices are
+   closer in speed than here. A body split's ceiling is 1 + R_cpu / R_gpu, which for this machine is a few
+   percent (§23.5), and keeping the tree GPU-resident is the 2025 state of the art
+   [P:frontiere2025crkhacc]. The one direct 2026 gravity source for a CPU-tree / GPU-walk phase split
+   (OpenGadget3, Ragagnin et al. 2026) is still not in `references.bib`, so it is not cited
+   (TODO(source), evidence map §4).
+
+**Load-balancing problems addressed in this round (three levels):**
+- *Inside the CPU* (§23.2): a static even split across 12 P-core threads and 8 E-cores finishes when the
+  slowest worker class finishes. That is the heterogeneous-CPU load-balancing problem R3 #8 names.
+- *Between CPU and GPU, by bodies* (§23.5): the split fraction f must make both finish together, with the
+  PCIe transfer as a fixed CPU-side offset.
+- *Between CPU and GPU, by phases* (§23.6): the tree build and the walk are different kinds of work; the
+  question is whether the CPU can take a phase off the GPU's critical path.
+
+### 23.2 The host CPU: core types, the pinned pool, three schedules
+- **Detection** [M]: `GetLogicalProcessorInformationEx(RelationProcessorCore)`. Each core reports an
+  `EfficiencyClass` and its logical processors; the highest class is a P-core. On this machine that gives
+  6 P-cores × 2 LPs + 8 E-cores × 1 LP = 20 LPs (§0 of the predictions; matches 01-hardware §1).
+- **CPU sets** (`--cpu-set`): `all` (20 LPs, P first), `p` (12: P-cores with both hyper-threads), `p1` (6:
+  one LP per P-core), `e` (8 E-cores), `cores` (14: one LP per physical core). `--cpu-threads k` takes the
+  first k of a set.
+- **Pool:** one `std::thread` per LP, hard-pinned with `SetThreadAffinityMask` (our own threads only: no
+  system, power or scheduler setting is touched). The dispatching (bench) thread is not pinned and does not
+  compute. Workers spin briefly between regions, then block; spinners yield every 32 pauses, because the
+  unpinned dispatcher necessarily shares an LP with a pinned worker when all 20 are used (without the yield
+  a 2.9 ms CPU sort at N = 8192 was observed while building: §0 of the predictions). *Why not OpenMP:* the
+  experiment needs hard per-LP affinity and per-worker busy times. MSVC's OpenMP runtimes give neither in a
+  controllable way, so a 300-line pool is the more controllable option (the brief allows either).
+- **Schedules** (`--cpu-sched`), and which imbalance each removes:
+
+| schedule | what a worker gets | removes | leaves |
+|---|---|---|---|
+| `static` | n / W contiguous items | nothing | core-type imbalance (E-cores, HT pairs) **and** item-cost imbalance (tree regions) |
+| `weighted` | a contiguous range proportional to its measured speed (items/ms, EMA over previous regions at the same call site) | core-type imbalance | item-cost imbalance (a static partition by speed, not by cost) |
+| `dynamic` | chunks of c items from an atomic counter (c = n / (32 W) by default) | both | the tail of one chunk, and the counter's cost |
+
+  For all-pairs every item (16 bodies × N sources) costs the same, so `weighted` should reach `dynamic`.
+  For the tree walk items differ by region, so `weighted` should fall between `static` and `dynamic`. This
+  separation is the measurement design: it attributes the dynamic schedule's gain to the two causes.
+- **Metrics that prove it** (`CpuStats`, the bench's `host:` line): worker busy max/mean per region (1 =
+  balanced; the region's wall time is the slowest worker), the mean busy time of P workers vs E workers,
+  and the share of items done on P workers. Under `static` the P workers should idle (busy P < busy E,
+  max/mean > 1); under `dynamic` both should be busy for the whole region.
+
+### 23.3 `cpu_allpairs` (the CPU all-pairs baseline)
+- **Decomposition.** Bodies in register blocks of 8·IV (IV = `--cpu-iv` 1 or 2 AVX2 vectors of 8); a work
+  item is one block; sources are broadcast (`_mm256_broadcast_ss`) from the AoS `float4` array in j order.
+  The j loop is tiled (`--cpu-tile`, 2048 bodies = 32 KB) and each tile is reused by 8 blocks from L1/L2
+  before the next tile, with the accumulators kept in memory between tiles (no extra rounding).
+- **Arithmetic and summation order.** `interact8` is `bodyBodyInteraction()` (interaction.cuh) line for line:
+  r = xj − xi, d² = fma(rx, rx, fma(ry, ry, fma(rz, rz, ε²))), s = ((m · inv) · inv) · inv,
+  a = fma(r, s, a). Per body the sum runs over j = 0 … N−1 in order, the `allpairs_naive` order. Only the
+  inverse square root differs from the GPU.
+- **1/sqrt: `_mm256_rsqrt_ps` + one Newton step** (production, `--cpu-rsqrt 1`), y₁ = y₀(1.5 − 0.5 d² y₀²):
+  4 extra instructions on the FP ports. The alternative, `sqrt + div` (`--cpu-rsqrt 0`), is correctly
+  rounded but uses the divider, which on these cores is a separate, much slower unit than the FMA ports
+  [D: one divide + one square root per 8 interactions against ~17 FMA-port instructions; not measured
+  separately, so the speed ratio is a phase-2 measurement]. **Accuracy justification:** the estimate's
+  relative error is ≤ 1.5·2⁻¹² (Intel's architectural bound; TODO(source): Intel SDM entry for RSQRTPS,
+  not in the bib), so after one step the error is ≈ 1.5 e₀² + rounding ≈ 3–4 u, from below. Per term the
+  error is then a few u, like the GPU's own `rsqrtf` (MUFU.RSQ, a few ulp [N:nvidia2026cudaguide]; the
+  ulp table is not in our notes, so this stays a [D] comparison). The D-009 gates decide, and they are
+  applied unchanged: G1 normMax ≤ u√N, G2 ≤ 1.5 × naive's normMax, G0. In the selftest at N = 65536 the
+  rsqrt path gives normMax = 0.38 u√N against naive's 0.38 (§0 of the predictions). `sqrt + div` remains
+  in the code because it makes `rsqrt(1) = 1` exact, which the exact lattice test needs (§23.7).
+- **Bit reproducibility across core types** [M, selftest]: `_mm256_rsqrt_ps` returns identical bits on a
+  P-core and an E-core for 2²⁰ inputs, so the production result does not depend on which core type ran an
+  item.
+- **Expected bottleneck** [D]: FP-port issue. Per 8 interactions: 3 SUB + 3 FMA + RSQRT + 4 (Newton) + 3 MUL
+  + 3 FMA = 17 vector instructions, plus 4 broadcast loads per source shared by the IV vectors. On a P-core
+  (Golden Cove, three 256-bit vector ALU ports) that is ≈ 5.7 cycles per 8 interactions ≈ 1.4 interactions
+  per clock per core, and hyper-threading adds little to a port-bound loop. An E-core (Gracemont) executes
+  256-bit AVX2 as two 128-bit halves on fewer FP pipes, so its per-clock rate should be roughly a quarter
+  to a half of a P-core's, at a lower clock. The port counts are microarchitecture facts recalled, not
+  sourced (TODO(source): Intel optimization manual); the phase-2 measurement per core type replaces them.
+- **Memory** [D]: per block of 16 bodies, 16 B per source from L1/L2 (tile reuse) = 1 B per interaction;
+  at 40 G interactions/s that is ~40 GB/s spread over 14 cores' L2s, far below their bandwidth. N = 1M
+  positions are 16 MB < the 24 MB L3.
+
+### 23.4 `cpu_bh` and `cpu_bh_scalar` (the CPU Barnes-Hut baselines)
+- **The tree is the GPU's tree, bit for bit.** `host::buildTree` repeats §11 in the GPU's FP32 operations:
+  bounding cube (the same `fminf/fmaxf`, `side × 1.0001f`, IEEE `1/side`), 21-bit quantisation and
+  63-bit Morton keys, a **stable** LSD radix sort of (key, index) pairs (8-bit digits; digits on which no key
+  differs are skipped; ties keep the original index order, which is what CUB's SortPairs gives), the
+  Karras radix tree with the same δ function (`__lzcnt64`, and 64 + `lzcnt(i ⊕ j)` for duplicates), and the
+  bottom-up multipoles with an atomic arrival counter per node (`acq_rel`: the second child to arrive builds
+  the parent, as `multipoleKernel` does). MSVC `/fp:precise` does not contract `a·b + c`, so the CPU code
+  places every FMA where nvcc placed it: com = fma(L.m, L.com, R.m · R.com) · (1/M) and
+  b² = fma(bz, bz, fma(bx, bx, by · by)). **Measured** (`nbody_bench --tree-compare`, 8 ICs × 2 mass spectra
+  at N = 10007 and 1M): keys, perm, sortedPos, node info, parents, COM, mass, AABB and rc² are identical on
+  all 16 cases. The first attempt had the COM operands the wrong way round (my reading of the SASS register
+  assignment). The comparison caught it immediately (13,021 of 65,535 COMs off by 1 ulp at N = 65536).
+- **Why bitwise matters:** with an identical tree and the GPU's FP32 opening test, the CPU walks make *the
+  same accept/open decisions* as the GPU walks, so the comparison does the same work on both devices, slot
+  for slot. That makes the speedup a hardware ratio at equal work, not a comparison of two tree codes.
+- **`cpu_bh` = the CPU analogue of R3 #7.** A group of `--cpu-group` G Morton-consecutive bodies (8, 16, 32,
+  64; G = 32 is the #7 warp) walks the union of its members' bmax decisions (a node is opened iff any valid
+  member opens it, `_CMP_NGE_UQ` = the GPU's `!(d² >= rc²)`). It appends accepted cells and bucket bodies to
+  a 512-entry interaction list, and evaluates the list against the group, 8 bodies per AVX2 instruction,
+  with G/8 independent accumulator sets. List order = walk order, so per body the summation order is
+  `warpWalk`'s. **For G = 32 the per-slot pop and interaction counts equal `bh_warp`'s exactly** (checked
+  on every bench run and in the selftest), and the accelerations agree within the per-body roundoff bound
+  (2 I + 64) u (worst case seen in the selftest: 0.125 of the bound). On a CPU the union walk is not about
+  divergence: it is what lets one walk feed 8-wide vectors, the CPU's own form of "coherent lanes"
+  (D-030's point: #5 and #7 attack the same loss).
+- **`cpu_bh_scalar` = R3 #5 on the CPU:** `bhTraverseKernel` statement for statement in scalar SSE
+  arithmetic (the same 1/sqrt choice), one body per item. Per-slot counts equal `bh_sorted`'s. It is the
+  CPU ablation that shows what vectorising the walk is worth. The best-tuned CPU tree baseline (rule 8) is
+  the faster of the two, over G and leaf size.
+- **Stack** 160 entries (the provable bound is ≤ 95, §19.2; overflow counted and fatal).
+- **Expected bottleneck** [D]: the list evaluation runs near the all-pairs rate. The walk adds scalar pops
+  and 4 vector tests per pop for G = 32, and the node loads miss L2 at 1M (52 MB of tree vs 2 MB of L2 per
+  P-core and 24 MB of L3). The build is memory-bound: 8 radix passes × ~36 MB of traffic at 1M, plus the
+  random-access multipole climb.
+
+### 23.5 Body splits: `hyb_allpairs`, `hyb_bh` [P:nozal2025coexecution, P:zhong2025hybrimoe]
+- **`hyb_allpairs`.** The GPU computes bodies [0, n_g) with `allPairsRangeKernel<128|256>`. That kernel is
+  `allpairs_tuned`'s block-full loop (the D-013 best-tuned configuration at large N: tuned b128, full
+  unroll) with an i offset: 40 regs, 0 spills, 2 KB static smem at b128, the same as the tuned kernel
+  [M, `cuobjdump -res-usage`]. The CPU computes bodies [n_g, N) with `host::allPairs`. Per launch: the copy
+  stream (non-blocking) moves all positions D2H (16 B/body; the CPU needs every source) while the range
+  kernel runs. This overlap is allowed with one copy engine (one transfer plus kernels at once
+  [N:nvidia2026bestpractices §10.1.2]) and needs pinned memory [N:nvidia2026cudaguide §2.5], so all host
+  buffers are `cudaHostAlloc`. The host waits for the positions, computes its part, and the results go
+  H2D (16 B per CPU body); the main stream waits for that copy. n_g is a multiple of 128.
+- **`hyb_bh`.** The GPU builds the tree (§11, unchanged) and walks Morton slots [0, n_g) with #7: the
+  production `bhWarpKernel` with a `TreeView` whose n is n_g, so the GPU part *is* `bh_warp`'s SASS. Its
+  per-slot results are bitwise `bh_warp`'s. Meanwhile the copy stream moves the tree to the host
+  (sortedPos 16 + com 16 + rc² 4 + info 16 + perm 4 = 56 B/body). The CPU group-walks slots [n_g, N) on
+  that copy (the same tree, so the same work), returns 16 B per CPU slot, and a 14-register scatter kernel
+  writes acc[perm[t]]. n_g is a multiple of 32 (whole #7 warps), so with G = 32 the CPU's groups are the
+  GPU's warps. The CPU takes the *end* of the Morton curve: a compact region, good for its caches.
+- **The balance equation.** Both parts start when their inputs exist. The GPU starts at once; the CPU
+  starts after the transfer T_x. With rates r_g and r_c (bodies/ms, measured on the previous launch), equal
+  finish times give f · N / r_g = T_x + (1 − f) N / r_c, so
+  **f = (T_x + N/r_c) / (N/r_g + N/r_c)**. This is the zhong2025hybrimoe objective (equal finish times),
+  with the transfer kept in the model. That paper's objective ignores transfer completion, a gap we do not
+  copy.
+- **Three modes** (`--hyb-frac`): a fixed f in [0, 1] (*static*, e.g. computed in phase 2 from the
+  standalone rates), −1 (*dynamic*: re-solved every launch from the last launch's measured times, EMA 0.5,
+  i.e. the co-execution runtime's adaptive scheme), −2 (*calibrated*: dynamic for 4 launches, then frozen).
+  If the CPU rate is unknown, the first launch gives the CPU a probe share. If the model's CPU share is below
+  two work items per worker, the CPU part is skipped (f = 1), because its fixed costs could not be
+  recovered.
+- **Ceiling and break-even** [D]. Without transfers the best possible time is
+  T_gpu / (1 + r_c/r_g). For all-pairs r_c/r_g ≈ 40/1150 ≈ 0.035, a ≤ 3.4% gain; the D2H of positions
+  overlaps the GPU kernel and costs the CPU only a late start. For the tree the walk-rate ratio is larger
+  (the CPU group walk runs near its all-pairs rate, while #7 runs at ~1/4 of the GPU's all-pairs rate,
+  §18.1), but 56 B/body must cross PCIe before the CPU can start. At 1M that is ~2.3 ms of a ~6 ms GPU walk
+  [D: 56 MB at ~25 GB/s, to be measured]. So the CPU gets ~60% of the GPU's walk time. The split gains only
+  where the walk is long compared with the transfer: large N, small θ (more interactions per transferred
+  byte). Where the step is build-bound (cube_edges, the IC round's observation), the CPU can never start
+  before the GPU is done.
+
+### 23.6 The phase split: `hyb_phase`, with the GPU-only control `bh_warp_refit`
+- **The dependency.** The tree for step k+1 needs x_{k+1} = x_k + dt (v_k + a_k dt/2) (KDK), so it needs
+  a_k, the output of step k's walk. "Build k+1 on the CPU while the GPU walks k" is impossible without a
+  lag or a predictor. Options considered:
+  1. *Predictor* (build on x_k + dt·v_k): a cheaper staleness, but still stale, and it adds a host-side
+     integrator.
+  2. *Synchronous CPU build* (no overlap): correct, but the CPU build is on the critical path. It is kept
+     as a measured arm (`--hyb-sync`); it is expected to be far slower than the GPU build (§23.4).
+  3. **Chosen: a lagged topology plus a GPU refit.** Split the build into the *topology* (keys, sort,
+     radix tree, parent links: the part that needs a global sort) and the *refit* (gather
+     sortedPos = pos[perm], bottom-up multipoles). The refit is two cheap GPU kernels, and it makes every
+     node's mass, COM, tight AABB and bmax exact for the **current** positions. The CPU builds the next
+     topology in the background from the positions of the launch that started its job, the copy stream
+     uploads it (perm, keys, info, leaf and node parents: 36 B/body), and the GPU swaps it in when the
+     upload is complete (D2D into the tree context, so every diagnostic sees the tree in use).
+- **Correctness argument (why the lag cannot break the criterion)** [D]: the bmax criterion's safety (§11.4)
+  needs only that bmax bounds every body of the node, and the refit computes bmax from the node's actual
+  bodies' AABB. Any binary tree over any permutation, refitted, is therefore a valid BH tree. A stale
+  topology changes **which** cells exist (bodies that drifted apart share a node, so nodes get bigger and
+  are opened more often: more work) and slightly changes the error. It never makes a cell accept a body
+  inside it. Checked in the selftest: positions moved by 0.02 rms per axis after the topology was built,
+  refit only, then `checkLastTree` (structure), `checkLastTreeExact` (node data from first principles +
+  host-walk counts; worst 0.028 of its bound) and TN1/TN2 all pass.
+- **Physics: quantified and gated** (pre-registered): `--lag-check` after an integration compares the
+  refitted stale tree with a fresh build at the same positions. LG1: TN1/TN2 hold on the stale tree.
+  LG2: its normalised rms ≤ 1.10 × the fresh tree's. The work ratio (interactions per body,
+  stale / fresh) is reported.
+- **What the CPU actually saves, and the control.** The GPU still refits every launch, so hyb_phase removes
+  only the GPU's topology time (keys + sort + radix tree), not the whole build. But a GPU can refit too:
+  **`bh_warp_refit`** rebuilds on the GPU every K launches (`--refit-every`) and refits in between. The
+  phase split's gain over `bh_warp` therefore decomposes into (a) refit instead of rebuild
+  (`bh_warp_refit` vs `bh_warp`, no CPU involved) and (b) the CPU doing the topology
+  (`hyb_phase` vs `bh_warp_refit` at K ≈ the observed lag). Only (b) is R3 #8. It is bounded by the GPU's
+  topology time / K [D].
+- **Data movement and the single copy engine:** per topology, 16 B/body D2H (positions) and 36 B/body H2D,
+  both on the copy stream, overlapping GPU work. The main stream waits for the position copy before its next
+  kick-drift (otherwise the next step could overwrite positions the copy engine is still reading). The job,
+  the upload and the swap are serialised (one topology in flight).
+- **In the force-only bench** (repeated launches on the same positions) the CPU topology equals the GPU's
+  (§23.4), so `hyb_phase` and `bh_warp_refit` must be **bitwise equal to `bh_warp`**, with equal per-slot
+  counts (checked on every bench run). The lag and its physics only appear in integration, hence the lag
+  check.
+
+### 23.7 Validation (all pass; `results/2026-10-18_cpu_gpu/phase1/selftest.txt`)
+- **Exact lattice** (the D-009 missed-interaction test): every CPU and hybrid path joins the existing
+  lattice cases (602 new; 7840 in total), with `cpuRsqrt = 0` so that every FP32 operation is exact in any
+  order. The configurations cover all CPU sets, all three schedules, IV 1/2, tiles 64–2048, chunk 1,
+  groups 8–64, leaf 1–64, split fractions {0, 0.37, 0.5, 1, dynamic}, the synchronous and asynchronous
+  phase split and refit every 1 or 3. All are bitwise equal to the analytic sum. `--selftest-drop 5`
+  detects the dropped body in every new case where it is visible.
+- **Statistical (production rsqrt path):** D-009 G0/G1/G2 for `cpu_allpairs` (IV 1 and 2, rsqrt and exact)
+  and `hyb_allpairs` (f = 0.5 and dynamic) on Plummer at N = 1000, 10007, 65536.
+- **Same tree, same work:** for 12 IC labels × N ∈ {1, 2, 3, 1000, 10007, 65536} × 2 (θ, leaf) configs:
+  `compareHostGpuTree` (topology bitwise, node data equal), `cpu_bh_scalar` counts = `bh_sorted`'s,
+  `cpu_bh` (G = 32) counts = `bh_warp`'s, `hyb_bh` at f ∈ {0, 0.5, 1} counts = `bh_warp`'s, all within the
+  (2I + 64) u bound (`hyb_bh` at f = 1 bitwise), and `hyb_phase` (sync) / `bh_warp_refit` bitwise
+  `bh_warp` over 3 launches (rebuild, refit, refit).
+- **Scheduling:** every schedule × CPU set × n ∈ {0, 1, 7, 1000, 100003} × chunk processes every item
+  exactly once (twice in a row, so the weighted schedule runs on measured speeds).
+- **Asynchronous phase split** converges (≥ 2 topology swaps) to a bitwise-`bh_warp` result; the stale
+  topology checks of §23.6.
+
+### 23.8 Interface changes (backward compatible)
+- `Params`: `cpuSet, cpuThreads, cpuSched, cpuChunk, cpuRsqrt, cpuGroup, cpuTile, cpuIV, hybFrac,
+  refitEvery, hybFreeze, hybSync, hostPhases, cpuStats, hybStats` (ignored by every GPU kernel).
+  `LaunchInfo`: `hostTimed, hostTree, hybrid, countsSibling, cpuWorkers`. New: `CpuStats`, `HybridStats`,
+  `HostCpuInfo`, `TreeCompare`, `hybridRegistry()`, `findAnyKernel()`, `probeCpuClocks()`,
+  `compareHostGpuTree()`, `hybridShutdown()`, `hostLastTreeDepth()`, `hostTreeOverflows()`.
+- Bench: `--cpu-set/--cpu-threads/--cpu-sched/--cpu-chunk/--cpu-rsqrt/--cpu-group/--cpu-tile/--cpu-iv`,
+  `--hyb-frac`, `--refit-every`, `--hyb-sync`, `--wall` (host-clock timing of any kernel: the fair baseline
+  for the hybrids, which are host-timed), `--cpu-info` (core types + measured clocks), `--tree-compare N`,
+  `--lag-check`. Host paths are timed with the host clock plus a device sync. Their D2H/H2D copies are
+  reported separately (`host:` line) and are not part of the CPU compute time quoted as the baseline. The
+  CSV gains 35 columns (new header; older CSVs are refused for appending, as before).
+- Build: `host_kernels.cpp` and `host_pool.cpp` compile with `/arch:AVX2 /fp:precise`.
+
+### 23.9 Not done (and why)
+- OpenMP: not used (§23.2). AVX-512: not available on Raptor Lake.
+- A CPU quadrupole, or a CPU k-d tree: they would change the algorithm, and the point is equal work.
+- Double-buffered topologies in flight (more than one CPU job at once): the lag would shrink by at most one
+  job length, and the measured question is whether the CPU's share pays at all.
+- Power/thermal control of the CPU: not changed (no system settings). Phase 2 records what is readable
+  without admin (power plan, measured clocks under load).

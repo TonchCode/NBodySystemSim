@@ -60,9 +60,21 @@
 //       Integrates S KDK steps (one launch per kernel per step: TDR-safe) and logs
 //       step,time,kinetic,potential,total,rel_drift every K steps (FP64 host energy, O(N^2)).
 //
+// R3 #8, CPU vs GPU (docs/03-design.md §23; bench only, not in the viewer):
+//   cpu_allpairs, cpu_bh, cpu_bh_scalar      honest CPU baselines (AVX2, pinned host pool)
+//   hyb_allpairs, hyb_bh                     CPU+GPU body splits (--hyb-frac F | -1 dynamic | -2 calibrate+freeze)
+//   hyb_phase, bh_warp_refit                 phase split (CPU topology in the background, GPU refit) + its GPU control
+//   --cpu-set all|p|p1|e|cores  --cpu-threads K  --cpu-sched static|dynamic|weighted  --cpu-chunk C
+//   --cpu-rsqrt 1|0 (rsqrt+Newton | sqrt+div)  --cpu-group 8|16|32|64  --cpu-tile T  --cpu-iv 1|2
+//   --refit-every K  --hyb-sync  --wall (host-clock timing incl. a device sync, for any kernel)
+//   --cpu-info (core types + measured clocks, then exit)  --lag-check (with --steps: stale-topology error)
+//   Host paths are timed with the host clock; the D2H/H2D copies of the bench's GPU-resident state are
+//   reported separately (host: line) and are not part of the CPU compute time.
+//
 // Timing covers the force kernel only (cudaEvent), after warm-up. Environment that CUDA
 // can't see (power limit, background load) is captured by tools/capture_env.ps1.
 #include <algorithm>
+#include <atomic>
 #include <chrono>
 #include <cmath>
 #include <cstdio>
@@ -72,8 +84,10 @@
 #include <fstream>
 #include <random>
 #include <string>
+#include <thread>
 #include <vector>
 #include "nbody.h"
+#include "host.h"   // R3 #8 selftest: pool scheduling and rsqrt checks
 
 namespace {
 
@@ -91,6 +105,12 @@ struct Args {
     std::string tlUnit = "block";        // timeline record unit: block | warp
     std::string massSpectrum = "equal";  // IC round: equal | salpeter | heavy-few
     double      bhMass = 0.01;           // IC round: disk / galaxies central-body mass fraction
+    // R3 #8 (docs/03-design.md §23)
+    int   cpuSet = 0, cpuThreads = 0, cpuSched = 1, cpuChunk = 0, cpuRsqrt = 1, cpuGroup = 32, cpuTile = 2048, cpuIV = 2;
+    float hybFrac = -1.f;
+    int   refitEvery = 8;
+    bool  hybSync = false, wall = false, cpuInfo = false, lagCheck = false;
+    int   treeCompare = 0;
 };
 
 int toInt(const char* flag, const char* v)
@@ -153,6 +173,21 @@ Args parse(int argc, char** argv)
         else if (s == "--timeline-unit")     a.tlUnit = next();
         else if (s == "--mass-spectrum")     a.massSpectrum = next();
         else if (s == "--bh-mass")           a.bhMass = nextf();
+        else if (s == "--cpu-set")           { a.cpuSet = nbody::parseCpuSet(next()); if (a.cpuSet < 0) { fprintf(stderr, "--cpu-set must be all|p|p1|e|cores\n"); exit(2); } }
+        else if (s == "--cpu-threads")       a.cpuThreads = nexti();
+        else if (s == "--cpu-sched")         { a.cpuSched = nbody::parseCpuSched(next()); if (a.cpuSched < 0) { fprintf(stderr, "--cpu-sched must be static|dynamic|weighted\n"); exit(2); } }
+        else if (s == "--cpu-chunk")         a.cpuChunk = nexti();
+        else if (s == "--cpu-rsqrt")         a.cpuRsqrt = nexti();
+        else if (s == "--cpu-group")         a.cpuGroup = nexti();
+        else if (s == "--cpu-tile")          a.cpuTile = nexti();
+        else if (s == "--cpu-iv")            a.cpuIV = nexti();
+        else if (s == "--hyb-frac")          a.hybFrac = nextf();
+        else if (s == "--refit-every")       a.refitEvery = nexti();
+        else if (s == "--hyb-sync")          a.hybSync = true;
+        else if (s == "--wall")              a.wall = true;
+        else if (s == "--cpu-info")          a.cpuInfo = true;
+        else if (s == "--lag-check")         a.lagCheck = true;
+        else if (s == "--tree-compare")      a.treeCompare = nexti();
         else { fprintf(stderr, "unknown argument %s\n", s.c_str()); exit(2); }
     }
     // eps <= 0 makes the self-term 0 * rsqrt(0) = NaN (critic review 1, #12).
@@ -169,6 +204,12 @@ Args parse(int argc, char** argv)
         fprintf(stderr, "--mass-spectrum must be %s\n", nbody::massSpectrumNames()); exit(2);
     }
     if (!(a.bhMass >= 0.0) || !(a.bhMass < 1.0)) { fprintf(stderr, "--bh-mass must be in [0, 1)\n"); exit(2); }
+    if (a.cpuRsqrt != 0 && a.cpuRsqrt != 1) { fprintf(stderr, "--cpu-rsqrt must be 0 or 1\n"); exit(2); }
+    if (a.cpuGroup != 8 && a.cpuGroup != 16 && a.cpuGroup != 32 && a.cpuGroup != 64) { fprintf(stderr, "--cpu-group must be 8, 16, 32 or 64\n"); exit(2); }
+    if (a.cpuIV != 1 && a.cpuIV != 2) { fprintf(stderr, "--cpu-iv must be 1 or 2\n"); exit(2); }
+    if (a.cpuThreads < 0 || a.cpuChunk < 0 || a.cpuTile < 0) { fprintf(stderr, "--cpu-threads/--cpu-chunk/--cpu-tile must be >= 0\n"); exit(2); }
+    if (!(a.hybFrac <= 1.f) || (a.hybFrac < 0.f && a.hybFrac != -1.f && a.hybFrac != -2.f)) { fprintf(stderr, "--hyb-frac must be in [0, 1], -1 or -2\n"); exit(2); }
+    if (a.refitEvery < 1) { fprintf(stderr, "--refit-every must be >= 1\n"); exit(2); }
     return a;
 }
 
@@ -425,6 +466,31 @@ bool bitwiseEq(const std::vector<float4>& a, const std::vector<float4>& b)
     return a.size() == b.size() && std::memcmp(a.data(), b.data(), a.size() * sizeof(float4)) == 0;
 }
 
+// R3 #8: a CPU (or CPU+GPU) result against a GPU sibling with the SAME work (same cells, same summation
+// order per body; only 1/sqrt and FMA rounding differ). Per body |a - b| / S_i must stay within
+// (2 I + 64) u, I = the largest per-slot interaction count (each term: GPU MUFU.RSQ <= 2 ulp, CPU
+// rsqrt + Newton ~ 3.4 ulp, cubed, plus one rounding per summand on each side) [D].
+struct TwinStats { double max = 0; int viol = 0; double bound = 0; };
+TwinStats twinStats(const std::vector<float4>& a, const std::vector<float4>& b, const std::vector<float>& scale, double imax)
+{
+    TwinStats t;
+    t.bound = (2.0 * imax + 64.0) * kU;
+    for (size_t i = 0; i < a.size(); ++i) {
+        const double dx = double(a[i].x) - b[i].x, dy = double(a[i].y) - b[i].y, dz = double(a[i].z) - b[i].z;
+        const double sc = scale[i] > 0.f ? double(scale[i]) : 1.0;
+        const double e  = std::sqrt(dx * dx + dy * dy + dz * dz) / sc;
+        t.max = std::max(t.max, e);
+        if (!(e <= t.bound)) ++t.viol;
+    }
+    return t;
+}
+double maxInter(const std::vector<uint4>& wc)
+{
+    unsigned m = 0;
+    for (const uint4& c : wc) m = std::max(m, c.y);
+    return double(m);
+}
+
 // ---------------------------------------------------------------------------------------
 // Exact missed-interaction self-test.
 // Positions X_i = integers in [-16, 15] times 2^-20, masses m_j in {1, 2}, eps = 1, G = 1.
@@ -480,6 +546,62 @@ std::vector<SelftestCase> allConfigs(int n)
         } else {
             base.blockSize = 256;
             out.push_back({&k, base, name + " b256 (default params)"});
+        }
+    }
+    // R3 #8 (docs/03-design.md §23.7): CPU baselines and CPU+GPU splits on the same exact lattice. The CPU's
+    // 1/sqrt is the correctly rounded sqrt + div here (cpuRsqrt = 0), so rsqrt(1) = 1 exactly as on the GPU;
+    // the production rsqrt + Newton path is checked statistically (D-009 gates) in runTreeSelftest. Every
+    // schedule, CPU set, tile/block shape and split fraction below exercises a different range partition.
+    for (const auto& k : hybridRegistry()) {
+        const std::string name = k.name;
+        Params base;
+        base.n = n; base.softening = 1.f; base.G = 1.f; base.cpuRsqrt = 0; base.blockSize = 128;
+        char buf[160];
+        auto add = [&](const Params& q, const char* fmt, auto... xs) {
+            snprintf(buf, sizeof buf, fmt, xs...);
+            out.push_back({&k, q, name + " " + buf});
+        };
+        if (name == "cpu_allpairs") {
+            struct C { int set, sched, threads, iv, tile, chunk; };
+            const C cs[] = {{0, 1, 0, 2, 2048, 0}, {0, 0, 0, 1, 64, 0}, {1, 0, 3, 2, 100, 0}, {3, 2, 0, 1, 2048, 0},
+                            {4, 1, 0, 2, 512, 1}, {2, 2, 0, 2, 2048, 0}};
+            for (const C& c : cs) {
+                Params q = base; q.cpuSet = c.set; q.cpuSched = c.sched; q.cpuThreads = c.threads; q.cpuIV = c.iv;
+                q.cpuTile = c.tile; q.cpuChunk = c.chunk;
+                add(q, "set%s %s t%d iv%d tile%d chunk%d", cpuSetName(c.set), cpuSchedName(c.sched), c.threads, c.iv, c.tile, c.chunk);
+            }
+        } else if (name == "cpu_bh") {
+            int r = 0;
+            for (int leaf : {1, 16, 64}) for (int grp : {8, 16, 32, 64}) {
+                Params q = base; q.theta = 0.f; q.leafSize = leaf; q.cpuGroup = grp; q.cpuSched = r % 3; q.cpuSet = (r % 2) ? 4 : 0;
+                ++r;
+                add(q, "leaf%d group%d %s th0", leaf, grp, cpuSchedName(q.cpuSched));
+            }
+        } else if (name == "cpu_bh_scalar") {
+            for (int leaf : {1, 8, 16}) {
+                Params q = base; q.theta = 0.f; q.leafSize = leaf; q.cpuSched = leaf % 3;
+                add(q, "leaf%d %s th0", leaf, cpuSchedName(q.cpuSched));
+            }
+        } else if (name == "hyb_allpairs") {
+            for (float f : {0.f, 0.37f, 1.f, -1.f}) for (int b : {128, 256}) {
+                Params q = base; q.hybFrac = f; q.blockSize = b;
+                add(q, "frac%g b%d", f, b);
+            }
+        } else if (name == "hyb_bh") {
+            for (float f : {0.f, 0.5f, 1.f, -1.f}) for (int leaf : {8, 16}) {
+                Params q = base; q.theta = 0.f; q.hybFrac = f; q.leafSize = leaf; q.cpuGroup = leaf == 8 ? 16 : 32;
+                add(q, "frac%g leaf%d group%d th0", f, leaf, q.cpuGroup);
+            }
+        } else if (name == "hyb_phase") {
+            for (int sync : {1, 0}) for (int leaf : {1, 16}) {
+                Params q = base; q.theta = 0.f; q.hybSync = sync; q.leafSize = leaf;
+                add(q, "sync%d leaf%d th0", sync, leaf);
+            }
+        } else if (name == "bh_warp_refit") {
+            for (int every : {1, 3}) {
+                Params q = base; q.theta = 0.f; q.refitEvery = every;
+                add(q, "every%d th0", every);
+            }
         }
     }
     return out;
@@ -779,6 +901,167 @@ int runTreeSelftest(unsigned seed)
         printf("selftest (IC invariants): %d checks, %d failed (mass 1, COM, momentum, finite, positive masses, "
                "deterministic, legacy hashes)\n", cases - c0, fails - f0);
     }
+    {   // (m) R3 #8: CPU baselines and CPU+GPU splits (docs/03-design.md §23.7)
+        const int c0 = cases, f0 = fails;
+        // (m1) every schedule processes every item exactly once, on every CPU set
+        for (int set = 0; set <= 4; ++set)
+            for (int sched = 0; sched <= 2; ++sched)
+                for (long long nn : {0ll, 1ll, 7ll, 1000ll, 100003ll})
+                    for (long long ch : {0ll, 1ll, 7ll}) {
+                        host::configurePool(set, 0);
+                        std::vector<std::atomic<int>> hit(static_cast<size_t>(nn));
+                        for (auto& h : hit) h.store(0);
+                        for (int rep = 0; rep < 2; ++rep)   // twice: the weighted schedule uses the first run's speeds
+                            host::parallelFor(nn, sched, ch, 77, nullptr, [&](long long b, long long e, int) {
+                                for (long long i = b; i < e; ++i) hit[size_t(i)].fetch_add(1);
+                            });
+                        int bad = 0;
+                        for (auto& h : hit) bad += h.load() != 2;
+                        ++cases;
+                        if (bad) { ++fails; printf("  FAIL pool set %s %s n=%lld chunk %lld: %d items not processed exactly once\n", cpuSetName(set), cpuSchedName(sched), nn, ch, bad); }
+                    }
+        // (m2) observation: does _mm256_rsqrt_ps give the same bits on P- and E-cores?
+        {
+            const int mm = host::rsqrtCoreTypeMismatches(1 << 20);
+            if (mm < 0) printf("  rsqrt P vs E: not a hybrid CPU, skipped\n");
+            else printf("  rsqrt P vs E: %d of %d inputs give different _mm256_rsqrt_ps bits (observation; the production "
+                        "result can depend on which core type ran an item)\n", mm, 1 << 20);
+        }
+        // (m3) CPU and CPU+GPU all-pairs vs the GPU with the production rsqrt + Newton: D-009 gates G0/G1/G2
+        for (int n : {1000, 10007, 65536}) {
+            std::vector<float4> pos, vel, ref, acc;
+            makeIC("plummer", n, seed, pos, vel);
+            DeviceState s = allocate(n);
+            upload(s, pos, vel);
+            Params p;
+            p.n = n;
+            referenceAcc(s, p, ref);
+            std::vector<int> idx;
+            for (int t = 0; t < 256; ++t) idx.push_back(int((long long)t * n / 256));
+            const Fp64Sample truth = referenceFp64(pos, p, idx);
+            const double naiveNorm = compareFp64(ref, truth).normMax;
+            struct V { const char* k; int rsqrt; float frac; int iv; };
+            const V vs[] = {{"cpu_allpairs", 1, -1.f, 2}, {"cpu_allpairs", 1, -1.f, 1}, {"cpu_allpairs", 0, -1.f, 2},
+                            {"hyb_allpairs", 1, 0.5f, 2}, {"hyb_allpairs", 1, -1.f, 2}};
+            for (const V& v : vs) {
+                Params q = p; q.cpuRsqrt = v.rsqrt; q.hybFrac = v.frac; q.cpuIV = v.iv; q.blockSize = 128;
+                acc = runAcc(*findAnyKernel(v.k), s, q);
+                const Fp64Error e = compareFp64(acc, truth);
+                const double mr = compareAcc(acc, ref).maxRel;
+                const bool ok = mr <= kG0 && e.normMax <= kG1 * kU * std::sqrt(double(n)) && e.normMax <= kG2 * naiveNorm;
+                ++cases;
+                if (!ok) { ++fails; printf("  FAIL %s rsqrt%d frac%g iv%d n=%d: D-009 (max rel %.2e, normMax %.3e vs u sqrtN %.3e, naive %.3e)\n", v.k, v.rsqrt, v.frac, v.iv, n, mr, e.normMax, kU * std::sqrt(double(n)), naiveNorm); }
+                if (n == 65536)
+                    printf("  %s rsqrt%d frac%g iv%d n=%d: normMax %.3e = %.2f u sqrtN (naive %.3e), max rel vs naive %.2e\n", v.k, v.rsqrt, v.frac, v.iv, n,
+                           e.normMax, e.normMax / (kU * std::sqrt(double(n))), naiveNorm, mr);
+            }
+            release(s);
+        }
+        // (m4) the host tree is the GPU tree; the CPU walks do the GPU walks' work (per-slot counts equal) and their
+        // accelerations agree within the roundoff bound; hybrids likewise
+        double worstTwin = 0;
+        for (const char* ic : ics)
+            for (int n : ns) {
+                std::vector<float4> pos, vel;
+                makeLabelled(ic, n, seed, pos, vel);
+                DeviceState s = allocate(n);
+                upload(s, pos, vel);
+                for (int cfg = 0; cfg < 2; ++cfg) {
+                    Params p;
+                    p.n = n; p.blockSize = cfg ? 256 : 128; p.theta = cfg ? 0.7f : 0.5f; p.leafSize = cfg ? 8 : 16;
+                    p.cpuSched = cfg ? 0 : 1;
+                    std::vector<float4> a5, a7, ah, scratchAcc;
+                    const std::vector<uint4> w5 = runCounters(*findKernel("bh_sorted"), s, p, &a5);
+                    const std::vector<uint4> w7 = runCounters(*findKernel("bh_warp"), s, p, &a7);
+                    std::vector<float> sc;
+                    forceScale(s, p, sc);
+                    for (int v = 0; v < 2; ++v) {   // cpu_bh_scalar (= #5 work), cpu_bh group 32 (= #7 work)
+                        const KernelInfo* kh = findAnyKernel(v ? "cpu_bh" : "cpu_bh_scalar");
+                        const std::vector<uint4> wh = runCounters(*kh, s, p, &ah);
+                        const TreeCompare tc = compareHostGpuTree();
+                        ++cases;
+                        if (!tc.ok) { ++fails; printf("  FAIL host tree %s n=%d th%.1f: %s (keys %d, perm %d, pos %d, info %d, parents %d, com %d, box %d, rc2 %d, max |dCOM| %.2e)\n", ic, n, p.theta, tc.msg.c_str(), tc.keyDiff, tc.permDiff, tc.posDiff, tc.infoDiff, tc.parentDiff, tc.comDiff, tc.boxDiff, tc.rc2Diff, tc.maxComAbs); }
+                        const std::vector<uint4>& ws = v ? w7 : w5;
+                        const std::vector<float4>& as = v ? a7 : a5;
+                        ++cases;
+                        if (const int d = countDiff(wh, ws)) { ++fails; printf("  FAIL %s %s n=%d th%.1f: %d slots with counts != %s\n", kh->name, ic, n, p.theta, d, v ? "bh_warp" : "bh_sorted"); }
+                        const TwinStats tw = twinStats(ah, as, sc, maxInter(ws));
+                        worstTwin = std::max(worstTwin, tw.max / tw.bound);
+                        ++cases;
+                        if (tw.viol) { ++fails; printf("  FAIL %s %s n=%d th%.1f: %d bodies above (2 I + 64) u (max %.3e, bound %.3e)\n", kh->name, ic, n, p.theta, tw.viol, tw.max, tw.bound); }
+                    }
+                    if (n >= 2) {   // hyb_bh at fixed fractions: counts = bh_warp's, accelerations within the bound
+                        for (float f : {0.f, 0.5f, 1.f}) {
+                            Params q = p; q.hybFrac = f;
+                            const std::vector<uint4> wh = runCounters(*findAnyKernel("hyb_bh"), s, q, &ah);
+                            ++cases;
+                            if (const int d = countDiff(wh, w7)) { ++fails; printf("  FAIL hyb_bh frac%g %s n=%d th%.1f: %d slots with counts != bh_warp\n", f, ic, n, p.theta, d); }
+                            const TwinStats tw = twinStats(ah, a7, sc, maxInter(w7));
+                            ++cases;
+                            if (tw.viol || (f == 1.f && !bitwiseEq(ah, a7))) { ++fails; printf("  FAIL hyb_bh frac%g %s n=%d th%.1f: %d bodies above the bound%s\n", f, ic, n, p.theta, tw.viol, f == 1.f ? " or not bitwise bh_warp at frac 1" : ""); }
+                        }
+                        // hyb_phase (sync: CPU topology, GPU refit) and bh_warp_refit: bitwise bh_warp, equal counts
+                        for (const char* nm : {"hyb_phase", "bh_warp_refit"}) {
+                            Params q = p; q.hybSync = 1; q.refitEvery = 2;
+                            for (int rep = 0; rep < 3; ++rep) {   // refit launches 2 and 3 run on the previous topology
+                                const std::vector<uint4> wh = runCounters(*findAnyKernel(nm), s, q, &ah);
+                                ++cases;
+                                if (!bitwiseEq(ah, a7) || countDiff(wh, w7)) { ++fails; printf("  FAIL %s %s n=%d th%.1f launch %d: not bitwise equal to bh_warp / counts differ\n", nm, ic, n, p.theta, rep); }
+                            }
+                        }
+                    }
+                }
+                release(s);
+            }
+        // (m5) the asynchronous phase split converges to the CPU topology, and a STALE topology is still a valid tree:
+        // perturb the positions after the topology was built, refit only (hybFreeze), then the structural check,
+        // the exact theta > 0 host check (node data from first principles + host walk counts) and TN1/TN2.
+        for (const char* ic : {"plummer", "galaxies", "cube_edges"})
+            for (int n : {1000, 10007}) {
+                std::vector<float4> pos, vel, ah, a7, ref;
+                makeLabelled(ic, n, seed, pos, vel);
+                DeviceState s = allocate(n);
+                upload(s, pos, vel);
+                Params p;
+                p.n = n; p.blockSize = 128; p.theta = 0.5f; p.leafSize = 16;
+                const std::vector<uint4> w7 = runCounters(*findKernel("bh_warp"), s, p, &a7);
+                { Params r = p; r.refitEvery = 1000000; runAcc(*findAnyKernel("bh_warp_refit"), s, r); }   // its state: this N
+                HybridStats hs{};
+                Params q = p; q.hybStats = &hs;
+                for (int it = 0; it < 400 && hs.topoUpdates < 2; ++it) { runAcc(*findAnyKernel("hyb_phase"), s, q); std::this_thread::sleep_for(std::chrono::milliseconds(2)); }
+                ah = runAcc(*findAnyKernel("hyb_phase"), s, p);
+                ++cases;
+                if (hs.topoUpdates < 2 || !bitwiseEq(ah, a7)) { ++fails; printf("  FAIL hyb_phase async %s n=%d: %d topology updates, bitwise %s\n", ic, n, hs.topoUpdates, bitwiseEq(ah, a7) ? "yes" : "no"); }
+                std::mt19937 rng(seed + 7);
+                std::normal_distribution<float> nd(0.f, 1.f);
+                std::vector<float4> moved = pos;
+                for (float4& b : moved) { b.x += 0.02f * nd(rng); b.y += 0.02f * nd(rng); b.z += 0.02f * nd(rng); }
+                upload(s, moved, vel);
+                for (const char* nm : {"hyb_phase", "bh_warp_refit"}) {
+                    Params f = p; f.hybFreeze = 1; f.refitEvery = 1000000;
+                    std::vector<float4> as;
+                    const std::vector<uint4> ws = runCounters(*findAnyKernel(nm), s, f, &as);
+                    const TreeCheck tc = checkLastTree(s);
+                    const TreeExactCheck x = checkLastTreeExact(as, &ws, p.softening * p.softening, p.G, true);
+                    referenceAcc(s, p, ref);
+                    std::vector<float> sc;
+                    forceScale(s, p, sc);
+                    const NormStats e = normStats(as, ref, sc);
+                    const bool ok = tc.ok && x.ok && e.rms <= treeGateNRms(p.theta) && e.p99 <= treeGateNP99(p.theta);
+                    ++cases;
+                    if (!ok) { ++fails; printf("  FAIL stale topology %s %s n=%d: tree %s, exact %s, norm rms %.3e p99 %.3e\n", nm, ic, n, tc.ok ? "ok" : tc.msg.c_str(), x.ok ? "ok" : x.msg.c_str(), e.rms, e.p99); }
+                    if (n == 10007 && std::string(ic) == "plummer")
+                        printf("  stale topology %s %s n=%d (positions moved by 0.02 rms per axis): tree ok, exact host check %.3f of bound, "
+                               "norm rms %.3e p99 %.3e\n", nm, ic, n, x.maxErrOverBound, e.rms, e.p99);
+                }
+                release(s);
+            }
+        const int hov = hostTreeOverflows(true);
+        ++cases;
+        if (hov) { ++fails; printf("  FAIL host walk stack overflows: %d\n", hov); }
+        printf("selftest (R3 #8 CPU/hybrid): %d checks, %d failed; CPU vs GPU walks worst |da|/sum|f| = %.3f of the (2I+64)u bound\n",
+               cases - c0, fails - f0, worstTwin);
+    }
     const int ov = treeStackOverflows(true);
     ++cases;
     if (ov) { ++fails; printf("  FAIL tree stack overflows: %d\n", ov); }
@@ -900,6 +1183,58 @@ int runSelftest(int dropBody, unsigned seed)
     return (nFail == 0 && nStampFail == 0) ? 0 : 3;
 }
 
+double medianD(std::vector<double> v)
+{
+    std::sort(v.begin(), v.end());
+    const size_t m = v.size();
+    if (m == 0) return 0.0;
+    return (m % 2) ? v[m / 2] : 0.5 * (v[m / 2 - 1] + v[m / 2]);
+}
+
+// R3 #8: core types and measured clocks (dependent-add chain, not the TSC).
+void printCpuInfo()
+{
+    using namespace nbody;
+    const HostCpuInfo& c = hostCpuInfo();
+    printf("# cpu  %s | %d P-cores (%d LPs) + %d E-cores (%d LPs) = %d logical processors\n", c.brand.c_str(), c.pCores,
+           c.pLogical, c.eCores, int(c.eLPs.size()), c.logical);
+    printf("# P LPs:"); for (int lp : c.pLPs) printf(" %d", lp); printf("\n# E LPs:"); for (int lp : c.eLPs) printf(" %d", lp); printf("\n");
+    for (int set = 0; set <= 4; ++set) {
+        int np = 0;
+        const int w = cpuSetSize(set, 0);
+        for (int k = 0; k < w; ++k) np += cpuSetWorkerIsP(set, 0, k);
+        printf("# set %-5s : %2d workers (%d on P LPs, %d on E LPs)\n", cpuSetName(set), w, np, w - np);
+    }
+    auto report = [&](const char* tag, const std::vector<int>& lps) {
+        if (lps.empty()) return;
+        const std::vector<double> f = probeCpuClocks(lps, 400.0);
+        double sp = 0, se = 0, mn = 1e9, mx = 0; int np = 0, ne = 0;
+        for (size_t k = 0; k < lps.size(); ++k) {
+            const bool isP = std::find(c.pLPs.begin(), c.pLPs.end(), lps[k]) != c.pLPs.end();
+            (isP ? sp : se) += f[k]; (isP ? np : ne)++;
+            mn = std::min(mn, f[k]); mx = std::max(mx, f[k]);
+        }
+        printf("clock %-28s: %2zu LPs busy  P mean %.3f GHz (%d)  E mean %.3f GHz (%d)  min %.3f  max %.3f\n", tag, lps.size(),
+               np ? sp / np : 0.0, np, ne ? se / ne : 0.0, ne, mn, mx);
+    };
+    if (!c.pLPs.empty()) report("1 P LP alone", {c.pLPs[0]});
+    if (!c.eLPs.empty()) report("1 E LP alone", {c.eLPs[0]});
+    {
+        std::vector<int> p1;
+        const int per = c.pCores > 0 ? std::max(1, c.pLogical / c.pCores) : 1;
+        for (int k = 0; k < c.pLogical; k += per) p1.push_back(c.pLPs[size_t(k)]);
+        report("one LP per P-core", p1);
+    }
+    report("all P LPs (HT pairs busy)", c.pLPs);
+    report("all E LPs", c.eLPs);
+    std::vector<int> all = c.pLPs;
+    all.insert(all.end(), c.eLPs.begin(), c.eLPs.end());
+    report("all LPs", all);
+    printf("note: each probe thread runs 16 dependent 1-cycle integer ops per iteration; GHz = 16 * iterations / time. "
+           "The chain is latency-bound (one ALU per cycle), so the two hyper-threads of a P-core each run at the core clock: "
+           "the figure is the core clock under that load, not a share of the core's throughput.\n");
+}
+
 } // namespace
 
 int main(int argc, char** argv)
@@ -909,13 +1244,42 @@ int main(int argc, char** argv)
 
     if (a.list) {
         for (const auto& k : kernelRegistry()) printf("%-20s %s\n", k.name, k.description);
+        printf("# R3 #8 (bench only): CPU baselines, CPU+GPU splits, GPU-only controls\n");
+        for (const auto& k : hybridRegistry()) printf("%-20s %s\n", k.name, k.description);
         return 0;
+    }
+    if (a.cpuInfo) { printCpuInfo(); return 0; }
+    if (a.treeCompare > 0) {   // R3 #8: the host tree against the GPU tree, every IC, at N = a.treeCompare
+        printDevice();
+        int bad = 0;
+        const char* ics[] = {"plummer", "collision", "core", "disk", "galaxies", "cube_shell", "cube_edges", "uniform"};
+        for (const char* ic : ics)
+            for (const char* sp : {"equal", "salpeter"}) {
+                std::vector<float4> pos, vel;
+                ICOptions o; o.massSpectrum = sp;
+                makeIC(ic, a.treeCompare, a.seed, pos, vel, o);
+                DeviceState s = allocate(a.treeCompare);
+                upload(s, pos, vel);
+                Params p; p.n = a.treeCompare; p.theta = a.theta; p.leafSize = a.leaf;
+                runAcc(*findKernel("bh_sorted"), s, p);
+                runAcc(*findAnyKernel("cpu_bh"), s, p);
+                const TreeCompare tc = compareHostGpuTree();
+                bad += !tc.ok;
+                printf("tree-compare %-10s %-8s n=%d: %s | keys %d perm %d sortedPos %d info %d parents %d | com %d box %d rc2 %d (max |dCOM| %.2e)\n",
+                       ic, sp, a.treeCompare, tc.ok ? "IDENTICAL" : tc.msg.c_str(), tc.keyDiff, tc.permDiff, tc.posDiff, tc.infoDiff,
+                       tc.parentDiff, tc.comDiff, tc.boxDiff, tc.rc2Diff, tc.maxComAbs);
+                release(s);
+            }
+        hybridShutdown();
+        return bad ? 3 : 0;
     }
     if (a.selftest) {
         printDevice();
-        return runSelftest(a.selftestDrop, a.seed);
+        const int rc = runSelftest(a.selftestDrop, a.seed);
+        hybridShutdown();
+        return rc;
     }
-    const KernelInfo* k = findKernel(a.kernel);
+    const KernelInfo* k = findAnyKernel(a.kernel);
     if (!k) { fprintf(stderr, "unknown kernel '%s' (use --list)\n", a.kernel.c_str()); return 2; }
 
     printDevice();
@@ -924,6 +1288,9 @@ int main(int argc, char** argv)
     p.unroll = a.unroll; p.threadsPerBody = a.q; p.prefetch = a.prefetch;
     p.theta = a.theta; p.leafSize = a.leaf;
     p.timelineWarp = a.tlUnit == "warp" ? 1 : 0;
+    p.cpuSet = a.cpuSet; p.cpuThreads = a.cpuThreads; p.cpuSched = a.cpuSched; p.cpuChunk = a.cpuChunk;
+    p.cpuRsqrt = a.cpuRsqrt; p.cpuGroup = a.cpuGroup; p.cpuTile = a.cpuTile; p.cpuIV = a.cpuIV;
+    p.hybFrac = a.hybFrac; p.refitEvery = a.refitEvery; p.hybSync = a.hybSync ? 1 : 0;
 
     // ---- launch configuration + occupancy (what will actually run) -------------
     LaunchInfo li;
@@ -953,7 +1320,17 @@ int main(int argc, char** argv)
             printf("# occupancy cap: --occ-blocks %d -> %d B padding per block -> resident %d blocks/SM%s\n", a.occBlocks,
                    pad, li.blocksPerSM, li.blocksPerSM == a.occBlocks ? "" : "  (WARNING: not the requested value)");
         }
-        occ = printLaunch("launch ", li);
+        if (li.hostTimed && li.gridBlocks == 0) occ = -1.0;   // pure host path: no GPU launch configuration
+        else occ = printLaunch("launch ", li);
+        if (li.hostTimed) {
+            int np = 0;
+            for (int w = 0; w < li.cpuWorkers; ++w) np += cpuSetWorkerIsP(p.cpuSet, p.cpuThreads, w);
+            printf("# host: %s | set=%s threads=%d -> %d workers (%d on P LPs, %d on E LPs) sched=%s chunk=%d | rsqrt=%s "
+                   "group=%d tile=%d iv=%d | hyb_frac=%g refit_every=%d hyb_sync=%d | timing: host clock + device sync\n",
+                   hostCpuInfo().brand.c_str(), cpuSetName(p.cpuSet), p.cpuThreads, li.cpuWorkers, np, li.cpuWorkers - np,
+                   cpuSchedName(p.cpuSched), p.cpuChunk, p.cpuRsqrt ? "rsqrt+newton" : "sqrt+div", p.cpuGroup, p.cpuTile,
+                   p.cpuIV, p.hybFrac, p.refitEvery, p.hybSync);
+        }
         if (li.persistent) printf("# persistent: grid = min(resident blocks/SM x %d SMs, blocks with work) = %d blocks (%d warps)\n", sms,
                                   li.gridBlocks, li.gridBlocks * li.blockThreads / 32);
         if (li.control) printf("# CONTROL kernel: forces of only 1 body in 32 are computed; validation and gates are skipped\n");
@@ -1013,7 +1390,17 @@ int main(int argc, char** argv)
 
     // --batch K: K back-to-back launches between the events, time / K. For us-scale
     // kernels a single event pair is dominated by event resolution and launch jitter.
+    // R3 #8: host paths (and --wall) are timed with the host clock around the batch plus a device sync, so
+    // CPU work, copies and GPU work of a launch are all inside the interval.
+    const bool wallTiming = li.hostTimed || a.wall;
     auto timeBatch = [&](const Params& pp) {
+        if (wallTiming) {
+            CUDA_CHECK(cudaDeviceSynchronize());
+            const auto w0 = std::chrono::steady_clock::now();
+            for (int b = 0; b < a.batch; ++b) k->launch(s, pp, 0);
+            CUDA_CHECK(cudaDeviceSynchronize());
+            return float(std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - w0).count() / a.batch);
+        }
         float m = 0.f;
         CUDA_CHECK(cudaEventRecord(t0));
         for (int b = 0; b < a.batch; ++b) k->launch(s, pp, 0);
@@ -1038,14 +1425,14 @@ int main(int argc, char** argv)
     // labelled N^2-equivalent; the real rates are on the work: line and in the CSV.
     if (li.approximate)
         printf("kernel=%s n=%d block=%d q=%d prefetch=%d unroll=%d runs=%d batch=%d  median=%.4f ms  min=%.4f  max=%.4f  "
-               "%.3f G N^2-equivalent interactions/s (not the tree rate; see the work: line)\n",
+               "%.3f G N^2-equivalent interactions/s (not the tree rate; see the work: line)%s\n",
                k->name, p.n, p.blockSize, li.threadsPerBody, li.prefetch, li.unroll, a.runs, a.batch, med, sorted.front(),
-               sorted.back(), ips * 1e-9);
+               sorted.back(), ips * 1e-9, wallTiming ? "  [timing: wall]" : "");
     else
         printf("kernel=%s n=%d block=%d q=%d prefetch=%d unroll=%d runs=%d batch=%d  median=%.4f ms  min=%.4f  max=%.4f  "
-               "%.3f Ginteractions/s  %.1f GFLOP/s (@%.0f FLOP/interaction)\n",
+               "%.3f Ginteractions/s  %.1f GFLOP/s (@%.0f FLOP/interaction)%s\n",
                k->name, p.n, p.blockSize, li.threadsPerBody, li.prefetch, li.unroll, a.runs, a.batch, med, sorted.front(),
-               sorted.back(), ips * 1e-9, gflop, kFlopsPerInteraction);
+               sorted.back(), ips * 1e-9, gflop, kFlopsPerInteraction, wallTiming ? "  [timing: wall]" : "");
 
     if (wantTl) {
         const double medTl = median(msTl);
@@ -1095,7 +1482,51 @@ int main(int argc, char** argv)
     int stackOverflows = 0;
     TreeDepth td;
     std::vector<uint4> wcOwn;
-    if (li.nPhases > 0) {
+    // ---- R3 #8: host statistics pass (a.runs extra launches with host phase times, pool and hybrid stats)
+    std::vector<double> hostPh(8, -1.0);
+    CpuStats cstat{};
+    HybridStats hstat{};
+    if (li.hostTimed) {
+        std::vector<std::vector<double>> per(8, std::vector<double>(size_t(a.runs), 0.0));
+        Params ps = p;
+        ps.cpuStats = &cstat;
+        ps.hybStats = li.hybrid ? &hstat : nullptr;
+        for (int r = 0; r < a.runs; ++r) {
+            double ph[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+            ps.hostPhases = ph;
+            k->launch(s, ps, 0);
+            CUDA_CHECK(cudaDeviceSynchronize());
+            for (int q = 0; q < 8; ++q) per[size_t(q)][size_t(r)] = ph[q];
+        }
+        for (int q = 0; q < 8; ++q) hostPh[size_t(q)] = medianD(per[size_t(q)]);
+        if (cstat.regions > 0)
+            printf("host: d2h %.4f ms  h2d %.4f ms (median of %d; the bench's GPU-resident state, not CPU compute) | pool: %d "
+                   "workers (%d P, %d E), %d regions/launch, worker busy max/mean %.3f, mean busy P %.3f ms E %.3f ms per "
+                   "launch, items on P %.1f%%\n", hostPh[6], hostPh[7], a.runs, cstat.workers, cstat.pWorkers, cstat.eWorkers,
+                   cstat.regions / a.runs, cstat.sumMeanBusyMs > 0 ? cstat.sumMaxBusyMs / cstat.sumMeanBusyMs : 0.0,
+                   cstat.sumPBusyMs / a.runs, cstat.sumEBusyMs / a.runs,
+                   100.0 * double(cstat.pItems) / double(std::max<long long>(1, cstat.pItems + cstat.eItems)));
+        if (li.hybrid && hstat.launches > 0) {
+            const double L = hstat.launches;
+            printf("hybrid: %d launches, GPU share %.4f (last %.4f, %d GPU-only), GPU part %.4f ms, CPU part %.4f ms, transfer "
+                   "%.4f ms, wall %.4f ms per launch | topology updates %d, mean lag %.2f launches, CPU topology build %.3f ms\n",
+                   hstat.launches, hstat.fracSum / L, hstat.lastFrac, hstat.gpuOnlyLaunches, hstat.gpuMs / L, hstat.cpuMs / L,
+                   hstat.xferMs / L, hstat.wallMs / L, hstat.topoUpdates,
+                   hstat.topoUpdates ? hstat.lagSum / hstat.topoUpdates : -1.0,
+                   hstat.topoUpdates ? hstat.cpuBuildMs / hstat.topoUpdates : -1.0);
+        }
+    }
+    if (li.nPhases > 0 && li.hostTimed) {
+        printf("phases (host clock, median of %d, ms):", a.runs);
+        for (int q = 0; q < li.nPhases; ++q) {
+            phaseMed.push_back(hostPh[size_t(q)]);
+            printf("  %s %.4f", li.phaseNames[q], phaseMed.back());
+        }
+        if (li.nPhases >= 5)
+            printf("  | build(keys+sort+tree) %.4f  traverse %.4f", phaseMed[0] + phaseMed[1] + phaseMed[2], phaseMed.back());
+        printf("  (production total %.4f incl. copies)\n", med);
+    }
+    if (li.nPhases > 0 && !li.hostTimed) {
         std::vector<cudaEvent_t> ev(li.nPhases + 1);
         for (auto& e : ev) CUDA_CHECK(cudaEventCreate(&e));
         std::vector<std::vector<float>> ph(li.nPhases, std::vector<float>(a.runs));
@@ -1117,7 +1548,8 @@ int main(int argc, char** argv)
         printf("  | build(keys+sort+tree) %.4f  order %.4f  traverse %.4f  sum %.4f  (production total %.4f)\n", build,
                phaseMed.size() > 3 ? phaseMed[3] : 0.0, phaseMed.back(), median(phSum), med);
         for (auto& e : ev) CUDA_CHECK(cudaEventDestroy(e));
-
+    }
+    if (li.approximate) {
         uint4* dWc = nullptr;
         CUDA_CHECK(cudaMalloc(&dWc, size_t(p.n) * sizeof(uint4)));
         CUDA_CHECK(cudaMemset(dWc, 0, size_t(p.n) * sizeof(uint4)));
@@ -1130,7 +1562,7 @@ int main(int argc, char** argv)
         CUDA_CHECK(cudaFree(dWc));
         ws = warpStats(wc, p.n, a.treeStats);
         wcOwn = wc;
-        const double trav = phaseMed.back();
+        const double trav = phaseMed.empty() ? -1.0 : phaseMed.back();
         printf("work: %.1f interactions/body (%.3e total), %.1f nodes popped/body | per-warp max/mean %.3f "
                "(median warp %.3f) | SIMT eff interactions %.3f, pops %.3f | warp-cost max/mean %.2f | "
                "traversal %.1f G interactions/s%s\n",
@@ -1141,9 +1573,9 @@ int main(int argc, char** argv)
                "N^2-equivalent %.1f G/s%s\n", ws.totalInter / (med * 1e-3) * 1e-9, med,
                trav > 0 ? ws.totalInter / (trav * 1e-3) * 1e-9 : 0.0, ips * 1e-9,
                li.control ? "  (control: lane-work; 1 body in 32 computed)" : "");
-        stackOverflows = treeStackOverflows(true);
+        stackOverflows = treeStackOverflows(true) + hostTreeOverflows(true);
         if (stackOverflows) printf("ERROR: %d traversal stack overflows (results invalid)\n", stackOverflows);
-        td = lastTreeDepth();
+        td = li.hostTree ? hostLastTreeDepth() : lastTreeDepth();
         printf("tree: max depth %d, push depth %d -> stack bound %d (capacity: per-thread %d, warp %d)%s, duplicate keys %d "
                "(%.3f%% of bodies)\n", td.maxDepth, td.pushDepth, td.stackBound, td.threadStack, td.warpStack,
                td.stackBound > td.warpStack ? "  WARNING: the warp walk can overflow on this tree" : "", td.dupKeys,
@@ -1162,6 +1594,9 @@ int main(int argc, char** argv)
     NormStats ns;
     double gRms = -1, gP99 = -1, sibNRms = -1, sibNP99 = -1, heavyNormMax = -1;
     std::string tn1 = "na", tn2 = "na", tg3n = "na";
+    std::string countsSib = "na";
+    double twinMax = -1;
+    int twinViol = -1;
     if (li.control) {
         printf("gates: not evaluated (control kernel)\n");
         gates = "control";
@@ -1339,6 +1774,22 @@ int main(int argc, char** argv)
                    li.exactSibling, bit ? "bitwise equal" : "DIFFER", countsMatch.c_str(), diff);
             if (!bit || diff > 0) { gateFail = true; gates = "FAIL"; }
         }
+        // R3 #8: same work as a GPU sibling (cpu_bh -> bh_warp, cpu_bh_scalar -> bh_sorted, hyb_bh -> bh_warp):
+        // per-slot pop and interaction counts EQUAL, accelerations within the per-body roundoff bound.
+        if (li.countsSibling && !wcOwn.empty()) {
+            const KernelInfo* kc = findAnyKernel(li.countsSibling);
+            std::vector<float4> ac;
+            const std::vector<uint4> wcs = runCounters(*kc, s, p, &ac);
+            const int diff = countDiff(wcOwn, wcs);
+            if (scale.empty()) forceScale(s, p, scale);
+            const TwinStats tw = twinStats(acc, ac, scale, maxInter(wcOwn));
+            countsSib = diff == 0 ? "yes" : "NO";
+            twinMax = tw.max; twinViol = tw.viol;
+            printf("same work as %s: per-slot pop/interaction counts %s (%d slots differ) | accelerations: max |da|/sum|f| "
+                   "%.3e, %d bodies above the roundoff bound (2 I_max + 64) u = %.3e => %s\n", li.countsSibling,
+                   diff == 0 ? "EQUAL" : "DIFFER", diff, tw.max, tw.viol, tw.bound, (diff == 0 && tw.viol == 0) ? "PASS" : "FAIL");
+            if (diff || tw.viol) { gateFail = true; gates = "FAIL"; }
+        }
     } else {
         printf("gates: not evaluated (--no-validate)\n");
     }
@@ -1354,7 +1805,11 @@ int main(int argc, char** argv)
             "n2equiv_ginter_per_s,trav_ginter_per_s,occ_blocks,smem_pad,persistent,control,"
             "sib_rms,sib_p99,tg3,union_inter_ratio,union_visit_ratio,exact_match,counts_match,"
             "mass_spectrum,bh_mass,ic_hash,mass_max_min,norm_rms,norm_p99,norm_max,tn1,tn2,sib_norm_rms,sib_norm_p99,tg3n,"
-            "glob_rms,glob_p99,heavy_norm_max,tree_depth,push_depth,stack_bound,dup_keys";
+            "glob_rms,glob_p99,heavy_norm_max,tree_depth,push_depth,stack_bound,dup_keys,"
+            "timing,cpu_set,cpu_threads,cpu_workers,cpu_sched,cpu_chunk,cpu_rsqrt,cpu_group,cpu_tile,cpu_iv,"
+            "host_ph0_ms,host_ph1_ms,host_ph2_ms,host_ph3_ms,host_ph4_ms,host_d2h_ms,host_h2d_ms,"
+            "worker_max_mean,p_busy_ms,e_busy_ms,p_items_share,hyb_frac_req,hyb_frac,hyb_gpu_ms,hyb_cpu_ms,hyb_xfer_ms,"
+            "hyb_wall_ms,hyb_gpu_only,topo_updates,topo_lag,cpu_build_ms,refit_every,counts_sib_match,twin_max,twin_viol";
         // Round 2 (critic review 2, #5): ginteractions_per_s / gflops hold the REAL interaction rate
         // (all-pairs: N^2; trees: counted interactions / pipeline time); N^2 / time is in
         // n2equiv_ginter_per_s. Older CSVs (other header) are refused for appending.
@@ -1395,7 +1850,21 @@ int main(int argc, char** argv)
               << ',' << a.massSpectrum << ',' << a.bhMass << ',' << std::hex << icH << std::dec << ',' << mMax / mMin << ','
               << ns.rms << ',' << ns.p99 << ',' << ns.max << ',' << tn1 << ',' << tn2 << ',' << sibNRms << ',' << sibNP99 << ','
               << tg3n << ',' << gRms << ',' << gP99 << ',' << heavyNormMax << ',' << td.maxDepth << ',' << td.pushDepth << ','
-              << td.stackBound << ',' << td.dupKeys << '\n';
+              << td.stackBound << ',' << td.dupKeys << ',';
+            const double L = std::max(1, hstat.launches), R = std::max(1, a.runs);
+            f << (wallTiming ? "wall" : "events") << ',' << (li.hostTimed ? cpuSetName(p.cpuSet) : "na") << ',' << p.cpuThreads << ','
+              << li.cpuWorkers << ',' << (li.hostTimed ? cpuSchedName(p.cpuSched) : "na") << ',' << p.cpuChunk << ',' << p.cpuRsqrt
+              << ',' << p.cpuGroup << ',' << p.cpuTile << ',' << p.cpuIV;
+            for (int q = 0; q < 8; ++q) f << ',' << hostPh[size_t(q)];
+            f << ',' << (cstat.sumMeanBusyMs > 0 ? cstat.sumMaxBusyMs / cstat.sumMeanBusyMs : -1.0) << ','
+              << (cstat.regions ? cstat.sumPBusyMs / R : -1.0) << ',' << (cstat.regions ? cstat.sumEBusyMs / R : -1.0) << ','
+              << (cstat.regions ? double(cstat.pItems) / double(std::max<long long>(1, cstat.pItems + cstat.eItems)) : -1.0) << ','
+              << p.hybFrac << ',' << (hstat.launches ? hstat.fracSum / L : -1.0) << ',' << (hstat.launches ? hstat.gpuMs / L : -1.0)
+              << ',' << (hstat.launches ? hstat.cpuMs / L : -1.0) << ',' << (hstat.launches ? hstat.xferMs / L : -1.0) << ','
+              << (hstat.launches ? hstat.wallMs / L : -1.0) << ',' << hstat.gpuOnlyLaunches << ',' << hstat.topoUpdates << ','
+              << (hstat.topoUpdates ? hstat.lagSum / hstat.topoUpdates : -1.0) << ','
+              << (hstat.topoUpdates ? hstat.cpuBuildMs / hstat.topoUpdates : -1.0) << ',' << p.refitEvery << ',' << countsSib
+              << ',' << twinMax << ',' << twinViol << '\n';
         }
     }
 
@@ -1417,9 +1886,12 @@ int main(int argc, char** argv)
             elog << 0 << ',' << 0.0 << ',' << e0.kinetic << ',' << e0.potential << ',' << e0.total << ',' << 0.0 << '\n';
         }
         std::vector<float4> hp, hv;
+        HybridStats ihs{};
+        Params pi = p;
+        if (li.hybrid) pi.hybStats = &ihs;
         auto w0 = std::chrono::steady_clock::now();
         for (int i = 1; i <= a.steps; ++i) {
-            step(s, p, *k, 0);
+            step(s, pi, *k, 0);
             if (elog.is_open() && a.energyEvery > 0 && (i % a.energyEvery == 0 || i == a.steps)) {
                 download(s, hp, hv);   // synchronises
                 Energy e = computeEnergy(hp, hv, p);
@@ -1439,8 +1911,40 @@ int main(int argc, char** argv)
         } else {
             printf("integrated %d steps\n", a.steps);
         }
+        if (li.hybrid && ihs.launches > 0)
+            printf("integration hybrid: %d launches, %d topology updates, mean lag %.2f steps, CPU topology build %.3f ms, "
+                   "GPU part %.4f ms/step, wall %.4f ms/step\n", ihs.launches, ihs.topoUpdates,
+                   ihs.topoUpdates ? ihs.lagSum / ihs.topoUpdates : -1.0, ihs.topoUpdates ? ihs.cpuBuildMs / ihs.topoUpdates : -1.0,
+                   ihs.gpuMs / ihs.launches, ihs.wallMs / ihs.launches);
+        // R3 #8 lag check (pre-registered, docs/predictions/2026-10-18-cpu-gpu.md): the topology the GPU is
+        // refitting at the end of the run (built from older positions) against a fresh build, both vs exact.
+        if (a.lagCheck && li.approximate && li.exactSibling) {
+            Params pf = p;
+            pf.hybFreeze = 1;
+            std::vector<float4> aS, aF, refL;
+            const std::vector<uint4> wS = runCounters(*k, s, pf, &aS);
+            const TreeCheck tcS = checkLastTree(s);
+            const KernelInfo* kf = findAnyKernel(li.exactSibling);
+            const std::vector<uint4> wF = runCounters(*kf, s, p, &aF);
+            referenceAcc(s, p, refL);
+            std::vector<float> scL;
+            forceScale(s, p, scL);
+            const NormStats eS = normStats(aS, refL, scL), eF = normStats(aF, refL, scL);
+            long long iS = 0, iF = 0;
+            for (const uint4& c : wS) iS += c.y;
+            for (const uint4& c : wF) iF += c.y;
+            const double th = p.theta;
+            const bool ok1 = eS.rms <= treeGateNRms(th) && eS.p99 <= treeGateNP99(th), ok2 = eS.rms <= 1.10 * eF.rms;
+            printf("lag check after %d steps: stale topology norm rms %.3e p99 %.3e, %.1f int/body | fresh %s rms %.3e p99 %.3e, "
+                   "%.1f int/body | rms ratio %.4f, work ratio %.4f | tree check %s | LG1 (TN1/TN2 on the stale tree) %s, "
+                   "LG2 (rms <= 1.10 x fresh) %s\n", a.steps, eS.rms, eS.p99, double(iS) / p.n, li.exactSibling, eF.rms, eF.p99,
+                   double(iF) / p.n, eS.rms / eF.rms, double(iS) / double(std::max(1ll, iF)), tcS.ok ? "ok" : tcS.msg.c_str(),
+                   ok1 ? "PASS" : "FAIL", ok2 ? "PASS" : "FAIL");
+            if (!ok1 || !ok2 || !tcS.ok) gateFail = true;
+        }
     }
 
     release(s);
+    hybridShutdown();
     return gateFail ? 3 : 0;
 }

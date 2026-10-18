@@ -25,7 +25,10 @@ add_library(nbody_core STATIC
   src/core/kernels_allpairs.cu
   src/core/kernels_tuned.cu     # R3 #2
   src/core/kernels_multi.cu     # R3 #3
-  src/core/kernels_tree.cu      # R3 #4, #5
+  src/core/kernels_tree.cu      # R3 #4, #5 (+ #6, #7; R3 #8 tree splits at the end)
+  src/core/kernels_hybrid.cu    # R3 #8 all-pairs body split
+  src/core/host_pool.cpp        # R3 #8 P/E-core topology, pinned host thread pool, schedules
+  src/core/host_kernels.cpp     # R3 #8 CPU baselines (AVX2 all-pairs, host Barnes-Hut)
   src/core/init.cpp
 )
 target_include_directories(nbody_core PUBLIC src/core)
@@ -35,6 +38,11 @@ if(MSVC)
   set_source_files_properties(src/core/kernels_tree.cu PROPERTIES COMPILE_OPTIONS "-Xcompiler=/Zc:preprocessor")
 endif()
 target_compile_options(nbody_core PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:${NBODY_CUDA_FLAGS}>)
+# R3 #8: the CPU baselines use AVX2 + FMA (Raptor Lake has no AVX-512). /fp:precise (MSVC default) does
+# not contract a*b+c, so every FMA in host_kernels.cpp is explicit (mirrors nvcc's contractions).
+if(MSVC)
+  set_source_files_properties(src/core/host_kernels.cpp src/core/host_pool.cpp PROPERTIES COMPILE_OPTIONS "/arch:AVX2;/fp:precise")
+endif()
 target_link_libraries(nbody_core PUBLIC CUDA::cudart)
 
 # ---- bench: CLI harness, CSV output ----------------------------------------

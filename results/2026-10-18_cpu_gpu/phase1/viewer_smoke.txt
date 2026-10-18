@@ -1,0 +1,7 @@
+GL 3.3.0 NVIDIA 617.42 | NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2
+ic=plummer mass_spectrum=equal N=65536 seed=42 ic_hash=e11a638ea14aeb36
+screenshot -> results/2026-10-18_cpu_gpu/phase1/viewer_smoke.bmp (1600x900)
+N-body | plummer (equal) | N=65536 | bh_warp | 0.962 ms/step | 115.5 G int/s real (counted, incl. build + integrator) | 1695 int/body | 2 steps/frame | 177 FPS
+simulated time t = 0.4800 (dt 0.002, 120 frames, camera dist 4.000 yaw 0.600 pitch 0.350)
+phases (smoothed ms): keys 0.0149 sort 0.3816 tree 0.0529 order 0.0013 traverse 0.6026
+load balance: per-warp max/mean 1.000 (median 1.000) | SIMT eff interactions 1.000, pops 1.000 | warp-cost max/mean 1.51 | 1695.1 int/body | overflows 0
