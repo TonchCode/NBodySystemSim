@@ -101,6 +101,45 @@ throughput**. The main session re-checked two timelines independently and reprod
 the TG1/TG2 gates for trees, with an exact-arithmetic selftest that catches a single missed
 interaction (D-009, D-017). A faster kernel that drops work therefore cannot enter this chapter.
 
+### 4.1.1 Replicating without background load (the clean re-run)
+
+The round-2 tree results (§4.5–4.7) were measured under 20–22 % uncontrolled background GPU load. Rather than
+argue the effect away, the load-sensitive items were **replicated** (D-033;
+`results/2026-10-18_clean_rerun/summary.md`; `docs/03-design.md` §22):
+- **Pre-registered.** The replication plan was committed before any timed run (fbe0742), and each
+  item was scored against its *original* committed range, not a new one. A resume option added
+  later (bfe3c5b) only skips cells and changes no command.
+- **Controlled.** The same binary (SASS identical to the previous round, 222 of 222 functions), the
+  same 272 W cap, 0 % idle utilisation before and after, and at most 1 % at every scored
+  between-cell check. Within each cell the kernels ran in the order A, B, …, B, A, so within-cell
+  ratios are protected against drift. 945 scored runs, all exit 0, no gate failures.
+- **An incident, contained.** At 04:56 the Windows screensaver started and loaded the GPU by
+  30–44 %. The between-cell idle check flagged it at the next cell. The script ran on for about ten
+  minutes before it stopped, so one more cell ran under the screensaver. **Nothing measured after
+  04:56 in that sub-session was scored**; those logs are kept separately in `flagged/`. The owner
+  disabled the screensaver, and the remaining cells were run from cell 39 in a second sub-session
+  under a display-required hold, with no cell flagged. The only comparison that spans the two
+  sub-sessions is the 1M best-against-best of set C, and the main session re-checked it
+  independently afterwards (5.73× against 5.76×).
+- **Outcome.** Of 59 primary items across tree round 2 and the IC round, 36 HIT against the original
+  ranges, against 39 before. The three flips are two cells named in advance as edge cases and one
+  disputed reading (D-033). **No #6 or #7 conclusion changed**, and all 153 deterministic values
+  reproduced exactly. Within the tree-round-2 primary items, 13 of 23 HIT before and after
+  (`results/2026-10-18_clean_rerun/summary.md`, scorecard).
+- **The proposed mechanism was falsified.** The pre-registered explanation was that per-thread walks
+  are load-sensitive and coherent walks are not. The data reject it: the inflation tracked **kernel
+  length** and how late in a session a cell ran (in the more heavily loaded IC session, cells of
+  about 8–10 ms or more lost 7–17 %, short cells at most 1–3 %), consistent with time-sharing the GPU
+  with desktop applications. Round 2's own load cost about 3 % on per-thread walks, inside the ±4 %
+  by which two clean sessions differ per cell (D-033). The consequences predicted from the load
+  (speedups slightly lower when clean, #6 not rescued, the between-set drift gone) did hold.
+- **Process lessons**, recorded for future sessions: disable the screensaver and verify it in the
+  registry; never edit a running script; stop the script itself, not only its wrapper
+  (`docs/03-design.md` §22).
+
+The clean values are canonical for every re-run item. Set D (occupancy) and the exploratory runs were
+not re-run and keep their load label (D-033).
+
 ---
 
 ## 4.2 Technique #1: static tiling (the baseline)
@@ -341,14 +380,19 @@ statement about Ada versus older GPUs is made.
 
 **Rule 8 for the tree: best against best (tree round 2).** The 1.6–2.1× above is the fixed
 protocol configuration (leaf 16, block 128), which critic review 2 (#8) flagged as untuned. Tree
-round 2 swept leaf × block for each variant (set C, Plummer, θ = 0.5; D-025;
-`results/2026-10-17_tree_round2/summary.md` §2, finding 5):
-- **#5's best leaf is 32, not the predicted 8–16**, with block 256. At 1M it is 11 % faster than
-  leaf 16, block 128 (35.30 ms). #4's best is also leaf 32, block 256 at 1M (leaf 16, block 256 at
-  262,144).
-- Best against best, **#5 / #4 = 2.06× at N = 262,144 and 2.18× at 1M** (D-025).
-- The pre-registered leaf and block optima missed (L1–L4, L6, L7 in
-  `results/2026-10-17_tree_round2/scorecard.csv`).
+round 2 swept leaf × block for each variant (set C, Plummer, θ = 0.5; D-025). The canonical values
+are from the clean replication at 0 % background load (D-033; set C in
+`results/2026-10-18_clean_rerun/tree2/merged/analysis_output.txt`):
+- **#5 at 1M: best is leaf 32, block 256, at 34.45 ms**, 12 % faster than the protocol
+  configuration leaf 16, block 128 (38.75 ms). At N = 262,144 the best is leaf 16, block 256
+  (7.64 ms), with leaf 32, block 256 at 7.72 ms, within 1.1 % (D-033). The predicted leaf range
+  8–16 therefore holds at 262,144 but not at 1M.
+- **#4's best:** leaf 32, block 256 at 262,144 (15.32 ms); leaf 32, block 128 at 1M (71.11 ms).
+- Best against best, **#5 / #4 = 2.01× at N = 262,144 and 2.06× at 1M**
+  (`results/2026-10-18_clean_rerun/`). Under the 20–22 % load of the original round-2 session these
+  had been 2.06× and 2.18× (`results/2026-10-17_tree_round2/`; D-025).
+- The pre-registered leaf and block optima still miss in the clean run (L1, L2, L4, L6, L7);
+  L3 (#7's best leaf) flips from MISS to HIT (`results/2026-10-18_clean_rerun/scorecard.csv`).
 
 **What limits #5: L1 capacity, not occupancy (tree round 2, set D).** Round 1 had reported the
 traversal rate as barely rising with occupancy, but that observation was confounded with N
@@ -358,7 +402,9 @@ which also pins the L1 carve-out near its minimum (`docs/03-design.md` §17.5). 
 full L1, does **29.0 G/s (×1.51)** (`results/2026-10-17_tree_round2/summary.md` §2, finding 4;
 D-026). #5 is therefore bound by the L1 capacity available to its scattered accesses, not by
 occupancy. Caveat: the padded "12 blocks" cell actually ran at 11 blocks per SM, because shared
-memory is allocated in 256 B units (D-026).
+memory is allocated in 256 B units (D-026). **Load label:** set D was not part of the clean
+replication, so these values were measured under 20–22 % background GPU load
+(`results/2026-10-17_tree_round2/`; D-033).
 
 ### 4.5.2 Where the imbalance went
 
@@ -378,7 +424,7 @@ memory is allocated in 256 B units (D-026).
 - **Coherent speed is far away.** In the θ = 0 control, all lanes walk the same path: 552 G
   interactions/s at SIMT efficiency 1.000. At θ = 0.5 the same kernel does 14–43 G/s, about 1/20
   of its coherent speed (summary §2, finding 3). Round 2 measured this gap properly at θ = 0.5
-  (§4.5.5): intra-warp incoherence costs #5 a factor of 5.2–9.7.
+  (§4.5.5): intra-warp incoherence costs #5 a factor of 4.4–9.5.
 - **Hilbert ≈ Morton.** Hilbert lowers per-warp max/mean by only 0.2–0.6 %, its traversal is
   1.5–4.4 % slower in 8 of 9 cells, and it costs an extra 0.13–0.24 ms order phase. Morton is
   free (the build already produces it), so it is the #5 default (D-018). The compactness argument
@@ -449,11 +495,12 @@ It was used only to choose which experiments to run, and it is now superseded (D
 warp walking the body of the warp's first slot (`order[t] = perm[t & ~31]`). It therefore has
 perfect lane coherence and same-address loads, and nothing else changes (`docs/03-design.md`
 §17.4). Its traversal time is the time #5's kernel needs for #5-like lane work when the warp is
-coherent. Measured: **#5's kernel runs 5.2–9.7× faster when coherent**, at 172–259 G lane
-interactions/s, so intra-warp incoherence (idle lanes, scattered loads and the divergent stack
-together) costs #5 a factor of 5–10 (`results/2026-10-17_tree_round2/summary.md` §2, finding 2;
-`docs/03-design.md` §18.2). At 1M the measured ceiling is 9.2× (Plummer) and 9.7× (core); the
-round-1 residual estimate had been 8.4× (`docs/03-design.md` §18.2). The control is one body per
+coherent. Measured in the clean replication: **#5's kernel runs 4.4–9.5× faster when coherent**,
+at 127–261 G lane interactions/s, so intra-warp incoherence (idle lanes, scattered loads and the
+divergent stack together) costs #5 a factor of about 4–10 (items C1–C4 in
+`results/2026-10-18_clean_rerun/scorecard.csv`). At 1M the measured ceiling is 9.0× (Plummer) and
+9.5× (core) (`results/2026-10-18_clean_rerun/`); the round-1 residual estimate had been 8.4×
+(`docs/03-design.md` §18.2). The control is one body per
 warp, so it has no gates, and its warp-cost spread samples #5's lanes rather than #5's warp maxima
 (`docs/03-design.md` §17.4).
 
@@ -532,33 +579,37 @@ to 1.55) on #4 at 1M, where #4's pop efficiency leaves the most to recover
 ### 4.6.3 Measured effect: every arm is slower than the hardware block scheduler
 
 Speed relative to the sibling on the hardware block scheduler, traversal phase, θ = 0.5, leaf 16,
-block 128, Plummer and core ICs at N = 65,536, 262,144 and 1M
-(`results/2026-10-17_tree_round2/summary.md` §1–§2; D-023):
+block 128, Plummer and core ICs at N = 65,536, 262,144 and 1M. Values are from the clean
+replication at 0 % background load, which is canonical (D-033; `results/2026-10-18_clean_rerun/`,
+summary and `scorecard.csv` items P1–P8):
 
 | Arm | Speed vs sibling | Balance metric it targets, and what it did |
 |---|---|---|
-| Warp-granular queue on #5 | **0.89–0.93×** | single-wave SM efficiency (core, 65,536): 0.811 → 0.917, tail 18.3 % → 6.6 %; warp-slot fill at 1M: 0.945 → 0.975 (Plummer), 0.946 → 0.980 (core) |
-| Warp-granular queue on #7 | **0.89–0.95×** | — |
-| Lane-granular refill on #5 | **0.64–0.74×** | — |
-| Lane-granular refill on #4 | **0.68–0.91×** | #4 core pop SIMT efficiency at 1M: 0.61 → 0.91 |
-| Static cost-balanced partition | **0.84–0.98×** | — |
+| Warp-granular queue on #5 | **0.88–0.93×** | single-wave SM efficiency (core, 65,536): 0.827 → 0.921, tail 14.7 % → 6.4 %; warp-slot fill at 1M: 0.946 → 0.976 (Plummer), 0.948 → 0.980 (core) |
+| Warp-granular queue on #7 | **0.90–0.95×** | — |
+| Lane-granular refill on #5 | **0.63–0.75×** | — |
+| Lane-granular refill on #4 | **0.70–0.89×** | #4 core pop SIMT efficiency at 1M: 0.61 → 0.91 |
+| Static cost-balanced partition | **0.85–0.97×** | — |
 
-(Timeline metrics: `results/2026-10-17_tree_round2/summary.md` §4.) At 1M, for example, #5 takes
-39.53 ms, the warp queue 43.06 ms, lane refill 58.34 ms and the static partition 47.30 ms
-(Plummer; summary §1).
+(Timeline metrics: `results/2026-10-18_clean_rerun/summary.md`, timelines.) At 1M, for example,
+#5 takes 38.60 ms, the warp queue 41.54 ms, lane refill 55.51 ms and the static partition 45.53 ms
+(Plummer; set A in `results/2026-10-18_clean_rerun/tree2/merged/analysis_output.txt`). Interleaved
+repeats at 1M agree to within 0.8 % (set A2, same file).
 
 **Result: a measured negative.** Each arm improves the balance metric it was designed to improve,
 and each is slower in every cell. All #6 performance items of the scorecard are misses (P1–P9,
-P11 in `results/2026-10-17_tree_round2/scorecard.csv`). The lane-refill arm is still 36 % slower at
-N = 65,536, where, with 0.53 bodies per lane, it performs no refills at all
-(`results/2026-10-17_tree_round2/summary.md` §2, finding 3). The cost is therefore in the arm's
+P11), in the original session and again in the clean replication
+(`results/2026-10-17_tree_round2/scorecard.csv`; `results/2026-10-18_clean_rerun/scorecard.csv`).
+The lane-refill arm is still 37 % slower at N = 65,536 (Plummer), where, with 0.53 bodies per lane,
+it performs no refills at all (`results/2026-10-18_clean_rerun/scorecard.csv`, P3). The cost is therefore in the arm's
 structure, not in the rebalancing it performs.
 
 ### 4.6.4 Why: exploratory diagnosis (not pre-registered)
 
 Two exploratory variants, added after the main set and checked to leave the SASS of every measured
 kernel unchanged, point to two different mechanisms (`results/2026-10-17_tree_round2/explore/`;
-summary §2 and §7; `docs/03-design.md` §18.3):
+summary §2 and §7; `docs/03-design.md` §18.3). They were not part of the clean replication, so
+their numbers carry the 20–22 % load label (D-033):
 
 1. **The warp-granular queue loses L1 locality.** The hardware block scheduler hands an SM a block
    of four Morton-adjacent warps, which share L1 lines. A warp-granular queue scatters them over
@@ -586,13 +637,12 @@ attacked the loop-level loss (D-023).
 
 ### 4.6.5 Limitations
 
-- **Background load.** The round-2 session ran with **20–22 % idle GPU utilisation** from desktop
-  applications, before and after the runs. On round-1 reference points it cost +2.4 % (#4) and
-  +2.7 % (#5) traversal time; absolute times drift by up to about 7 % between sets, while ratios
-  from adjacent runs are stable to within 1.5 % (6.8 % for the static arm on the core IC)
-  (`results/2026-10-17_tree_round2/summary.md`, environment). The #6 conclusions hinge on 1–5 %
-  differences in several cells, so they are load-sensitive and must be re-run with the applications
-  closed (`TODO(results: #6 re-run with desktop applications closed)`).
+- **Replicated without background load.** The original round-2 session ran with 20–22 % idle GPU
+  utilisation, and the #6 verdicts hinged on 1–5 % differences. The pre-registered clean
+  replication at 0 % load re-measured every #6 cell with A/B/B/A interleaving: **no #6 verdict
+  changed**, and every arm is still slower than its sibling in every cell (§4.6.3; §4.1.1;
+  `results/2026-10-18_clean_rerun/summary.md`; D-033). Attributing #6's loss to the background load
+  is therefore ruled out (D-033).
 - The diagnosis in §4.6.4 is exploratory and was not pre-registered.
 - The block-granular queue was tested only on #5. Whether it can at least break even on the #7
   walk, whose single-wave tail is now its largest loss (§4.7.4), is open (`docs/03-design.md`
@@ -626,96 +676,104 @@ vote, **not work stealing**. It does not remove work; it adds work and removes i
 
 ### 4.7.2 Measured effect
 
-**Fixed protocol configuration** (leaf 16, block 128, θ = 0.5; set A,
-`results/2026-10-17_tree_round2/summary.md` §1–§2):
+**Fixed protocol configuration** (leaf 16, block 128, θ = 0.5; set A of the clean replication,
+canonical per D-033; `results/2026-10-18_clean_rerun/tree2/merged/analysis_output.txt`, set A, and
+`scorecard.csv` items W8–W9):
 
 | IC | N | #5 traversal (ms) | #7 traversal (ms) | #7 speedup |
 |---|---|---|---|---|
-| Plummer | 65,536 | 1.804 | 0.576 | 3.1× |
-| Plummer | 262,144 | 8.723 | 1.607 | 5.4× |
-| Plummer | 1,048,576 | 39.53 | 5.982 | 6.6× |
-| core | 65,536 | 2.511 | 0.729 | 3.4× |
-| core | 262,144 | 11.19 | 1.759 | 6.4× |
-| core | 1,048,576 | 49.54 | 6.774 | 7.3× |
+| Plummer | 65,536 | 1.798 | 0.574 | 3.1× |
+| Plummer | 262,144 | 8.408 | 1.609 | 5.2× |
+| Plummer | 1,048,576 | 38.60 | 6.005 | 6.4× |
+| core | 65,536 | 2.433 | 0.729 | 3.3× |
+| core | 262,144 | 11.19 | 1.756 | 6.4× |
+| core | 1,048,576 | 48.01 | 6.770 | 7.1× |
 
-The traversal is **3.1–7.3× faster than #5**, and the gain grows with N. The full step (build +
-traversal) is 2.6–6.0× faster (summary §2, finding 1). The main session re-ran the N = 262,144
-Plummer case under the same background load and got 1.592 ms against 1.607 ms (summary §6).
+The traversal is **3.1–7.1× faster than #5**, and the gain grows with N. The full step (build +
+traversal) is 2.6–6.6× faster [D, from the set-A totals in the same file]. Under the 20–22 % load of
+the original session the range had been 3.1–7.3× (`results/2026-10-17_tree_round2/summary.md` §2).
 
-**Best against best** (rule 8; set C, Plummer, θ = 0.5; D-025): **5.9× at 1M** (#5 at leaf 32,
-block 256: 35.30 ms; #7 at leaf 8, block 256: 5.97 ms) and **5.2× at N = 262,144**. For the total
-step, 5.4× and 4.4× (summary §2, finding 1). #7 is flat within ±1 % over leaf 8–16 and all block
-sizes (D-025).
+**Best against best** (rule 8; set C, Plummer, θ = 0.5; `results/2026-10-18_clean_rerun/`):
+**5.8× at 1M** (5.76×: #5 at leaf 32, block 256, 34.45 ms; #7 at leaf 16, block 64, 5.99 ms) and
+**4.8× at N = 262,144**. For the total step, 5.3× and 4.3× (`results/2026-10-18_clean_rerun/summary.md`,
+item L5). The main session re-ran the 1M pair afterwards at 0 % load and got 34.31 ms and 5.99 ms,
+i.e. 5.73× (same summary, independent re-check). #7 is flat in leaf size: leaf 8 and leaf 16 are
+within 0.6 % at 1M (D-033). Under load the figures had been 5.9× and 5.2× (D-025).
 
 **Real interaction rate.** At 1M (Plummer), #7 performs 1,837 interactions and 2,036 pops per body
-at **SIMT efficiency 1.000** at both interaction and pop sites, at **322 G interactions/s**,
-against 1,063 interactions, 1,612 pops, SIMT efficiency 0.201 / 0.976 and 28.2 G/s for #5
-(summary §1). Across N, #7's rate is 193 / 285 / 322 G/s (Plummer), about 11 times #5's 28–33 G/s
-(`docs/03-design.md` §18.1).
+at **SIMT efficiency 1.000** at both interaction and pop sites, at **321 G interactions/s**,
+against 1,063 interactions, 1,612 pops, SIMT efficiency 0.201 / 0.976 and 28.8 G/s for #5
+(`results/2026-10-18_clean_rerun/tree2/merged/analysis_output.txt`, set A; the work counts are
+deterministic and identical to round 2). Across N, #7's rate is 194 / 285 / 321 G/s (Plummer), about
+11 times #5's 29–33 G/s (same file; scorecard item W11).
 
 **The union overhead.** #7 does **1.64–1.85×** the interactions and **1.22–1.31×** the pops of #5,
-flat in N, as pre-registered (W1–W5 HIT, `results/2026-10-17_tree_round2/scorecard.csv`;
-`docs/03-design.md` §18.1).
+flat in N, as pre-registered (W1–W5 HIT). These are deterministic counts and reproduce exactly
+(`results/2026-10-17_tree_round2/scorecard.csv`; `results/2026-10-18_clean_rerun/scorecard.csv`).
 
-**Against the coherent control.** #7 runs 1.32–1.65× slower than the coherent control, which is
-about its extra work. It closes **69–88 % of the gap** between #5 and the control, measured in log
-terms (summary §2, finding 2; D-024). Most of what remains is the union's extra work, not
-residual incoherence.
+**Against the coherent control.** #7 runs 1.31–1.65× slower than the coherent control, which is
+about its extra work. It closes **70–87 % of the gap** between #5 and the control, measured in log
+terms (`results/2026-10-18_clean_rerun/tree2/merged/analysis_output.txt`, derived values T7/TC and
+f; D-024). Most of what remains is the union's extra work, not residual incoherence.
 
 **Accuracy.** Because every lane interacts with at least the cells it would have used alone, #7 is
 **more accurate than #5**: rms relative error ×0.66–0.85 and p99 ×0.60–0.91 of #5's at the same θ;
-the TG3 gate passes 60/60 (summary §1, §5). At N = 262,144, θ = 0.5 the rms error is 4.59 × 10⁻³
-against 6.55 × 10⁻³ for #5 (summary §6). TG3 is an aggregate gate: an individual body's error is not
-guaranteed to drop (`docs/03-design.md` §17.2).
+the TG3 gate passes 60/60 (`results/2026-10-17_tree_round2/summary.md` §1, §5; deterministic,
+reproduced in the clean run). At N = 262,144, θ = 0.5 the rms error is 4.59 × 10⁻³ against
+6.55 × 10⁻³ for #5. TG3 is an aggregate gate: an individual body's error is not guaranteed to drop
+(`docs/03-design.md` §17.2).
 
 **What limits #7: latency, not L1.** In the occupancy sweep (set D, N = 262,144) the control and #7
 speed up ×1.75 and ×1.87 from 4 to 11 blocks per SM, and gain only ×1.30 and ×1.12 from the full
 L1 (D-026). The coherent walk is bound by its dependent pop chain (shuffle, node load, test, vote,
 branch), so its next optimisation is fewer pops per interaction, i.e. wider tree nodes, not more
-occupancy (D-026).
+occupancy (D-026). Set D was not re-run, so these numbers carry the 20–22 % load label (D-033).
 
 ### 4.7.3 #7 needs #5's ordering, and depends on θ
 
 **Without the space-filling-curve order** (`bh_warp_naive`, the union walk on the original body
 order), a warp's 32 bodies are scattered over the system and their union is large: **12.9–14.8×**
-#4's interactions. It is still 1.2–1.6× faster than #4, which shows how expensive divergence is for
-#4, but it is **4.1–8.3× slower than `bh_warp`** (summary §2, finding 6). The scorecard item W16
-missed: at 1M the naive union walk beat #4 by 1.59×, above the predicted ≤ 1.3×
-(`results/2026-10-17_tree_round2/summary.md` §3). #5 and #7 are therefore complements: sorting
-makes the union small, the union makes the warp coherent.
+#4's interactions (deterministic). It is still 1.26–1.52× faster than #4, which shows how expensive
+divergence is for #4, but it is **4.1–8.1× slower than `bh_warp`**
+(`results/2026-10-18_clean_rerun/scorecard.csv`, items W16, W17). The scorecard item W16 misses: at
+1M the naive union walk beats #4 by 1.51×, above the predicted ≤ 1.3× (same file). #5 and #7 are
+therefore complements: sorting makes the union small, the union makes the warp coherent.
 
-**θ dependence** (set F, N = 262,144; summary §2, finding 8):
+**θ dependence** (set F, N = 262,144; `results/2026-10-18_clean_rerun/tree2/merged/analysis_output.txt`,
+set F):
 
 | bmax-θ | 0.3 | 0.5 | 0.7 | 1.0 |
 |---|---|---|---|---|
 | Union overhead (interactions) | ×1.55 | ×1.79 | ×2.08 | ×2.11 |
-| #7 speedup over #5 | 8.1× | 5.4× | 4.0× | 3.0× |
+| #7 speedup over #5 | 7.8× | 5.2× | 3.9× | 3.0× |
 
 A larger θ accepts more cells, so lanes disagree more often and the union grows. At θ = 0, #7
-equals #5 within 2 % and passes D-009 (summary §2).
+equals #5 within about 2 % and passes D-009 (same file, set G).
 
 **The interaction-list sub-variant** (`bh_warp_list`) buffers accepted cells and bucket bodies in a
 per-warp shared-memory list and evaluates them in a dense loop. It is bitwise equal to `bh_warp`
-but 2–7 % **slower** (W13 MISS): once the walk is coherent, interleaving pops and interactions
-costs nothing, and the list adds shared-memory traffic (`docs/03-design.md` §18.1; D-022). It stays
-registered as a measured negative.
+but 3–8 % **slower** (W13 MISS; `results/2026-10-18_clean_rerun/scorecard.csv`): once the walk is
+coherent, interleaving pops and interactions costs nothing, and the list adds shared-memory traffic
+(`docs/03-design.md` §18.1; D-022). It stays registered as a measured negative.
 
 ### 4.7.4 Crossover and new bottleneck
 
-`bh_warp` crosses the best all-pairs configuration of the same session at **N ≈ 29,200**, down from
-≈ 39,700 for #5 (set E; summary §2, finding 7; `docs/03-design.md` §18.5). Its total step is 4.4×
-faster than the best all-pairs at N = 65,536 and 24.9× at 262,144; at 1M the ratio is 123×, against
-an extrapolated all-pairs time [D]. The conditions of §4.5.3 apply: the crossover holds for θ = 0.5
-only, and per-run clocks for the two sides were not reported, so the power-cap bias found in
-round 1 has not been re-checked for this session (round 2 logged a median power of 196 W and a
-maximum of 271 W under the 272 W cap). Round 2 also ran under 20–22 % background load (summary,
-environment).
+`bh_warp` crosses the best all-pairs configuration of the same session at **N ≈ 28,700**, down from
+≈ 39,700 for #5 (set E; `results/2026-10-18_clean_rerun/scorecard.csv`, item X1). Its total step is
+4.4× faster than the best all-pairs at N = 65,536 and 27.3× at 262,144; at 1M the ratio is 124×,
+against an extrapolated all-pairs time [D] (item X3, same file). The conditions of §4.5.3 apply:
+the crossover holds for θ = 0.5 only, and per-run clocks for the two sides were not reported, so
+the power-cap bias found in round 1 has not been re-checked. The clean session ran at 0 % idle load,
+with a median power of 185 W and a maximum of 270 W under the 272 W cap
+(`results/2026-10-18_clean_rerun/summary.md`, environment).
 
 **The new bottleneck is between warps.** #7 makes the single-wave tail relatively worse: at
-N = 65,536 (core) its SM efficiency is 0.733 with a 27.3 % tail, against 0.811 and 18.3 % for #5,
-because its warp costs spread 1.5–2.6× (max/mean) over a launch about 3× shorter (summary §4). At
-1M the tail is 1.5–1.9 %. So at N = 65,536 between-warp imbalance is now #7's largest loss, which
-is exactly the case where a cheap, locality-preserving block-granular queue (§4.6.4) might pay.
+N = 65,536 (core) its SM efficiency is 0.734 with a 27.2 % tail, against 0.827 and 14.7 % for #5
+(`results/2026-10-18_clean_rerun/summary.md`, timelines). Its warp costs spread 1.5–2.6× (max/mean)
+over a launch about 3× shorter (`results/2026-10-17_tree_round2/summary.md` §4). At 1M the tail is
+about 2 % (1.8–2.3 %, clean timelines in `tree2/merged/analysis_output.txt`). So at N = 65,536
+between-warp imbalance is now #7's largest loss, which is exactly the case where a cheap,
+locality-preserving block-granular queue (§4.6.4) might pay.
 
 ### 4.7.5 Literature
 
@@ -728,8 +786,10 @@ for gravity on Ada, so the coherent-control comparison is our own contribution.
 
 ### 4.7.6 Limitations
 
-- The 20–22 % background load affects absolute times by a few per cent (§4.6.5); the #7 ratios are
-  far larger than that.
+- **Replicated without background load.** The #7 cells were re-measured in the clean replication
+  at 0 % load. The speedups fell slightly (by up to about 4 % per cell) and every #7 verdict stayed
+  the same (`results/2026-10-18_clean_rerun/summary.md`, key cells; D-033). Coherent walks are not
+  load-proof, though: in the IC session, #7 at 1M was inflated by 7–15 % under 30–37 % load (D-033).
 - All ratios depend on θ (§4.7.3).
 - The best-against-best speedups are for the Plummer IC only (set C).
 - The 1M all-pairs comparison is extrapolated [D].
@@ -766,28 +826,32 @@ and E-cores. Not run in tree round 2 (`TODO(results: #8, future round)`).
 
 | # | Technique | Imbalance targeted | Measured effect (rule 8 baseline unless noted) | Status |
 |---|---|---|---|---|
-| — | Measurement method | — | per-block / per-warp-unit SM timelines + per-warp counters; twin differs from production by −3.4…+6.2 %, so timelines for structure only | done (D-011) |
+| — | Measurement method | — | per-block / per-warp-unit SM timelines + per-warp counters; twin differs from production by −3.4…+6.2 %, so timelines for structure only; load-sensitive items replicated at 0 % load (§4.1.1) | done (D-011, D-033) |
 | 1 | Static tiling | none (reference) | 76 / 64 / 40 idle SMs at N = 1,000 / 4,096 / 10,000; 23.5 % tail at 65,536 | done |
 | 2 | Block / tile / unroll | SM level: starvation, wave tail | is the baseline: 1.14–1.54× over tiled b256 [D]; step model exact for single waves, per-block cost term wrong (D-012) | done |
 | 3 | q threads per body | SM level: starvation | **2.40× / 2.56× / 1.40× / 1.02×** at N = 1,000 / 4,096 / 10,000 / 65,536; at 4,096: q × 2.40 · prefetch × 1.067; idle SMs 64 → 16 | done (unroll still confounded) |
 | 4 | Naive Barnes-Hut | (imbalance baseline for trees) | per-warp max/mean 1.17–1.62; interaction-site SIMT eff. 0.09–0.13 | done |
-| 5 | Morton / Hilbert order | inside warps | **2.06× / 2.18× vs #4** best vs best at N = 262,144 / 1M (θ = 0.5); 1.6–2.1× at the fixed protocol config; Hilbert ≈ Morton; L1-capacity-bound; crossover N ≈ 39,700 | done |
-| 6 | Persistent threads + queues (warp, lane, static, on #7) | between warps / blocks; loop level (lane arm) | **slower in every cell: 0.64–0.98×** of the hardware scheduler, although each arm improves its balance metric; mechanism: lost L1 locality (warp queue), loop structure (lane refill, not verified in SASS) | measured negative; load-sensitive, re-run pending |
-| 7 | Warp-cooperative union walk | inside warps (idle lanes, divergent loads) | **5.9× / 5.2× vs #5** best vs best at 1M / 262,144 (θ = 0.5); 3.1–7.3× at the fixed config; SIMT eff. 1.000; ×1.6–1.9 interactions; more accurate (TG3 60/60); closes 69–88 % of the coherent gap; needs #5's order; crossover N ≈ 29,200 | done |
+| 5 | Morton / Hilbert order | inside warps | **2.01× / 2.06× vs #4** best vs best at N = 262,144 / 1M (θ = 0.5); 1.6–2.1× at the fixed protocol config; Hilbert ≈ Morton; L1-capacity-bound; crossover N ≈ 39,700 | done |
+| 6 | Persistent threads + queues (warp, lane, static, on #7) | between warps / blocks; loop level (lane arm) | **slower in every cell: 0.63–0.97×** of the hardware scheduler, although each arm improves its balance metric; mechanism: lost L1 locality (warp queue), loop structure (lane refill, not verified in SASS) | measured negative; replicated clean 2026-10-18 |
+| 7 | Warp-cooperative union walk | inside warps (idle lanes, divergent loads) | **5.8× / 4.8× vs #5** best vs best at 1M / 262,144 (θ = 0.5); 3.1–7.1× at the fixed config; SIMT eff. 1.000; ×1.6–1.9 interactions; more accurate (TG3 60/60); closes 70–87 % of the coherent gap; needs #5's order; crossover N ≈ 28,700 | done; replicated clean 2026-10-18 |
 | 8 | CPU + GPU split | between devices, P/E cores | `TODO(results: #8, future round)` | planned |
 
 **Scorecards.** All-pairs round 2: 18 HIT / 7 MISS (`results/2026-10-17_round2/summary.md` §7).
 Tree round 1: disputed, not used (§4.5.6). Tree round 2: **39 HIT / 22 MISS of 61 items**, from the
 committed item table `results/2026-10-17_tree_round2/scorecard.csv`; the #7 model held, all #6
-performance items missed (`results/2026-10-17_tree_round2/summary.md` §3).
+performance items missed (`results/2026-10-17_tree_round2/summary.md` §3). **Clean replication**
+(2026-10-18, 0 % load, §4.1.1): 36 of 59 primary items (tree round 2 and the IC round) HIT against
+the original ranges, against 39 before; no #6 or #7 conclusion changed; the proposed load mechanism
+was falsified, and the inflation tracked kernel length (`results/2026-10-18_clean_rerun/summary.md`;
+D-033). Tree-rate numbers in rows 5–7 are the clean, canonical values.
 
 Four conclusions, each limited to what was measured:
 1. **For all-pairs, the imbalance is entirely at SM level**, and it is fixed by creating the right
    number of work items: smaller blocks (#2) or several threads per body (#3). The gain is 2.4–2.6×
    at small N and disappears once every SM has work (§4.3–4.4).
 2. **For trees, the dominant loss is inside warps.** The coherent control measures it directly:
-   incoherence costs #5 a factor of 5–10 (§4.5.5). Sorting (#5) is the necessary first step, and
-   the warp-union walk (#7) on top of it removes most of the remaining gap, 5.9× best against best
+   incoherence costs #5 a factor of about 4–10 (§4.5.5). Sorting (#5) is the necessary first step, and
+   the warp-union walk (#7) on top of it removes most of the remaining gap, 5.8× best against best
    at 1M, even though it does more work (§4.7).
 3. **On sm_89 the hardware block scheduler is hard to beat.** It is already a dynamic queue that
    keeps Morton-adjacent warps together on one SM. Every software queue we built improved its
