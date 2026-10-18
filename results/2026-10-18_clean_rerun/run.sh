@@ -22,6 +22,10 @@ B=./build/nbody_bench.exe
 V=./build/src/viewer/nbody_viewer.exe
 OLD=${OLD_BENCH:-/c/Users/petya/AppData/Local/Temp/claude/D--life-system/cf99499d-78af-474a-80e1-0ba28ceb4299/scratchpad/nbody_bench_before.exe}
 DRY=${DRYRUN:-0}
+# RESUME_FROM=K (added 2026-10-18 after the session was stopped at cell 39 by the screensaver; commands unchanged):
+# cells 1..K-1 are skipped (already measured), the clock log and selftest go to *_resumeK files.
+RES=${RESUME_FROM:-1}
+SFX=""; [ "$RES" -gt 1 ] && SFX="_resume$RES"
 STAGE=$R/stage
 NRUNS=0; NCELLS=0
 STAGED=(); CELL_LOGS=()
@@ -81,6 +85,7 @@ commit_staged() {
 cell() {   # id mode(both|once) fn args...
   local id=$1 mode=$2; shift 2
   NCELLS=$((NCELLS + 1))
+  if [ "$NCELLS" -lt "$RES" ]; then return; fi
   STAGED=(); CELL_LOGS=()
   out "## cell $NCELLS: $id ($mode)"
   if [ "$mode" = both ]; then "$@" p1; "$@" p2; else "$@" p1; fi
@@ -258,13 +263,13 @@ else
   mkdir -p $STAGE $R/viewer
   [ -f $R/idle_log.csv ] || echo "time,cell,phase,idle_util_pct" > $R/idle_log.csv
   nvidia-smi --query-gpu=timestamp,clocks.sm,clocks.mem,power.draw,power.limit,temperature.gpu,utilization.gpu,pstate,clocks_event_reasons.active \
-      --format=csv -lms 200 -f $R/gpu_clock_log.csv &
+      --format=csv -lms 200 -f $R/gpu_clock_log$SFX.csv &
   CLOG=$!
   trap 'kill $CLOG 2>/dev/null' EXIT
-  sha256sum $B $V $OLD > $R/binary_hashes.txt
-  echo "session start $(date '+%F %T')" | tee $R/session_times.txt
+  sha256sum $B $V $OLD > $R/binary_hashes$SFX.txt
+  echo "session start $(date '+%F %T') (resume from cell $RES)" | tee -a $R/session_times.txt
   m=$(idle_med); log_idle start start "$m"
-  $B --selftest > $R/selftest.txt 2>&1; echo "selftest exit=$?" | tee -a $R/session_times.txt
+  $B --selftest > $R/selftest$SFX.txt 2>&1; echo "selftest exit=$?" | tee -a $R/session_times.txt
 fi
 [ "$DRY" = 1 ] && out "    $B --selftest > $R/selftest.txt"
 

@@ -1,0 +1,2 @@
+2026-10-18 04:56:44 FLAGGED T2-C n1048576 l32 b128 (idle 14%)
+2026-10-18 04:57:54 SESSION STOPPED by bench-profiler during the wait for cell 'T2-C n1048576 l32 b128': background load 34-44% from the Windows screensaver (Mystify.scr, new GPU process, absent from env_before). Cells 1-38 were completed clean (every idle check 0%). Resume from cell 39 (re-run of the flagged cell) after the screensaver is off.
