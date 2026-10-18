@@ -81,11 +81,24 @@ void appendPlummer(int nc, unsigned seed, double a, double mc, double3 c, double
 
 // A contiguous run [begin, end) of the (pre-shuffle) arrays that forms one physical component.
 // spectrum = false: the component's masses are never redrawn (the central massive body).
-struct Component { int begin, end; bool spectrum; };
+// tag: the viewer's colour-by-origin label (originTag(group, role), nbody.h); it never feeds back into
+// positions, velocities, masses or any RNG stream.
+struct Component { int begin, end; bool spectrum; unsigned char tag = 0; };
+
+// Expand the component runs into one tag per (pre-shuffle) body.
+void tagsFromComponents(int n, const std::vector<Component>& comps, std::vector<unsigned char>* tags)
+{
+    if (!tags) return;
+    tags->assign(size_t(n), 0);
+    for (const Component& c : comps)
+        for (int i = c.begin; i < c.end && i < n; ++i) (*tags)[size_t(i)] = c.tag;
+}
 
 // Shuffle so the original order is spatially random (like the single Plummer): otherwise the
 // components would be contiguous runs and bh_naive's "unsorted" warps would be partly sorted.
-void shuffleBodies(int n, unsigned seed, std::vector<float4>& pos, std::vector<float4>& vel)
+// tags (optional, viewer): permuted with the same index array, so each tag follows its body.
+void shuffleBodies(int n, unsigned seed, std::vector<float4>& pos, std::vector<float4>& vel,
+                   std::vector<unsigned char>* tags = nullptr)
 {
     std::vector<int> idx(n);
     std::iota(idx.begin(), idx.end(), 0);
@@ -93,6 +106,11 @@ void shuffleBodies(int n, unsigned seed, std::vector<float4>& pos, std::vector<f
     std::vector<float4> p2(n), v2(n);
     for (int i = 0; i < n; ++i) { p2[i] = pos[idx[i]]; v2[i] = vel[idx[i]]; }
     pos.swap(p2); vel.swap(v2);
+    if (tags && tags->size() == size_t(n)) {
+        std::vector<unsigned char> t2(static_cast<size_t>(n));
+        for (int i = 0; i < n; ++i) t2[size_t(i)] = (*tags)[size_t(idx[i])];
+        tags->swap(t2);
+    }
 }
 
 // The legacy ICs, unshuffled, with their component runs (bitwise the pre-IC-round code path).
@@ -103,20 +121,20 @@ bool buildLegacy(const std::string& name, int n, unsigned seed, std::vector<floa
     pos.reserve(n); vel.reserve(n);
     if (name == "plummer") {
         makePlummer(n, seed, pos, vel);
-        comps.push_back({0, n, true});
+        comps.push_back({0, n, true, originTag(0, kRoleSingle)});
     } else if (name == "collision") {
         const int n1 = n / 2, n2 = n - n1;
         appendPlummer(n1, seed, 0.25, 0.5, make_double3(-1.0, -0.125, 0.0), make_double3(0.35, 0.0, 0.0), 1.0 / n, pos, vel);
         appendPlummer(n2, seed + 1000003u, 0.25, 0.5, make_double3(1.0, 0.125, 0.0), make_double3(-0.35, 0.0, 0.0), 1.0 / n,
                       pos, vel);
-        comps.push_back({0, n1, true});
-        comps.push_back({n1, n, true});
+        comps.push_back({0, n1, true, originTag(0, kRoleCluster)});
+        comps.push_back({n1, n, true, originTag(1, kRoleCluster)});
     } else if (name == "core") {
         const int nc = n / 4, nh = n - nc;
         appendPlummer(nh, seed, 1.0, 0.75, make_double3(0, 0, 0), make_double3(0, 0, 0), 1.0 / n, pos, vel);
         appendPlummer(nc, seed + 1000003u, 0.03, 0.25, make_double3(0, 0, 0), make_double3(0, 0, 0), 1.0 / n, pos, vel);
-        comps.push_back({0, nh, true});
-        comps.push_back({nh, n, true});
+        comps.push_back({0, nh, true, originTag(0, kRoleHalo)});
+        comps.push_back({nh, n, true, originTag(1, kRoleCluster)});
     } else {
         return false;
     }
@@ -203,7 +221,7 @@ void apply(const Rot& r, double& x, double& y, double& z)
 // will form bars, spirals and clumps within about one rotation; it is a force snapshot for the
 // workload study and a demo for the viewer, not a stable Milky Way.
 void appendDisk(int ng, unsigned seed, double Mg, double3 c, double3 v, const Rot& R, const ICOptions& o,
-                std::vector<Component>& comps, std::vector<float4>& pos, std::vector<float4>& vel)
+                std::vector<Component>& comps, std::vector<float4>& pos, std::vector<float4>& vel, int group = 0)
 {
     if (ng <= 0) return;
     const double Rd = 0.25, Rmax = 6.0 * Rd, z0 = 0.1 * Rd, ab = 0.08, fb = 0.1;
@@ -270,9 +288,9 @@ void appendDisk(int ng, unsigned seed, double Mg, double3 c, double3 v, const Ro
         pos.push_back(make_float4(float(c.x + x), float(c.y + y), float(c.z + z), float(M[i])));
         vel.push_back(make_float4(float(v.x + vx), float(v.y + vy), float(v.z + vz), 0.f));
     }
-    if (nbh) comps.push_back({base, base + 1, false});
-    comps.push_back({base + b0, base + d0, true});
-    comps.push_back({base + d0, base + ng, true});
+    if (nbh) comps.push_back({base, base + 1, false, originTag(group, kRoleCentral)});
+    comps.push_back({base + b0, base + d0, true, originTag(group, kRoleBulge)});
+    comps.push_back({base + d0, base + ng, true, originTag(group, kRoleDisk)});
 }
 
 // Cube ICs: uniform on the faces / edges / volume of [-1,1]^3, small isotropic random velocities
@@ -320,7 +338,7 @@ bool makeIC(const std::string& name, int n, unsigned seed, std::vector<float4>& 
 }
 
 bool makeIC(const std::string& name, int n, unsigned seed, std::vector<float4>& pos, std::vector<float4>& vel,
-            const ICOptions& opt)
+            const ICOptions& opt, std::vector<unsigned char>* tags)
 {
     if (!validMassSpectrum(opt.massSpectrum) || !(opt.bhMass >= 0.0) || !(opt.bhMass < 1.0) || !(opt.softening > 0.0))
         return false;
@@ -328,7 +346,8 @@ bool makeIC(const std::string& name, int n, unsigned seed, std::vector<float4>& 
     const bool legacy = buildLegacy(name, n, seed, pos, vel, comps);
     if (legacy) {
         if (opt.massSpectrum == "equal") {   // bitwise the legacy IC
-            if (name != "plummer") shuffleBodies(n, seed, pos, vel);
+            tagsFromComponents(n, comps, tags);
+            if (name != "plummer") shuffleBodies(n, seed, pos, vel, tags);
             return true;
         }
     } else if (name == "disk") {
@@ -340,18 +359,75 @@ bool makeIC(const std::string& name, int n, unsigned seed, std::vector<float4>& 
         const int n1 = n / 2, n2 = n - n1;
         const double M1 = n1 > 0 ? 0.5 : 0.0, M2 = 1.0 - M1;   // n = 1: one galaxy of mass 1
         appendDisk(n1, seed, M1, make_double3(-1.5, -0.5, 0.0), make_double3(0.3, 0.05, 0.0), rotX(0.5236), opt, comps,
-                   pos, vel);
+                   pos, vel, 0);
         appendDisk(n2, seed + 1000003u, M2, make_double3(1.5, 0.5, 0.0), make_double3(-0.3, -0.05, 0.0),
-                   mul(rotY(0.6981), rotX(-0.8727)), opt, comps, pos, vel);
+                   mul(rotY(0.6981), rotX(-0.8727)), opt, comps, pos, vel, 1);
     } else if (name == "cube_shell" || name == "cube_edges" || name == "uniform") {
         appendCube(name, n, seed, pos, vel);
-        comps.push_back({0, n, true});
+        comps.push_back({0, n, true, originTag(0, kRoleSingle)});
     } else {
         return false;
     }
+    tagsFromComponents(n, comps, tags);
     applySpectrum(opt.massSpectrum, comps, seed, pos);
     recentre(pos, vel);
-    if (name != "plummer") shuffleBodies(n, seed, pos, vel);
+    if (name != "plummer") shuffleBodies(n, seed, pos, vel, tags);
+    return true;
+}
+
+// ---- viewer-only presets (D-032): combinations of the existing generators, no new physics ----------
+// Not in icNames(), so nbody_bench --ic rejects them and the selftest IC suite is unchanged.
+const char* presetNames() { return "merger3|flyby|unequal"; }
+
+bool makePreset(const std::string& name, int n, unsigned seed, std::vector<float4>& pos, std::vector<float4>& vel,
+                const ICOptions& opt, std::vector<unsigned char>* tags)
+{
+    if (!validMassSpectrum(opt.massSpectrum) || !(opt.bhMass >= 0.0) || !(opt.bhMass < 1.0) || !(opt.softening > 0.0))
+        return false;
+    std::vector<Component> comps;
+    pos.clear(); vel.clear();
+    pos.reserve(n); vel.reserve(n);
+    if (name == "merger3") {
+        // Three disks of mass 1/3 on a triangle of radius 1.6 (separation 2.77), each moving 0.15 inwards
+        // and 0.12 tangentially: kinetic 0.018 < |potential| 0.120, so bound; a staggered triple merger.
+        const int    ns[3]  = {n / 3, n / 3, n - 2 * (n / 3)};
+        const double ang[3] = {kPi / 2, kPi / 2 + 2 * kPi / 3, kPi / 2 + 4 * kPi / 3};
+        const Rot    R[3]   = {rotX(0.5236), mul(rotY(0.6981), rotX(-0.8727)), mul(rotY(-1.0), rotX(1.2))};
+        for (int k = 0; k < 3; ++k) {
+            const double cx = 1.6 * std::cos(ang[k]), cy = 1.6 * std::sin(ang[k]);
+            const double ux = -std::cos(ang[k]), uy = -std::sin(ang[k]);   // inward unit vector
+            const double vx = 0.15 * ux - 0.12 * uy, vy = 0.15 * uy + 0.12 * ux;
+            appendDisk(ns[k], seed + 1000003u * unsigned(k), 1.0 / 3.0, make_double3(cx, cy, 0.1 * (k - 1)),
+                       make_double3(vx, vy, 0.0), R[k], opt, comps, pos, vel, k);
+        }
+    } else if (name == "flyby") {
+        // A disk (mass 0.8) and a compact Plummer cluster (mass 0.2, virial radius 0.15, 20% of the bodies, so
+        // equal body masses): start 3.1 apart, relative speed 0.75 against an escape speed of 0.81 there, impact
+        // parameter ~0.9: a close tidal passage that raises tails, then (marginally bound) a slow capture.
+        const int    nc = std::min(n, std::max(1, int(std::lround(0.2 * n)))), ng = n - nc;
+        const double Mc = ng > 0 ? 0.2 : 1.0, Mg = 1.0 - Mc;
+        appendDisk(ng, seed, Mg, make_double3(-0.3, 0.0, 0.0), make_double3(0.12, 0.0, 0.0), rotX(0.35), opt, comps,
+                   pos, vel, 0);
+        const int c0 = int(pos.size());
+        appendPlummer(nc, seed + 1000003u, 0.15, Mc, make_double3(2.6, 1.0, 0.3), make_double3(-0.63, -0.05, 0.0),
+                      Mc / nc, pos, vel);
+        comps.push_back({c0, c0 + nc, true, originTag(1, kRoleCluster)});
+    } else if (name == "unequal") {
+        // 3:1 merger: disk A (mass 0.75, 75% of the bodies) and disk B (mass 0.25), momenta equal and opposite,
+        // separation 3.16, relative speed 0.41 < escape 0.80: bound.
+        const int    n1 = int(std::lround(0.75 * n)), n2 = n - n1;
+        const double M1 = n2 > 0 ? 0.75 : 1.0, M2 = 1.0 - M1;
+        appendDisk(n1, seed, M1, make_double3(-0.75, -0.25, 0.0), make_double3(0.1, 0.02, 0.0), rotX(0.4), opt, comps,
+                   pos, vel, 0);
+        appendDisk(n2, seed + 1000003u, M2, make_double3(2.25, 0.75, 0.0), make_double3(-0.3, -0.06, 0.0),
+                   mul(rotY(0.9), rotX(-1.1)), opt, comps, pos, vel, 1);
+    } else {
+        return false;
+    }
+    tagsFromComponents(n, comps, tags);
+    applySpectrum(opt.massSpectrum, comps, seed, pos);
+    recentre(pos, vel);
+    shuffleBodies(n, seed, pos, vel, tags);
     return true;
 }
 

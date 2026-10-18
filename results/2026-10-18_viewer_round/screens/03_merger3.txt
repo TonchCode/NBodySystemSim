@@ -1,0 +1,7 @@
+GL 3.3.0 NVIDIA 617.42 | NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2
+ic=merger3 mass_spectrum=equal N=262144 seed=42 ic_hash=e42ef47c7d5f8ef5
+screenshot -> results/2026-10-18_viewer_round/screens/03_merger3.bmp (1600x900)
+N-body | merger3 (equal) | N=262144 | bh_warp | 1.771 ms/step | 254.0 G int/s real (counted, incl. build + integrator) | 1715 int/body | 4 steps/frame | 133 FPS | no vsync
+simulated time t = 3.2000 (dt 0.002, 400 frames, camera dist 6.000 yaw 0.600 pitch 0.350)
+phases (smoothed ms): keys 0.0131 sort 0.2610 tree 0.1137 order 0.0014 traverse 1.7290
+load balance: per-warp max/mean 1.000 (median 1.000) | SIMT eff interactions 1.000, pops 1.000 | warp-cost max/mean 1.79 | 1715.2 int/body | overflows 0

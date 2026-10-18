@@ -1,0 +1,15 @@
+GL 3.3.0 NVIDIA 617.42 | NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2
+ic=galaxies mass_spectrum=equal N=131072 seed=42 ic_hash=89757b8b58f73f27
+test key at frame 5: open=well
+test key at frame 5: open=energy
+test key at frame 20: energy
+energy t=0.0800: E=-0.358996760 (K 0.380600, W -0.739597), dE/|E0|=0.000e+00 since t=0.0800, 17.8 ms
+test key at frame 40: well=0.45/0.55
+test key at frame 215: energy
+energy t=0.8600: E=-0.236854134 (K 0.513543, W -0.750397), dE/|E0|=3.402e-01 since t=0.0800, 16.2 ms  [user-modified run: not conserved]
+screenshot -> results/2026-10-18_viewer_round/screens/08_well_energy_panels.bmp (1600x900)
+N-body | galaxies (equal) | N=131072 | bh_warp | 1.004 ms/step | 151.2 G int/s real (counted, incl. build + integrator) | 1158 int/body | 2 steps/frame | 296 FPS | no vsync | USER-MODIFIED
+simulated time t = 0.8800 (dt 0.002, 220 frames, camera dist 5.000 yaw 0.600 pitch 0.350)
+phases (smoothed ms): keys 0.0126 sort 0.2692 tree 0.0886 order 0.0014 traverse 0.6297
+load balance: per-warp max/mean 1.000 (median 1.000) | SIMT eff interactions 1.000, pops 1.000 | warp-cost max/mean 2.15 | 1158.3 int/body | overflows 0
+run modified by user interaction (gravity well)

@@ -1,0 +1,10 @@
+GL 3.3.0 NVIDIA 617.42 | NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2
+ic=plummer mass_spectrum=equal N=4194304 seed=42 ic_hash=86c7d8ef3a01ac68
+test key at frame 30: open=energy
+test key at frame 35: energy
+screenshot -> results/2026-10-18_viewer_round/screens/09_4M_tree_lb.bmp (1600x900)
+N-body | plummer (equal) | N=4194304 | bh_warp | 30.172 ms/step | 265.7 G int/s real (counted, incl. build + integrator) | 1911 int/body | 2 steps/frame | 16 FPS | no vsync
+simulated time t = 0.2400 (dt 0.002, 60 frames, camera dist 3.000 yaw 0.600 pitch 0.350)
+phases (smoothed ms): keys 0.3778 sort 3.3498 tree 1.3678 order 0.0015 traverse 24.9387
+load balance: per-warp max/mean 1.000 (median 1.000) | SIMT eff interactions 1.000, pops 1.000 | warp-cost max/mean 1.55 | 1911.3 int/body | overflows 0
+tree: max depth 36, push depth 30, stack bound 32 (capacity 96 / 64), dup keys 0

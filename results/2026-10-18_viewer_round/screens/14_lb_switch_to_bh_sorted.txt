@@ -1,0 +1,9 @@
+GL 3.3.0 NVIDIA 617.42 | NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2
+ic=galaxies mass_spectrum=equal N=262144 seed=42 ic_hash=35003ffd3a86a1b8
+test key at frame 50: kernel=bh_sorted
+screenshot -> results/2026-10-18_viewer_round/screens/14_lb_switch_to_bh_sorted.bmp (1600x900)
+N-body | galaxies (equal) | N=262144 | bh_sorted | 4.909 ms/step | 49.7 G int/s real (counted, incl. build + integrator) | 930 int/body | 2 steps/frame | 82 FPS | no vsync
+simulated time t = 0.6000 (dt 0.002, 150 frames, camera dist 5.000 yaw 0.600 pitch 0.350)
+phases (smoothed ms): keys 0.0145 sort 0.2245 tree 0.1133 order 0.0015 traverse 4.7126
+load balance: per-warp max/mean 1.102 (median 1.094) | SIMT eff interactions 0.139, pops 0.948 | warp-cost max/mean 1.44 | 930.2 int/body | overflows 0
+tree: max depth 40, push depth 34, stack bound 36 (capacity 96 / 64), dup keys 0

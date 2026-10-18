@@ -1,0 +1,19 @@
+GL 3.3.0 NVIDIA 617.42 | NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2
+ic=plummer mass_spectrum=equal N=32768 seed=42 ic_hash=3512ab4371d79249
+test key at frame 10: up
+ic=plummer mass_spectrum=equal N=65536 seed=42 ic_hash=e11a638ea14aeb36
+test key at frame 20: down
+ic=plummer mass_spectrum=equal N=32768 seed=42 ic_hash=3512ab4371d79249
+test key at frame 30: ic
+ic=collision mass_spectrum=equal N=32768 seed=42 ic_hash=ce76566612a85312
+test key at frame 40: spectrum
+ic=collision mass_spectrum=salpeter N=32768 seed=42 ic_hash=f0bbf74d012e4fda
+test key at frame 50: mass
+test key at frame 60: ic
+ic=core mass_spectrum=salpeter N=32768 seed=42 ic_hash=f0c9baa73b4822d8
+test key at frame 70: mass
+screenshot -> results/2026-10-18_viewer_round/screens/12_legacy_keys.bmp (1600x900)
+N-body | core (salpeter) | N=32768 | bh_warp | 0.907 ms/step | 81.4 G int/s real (counted, incl. build + integrator) | 2253 int/body | 2 steps/frame | 375 FPS | no vsync
+simulated time t = 0.0800 (dt 0.002, 80 frames, camera dist 4.000 yaw 0.600 pitch 0.350)
+phases (smoothed ms): keys 0.0160 sort 0.3216 tree 0.0893 order 0.0014 traverse 0.5596
+load balance: per-warp max/mean 1.000 (median 1.000) | SIMT eff interactions 1.000, pops 1.000 | warp-cost max/mean 1.72 | 2253.0 int/body | overflows 0

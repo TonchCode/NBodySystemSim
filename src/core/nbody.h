@@ -153,8 +153,19 @@ struct ICOptions {
     double      bhMass       = 0.01;
     double      softening    = 0.01;
 };
+// tags (optional, viewer colour-by-origin, D-032): one originTag per body, permuted with the bodies.
+// Passing it changes nothing else: positions, velocities, masses and every RNG stream are identical.
 bool makeIC(const std::string& name, int n, unsigned seed, std::vector<float4>& pos, std::vector<float4>& vel,
-            const ICOptions& opt);
+            const ICOptions& opt, std::vector<unsigned char>* tags = nullptr);
+// Origin tag = group (galaxy / cluster index, 0..15) << 4 | role.
+enum OriginRole : unsigned char { kRoleSingle = 0, kRoleDisk = 1, kRoleBulge = 2, kRoleCentral = 3, kRoleHalo = 4,
+                                  kRoleCluster = 5 };
+constexpr unsigned char originTag(int group, OriginRole role) { return (unsigned char)(((group & 15) << 4) | role); }
+// Viewer-only presets (D-032): merger3 (three disks), flyby (disk + Plummer cluster), unequal (3:1 disk merger).
+// Combinations of the existing generators; NOT in icNames(), so the bench and its selftest never see them.
+const char* presetNames();   // "merger3|flyby|unequal"
+bool makePreset(const std::string& name, int n, unsigned seed, std::vector<float4>& pos, std::vector<float4>& vel,
+                const ICOptions& opt, std::vector<unsigned char>* tags = nullptr);
 const char* massSpectrumNames();   // "equal|salpeter|heavy-few"
 bool        validMassSpectrum(const std::string& s);
 // FNV-1a 64 over the pos and vel arrays (IC regression hash; printed by the bench).

@@ -1,0 +1,24 @@
+GL 3.3.0 NVIDIA 617.42 | NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2
+ic=plummer mass_spectrum=equal N=65536 seed=42 ic_hash=e11a638ea14aeb36
+test key at frame 10: kernel=allpairs_tiled
+test key at frame 30: lb=1
+test key at frame 40: color=origin
+test key at frame 50: ic=collision
+ic=collision mass_spectrum=equal N=65536 seed=42 ic_hash=aa4211110a9bdd82
+test key at frame 70: n=32768
+ic=collision mass_spectrum=equal N=32768 seed=42 ic_hash=ce76566612a85312
+test key at frame 80: kernel=bh_sorted
+test key at frame 90: theta=0.7
+test key at frame 95: leaf=32
+test key at frame 100: block=128
+test key at frame 110: spectrum=salpeter
+ic=collision mass_spectrum=salpeter N=32768 seed=42 ic_hash=f0bbf74d012e4fda
+test key at frame 120: seed=7
+ic=collision mass_spectrum=salpeter N=32768 seed=7 ic_hash=25b672ef66fdbfa1
+test key at frame 130: kernel=allpairs_tuned
+test key at frame 140: pause
+test key at frame 145: step
+test key at frame 150: pause
+screenshot -> results/2026-10-18_viewer_round/screens/07_allpairs_and_controls.bmp (1600x900)
+N-body | collision (salpeter) | N=32768 | allpairs_tuned | 1.256 ms/step | 854.8 G int/s real (N^2, incl. integrator) | 32768 int/body | 2 steps/frame | 327 FPS | no vsync
+simulated time t = 0.1220 (dt 0.002, 160 frames, camera dist 4.000 yaw 0.600 pitch 0.350)

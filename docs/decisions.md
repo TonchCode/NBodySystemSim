@@ -455,3 +455,49 @@ with block size (8 Morton-adjacent warps share L1 at b256). Any further #6 work 
 claims, and targets the single-wave clustered tail (37–39% on galaxies 65536), which is the only place
 a scheduler gain exists on this GPU.
 **Rules out:** claiming a #6 speedup; quoting the warp queue's SM-efficiency gain as a time gain.
+
+## D-032 — Viewer UI architecture: ImGui panel, live load-balance statistics, viewer-only kernels (2026-10-18, cuda-architect, viewer round)
+
+**Decided:**
+- **Dear ImGui 1.91.5** (vendored, `third_party/imgui`) compiled into a static `imgui` target that only
+  `nbody_viewer` links. The OpenGL3 backend keeps its own embedded loader (`imgl3w`); glad stays the
+  viewer's loader. The two never share a TU (symbols `imgl3w*` vs `glad_gl*`), so they coexist; no
+  `IMGUI_IMPL_OPENGL_LOADER_CUSTOM`. `io.IniFilename = nullptr`: no `imgui.ini` written.
+- **Input routing:** the viewer's GLFW callbacks are installed first and ImGui's backend chains them;
+  ours ignore mouse events while `io.WantCaptureMouse` and keys while `io.WantCaptureKeyboard` (F1/Tab
+  always toggle the panel). All existing keys still work.
+- **Two windows:** *Controls* (scenario with Apply/Reset/Revert staging, kernel + θ/leaf/block/dt/
+  steps, display, gravity well) and *Live statistics* (FPS, t, ms/step, real interaction rate,
+  phase times, load balance, tree depth/stack, energy, rolling plots).
+- **Statistics use the bench's definitions and code paths, not new ones:** phase times from
+  `Params::phaseEvents` on the first step of each frame; work statistics from the existing
+  instrumented twin (`Params::workCounters`), reduced with a copy of the bench's `warpStats`
+  (per-warp max/mean, SIMT efficiency = ΣI / (32 Σ leader I), warp-cost max/mean). The twin runs
+  *outside* the timed window every K frames (load-balance toggle) or every 2 s (interaction count
+  only), so the displayed ms/step is always the production kernel. The panel labels these as a
+  display; `nbody_bench` remains the source of every reported number.
+- **Viewer-only kernels** live in `src/viewer/viewer_kernels.cu` (not in `nbody_core`): the gravity-well
+  kick and an on-request O(N²) energy kernel (FP32 pair terms, FP64 accumulation, chunked launches,
+  N ≤ 1,048,576; agrees with the host FP64 `computeEnergy` to 1.1e-8 at N = 16384). Production
+  kernel SASS is unchanged (byte-identical bench SASS dump, `results/2026-10-18_viewer_round/sass_diff.txt`).
+- **Origin tags:** `makeIC(..., &tags)` returns one byte per body (group << 4 | role) from the
+  component runs and permutes it with the *same* shuffle index; no RNG draw is added or moved.
+  Verified: selftest PASS (legacy hashes), 48 IC × spectrum × N hashes identical before/after, and
+  the viewer's tagged galaxies-262144 hash equals the bench's untagged one. Stored in a third,
+  GL-only VBO (bodies never change index, so it is uploaded once per IC).
+- **Presets** `merger3`, `flyby`, `unequal` (`nbody::makePreset`) combine the existing disk and
+  Plummer generators. They are **viewer-only**: not in `icNames()`, the bench rejects them, so
+  they need no selftest coverage and carry no measurement claims.
+- **Gravity well:** RMB held; the cursor ray is intersected with the plane through the orbit target
+  perpendicular to the view (the point is `dist·tan(fov/2)·(x·aspect·s + y·u)`); a softened
+  point-mass kick after each KDK step. The run is flagged "modified by user interaction" (panel,
+  title, energy section) until the next reset.
+- **Launchers** `run.bat` (rebuild if stale, then galaxies / bh_warp / 262144 / origin colours / load
+  balance on, maximised) and `run-bench-selftest.bat`.
+**Why:** the defence of R3 is easiest to see live: switching #4 → #5 → #7 on the same galaxies shows
+SIMT efficiency and per-warp max/mean improve while interactions/body rise (the union overhead), the
+trade-off of D-022/D-030 on screen (smoke runs, galaxies 262144 at t ≈ 0.5: see
+`results/2026-10-18_viewer_round/screens/02_*.txt`, `14_*.txt`, `01_*.txt`; work counts, not timings). Reusing the
+bench's twins and definitions means the viewer cannot show a metric the bench does not define.
+**Rules out:** viewer code in `nbody_core` kernels; quoting viewer FPS or ms/step as results; host
+O(N²) energy per frame; presets in the bench without selftest coverage.

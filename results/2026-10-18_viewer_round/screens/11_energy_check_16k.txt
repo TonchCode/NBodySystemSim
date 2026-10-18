@@ -1,0 +1,8 @@
+GL 3.3.0 NVIDIA 617.42 | NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2
+ic=plummer mass_spectrum=equal N=16384 seed=42 ic_hash=79f678a5a53e50b1
+energy-check N=16384: GPU K 0.252667928390 W -0.509588746495 E -0.256920818105 | host K 0.252667928390 W -0.509588749389 E -0.256920821000 | rel dE 1.127e-08, dW 5.681e-09
+screenshot -> results/2026-10-18_viewer_round/screens/11_energy_check_16k.bmp (1600x900)
+N-body | plummer (equal) | N=16384 | bh_warp | 0.629 ms/step | 45.5 G int/s real (counted, incl. build + integrator) | 1749 int/body | 2 steps/frame | 362 FPS | no vsync
+simulated time t = 0.0200 (dt 0.002, 5 frames, camera dist 4.000 yaw 0.600 pitch 0.350)
+phases (smoothed ms): keys 0.0248 sort 0.1809 tree 0.0578 order 0.0011 traverse 0.3075
+load balance: per-warp max/mean 1.000 (median 1.000) | SIMT eff interactions 1.000, pops 1.000 | warp-cost max/mean 1.54 | 1749.0 int/body | overflows 0

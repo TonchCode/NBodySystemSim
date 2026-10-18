@@ -1246,3 +1246,35 @@ walk reach parity (0.996–1.010×) on galaxies 65536, and only there. **No #6 a
   splitting expensive units (sub-warp work items for the dense bulges) would attack the tail directly.
 - The disks fragment within a rotation (no halo): a halo potential would make the evolved-state
   workload (2857 int/body at t = 3 vs 1619 at t = 0) a stable benchmark too.
+
+---
+
+## 21. Viewer round: control panel and live statistics (2026-10-18)
+
+Decision D-032. No force kernel, tree code or integrator changed; production SASS is byte-identical
+(`results/2026-10-18_viewer_round/sass_diff.txt`). No performance claims in this round.
+
+- **What the panel shows and where it comes from.** ms/step: CUDA events around the frame's steps
+  (force + both kicks, + the well kick while active). Phases: `Params::phaseEvents` on the first
+  step of each frame (EMA-smoothed). Real interaction rate: counted interactions of the
+  instrumented twin / ms/step (all-pairs: N²). Load balance: the twin's per-thread counters reduced
+  exactly as `nbody_bench` does (§14): per-warp max/mean, SIMT efficiency at interaction and pop
+  sites, warp-cost max/mean; plus `lastTreeDepth()` (depth, push depth, stack need vs 96/64). The
+  twin differs from production by −3.4…+6.2% in time (D-011); its *counts* are exact and its
+  accelerations bitwise equal, so measuring does not perturb the run.
+- **Measurement cost** (display, not a result): ≈7 ms per load-balance measurement at N = 262144,
+  ≈110 ms at 4M (64 MB counter copy + host reduction + node-table copy for the depth); hence
+  "every K frames".
+- **Viewer-only kernels** (`src/viewer/viewer_kernels.cu`): `wellKickKernel`, one thread per body,
+  v += dt·G·M_w·r/(r² + ε_w²)^1.5; `energyKernel`, 256-body shared-memory tiles, FP32 terms summed
+  per tile, FP64 across tiles and for KE, self-pair skipped; ≤ 2^33 pairs per launch (TDR).
+- **Origin tags** (§19.1 components → group/role byte): galaxy/cluster index = palette, bulge paler,
+  central body = large white point. They follow each body through a merger, which makes mixing
+  visible (and the per-galaxy origin of the expensive bulge walks).
+- **Gravity well 2D → 3D:** a pixel defines a ray; the depth is fixed by the focal plane through the
+  orbit target, perpendicular to the view direction f. With d = f + x·tanH·aspect·s + y·tanH·u,
+  d·f = 1, so the hit is at t = dist and X = dist·tanH·(x·aspect·s + y·u). Orbiting tilts the plane,
+  so any 3D point is reachable.
+- **Presets** (viewer-only): `merger3` (three disks of 1/3, triangle of radius 1.6, bound),
+  `flyby` (disk 0.8 + Plummer cluster 0.2, relative speed 0.75 vs escape 0.81), `unequal` (3:1 disk
+  merger, bound). Not in the bench.

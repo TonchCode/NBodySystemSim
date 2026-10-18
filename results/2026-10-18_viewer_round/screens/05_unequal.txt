@@ -1,0 +1,7 @@
+GL 3.3.0 NVIDIA 617.42 | NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2
+ic=unequal mass_spectrum=equal N=262144 seed=42 ic_hash=10bcf17e3ed49983  (dt above the heavy-body advisory: orbits near the heaviest body are not converged)
+screenshot -> results/2026-10-18_viewer_round/screens/05_unequal.bmp (1600x900)
+N-body | unequal (equal) | N=262144 | bh_warp | 1.736 ms/step | 279.3 G int/s real (counted, incl. build + integrator) | 1850 int/body | 4 steps/frame | 127 FPS | no vsync
+simulated time t = 2.4000 (dt 0.002, 300 frames, camera dist 5.000 yaw 0.600 pitch 0.350)
+phases (smoothed ms): keys 0.0128 sort 0.2671 tree 0.1134 order 0.0013 traverse 1.6566
+load balance: per-warp max/mean 1.000 (median 1.000) | SIMT eff interactions 1.000, pops 1.000 | warp-cost max/mean 1.73 | 1849.9 int/body | overflows 0

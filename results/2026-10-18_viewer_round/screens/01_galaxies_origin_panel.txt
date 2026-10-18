@@ -1,0 +1,12 @@
+GL 3.3.0 NVIDIA 617.42 | NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2
+ic=galaxies mass_spectrum=equal N=262144 seed=42 ic_hash=35003ffd3a86a1b8
+test key at frame 60: energy
+energy t=0.2400: E=-0.358771763 (K 0.367291, W -0.726063), dE/|E0|=0.000e+00 since t=0.2400, 69.5 ms
+test key at frame 110: energy
+energy t=0.4400: E=-0.358755504 (K 0.362754, W -0.721510), dE/|E0|=4.532e-05 since t=0.2400, 63.7 ms
+screenshot -> results/2026-10-18_viewer_round/screens/01_galaxies_origin_panel.bmp (1600x900)
+N-body | galaxies (equal) | N=262144 | bh_warp | 1.631 ms/step | 234.4 G int/s real (counted, incl. build + integrator) | 1458 int/body | 2 steps/frame | 152 FPS | no vsync
+simulated time t = 0.4800 (dt 0.002, 120 frames, camera dist 5.000 yaw 0.600 pitch 0.350)
+phases (smoothed ms): keys 0.0131 sort 0.2088 tree 0.1116 order 0.0013 traverse 1.3655
+load balance: per-warp max/mean 1.000 (median 1.000) | SIMT eff interactions 1.000, pops 1.000 | warp-cost max/mean 1.83 | 1458.3 int/body | overflows 0
+tree: max depth 39, push depth 33, stack bound 35 (capacity 96 / 64), dup keys 0
