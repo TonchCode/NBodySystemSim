@@ -1,0 +1,10 @@
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=960 block=128 q=1 prefetch=-1 unroll=-1  regs=40 smem=0 B  resident 12 blocks/SM (100% occupancy)  blocks/SM=12.00 (busiest 12)  waves=1.00
+# persistent: grid = min(resident blocks/SM x 80 SMs, blocks with work) = 960 blocks (3840 warps)
+# ic=plummer seed=42 theta=0.5 leaf=16 mass_spectrum=equal bh_mass=0.01 ic_hash=d05ab553b27cfaed | mass total 1.000000000, min 9.537e-07, max 9.537e-07 (max/min 1) | dt advisory 1.65e-01 (dt 0.001)
+kernel=bh_persistent_lane_naive n=1048576 block=128 q=1 prefetch=-1 unroll=-1 runs=11 batch=1  median=82.6645 ms  min=82.5252  max=83.1283  13300.900 G N^2-equivalent interactions/s (not the tree rate; see the work: line)
+phases (median of 11, ms):  keys 0.0807  sort 0.2734  tree 0.3287  order 0.0020  traverse 81.9661  | build(keys+sort+tree) 0.6828  order 0.0020  traverse 81.9661  sum 82.6590  (production total 82.6645)
+work: 1062.6 interactions/body (1.114e+09 total), 1611.8 nodes popped/body | per-warp max/mean 1.186 (median warp 1.184) | SIMT eff interactions 0.116, pops 0.935 | warp-cost max/mean 1.07 | traversal 13.6 G interactions/s
+rates: real 13.48 G interactions/s over the full pipeline (82.6645 ms), 13.59 over the traversal; N^2-equivalent 13300.9 G/s
+tree: max depth 34, push depth 28 -> stack bound 30 (capacity: per-thread 96, warp 64), duplicate keys 0 (0.000% of bodies)
+gates: not evaluated (--no-validate)

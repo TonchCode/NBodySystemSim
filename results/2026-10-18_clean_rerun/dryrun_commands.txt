@@ -1,4 +1,4 @@
-# DRY RUN 2026-10-18 04:29:59: commands only, no GPU work. Binary: ./build/nbody_bench.exe
+# DRY RUN 2026-10-18 05:00:56: commands only, no GPU work. Binary: ./build/nbody_bench.exe
     ./build/nbody_bench.exe --selftest > results/2026-10-18_clean_rerun/selftest.txt
 # ---- tree round 2
 ## cell 1: T2-A plummer 65536 (both)

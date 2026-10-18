@@ -1,0 +1,772 @@
+== A_bh_naive_plummer_65536: ./build/nbody_bench.exe --kernel bh_naive --n 65536 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_naive_plummer_65536.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_naive_plummer_65536.csv
+   exit=0 04:32:29
+== A_bh_persistent_lane_naive_plummer_65536: ./build/nbody_bench.exe --kernel bh_persistent_lane_naive --n 65536 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_lane_naive_plummer_65536.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_lane_naive_plummer_65536.csv
+   exit=0 04:32:30
+== A_bh_sorted_plummer_65536: ./build/nbody_bench.exe --kernel bh_sorted --n 65536 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_sorted_plummer_65536.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_sorted_plummer_65536.csv
+   exit=0 04:32:31
+== A_bh_persistent_plummer_65536: ./build/nbody_bench.exe --kernel bh_persistent --n 65536 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_plummer_65536.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_plummer_65536.csv
+   exit=0 04:32:31
+== A_bh_persistent_lane_plummer_65536: ./build/nbody_bench.exe --kernel bh_persistent_lane --n 65536 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_lane_plummer_65536.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_lane_plummer_65536.csv
+   exit=0 04:32:32
+== A_bh_persistent_static_plummer_65536: ./build/nbody_bench.exe --kernel bh_persistent_static --n 65536 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_static_plummer_65536.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_static_plummer_65536.csv
+   exit=0 04:32:33
+== A_bh_coherent_plummer_65536: ./build/nbody_bench.exe --kernel bh_coherent --n 65536 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_coherent_plummer_65536.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_coherent_plummer_65536.csv
+   exit=0 04:32:34
+== A_bh_warp_plummer_65536: ./build/nbody_bench.exe --kernel bh_warp --n 65536 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_warp_plummer_65536.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_warp_plummer_65536.csv
+   exit=0 04:32:35
+== A_bh_warp_list_plummer_65536: ./build/nbody_bench.exe --kernel bh_warp_list --n 65536 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_warp_list_plummer_65536.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_warp_list_plummer_65536.csv
+   exit=0 04:32:35
+== A_bh_persistent_warp_plummer_65536: ./build/nbody_bench.exe --kernel bh_persistent_warp --n 65536 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_warp_plummer_65536.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_warp_plummer_65536.csv
+   exit=0 04:32:36
+== A_bh_warp_naive_plummer_65536: ./build/nbody_bench.exe --kernel bh_warp_naive --n 65536 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_warp_naive_plummer_65536.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_warp_naive_plummer_65536.csv
+   exit=0 04:32:37
+== A_bh_naive_plummer_262144: ./build/nbody_bench.exe --kernel bh_naive --n 262144 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_naive_plummer_262144.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_naive_plummer_262144.csv
+   exit=0 04:32:51
+== A_bh_persistent_lane_naive_plummer_262144: ./build/nbody_bench.exe --kernel bh_persistent_lane_naive --n 262144 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_lane_naive_plummer_262144.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_lane_naive_plummer_262144.csv
+   exit=0 04:32:53
+== A_bh_sorted_plummer_262144: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_sorted_plummer_262144.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_sorted_plummer_262144.csv
+   exit=0 04:32:54
+== A_bh_persistent_plummer_262144: ./build/nbody_bench.exe --kernel bh_persistent --n 262144 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_plummer_262144.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_plummer_262144.csv
+   exit=0 04:32:56
+== A_bh_persistent_lane_plummer_262144: ./build/nbody_bench.exe --kernel bh_persistent_lane --n 262144 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_lane_plummer_262144.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_lane_plummer_262144.csv
+   exit=0 04:32:58
+== A_bh_persistent_static_plummer_262144: ./build/nbody_bench.exe --kernel bh_persistent_static --n 262144 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_static_plummer_262144.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_static_plummer_262144.csv
+   exit=0 04:32:59
+== A_bh_coherent_plummer_262144: ./build/nbody_bench.exe --kernel bh_coherent --n 262144 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_coherent_plummer_262144.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_coherent_plummer_262144.csv
+   exit=0 04:33:00
+== A_bh_warp_plummer_262144: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_warp_plummer_262144.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_warp_plummer_262144.csv
+   exit=0 04:33:01
+== A_bh_warp_list_plummer_262144: ./build/nbody_bench.exe --kernel bh_warp_list --n 262144 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_warp_list_plummer_262144.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_warp_list_plummer_262144.csv
+   exit=0 04:33:02
+== A_bh_persistent_warp_plummer_262144: ./build/nbody_bench.exe --kernel bh_persistent_warp --n 262144 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_warp_plummer_262144.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_warp_plummer_262144.csv
+   exit=0 04:33:04
+== A_bh_warp_naive_plummer_262144: ./build/nbody_bench.exe --kernel bh_warp_naive --n 262144 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_warp_naive_plummer_262144.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_warp_naive_plummer_262144.csv
+   exit=0 04:33:05
+== A_bh_naive_plummer_1048576: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_naive_plummer_1048576.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_naive_plummer_1048576.csv
+   exit=0 04:33:34
+== A_bh_persistent_lane_naive_plummer_1048576: ./build/nbody_bench.exe --kernel bh_persistent_lane_naive --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_lane_naive_plummer_1048576.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_lane_naive_plummer_1048576.csv
+   exit=0 04:33:44
+== A_bh_sorted_plummer_1048576: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_sorted_plummer_1048576.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_sorted_plummer_1048576.csv
+   exit=0 04:33:52
+== A_bh_persistent_plummer_1048576: ./build/nbody_bench.exe --kernel bh_persistent --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_plummer_1048576.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_plummer_1048576.csv
+   exit=0 04:34:00
+== A_bh_persistent_lane_plummer_1048576: ./build/nbody_bench.exe --kernel bh_persistent_lane --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_lane_plummer_1048576.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_lane_plummer_1048576.csv
+   exit=0 04:34:09
+== A_bh_persistent_static_plummer_1048576: ./build/nbody_bench.exe --kernel bh_persistent_static --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_static_plummer_1048576.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_static_plummer_1048576.csv
+   exit=0 04:34:17
+== A_bh_coherent_plummer_1048576: ./build/nbody_bench.exe --kernel bh_coherent --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_coherent_plummer_1048576.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_coherent_plummer_1048576.csv
+   exit=0 04:34:18
+== A_bh_warp_plummer_1048576: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_warp_plummer_1048576.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_warp_plummer_1048576.csv
+   exit=0 04:34:25
+== A_bh_warp_list_plummer_1048576: ./build/nbody_bench.exe --kernel bh_warp_list --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_warp_list_plummer_1048576.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_warp_list_plummer_1048576.csv
+   exit=0 04:34:31
+== A_bh_persistent_warp_plummer_1048576: ./build/nbody_bench.exe --kernel bh_persistent_warp --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_warp_plummer_1048576.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_warp_plummer_1048576.csv
+   exit=0 04:34:38
+== A_bh_warp_naive_plummer_1048576: ./build/nbody_bench.exe --kernel bh_warp_naive --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_warp_naive_plummer_1048576.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_warp_naive_plummer_1048576.csv
+   exit=0 04:34:46
+== A_bh_naive_core_65536: ./build/nbody_bench.exe --kernel bh_naive --n 65536 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_naive_core_65536.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_naive_core_65536.csv
+   exit=0 04:36:12
+== A_bh_persistent_lane_naive_core_65536: ./build/nbody_bench.exe --kernel bh_persistent_lane_naive --n 65536 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_lane_naive_core_65536.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_lane_naive_core_65536.csv
+   exit=0 04:36:13
+== A_bh_sorted_core_65536: ./build/nbody_bench.exe --kernel bh_sorted --n 65536 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_sorted_core_65536.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_sorted_core_65536.csv
+   exit=0 04:36:14
+== A_bh_persistent_core_65536: ./build/nbody_bench.exe --kernel bh_persistent --n 65536 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_core_65536.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_core_65536.csv
+   exit=0 04:36:15
+== A_bh_persistent_lane_core_65536: ./build/nbody_bench.exe --kernel bh_persistent_lane --n 65536 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_lane_core_65536.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_lane_core_65536.csv
+   exit=0 04:36:16
+== A_bh_persistent_static_core_65536: ./build/nbody_bench.exe --kernel bh_persistent_static --n 65536 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_static_core_65536.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_static_core_65536.csv
+   exit=0 04:36:17
+== A_bh_coherent_core_65536: ./build/nbody_bench.exe --kernel bh_coherent --n 65536 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_coherent_core_65536.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_coherent_core_65536.csv
+   exit=0 04:36:17
+== A_bh_warp_core_65536: ./build/nbody_bench.exe --kernel bh_warp --n 65536 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_warp_core_65536.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_warp_core_65536.csv
+   exit=0 04:36:18
+== A_bh_warp_list_core_65536: ./build/nbody_bench.exe --kernel bh_warp_list --n 65536 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_warp_list_core_65536.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_warp_list_core_65536.csv
+   exit=0 04:36:19
+== A_bh_persistent_warp_core_65536: ./build/nbody_bench.exe --kernel bh_persistent_warp --n 65536 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_warp_core_65536.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_warp_core_65536.csv
+   exit=0 04:36:19
+== A_bh_naive_core_262144: ./build/nbody_bench.exe --kernel bh_naive --n 262144 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_naive_core_262144.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_naive_core_262144.csv
+   exit=0 04:36:33
+== A_bh_persistent_lane_naive_core_262144: ./build/nbody_bench.exe --kernel bh_persistent_lane_naive --n 262144 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_lane_naive_core_262144.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_lane_naive_core_262144.csv
+   exit=0 04:36:36
+== A_bh_sorted_core_262144: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_sorted_core_262144.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_sorted_core_262144.csv
+   exit=0 04:36:37
+== A_bh_persistent_core_262144: ./build/nbody_bench.exe --kernel bh_persistent --n 262144 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_core_262144.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_core_262144.csv
+   exit=0 04:36:39
+== A_bh_persistent_lane_core_262144: ./build/nbody_bench.exe --kernel bh_persistent_lane --n 262144 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_lane_core_262144.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_lane_core_262144.csv
+   exit=0 04:36:41
+== A_bh_persistent_static_core_262144: ./build/nbody_bench.exe --kernel bh_persistent_static --n 262144 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_static_core_262144.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_static_core_262144.csv
+   exit=0 04:36:43
+== A_bh_coherent_core_262144: ./build/nbody_bench.exe --kernel bh_coherent --n 262144 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_coherent_core_262144.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_coherent_core_262144.csv
+   exit=0 04:36:43
+== A_bh_warp_core_262144: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_warp_core_262144.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_warp_core_262144.csv
+   exit=0 04:36:45
+== A_bh_warp_list_core_262144: ./build/nbody_bench.exe --kernel bh_warp_list --n 262144 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_warp_list_core_262144.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_warp_list_core_262144.csv
+   exit=0 04:36:46
+== A_bh_persistent_warp_core_262144: ./build/nbody_bench.exe --kernel bh_persistent_warp --n 262144 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_warp_core_262144.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_warp_core_262144.csv
+   exit=0 04:36:47
+== A_bh_naive_core_1048576: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_naive_core_1048576.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_naive_core_1048576.csv
+   exit=0 04:37:17
+== A_bh_persistent_lane_naive_core_1048576: ./build/nbody_bench.exe --kernel bh_persistent_lane_naive --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_lane_naive_core_1048576.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_lane_naive_core_1048576.csv
+   exit=0 04:37:28
+== A_bh_sorted_core_1048576: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_sorted_core_1048576.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_sorted_core_1048576.csv
+   exit=0 04:37:36
+== A_bh_persistent_core_1048576: ./build/nbody_bench.exe --kernel bh_persistent --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_core_1048576.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_core_1048576.csv
+   exit=0 04:37:45
+== A_bh_persistent_lane_core_1048576: ./build/nbody_bench.exe --kernel bh_persistent_lane --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_lane_core_1048576.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_lane_core_1048576.csv
+   exit=0 04:37:54
+== A_bh_persistent_static_core_1048576: ./build/nbody_bench.exe --kernel bh_persistent_static --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_static_core_1048576.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_static_core_1048576.csv
+   exit=0 04:38:03
+== A_bh_coherent_core_1048576: ./build/nbody_bench.exe --kernel bh_coherent --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_coherent_core_1048576.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_coherent_core_1048576.csv
+   exit=0 04:38:04
+== A_bh_warp_core_1048576: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_warp_core_1048576.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_warp_core_1048576.csv
+   exit=0 04:38:10
+== A_bh_warp_list_core_1048576: ./build/nbody_bench.exe --kernel bh_warp_list --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_warp_list_core_1048576.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_warp_list_core_1048576.csv
+   exit=0 04:38:17
+== A_bh_persistent_warp_core_1048576: ./build/nbody_bench.exe --kernel bh_persistent_warp --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/A_bh_persistent_warp_core_1048576.csv --csv results/2026-10-18_clean_rerun/stage/setA.csv.p1.A_bh_persistent_warp_core_1048576.csv
+   exit=0 04:38:23
+== A2_r1_bh_sorted_plummer_1048576_bh_sorted-bh_persistent: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:39:46
+== A2_r1_bh_persistent_plummer_1048576_bh_sorted-bh_persistent: ./build/nbody_bench.exe --kernel bh_persistent --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:39:48
+== A2_r1_bh_sorted_plummer_1048576_bh_sorted-bh_persistent_lane: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:39:50
+== A2_r1_bh_persistent_lane_plummer_1048576_bh_sorted-bh_persistent_lane: ./build/nbody_bench.exe --kernel bh_persistent_lane --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:39:53
+== A2_r1_bh_naive_plummer_1048576_bh_naive-bh_persistent_lane_naive: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:39:57
+== A2_r1_bh_persistent_lane_naive_plummer_1048576_bh_naive-bh_persistent_lane_naive: ./build/nbody_bench.exe --kernel bh_persistent_lane_naive --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:40:01
+== A2_r1_bh_warp_plummer_1048576_bh_warp-bh_persistent_warp: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:40:02
+== A2_r1_bh_persistent_warp_plummer_1048576_bh_warp-bh_persistent_warp: ./build/nbody_bench.exe --kernel bh_persistent_warp --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:40:03
+== A2_r1_bh_sorted_plummer_1048576_bh_sorted-bh_persistent_static: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:40:05
+== A2_r1_bh_persistent_static_plummer_1048576_bh_sorted-bh_persistent_static: ./build/nbody_bench.exe --kernel bh_persistent_static --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:40:08
+== A2_r1_bh_sorted_core_1048576_bh_sorted-bh_persistent: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:40:14
+== A2_r1_bh_persistent_core_1048576_bh_sorted-bh_persistent: ./build/nbody_bench.exe --kernel bh_persistent --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:40:17
+== A2_r1_bh_sorted_core_1048576_bh_sorted-bh_persistent_lane: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:40:19
+== A2_r1_bh_persistent_lane_core_1048576_bh_sorted-bh_persistent_lane: ./build/nbody_bench.exe --kernel bh_persistent_lane --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:40:23
+== A2_r1_bh_naive_core_1048576_bh_naive-bh_persistent_lane_naive: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:40:28
+== A2_r1_bh_persistent_lane_naive_core_1048576_bh_naive-bh_persistent_lane_naive: ./build/nbody_bench.exe --kernel bh_persistent_lane_naive --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:40:33
+== A2_r1_bh_warp_core_1048576_bh_warp-bh_persistent_warp: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:40:34
+== A2_r1_bh_persistent_warp_core_1048576_bh_warp-bh_persistent_warp: ./build/nbody_bench.exe --kernel bh_persistent_warp --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:40:35
+== A2_r1_bh_sorted_core_1048576_bh_sorted-bh_persistent_static: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:40:38
+== A2_r1_bh_persistent_static_core_1048576_bh_sorted-bh_persistent_static: ./build/nbody_bench.exe --kernel bh_persistent_static --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:40:41
+== A2_r2_bh_sorted_plummer_1048576_bh_sorted-bh_persistent: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:40:46
+== A2_r2_bh_persistent_plummer_1048576_bh_sorted-bh_persistent: ./build/nbody_bench.exe --kernel bh_persistent --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:40:48
+== A2_r2_bh_sorted_plummer_1048576_bh_sorted-bh_persistent_lane: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:40:50
+== A2_r2_bh_persistent_lane_plummer_1048576_bh_sorted-bh_persistent_lane: ./build/nbody_bench.exe --kernel bh_persistent_lane --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:40:53
+== A2_r2_bh_naive_plummer_1048576_bh_naive-bh_persistent_lane_naive: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:40:57
+== A2_r2_bh_persistent_lane_naive_plummer_1048576_bh_naive-bh_persistent_lane_naive: ./build/nbody_bench.exe --kernel bh_persistent_lane_naive --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:41:01
+== A2_r2_bh_warp_plummer_1048576_bh_warp-bh_persistent_warp: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:41:02
+== A2_r2_bh_persistent_warp_plummer_1048576_bh_warp-bh_persistent_warp: ./build/nbody_bench.exe --kernel bh_persistent_warp --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:41:03
+== A2_r2_bh_sorted_plummer_1048576_bh_sorted-bh_persistent_static: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:41:06
+== A2_r2_bh_persistent_static_plummer_1048576_bh_sorted-bh_persistent_static: ./build/nbody_bench.exe --kernel bh_persistent_static --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:41:08
+== A2_r2_bh_sorted_core_1048576_bh_sorted-bh_persistent: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:41:14
+== A2_r2_bh_persistent_core_1048576_bh_sorted-bh_persistent: ./build/nbody_bench.exe --kernel bh_persistent --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:41:17
+== A2_r2_bh_sorted_core_1048576_bh_sorted-bh_persistent_lane: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:41:20
+== A2_r2_bh_persistent_lane_core_1048576_bh_sorted-bh_persistent_lane: ./build/nbody_bench.exe --kernel bh_persistent_lane --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:41:23
+== A2_r2_bh_naive_core_1048576_bh_naive-bh_persistent_lane_naive: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:41:28
+== A2_r2_bh_persistent_lane_naive_core_1048576_bh_naive-bh_persistent_lane_naive: ./build/nbody_bench.exe --kernel bh_persistent_lane_naive --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:41:33
+== A2_r2_bh_warp_core_1048576_bh_warp-bh_persistent_warp: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:41:34
+== A2_r2_bh_persistent_warp_core_1048576_bh_warp-bh_persistent_warp: ./build/nbody_bench.exe --kernel bh_persistent_warp --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:41:35
+== A2_r2_bh_sorted_core_1048576_bh_sorted-bh_persistent_static: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:41:38
+== A2_r2_bh_persistent_static_core_1048576_bh_sorted-bh_persistent_static: ./build/nbody_bench.exe --kernel bh_persistent_static --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:41:41
+== A2_r3_bh_sorted_plummer_1048576_bh_sorted-bh_persistent: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:41:46
+== A2_r3_bh_persistent_plummer_1048576_bh_sorted-bh_persistent: ./build/nbody_bench.exe --kernel bh_persistent --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:41:48
+== A2_r3_bh_sorted_plummer_1048576_bh_sorted-bh_persistent_lane: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:41:51
+== A2_r3_bh_persistent_lane_plummer_1048576_bh_sorted-bh_persistent_lane: ./build/nbody_bench.exe --kernel bh_persistent_lane --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:41:54
+== A2_r3_bh_naive_plummer_1048576_bh_naive-bh_persistent_lane_naive: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:41:58
+== A2_r3_bh_persistent_lane_naive_plummer_1048576_bh_naive-bh_persistent_lane_naive: ./build/nbody_bench.exe --kernel bh_persistent_lane_naive --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:42:02
+== A2_r3_bh_warp_plummer_1048576_bh_warp-bh_persistent_warp: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:42:03
+== A2_r3_bh_persistent_warp_plummer_1048576_bh_warp-bh_persistent_warp: ./build/nbody_bench.exe --kernel bh_persistent_warp --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:42:04
+== A2_r3_bh_sorted_plummer_1048576_bh_sorted-bh_persistent_static: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:42:06
+== A2_r3_bh_persistent_static_plummer_1048576_bh_sorted-bh_persistent_static: ./build/nbody_bench.exe --kernel bh_persistent_static --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:42:09
+== A2_r3_bh_sorted_core_1048576_bh_sorted-bh_persistent: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:42:14
+== A2_r3_bh_persistent_core_1048576_bh_sorted-bh_persistent: ./build/nbody_bench.exe --kernel bh_persistent --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:42:17
+== A2_r3_bh_sorted_core_1048576_bh_sorted-bh_persistent_lane: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:42:20
+== A2_r3_bh_persistent_lane_core_1048576_bh_sorted-bh_persistent_lane: ./build/nbody_bench.exe --kernel bh_persistent_lane --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:42:24
+== A2_r3_bh_naive_core_1048576_bh_naive-bh_persistent_lane_naive: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:42:28
+== A2_r3_bh_persistent_lane_naive_core_1048576_bh_naive-bh_persistent_lane_naive: ./build/nbody_bench.exe --kernel bh_persistent_lane_naive --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:42:34
+== A2_r3_bh_warp_core_1048576_bh_warp-bh_persistent_warp: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:42:35
+== A2_r3_bh_persistent_warp_core_1048576_bh_warp-bh_persistent_warp: ./build/nbody_bench.exe --kernel bh_persistent_warp --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:42:36
+== A2_r3_bh_sorted_core_1048576_bh_sorted-bh_persistent_static: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:42:38
+== A2_r3_bh_persistent_static_core_1048576_bh_sorted-bh_persistent_static: ./build/nbody_bench.exe --kernel bh_persistent_static --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate 
+   exit=0 04:42:42
+== B_bh_sorted_plummer_65536: ./build/nbody_bench.exe --kernel bh_sorted --n 65536 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlw_bh_sorted_plummer_65536.csv --timeline-unit warp --timeline-launches 5 
+   exit=0 04:42:45
+== B_bh_coherent_plummer_65536: ./build/nbody_bench.exe --kernel bh_coherent --n 65536 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlw_bh_coherent_plummer_65536.csv --timeline-unit warp --timeline-launches 5 
+   exit=0 04:42:46
+== B_bh_warp_plummer_65536: ./build/nbody_bench.exe --kernel bh_warp --n 65536 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlw_bh_warp_plummer_65536.csv --timeline-unit warp --timeline-launches 5 
+   exit=0 04:42:46
+== B_bh_persistent_plummer_65536: ./build/nbody_bench.exe --kernel bh_persistent --n 65536 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlw_bh_persistent_plummer_65536.csv --timeline-unit warp --timeline-launches 5 
+   exit=0 04:42:47
+== B_bh_persistent_lane_plummer_65536: ./build/nbody_bench.exe --kernel bh_persistent_lane --n 65536 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlw_bh_persistent_lane_plummer_65536.csv --timeline-unit warp --timeline-launches 5 
+   exit=0 04:42:48
+== B_bh_persistent_lane_naive_plummer_65536: ./build/nbody_bench.exe --kernel bh_persistent_lane_naive --n 65536 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlw_bh_persistent_lane_naive_plummer_65536.csv --timeline-unit warp --timeline-launches 5 
+   exit=0 04:42:49
+== B_bh_persistent_warp_plummer_65536: ./build/nbody_bench.exe --kernel bh_persistent_warp --n 65536 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlw_bh_persistent_warp_plummer_65536.csv --timeline-unit warp --timeline-launches 5 
+   exit=0 04:42:50
+== Bb_bh_sorted_plummer_65536: ./build/nbody_bench.exe --kernel bh_sorted --n 65536 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlb_bh_sorted_plummer_65536.csv --timeline-unit block --timeline-launches 5 
+   exit=0 04:42:51
+== Bb_bh_warp_plummer_65536: ./build/nbody_bench.exe --kernel bh_warp --n 65536 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlb_bh_warp_plummer_65536.csv --timeline-unit block --timeline-launches 5 
+   exit=0 04:42:51
+== B_bh_sorted_plummer_1048576: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlw_bh_sorted_plummer_1048576.csv --timeline-unit warp --timeline-launches 5 
+   exit=0 04:43:04
+== B_bh_coherent_plummer_1048576: ./build/nbody_bench.exe --kernel bh_coherent --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlw_bh_coherent_plummer_1048576.csv --timeline-unit warp --timeline-launches 5 
+   exit=0 04:43:05
+== B_bh_warp_plummer_1048576: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlw_bh_warp_plummer_1048576.csv --timeline-unit warp --timeline-launches 5 
+   exit=0 04:43:07
+== B_bh_persistent_plummer_1048576: ./build/nbody_bench.exe --kernel bh_persistent --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlw_bh_persistent_plummer_1048576.csv --timeline-unit warp --timeline-launches 5 
+   exit=0 04:43:10
+== B_bh_persistent_lane_plummer_1048576: ./build/nbody_bench.exe --kernel bh_persistent_lane --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlw_bh_persistent_lane_plummer_1048576.csv --timeline-unit warp --timeline-launches 5 
+   exit=0 04:43:14
+== B_bh_persistent_lane_naive_plummer_1048576: ./build/nbody_bench.exe --kernel bh_persistent_lane_naive --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlw_bh_persistent_lane_naive_plummer_1048576.csv --timeline-unit warp --timeline-launches 5 
+   exit=0 04:43:19
+== B_bh_persistent_warp_plummer_1048576: ./build/nbody_bench.exe --kernel bh_persistent_warp --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlw_bh_persistent_warp_plummer_1048576.csv --timeline-unit warp --timeline-launches 5 
+   exit=0 04:43:21
+== Bb_bh_sorted_plummer_1048576: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlb_bh_sorted_plummer_1048576.csv --timeline-unit block --timeline-launches 5 
+   exit=0 04:43:24
+== Bb_bh_warp_plummer_1048576: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlb_bh_warp_plummer_1048576.csv --timeline-unit block --timeline-launches 5 
+   exit=0 04:43:25
+== B_bh_sorted_core_65536: ./build/nbody_bench.exe --kernel bh_sorted --n 65536 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlw_bh_sorted_core_65536.csv --timeline-unit warp --timeline-launches 5 
+   exit=0 04:43:52
+== B_bh_coherent_core_65536: ./build/nbody_bench.exe --kernel bh_coherent --n 65536 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlw_bh_coherent_core_65536.csv --timeline-unit warp --timeline-launches 5 
+   exit=0 04:43:53
+== B_bh_warp_core_65536: ./build/nbody_bench.exe --kernel bh_warp --n 65536 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlw_bh_warp_core_65536.csv --timeline-unit warp --timeline-launches 5 
+   exit=0 04:43:54
+== B_bh_persistent_core_65536: ./build/nbody_bench.exe --kernel bh_persistent --n 65536 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlw_bh_persistent_core_65536.csv --timeline-unit warp --timeline-launches 5 
+   exit=0 04:43:54
+== B_bh_persistent_lane_core_65536: ./build/nbody_bench.exe --kernel bh_persistent_lane --n 65536 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlw_bh_persistent_lane_core_65536.csv --timeline-unit warp --timeline-launches 5 
+   exit=0 04:43:55
+== B_bh_persistent_lane_naive_core_65536: ./build/nbody_bench.exe --kernel bh_persistent_lane_naive --n 65536 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlw_bh_persistent_lane_naive_core_65536.csv --timeline-unit warp --timeline-launches 5 
+   exit=0 04:43:57
+== B_bh_persistent_warp_core_65536: ./build/nbody_bench.exe --kernel bh_persistent_warp --n 65536 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlw_bh_persistent_warp_core_65536.csv --timeline-unit warp --timeline-launches 5 
+   exit=0 04:43:57
+== Bb_bh_sorted_core_65536: ./build/nbody_bench.exe --kernel bh_sorted --n 65536 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlb_bh_sorted_core_65536.csv --timeline-unit block --timeline-launches 5 
+   exit=0 04:43:58
+== Bb_bh_warp_core_65536: ./build/nbody_bench.exe --kernel bh_warp --n 65536 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlb_bh_warp_core_65536.csv --timeline-unit block --timeline-launches 5 
+   exit=0 04:43:59
+== B_bh_sorted_core_1048576: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlw_bh_sorted_core_1048576.csv --timeline-unit warp --timeline-launches 5 
+   exit=0 04:44:13
+== B_bh_coherent_core_1048576: ./build/nbody_bench.exe --kernel bh_coherent --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlw_bh_coherent_core_1048576.csv --timeline-unit warp --timeline-launches 5 
+   exit=0 04:44:14
+== B_bh_warp_core_1048576: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlw_bh_warp_core_1048576.csv --timeline-unit warp --timeline-launches 5 
+   exit=0 04:44:16
+== B_bh_persistent_core_1048576: ./build/nbody_bench.exe --kernel bh_persistent --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlw_bh_persistent_core_1048576.csv --timeline-unit warp --timeline-launches 5 
+   exit=0 04:44:19
+== B_bh_persistent_lane_core_1048576: ./build/nbody_bench.exe --kernel bh_persistent_lane --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlw_bh_persistent_lane_core_1048576.csv --timeline-unit warp --timeline-launches 5 
+   exit=0 04:44:24
+== B_bh_persistent_lane_naive_core_1048576: ./build/nbody_bench.exe --kernel bh_persistent_lane_naive --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlw_bh_persistent_lane_naive_core_1048576.csv --timeline-unit warp --timeline-launches 5 
+   exit=0 04:44:31
+== B_bh_persistent_warp_core_1048576: ./build/nbody_bench.exe --kernel bh_persistent_warp --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlw_bh_persistent_warp_core_1048576.csv --timeline-unit warp --timeline-launches 5 
+   exit=0 04:44:32
+== Bb_bh_sorted_core_1048576: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlb_bh_sorted_core_1048576.csv --timeline-unit block --timeline-launches 5 
+   exit=0 04:44:36
+== Bb_bh_warp_core_1048576: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic core --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --no-validate --timeline results/2026-10-18_clean_rerun/tree2/p1/timeline/tlb_bh_warp_core_1048576.csv --timeline-unit block --timeline-launches 5 
+   exit=0 04:44:37
+== C_bh_naive_n262144_l4_b64: ./build/nbody_bench.exe --kernel bh_naive --n 262144 --ic plummer --leaf 4 --block 64 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_naive_n262144_l4_b64.csv
+   exit=0 04:45:09
+== C_bh_sorted_n262144_l4_b64: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic plummer --leaf 4 --block 64 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_sorted_n262144_l4_b64.csv
+   exit=0 04:45:11
+== C_bh_warp_n262144_l4_b64: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic plummer --leaf 4 --block 64 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_warp_n262144_l4_b64.csv
+   exit=0 04:45:12
+== C_bh_naive_n262144_l4_b128: ./build/nbody_bench.exe --kernel bh_naive --n 262144 --ic plummer --leaf 4 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_naive_n262144_l4_b128.csv
+   exit=0 04:45:22
+== C_bh_sorted_n262144_l4_b128: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic plummer --leaf 4 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_sorted_n262144_l4_b128.csv
+   exit=0 04:45:23
+== C_bh_warp_n262144_l4_b128: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic plummer --leaf 4 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_warp_n262144_l4_b128.csv
+   exit=0 04:45:24
+== C_bh_naive_n262144_l4_b256: ./build/nbody_bench.exe --kernel bh_naive --n 262144 --ic plummer --leaf 4 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_naive_n262144_l4_b256.csv
+   exit=0 04:45:34
+== C_bh_sorted_n262144_l4_b256: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic plummer --leaf 4 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_sorted_n262144_l4_b256.csv
+   exit=0 04:45:35
+== C_bh_warp_n262144_l4_b256: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic plummer --leaf 4 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_warp_n262144_l4_b256.csv
+   exit=0 04:45:36
+== C_bh_naive_n262144_l8_b64: ./build/nbody_bench.exe --kernel bh_naive --n 262144 --ic plummer --leaf 8 --block 64 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_naive_n262144_l8_b64.csv
+   exit=0 04:45:46
+== C_bh_sorted_n262144_l8_b64: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic plummer --leaf 8 --block 64 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_sorted_n262144_l8_b64.csv
+   exit=0 04:45:47
+== C_bh_warp_n262144_l8_b64: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic plummer --leaf 8 --block 64 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_warp_n262144_l8_b64.csv
+   exit=0 04:45:48
+== C_bh_naive_n262144_l8_b128: ./build/nbody_bench.exe --kernel bh_naive --n 262144 --ic plummer --leaf 8 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_naive_n262144_l8_b128.csv
+   exit=0 04:45:58
+== C_bh_sorted_n262144_l8_b128: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic plummer --leaf 8 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_sorted_n262144_l8_b128.csv
+   exit=0 04:45:59
+== C_bh_warp_n262144_l8_b128: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic plummer --leaf 8 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_warp_n262144_l8_b128.csv
+   exit=0 04:46:01
+== C_bh_naive_n262144_l8_b256: ./build/nbody_bench.exe --kernel bh_naive --n 262144 --ic plummer --leaf 8 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_naive_n262144_l8_b256.csv
+   exit=0 04:46:10
+== C_bh_sorted_n262144_l8_b256: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic plummer --leaf 8 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_sorted_n262144_l8_b256.csv
+   exit=0 04:46:11
+== C_bh_warp_n262144_l8_b256: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic plummer --leaf 8 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_warp_n262144_l8_b256.csv
+   exit=0 04:46:13
+== C_bh_naive_n262144_l16_b64: ./build/nbody_bench.exe --kernel bh_naive --n 262144 --ic plummer --leaf 16 --block 64 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_naive_n262144_l16_b64.csv
+   exit=0 04:46:22
+== C_bh_sorted_n262144_l16_b64: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic plummer --leaf 16 --block 64 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_sorted_n262144_l16_b64.csv
+   exit=0 04:46:23
+== C_bh_warp_n262144_l16_b64: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic plummer --leaf 16 --block 64 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_warp_n262144_l16_b64.csv
+   exit=0 04:46:25
+== C_bh_naive_n262144_l16_b128: ./build/nbody_bench.exe --kernel bh_naive --n 262144 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_naive_n262144_l16_b128.csv
+   exit=0 04:46:34
+== C_bh_sorted_n262144_l16_b128: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_sorted_n262144_l16_b128.csv
+   exit=0 04:46:35
+== C_bh_warp_n262144_l16_b128: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_warp_n262144_l16_b128.csv
+   exit=0 04:46:37
+== C_bh_naive_n262144_l16_b256: ./build/nbody_bench.exe --kernel bh_naive --n 262144 --ic plummer --leaf 16 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_naive_n262144_l16_b256.csv
+   exit=0 04:46:46
+== C_bh_sorted_n262144_l16_b256: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic plummer --leaf 16 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_sorted_n262144_l16_b256.csv
+   exit=0 04:46:47
+== C_bh_warp_n262144_l16_b256: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic plummer --leaf 16 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_warp_n262144_l16_b256.csv
+   exit=0 04:46:49
+== C_bh_naive_n262144_l32_b64: ./build/nbody_bench.exe --kernel bh_naive --n 262144 --ic plummer --leaf 32 --block 64 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_naive_n262144_l32_b64.csv
+   exit=0 04:46:58
+== C_bh_sorted_n262144_l32_b64: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic plummer --leaf 32 --block 64 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_sorted_n262144_l32_b64.csv
+   exit=0 04:46:59
+== C_bh_warp_n262144_l32_b64: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic plummer --leaf 32 --block 64 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_warp_n262144_l32_b64.csv
+   exit=0 04:47:01
+== C_bh_naive_n262144_l32_b128: ./build/nbody_bench.exe --kernel bh_naive --n 262144 --ic plummer --leaf 32 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_naive_n262144_l32_b128.csv
+   exit=0 04:47:10
+== C_bh_sorted_n262144_l32_b128: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic plummer --leaf 32 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_sorted_n262144_l32_b128.csv
+   exit=0 04:47:12
+== C_bh_warp_n262144_l32_b128: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic plummer --leaf 32 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_warp_n262144_l32_b128.csv
+   exit=0 04:47:13
+== C_bh_naive_n262144_l32_b256: ./build/nbody_bench.exe --kernel bh_naive --n 262144 --ic plummer --leaf 32 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_naive_n262144_l32_b256.csv
+   exit=0 04:47:22
+== C_bh_sorted_n262144_l32_b256: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic plummer --leaf 32 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_sorted_n262144_l32_b256.csv
+   exit=0 04:47:24
+== C_bh_warp_n262144_l32_b256: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic plummer --leaf 32 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_warp_n262144_l32_b256.csv
+   exit=0 04:47:25
+== C_bh_naive_n1048576_l4_b64: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic plummer --leaf 4 --block 64 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_naive_n1048576_l4_b64.csv
+   exit=0 04:47:42
+== C_bh_sorted_n1048576_l4_b64: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --leaf 4 --block 64 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_sorted_n1048576_l4_b64.csv
+   exit=0 04:47:50
+== C_bh_warp_n1048576_l4_b64: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic plummer --leaf 4 --block 64 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_warp_n1048576_l4_b64.csv
+   exit=0 04:47:56
+== C_bh_naive_n1048576_l4_b128: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic plummer --leaf 4 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_naive_n1048576_l4_b128.csv
+   exit=0 04:48:32
+== C_bh_sorted_n1048576_l4_b128: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --leaf 4 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_sorted_n1048576_l4_b128.csv
+   exit=0 04:48:40
+== C_bh_warp_n1048576_l4_b128: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic plummer --leaf 4 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_warp_n1048576_l4_b128.csv
+   exit=0 04:48:46
+== C_bh_naive_n1048576_l4_b256: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic plummer --leaf 4 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_naive_n1048576_l4_b256.csv
+   exit=0 04:49:22
+== C_bh_sorted_n1048576_l4_b256: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --leaf 4 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_sorted_n1048576_l4_b256.csv
+   exit=0 04:49:30
+== C_bh_warp_n1048576_l4_b256: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic plummer --leaf 4 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_warp_n1048576_l4_b256.csv
+   exit=0 04:49:36
+== C_bh_naive_n1048576_l8_b64: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic plummer --leaf 8 --block 64 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_naive_n1048576_l8_b64.csv
+   exit=0 04:50:11
+== C_bh_sorted_n1048576_l8_b64: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --leaf 8 --block 64 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_sorted_n1048576_l8_b64.csv
+   exit=0 04:50:19
+== C_bh_warp_n1048576_l8_b64: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic plummer --leaf 8 --block 64 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_warp_n1048576_l8_b64.csv
+   exit=0 04:50:26
+== C_bh_naive_n1048576_l8_b128: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic plummer --leaf 8 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_naive_n1048576_l8_b128.csv
+   exit=0 04:51:01
+== C_bh_sorted_n1048576_l8_b128: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --leaf 8 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_sorted_n1048576_l8_b128.csv
+   exit=0 04:51:09
+== C_bh_warp_n1048576_l8_b128: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic plummer --leaf 8 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_warp_n1048576_l8_b128.csv
+   exit=0 04:51:16
+== C_bh_naive_n1048576_l8_b256: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic plummer --leaf 8 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_naive_n1048576_l8_b256.csv
+   exit=0 04:51:51
+== C_bh_sorted_n1048576_l8_b256: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --leaf 8 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_sorted_n1048576_l8_b256.csv
+   exit=0 04:51:59
+== C_bh_warp_n1048576_l8_b256: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic plummer --leaf 8 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_warp_n1048576_l8_b256.csv
+   exit=0 04:52:05
+== C_bh_naive_n1048576_l16_b64: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic plummer --leaf 16 --block 64 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_naive_n1048576_l16_b64.csv
+   exit=0 04:52:41
+== C_bh_sorted_n1048576_l16_b64: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --leaf 16 --block 64 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_sorted_n1048576_l16_b64.csv
+   exit=0 04:52:48
+== C_bh_warp_n1048576_l16_b64: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic plummer --leaf 16 --block 64 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_warp_n1048576_l16_b64.csv
+   exit=0 04:52:55
+== C_bh_naive_n1048576_l16_b128: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_naive_n1048576_l16_b128.csv
+   exit=0 04:53:30
+== C_bh_sorted_n1048576_l16_b128: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_sorted_n1048576_l16_b128.csv
+   exit=0 04:53:38
+== C_bh_warp_n1048576_l16_b128: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_warp_n1048576_l16_b128.csv
+   exit=0 04:53:45
+== C_bh_naive_n1048576_l16_b256: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic plummer --leaf 16 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_naive_n1048576_l16_b256.csv
+   exit=0 04:54:20
+== C_bh_sorted_n1048576_l16_b256: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --leaf 16 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_sorted_n1048576_l16_b256.csv
+   exit=0 04:54:28
+== C_bh_warp_n1048576_l16_b256: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic plummer --leaf 16 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_warp_n1048576_l16_b256.csv
+   exit=0 04:54:34
+== C_bh_naive_n1048576_l32_b64: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic plummer --leaf 32 --block 64 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_naive_n1048576_l32_b64.csv
+   exit=0 04:55:09
+== C_bh_sorted_n1048576_l32_b64: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --leaf 32 --block 64 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_sorted_n1048576_l32_b64.csv
+   exit=0 04:55:17
+== C_bh_warp_n1048576_l32_b64: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic plummer --leaf 32 --block 64 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_warp_n1048576_l32_b64.csv
+   exit=0 04:55:23
+== C_bh_naive_n1048576_l32_b128: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic plummer --leaf 32 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_naive_n1048576_l32_b128.csv
+   exit=0 04:55:59
+== C_bh_sorted_n1048576_l32_b128: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --leaf 32 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_sorted_n1048576_l32_b128.csv
+   exit=0 04:56:07
+== C_bh_warp_n1048576_l32_b128: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic plummer --leaf 32 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_warp_n1048576_l32_b128.csv
+   exit=0 04:56:15
+== C_bh_naive_n1048576_l32_b256: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic plummer --leaf 32 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_naive_n1048576_l32_b256.csv
+   exit=0 05:03:02
+== C_bh_sorted_n1048576_l32_b256: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --leaf 32 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_sorted_n1048576_l32_b256.csv
+   exit=0 05:03:11
+== C_bh_warp_n1048576_l32_b256: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic plummer --leaf 32 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_warp_n1048576_l32_b256.csv
+   exit=0 05:03:18
+== C_bh_naive_n1048576_l32_b256: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic plummer --leaf 32 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_naive_n1048576_l32_b256.csv
+   exit=0 05:06:06
+== C_bh_sorted_n1048576_l32_b256: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --leaf 32 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_sorted_n1048576_l32_b256.csv
+   exit=0 05:06:14
+== C_bh_warp_n1048576_l32_b256: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic plummer --leaf 32 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_warp_n1048576_l32_b256.csv
+   exit=0 05:06:20
+== C_bh_naive_n1048576_l32_b128: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic plummer --leaf 32 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_naive_n1048576_l32_b128.csv
+   exit=0 11:30:13
+== C_bh_sorted_n1048576_l32_b128: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --leaf 32 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_sorted_n1048576_l32_b128.csv
+   exit=0 11:30:20
+== C_bh_warp_n1048576_l32_b128: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic plummer --leaf 32 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_warp_n1048576_l32_b128.csv
+   exit=0 11:30:27
+== C_bh_naive_n1048576_l32_b256: ./build/nbody_bench.exe --kernel bh_naive --n 1048576 --ic plummer --leaf 32 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_naive_n1048576_l32_b256.csv
+   exit=0 11:31:02
+== C_bh_sorted_n1048576_l32_b256: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --leaf 32 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_sorted_n1048576_l32_b256.csv
+   exit=0 11:31:10
+== C_bh_warp_n1048576_l32_b256: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic plummer --leaf 32 --block 256 --theta 0.5 --warmup-ms 300 --runs 11 --batch 1 --csv results/2026-10-18_clean_rerun/stage/setC.csv.p1.C_bh_warp_n1048576_l32_b256.csv
+   exit=0 11:31:16
+== E_bh_warp_8192: ./build/nbody_bench.exe --kernel bh_warp --n 8192 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_tree.csv.p1.E_bh_warp_8192.csv
+   exit=0 11:31:43
+== E_bh_warp_list_8192: ./build/nbody_bench.exe --kernel bh_warp_list --n 8192 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_tree.csv.p1.E_bh_warp_list_8192.csv
+   exit=0 11:31:43
+== E_tuned_b128u0_8192: ./build/nbody_bench.exe --kernel allpairs_tuned --n 8192 --block 128 --unroll 0 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_tuned_b128u0_8192.csv
+   exit=0 11:31:44
+== E_multi_b128q1_8192: ./build/nbody_bench.exe --kernel allpairs_multi --n 8192 --block 128 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q1_8192.csv
+   exit=0 11:31:44
+== E_multi_b128q2_8192: ./build/nbody_bench.exe --kernel allpairs_multi --n 8192 --block 128 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q2_8192.csv
+   exit=0 11:31:45
+== E_multi_b128q4_8192: ./build/nbody_bench.exe --kernel allpairs_multi --n 8192 --block 128 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q4_8192.csv
+   exit=0 11:31:45
+== E_multi_b128q8_8192: ./build/nbody_bench.exe --kernel allpairs_multi --n 8192 --block 128 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q8_8192.csv
+   exit=0 11:31:46
+== E_multi_b128q16_8192: ./build/nbody_bench.exe --kernel allpairs_multi --n 8192 --block 128 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q16_8192.csv
+   exit=0 11:31:46
+== E_multi_b256q1_8192: ./build/nbody_bench.exe --kernel allpairs_multi --n 8192 --block 256 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q1_8192.csv
+   exit=0 11:31:47
+== E_multi_b256q2_8192: ./build/nbody_bench.exe --kernel allpairs_multi --n 8192 --block 256 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q2_8192.csv
+   exit=0 11:31:47
+== E_multi_b256q4_8192: ./build/nbody_bench.exe --kernel allpairs_multi --n 8192 --block 256 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q4_8192.csv
+   exit=0 11:31:48
+== E_multi_b256q8_8192: ./build/nbody_bench.exe --kernel allpairs_multi --n 8192 --block 256 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q8_8192.csv
+   exit=0 11:31:49
+== E_multi_b256q16_8192: ./build/nbody_bench.exe --kernel allpairs_multi --n 8192 --block 256 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q16_8192.csv
+   exit=0 11:31:49
+== E_multi_b512q1_8192: ./build/nbody_bench.exe --kernel allpairs_multi --n 8192 --block 512 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q1_8192.csv
+   exit=0 11:31:50
+== E_multi_b512q2_8192: ./build/nbody_bench.exe --kernel allpairs_multi --n 8192 --block 512 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q2_8192.csv
+   exit=0 11:31:50
+== E_multi_b512q4_8192: ./build/nbody_bench.exe --kernel allpairs_multi --n 8192 --block 512 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q4_8192.csv
+   exit=0 11:31:51
+== E_multi_b512q8_8192: ./build/nbody_bench.exe --kernel allpairs_multi --n 8192 --block 512 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q8_8192.csv
+   exit=0 11:31:51
+== E_multi_b512q16_8192: ./build/nbody_bench.exe --kernel allpairs_multi --n 8192 --block 512 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q16_8192.csv
+   exit=0 11:31:52
+== E_multi_b1024q1_8192: ./build/nbody_bench.exe --kernel allpairs_multi --n 8192 --block 1024 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q1_8192.csv
+   exit=0 11:31:53
+== E_multi_b1024q2_8192: ./build/nbody_bench.exe --kernel allpairs_multi --n 8192 --block 1024 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q2_8192.csv
+   exit=0 11:31:53
+== E_multi_b1024q4_8192: ./build/nbody_bench.exe --kernel allpairs_multi --n 8192 --block 1024 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q4_8192.csv
+   exit=0 11:31:54
+== E_multi_b1024q8_8192: ./build/nbody_bench.exe --kernel allpairs_multi --n 8192 --block 1024 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q8_8192.csv
+   exit=0 11:31:54
+== E_multi_b1024q16_8192: ./build/nbody_bench.exe --kernel allpairs_multi --n 8192 --block 1024 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q16_8192.csv
+   exit=0 11:31:55
+== E_bh_warp_16384: ./build/nbody_bench.exe --kernel bh_warp --n 16384 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_tree.csv.p1.E_bh_warp_16384.csv
+   exit=0 11:32:12
+== E_bh_warp_list_16384: ./build/nbody_bench.exe --kernel bh_warp_list --n 16384 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_tree.csv.p1.E_bh_warp_list_16384.csv
+   exit=0 11:32:13
+== E_tuned_b128u0_16384: ./build/nbody_bench.exe --kernel allpairs_tuned --n 16384 --block 128 --unroll 0 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_tuned_b128u0_16384.csv
+   exit=0 11:32:13
+== E_multi_b128q1_16384: ./build/nbody_bench.exe --kernel allpairs_multi --n 16384 --block 128 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q1_16384.csv
+   exit=0 11:32:14
+== E_multi_b128q2_16384: ./build/nbody_bench.exe --kernel allpairs_multi --n 16384 --block 128 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q2_16384.csv
+   exit=0 11:32:15
+== E_multi_b128q4_16384: ./build/nbody_bench.exe --kernel allpairs_multi --n 16384 --block 128 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q4_16384.csv
+   exit=0 11:32:15
+== E_multi_b128q8_16384: ./build/nbody_bench.exe --kernel allpairs_multi --n 16384 --block 128 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q8_16384.csv
+   exit=0 11:32:16
+== E_multi_b128q16_16384: ./build/nbody_bench.exe --kernel allpairs_multi --n 16384 --block 128 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q16_16384.csv
+   exit=0 11:32:16
+== E_multi_b256q1_16384: ./build/nbody_bench.exe --kernel allpairs_multi --n 16384 --block 256 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q1_16384.csv
+   exit=0 11:32:17
+== E_multi_b256q2_16384: ./build/nbody_bench.exe --kernel allpairs_multi --n 16384 --block 256 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q2_16384.csv
+   exit=0 11:32:18
+== E_multi_b256q4_16384: ./build/nbody_bench.exe --kernel allpairs_multi --n 16384 --block 256 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q4_16384.csv
+   exit=0 11:32:18
+== E_multi_b256q8_16384: ./build/nbody_bench.exe --kernel allpairs_multi --n 16384 --block 256 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q8_16384.csv
+   exit=0 11:32:19
+== E_multi_b256q16_16384: ./build/nbody_bench.exe --kernel allpairs_multi --n 16384 --block 256 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q16_16384.csv
+   exit=0 11:32:19
+== E_multi_b512q1_16384: ./build/nbody_bench.exe --kernel allpairs_multi --n 16384 --block 512 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q1_16384.csv
+   exit=0 11:32:20
+== E_multi_b512q2_16384: ./build/nbody_bench.exe --kernel allpairs_multi --n 16384 --block 512 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q2_16384.csv
+   exit=0 11:32:20
+== E_multi_b512q4_16384: ./build/nbody_bench.exe --kernel allpairs_multi --n 16384 --block 512 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q4_16384.csv
+   exit=0 11:32:21
+== E_multi_b512q8_16384: ./build/nbody_bench.exe --kernel allpairs_multi --n 16384 --block 512 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q8_16384.csv
+   exit=0 11:32:22
+== E_multi_b512q16_16384: ./build/nbody_bench.exe --kernel allpairs_multi --n 16384 --block 512 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q16_16384.csv
+   exit=0 11:32:22
+== E_multi_b1024q1_16384: ./build/nbody_bench.exe --kernel allpairs_multi --n 16384 --block 1024 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q1_16384.csv
+   exit=0 11:32:23
+== E_multi_b1024q2_16384: ./build/nbody_bench.exe --kernel allpairs_multi --n 16384 --block 1024 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q2_16384.csv
+   exit=0 11:32:23
+== E_multi_b1024q4_16384: ./build/nbody_bench.exe --kernel allpairs_multi --n 16384 --block 1024 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q4_16384.csv
+   exit=0 11:32:24
+== E_multi_b1024q8_16384: ./build/nbody_bench.exe --kernel allpairs_multi --n 16384 --block 1024 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q8_16384.csv
+   exit=0 11:32:25
+== E_multi_b1024q16_16384: ./build/nbody_bench.exe --kernel allpairs_multi --n 16384 --block 1024 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q16_16384.csv
+   exit=0 11:32:25
+== E_bh_warp_24576: ./build/nbody_bench.exe --kernel bh_warp --n 24576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_tree.csv.p1.E_bh_warp_24576.csv
+   exit=0 11:32:44
+== E_bh_warp_list_24576: ./build/nbody_bench.exe --kernel bh_warp_list --n 24576 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_tree.csv.p1.E_bh_warp_list_24576.csv
+   exit=0 11:32:45
+== E_tuned_b128u0_24576: ./build/nbody_bench.exe --kernel allpairs_tuned --n 24576 --block 128 --unroll 0 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_tuned_b128u0_24576.csv
+   exit=0 11:32:45
+== E_multi_b128q1_24576: ./build/nbody_bench.exe --kernel allpairs_multi --n 24576 --block 128 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q1_24576.csv
+   exit=0 11:32:46
+== E_multi_b128q2_24576: ./build/nbody_bench.exe --kernel allpairs_multi --n 24576 --block 128 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q2_24576.csv
+   exit=0 11:32:46
+== E_multi_b128q4_24576: ./build/nbody_bench.exe --kernel allpairs_multi --n 24576 --block 128 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q4_24576.csv
+   exit=0 11:32:47
+== E_multi_b128q8_24576: ./build/nbody_bench.exe --kernel allpairs_multi --n 24576 --block 128 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q8_24576.csv
+   exit=0 11:32:48
+== E_multi_b128q16_24576: ./build/nbody_bench.exe --kernel allpairs_multi --n 24576 --block 128 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q16_24576.csv
+   exit=0 11:32:48
+== E_multi_b256q1_24576: ./build/nbody_bench.exe --kernel allpairs_multi --n 24576 --block 256 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q1_24576.csv
+   exit=0 11:32:49
+== E_multi_b256q2_24576: ./build/nbody_bench.exe --kernel allpairs_multi --n 24576 --block 256 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q2_24576.csv
+   exit=0 11:32:50
+== E_multi_b256q4_24576: ./build/nbody_bench.exe --kernel allpairs_multi --n 24576 --block 256 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q4_24576.csv
+   exit=0 11:32:50
+== E_multi_b256q8_24576: ./build/nbody_bench.exe --kernel allpairs_multi --n 24576 --block 256 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q8_24576.csv
+   exit=0 11:32:51
+== E_multi_b256q16_24576: ./build/nbody_bench.exe --kernel allpairs_multi --n 24576 --block 256 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q16_24576.csv
+   exit=0 11:32:51
+== E_multi_b512q1_24576: ./build/nbody_bench.exe --kernel allpairs_multi --n 24576 --block 512 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q1_24576.csv
+   exit=0 11:32:52
+== E_multi_b512q2_24576: ./build/nbody_bench.exe --kernel allpairs_multi --n 24576 --block 512 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q2_24576.csv
+   exit=0 11:32:53
+== E_multi_b512q4_24576: ./build/nbody_bench.exe --kernel allpairs_multi --n 24576 --block 512 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q4_24576.csv
+   exit=0 11:32:53
+== E_multi_b512q8_24576: ./build/nbody_bench.exe --kernel allpairs_multi --n 24576 --block 512 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q8_24576.csv
+   exit=0 11:32:54
+== E_multi_b512q16_24576: ./build/nbody_bench.exe --kernel allpairs_multi --n 24576 --block 512 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q16_24576.csv
+   exit=0 11:32:55
+== E_multi_b1024q1_24576: ./build/nbody_bench.exe --kernel allpairs_multi --n 24576 --block 1024 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q1_24576.csv
+   exit=0 11:32:55
+== E_multi_b1024q2_24576: ./build/nbody_bench.exe --kernel allpairs_multi --n 24576 --block 1024 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q2_24576.csv
+   exit=0 11:32:56
+== E_multi_b1024q4_24576: ./build/nbody_bench.exe --kernel allpairs_multi --n 24576 --block 1024 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q4_24576.csv
+   exit=0 11:32:57
+== E_multi_b1024q8_24576: ./build/nbody_bench.exe --kernel allpairs_multi --n 24576 --block 1024 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q8_24576.csv
+   exit=0 11:32:57
+== E_multi_b1024q16_24576: ./build/nbody_bench.exe --kernel allpairs_multi --n 24576 --block 1024 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q16_24576.csv
+   exit=0 11:32:58
+== E_bh_warp_32768: ./build/nbody_bench.exe --kernel bh_warp --n 32768 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_tree.csv.p1.E_bh_warp_32768.csv
+   exit=0 11:33:17
+== E_bh_warp_list_32768: ./build/nbody_bench.exe --kernel bh_warp_list --n 32768 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_tree.csv.p1.E_bh_warp_list_32768.csv
+   exit=0 11:33:18
+== E_tuned_b128u0_32768: ./build/nbody_bench.exe --kernel allpairs_tuned --n 32768 --block 128 --unroll 0 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_tuned_b128u0_32768.csv
+   exit=0 11:33:18
+== E_multi_b128q1_32768: ./build/nbody_bench.exe --kernel allpairs_multi --n 32768 --block 128 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q1_32768.csv
+   exit=0 11:33:19
+== E_multi_b128q2_32768: ./build/nbody_bench.exe --kernel allpairs_multi --n 32768 --block 128 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q2_32768.csv
+   exit=0 11:33:20
+== E_multi_b128q4_32768: ./build/nbody_bench.exe --kernel allpairs_multi --n 32768 --block 128 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q4_32768.csv
+   exit=0 11:33:20
+== E_multi_b128q8_32768: ./build/nbody_bench.exe --kernel allpairs_multi --n 32768 --block 128 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q8_32768.csv
+   exit=0 11:33:21
+== E_multi_b128q16_32768: ./build/nbody_bench.exe --kernel allpairs_multi --n 32768 --block 128 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q16_32768.csv
+   exit=0 11:33:22
+== E_multi_b256q1_32768: ./build/nbody_bench.exe --kernel allpairs_multi --n 32768 --block 256 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q1_32768.csv
+   exit=0 11:33:22
+== E_multi_b256q2_32768: ./build/nbody_bench.exe --kernel allpairs_multi --n 32768 --block 256 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q2_32768.csv
+   exit=0 11:33:23
+== E_multi_b256q4_32768: ./build/nbody_bench.exe --kernel allpairs_multi --n 32768 --block 256 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q4_32768.csv
+   exit=0 11:33:24
+== E_multi_b256q8_32768: ./build/nbody_bench.exe --kernel allpairs_multi --n 32768 --block 256 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q8_32768.csv
+   exit=0 11:33:24
+== E_multi_b256q16_32768: ./build/nbody_bench.exe --kernel allpairs_multi --n 32768 --block 256 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q16_32768.csv
+   exit=0 11:33:25
+== E_multi_b512q1_32768: ./build/nbody_bench.exe --kernel allpairs_multi --n 32768 --block 512 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q1_32768.csv
+   exit=0 11:33:26
+== E_multi_b512q2_32768: ./build/nbody_bench.exe --kernel allpairs_multi --n 32768 --block 512 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q2_32768.csv
+   exit=0 11:33:26
+== E_multi_b512q4_32768: ./build/nbody_bench.exe --kernel allpairs_multi --n 32768 --block 512 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q4_32768.csv
+   exit=0 11:33:27
+== E_multi_b512q8_32768: ./build/nbody_bench.exe --kernel allpairs_multi --n 32768 --block 512 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q8_32768.csv
+   exit=0 11:33:28
+== E_multi_b512q16_32768: ./build/nbody_bench.exe --kernel allpairs_multi --n 32768 --block 512 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q16_32768.csv
+   exit=0 11:33:28
+== E_multi_b1024q1_32768: ./build/nbody_bench.exe --kernel allpairs_multi --n 32768 --block 1024 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q1_32768.csv
+   exit=0 11:33:29
+== E_multi_b1024q2_32768: ./build/nbody_bench.exe --kernel allpairs_multi --n 32768 --block 1024 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q2_32768.csv
+   exit=0 11:33:30
+== E_multi_b1024q4_32768: ./build/nbody_bench.exe --kernel allpairs_multi --n 32768 --block 1024 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q4_32768.csv
+   exit=0 11:33:31
+== E_multi_b1024q8_32768: ./build/nbody_bench.exe --kernel allpairs_multi --n 32768 --block 1024 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q8_32768.csv
+   exit=0 11:33:31
+== E_multi_b1024q16_32768: ./build/nbody_bench.exe --kernel allpairs_multi --n 32768 --block 1024 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q16_32768.csv
+   exit=0 11:33:32
+== E_bh_warp_49152: ./build/nbody_bench.exe --kernel bh_warp --n 49152 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_tree.csv.p1.E_bh_warp_49152.csv
+   exit=0 11:33:52
+== E_bh_warp_list_49152: ./build/nbody_bench.exe --kernel bh_warp_list --n 49152 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_tree.csv.p1.E_bh_warp_list_49152.csv
+   exit=0 11:33:53
+== E_tuned_b128u0_49152: ./build/nbody_bench.exe --kernel allpairs_tuned --n 49152 --block 128 --unroll 0 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_tuned_b128u0_49152.csv
+   exit=0 11:33:54
+== E_multi_b128q1_49152: ./build/nbody_bench.exe --kernel allpairs_multi --n 49152 --block 128 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q1_49152.csv
+   exit=0 11:33:55
+== E_multi_b128q2_49152: ./build/nbody_bench.exe --kernel allpairs_multi --n 49152 --block 128 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q2_49152.csv
+   exit=0 11:33:55
+== E_multi_b128q4_49152: ./build/nbody_bench.exe --kernel allpairs_multi --n 49152 --block 128 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q4_49152.csv
+   exit=0 11:33:56
+== E_multi_b128q8_49152: ./build/nbody_bench.exe --kernel allpairs_multi --n 49152 --block 128 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q8_49152.csv
+   exit=0 11:33:57
+== E_multi_b128q16_49152: ./build/nbody_bench.exe --kernel allpairs_multi --n 49152 --block 128 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q16_49152.csv
+   exit=0 11:33:58
+== E_multi_b256q1_49152: ./build/nbody_bench.exe --kernel allpairs_multi --n 49152 --block 256 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q1_49152.csv
+   exit=0 11:33:59
+== E_multi_b256q2_49152: ./build/nbody_bench.exe --kernel allpairs_multi --n 49152 --block 256 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q2_49152.csv
+   exit=0 11:33:59
+== E_multi_b256q4_49152: ./build/nbody_bench.exe --kernel allpairs_multi --n 49152 --block 256 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q4_49152.csv
+   exit=0 11:34:00
+== E_multi_b256q8_49152: ./build/nbody_bench.exe --kernel allpairs_multi --n 49152 --block 256 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q8_49152.csv
+   exit=0 11:34:01
+== E_multi_b256q16_49152: ./build/nbody_bench.exe --kernel allpairs_multi --n 49152 --block 256 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q16_49152.csv
+   exit=0 11:34:02
+== E_multi_b512q1_49152: ./build/nbody_bench.exe --kernel allpairs_multi --n 49152 --block 512 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q1_49152.csv
+   exit=0 11:34:03
+== E_multi_b512q2_49152: ./build/nbody_bench.exe --kernel allpairs_multi --n 49152 --block 512 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q2_49152.csv
+   exit=0 11:34:03
+== E_multi_b512q4_49152: ./build/nbody_bench.exe --kernel allpairs_multi --n 49152 --block 512 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q4_49152.csv
+   exit=0 11:34:04
+== E_multi_b512q8_49152: ./build/nbody_bench.exe --kernel allpairs_multi --n 49152 --block 512 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q8_49152.csv
+   exit=0 11:34:05
+== E_multi_b512q16_49152: ./build/nbody_bench.exe --kernel allpairs_multi --n 49152 --block 512 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q16_49152.csv
+   exit=0 11:34:06
+== E_multi_b1024q1_49152: ./build/nbody_bench.exe --kernel allpairs_multi --n 49152 --block 1024 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q1_49152.csv
+   exit=0 11:34:07
+== E_multi_b1024q2_49152: ./build/nbody_bench.exe --kernel allpairs_multi --n 49152 --block 1024 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q2_49152.csv
+   exit=0 11:34:07
+== E_multi_b1024q4_49152: ./build/nbody_bench.exe --kernel allpairs_multi --n 49152 --block 1024 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q4_49152.csv
+   exit=0 11:34:08
+== E_multi_b1024q8_49152: ./build/nbody_bench.exe --kernel allpairs_multi --n 49152 --block 1024 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q8_49152.csv
+   exit=0 11:34:09
+== E_multi_b1024q16_49152: ./build/nbody_bench.exe --kernel allpairs_multi --n 49152 --block 1024 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q16_49152.csv
+   exit=0 11:34:10
+== E_bh_warp_65536: ./build/nbody_bench.exe --kernel bh_warp --n 65536 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_tree.csv.p1.E_bh_warp_65536.csv
+   exit=0 11:34:33
+== E_bh_warp_list_65536: ./build/nbody_bench.exe --kernel bh_warp_list --n 65536 --ic plummer --leaf 16 --block 128 --theta 0.5 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_tree.csv.p1.E_bh_warp_list_65536.csv
+   exit=0 11:34:34
+== E_tuned_b128u0_65536: ./build/nbody_bench.exe --kernel allpairs_tuned --n 65536 --block 128 --unroll 0 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_tuned_b128u0_65536.csv
+   exit=0 11:34:34
+== E_multi_b128q1_65536: ./build/nbody_bench.exe --kernel allpairs_multi --n 65536 --block 128 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q1_65536.csv
+   exit=0 11:34:35
+== E_multi_b128q2_65536: ./build/nbody_bench.exe --kernel allpairs_multi --n 65536 --block 128 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q2_65536.csv
+   exit=0 11:34:36
+== E_multi_b128q4_65536: ./build/nbody_bench.exe --kernel allpairs_multi --n 65536 --block 128 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q4_65536.csv
+   exit=0 11:34:37
+== E_multi_b128q8_65536: ./build/nbody_bench.exe --kernel allpairs_multi --n 65536 --block 128 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q8_65536.csv
+   exit=0 11:34:38
+== E_multi_b128q16_65536: ./build/nbody_bench.exe --kernel allpairs_multi --n 65536 --block 128 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b128q16_65536.csv
+   exit=0 11:34:39
+== E_multi_b256q1_65536: ./build/nbody_bench.exe --kernel allpairs_multi --n 65536 --block 256 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q1_65536.csv
+   exit=0 11:34:40
+== E_multi_b256q2_65536: ./build/nbody_bench.exe --kernel allpairs_multi --n 65536 --block 256 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q2_65536.csv
+   exit=0 11:34:41
+== E_multi_b256q4_65536: ./build/nbody_bench.exe --kernel allpairs_multi --n 65536 --block 256 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q4_65536.csv
+   exit=0 11:34:42
+== E_multi_b256q8_65536: ./build/nbody_bench.exe --kernel allpairs_multi --n 65536 --block 256 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q8_65536.csv
+   exit=0 11:34:43
+== E_multi_b256q16_65536: ./build/nbody_bench.exe --kernel allpairs_multi --n 65536 --block 256 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b256q16_65536.csv
+   exit=0 11:34:44
+== E_multi_b512q1_65536: ./build/nbody_bench.exe --kernel allpairs_multi --n 65536 --block 512 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q1_65536.csv
+   exit=0 11:34:45
+== E_multi_b512q2_65536: ./build/nbody_bench.exe --kernel allpairs_multi --n 65536 --block 512 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q2_65536.csv
+   exit=0 11:34:46
+== E_multi_b512q4_65536: ./build/nbody_bench.exe --kernel allpairs_multi --n 65536 --block 512 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q4_65536.csv
+   exit=0 11:34:47
+== E_multi_b512q8_65536: ./build/nbody_bench.exe --kernel allpairs_multi --n 65536 --block 512 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q8_65536.csv
+   exit=0 11:34:48
+== E_multi_b512q16_65536: ./build/nbody_bench.exe --kernel allpairs_multi --n 65536 --block 512 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b512q16_65536.csv
+   exit=0 11:34:49
+== E_multi_b1024q1_65536: ./build/nbody_bench.exe --kernel allpairs_multi --n 65536 --block 1024 --q 1 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q1_65536.csv
+   exit=0 11:34:49
+== E_multi_b1024q2_65536: ./build/nbody_bench.exe --kernel allpairs_multi --n 65536 --block 1024 --q 2 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q2_65536.csv
+   exit=0 11:34:50
+== E_multi_b1024q4_65536: ./build/nbody_bench.exe --kernel allpairs_multi --n 65536 --block 1024 --q 4 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q4_65536.csv
+   exit=0 11:34:51
+== E_multi_b1024q8_65536: ./build/nbody_bench.exe --kernel allpairs_multi --n 65536 --block 1024 --q 8 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q8_65536.csv
+   exit=0 11:34:52
+== E_multi_b1024q16_65536: ./build/nbody_bench.exe --kernel allpairs_multi --n 65536 --block 1024 --q 16 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setE_ap.csv.p1.E_multi_b1024q16_65536.csv
+   exit=0 11:34:53
+== F_bh_sorted_th0.3: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic plummer --theta 0.3 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/F_bh_sorted_th0.3.csv --csv results/2026-10-18_clean_rerun/stage/setF.csv.p1.F_bh_sorted_th0.3.csv
+   exit=0 11:35:21
+== F_bh_warp_th0.3: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic plummer --theta 0.3 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/F_bh_warp_th0.3.csv --csv results/2026-10-18_clean_rerun/stage/setF.csv.p1.F_bh_warp_th0.3.csv
+   exit=0 11:35:23
+== F_bh_sorted_th0.7: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic plummer --theta 0.7 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/F_bh_sorted_th0.7.csv --csv results/2026-10-18_clean_rerun/stage/setF.csv.p1.F_bh_sorted_th0.7.csv
+   exit=0 11:35:31
+== F_bh_warp_th0.7: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic plummer --theta 0.7 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/F_bh_warp_th0.7.csv --csv results/2026-10-18_clean_rerun/stage/setF.csv.p1.F_bh_warp_th0.7.csv
+   exit=0 11:35:33
+== F_bh_sorted_th1.0: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic plummer --theta 1.0 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/F_bh_sorted_th1.0.csv --csv results/2026-10-18_clean_rerun/stage/setF.csv.p1.F_bh_sorted_th1.0.csv
+   exit=0 11:35:40
+== F_bh_warp_th1.0: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic plummer --theta 1.0 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 1 --tree-stats results/2026-10-18_clean_rerun/tree2/p1/warps/F_bh_warp_th1.0.csv --csv results/2026-10-18_clean_rerun/stage/setF.csv.p1.F_bh_warp_th1.0.csv
+   exit=0 11:35:41
+== G_bh_sorted_th0: ./build/nbody_bench.exe --kernel bh_sorted --n 65536 --ic plummer --theta 0 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setG.csv.p1.G_bh_sorted_th0.csv
+   exit=0 11:35:48
+== G_bh_warp_th0: ./build/nbody_bench.exe --kernel bh_warp --n 65536 --ic plummer --theta 0 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --batch 5 --csv results/2026-10-18_clean_rerun/stage/setG.csv.p1.G_bh_warp_th0.csv
+   exit=0 11:35:49

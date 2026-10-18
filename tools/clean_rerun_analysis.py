@@ -25,6 +25,24 @@ OLD_T2 = 'results/2026-10-17_tree_round2'
 OLD_IC = 'results/2026-10-17_ic_round'
 OLD_T1 = 'results/2026-10-17_tree_round1'
 TIME_KEYS = ['trav', 'total_ms', 'keys', 'sort', 'tree', 'order', 'build']
+
+# The measured binary (IC round on) gates TG3 on normalised error (TG3n, D-027) and prints the round-2
+# relative TG3 as "legacy relative TG3: rms ratio X, p99 ratio Y => PASS (not gating)". tree_analysis
+# expects the round-2 line; read the legacy one so P2-W14/W15 compare the same quantity.
+_base_parse_log2 = ta.parse_log2
+
+
+def parse_log2_legacy_tg3(path):
+    r = _base_parse_log2(path)
+    if r is not None and 'tg3' not in r:
+        t = open(path, encoding='utf-8', errors='replace').read()
+        m = re.search(r'legacy relative TG3: rms ratio ([-+0-9.eE]+), p99 ratio ([-+0-9.eE]+) => (PASS|FAIL)', t)
+        if m:
+            r.update(tg3_rms_ratio=float(m.group(1)), tg3_p99_ratio=float(m.group(2)), tg3=m.group(3))
+    return r
+
+
+ta.parse_log2 = parse_log2_legacy_tg3
 RATE_KEYS = ['rate', 'rate_real', 'rate_trav', 'rate_ap']
 
 

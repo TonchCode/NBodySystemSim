@@ -1,0 +1,12 @@
+== T_bh_persistent_galaxies_65536.csv: bh_persistent n=65536 b=256 q=1 pf=-1 u=-1  (3 launches, median shown)
+   span 1290.45 us | max busy 1290.44 | mean busy (80 SMs) 1026.62 | max/mean 1.260 (active SMs: 1.260) | SM eff 0.794
+   clock calibration: 80 SMs calibrated, 0 raw; f 2.7539..2.7594 GHz; calibrated vs raw start outside one tick by <= 4355 ns
+   active 80 / idle 0 SMs | blocks/SM 24..32 | tail 257.27 us (19.9% of span) | start skew 1.72 us | timer res 1024 ns | SM clock 2.758 GHz
+== T_bh_sorted_galaxies_65536.csv: bh_sorted n=65536 b=256 q=1 pf=-1 u=-1  (3 launches, median shown)
+   span 1078.66 us | max busy 1078.66 | mean busy (80 SMs) 671.76 | max/mean 1.606 (active SMs: 1.606) | SM eff 0.623
+   clock calibration: 80 SMs calibrated, 0 raw; f 2.7554..2.7610 GHz; calibrated vs raw start outside one tick by <= 4610 ns
+   active 80 / idle 0 SMs | blocks/SM 24..32 | tail 398.22 us (36.9% of span) | start skew 0.98 us | timer res 1024 ns | SM clock 2.760 GHz
+== T_bh_warp_galaxies_65536.csv: bh_warp n=65536 b=128 q=1 pf=-1 u=-1  (3 launches, median shown)
+   span 448.49 us | max busy 448.22 | mean busy (80 SMs) 275.40 | max/mean 1.627 (active SMs: 1.627) | SM eff 0.614
+   clock calibration: 80 SMs calibrated, 0 raw; f 2.7608..2.7649 GHz; calibrated vs raw start outside one tick by <= 2871 ns
+   active 80 / idle 0 SMs | blocks/SM 24..28 | tail 172.90 us (38.6% of span) | start skew 0.57 us | timer res 1024 ns | SM clock 2.764 GHz

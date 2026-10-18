@@ -1,0 +1,10 @@
+session start 2026-10-18 04:32:02
+selftest exit=0
+2026-10-18 04:57:54 SESSION STOPPED by bench-profiler during the wait for cell 'T2-C n1048576 l32 b128': background load 34-44% from the Windows screensaver (Mystify.scr, new GPU process, absent from env_before). Cells 1-38 were completed clean (every idle check 0%). Resume from cell 39 (re-run of the flagged cell) after the screensaver is off.
+selftest exit=1
+session start 2026-10-18 11:29:37 (resume from cell 39)
+selftest exit=0
+2026-10-18 11:30:49 CORRECTION (bench-profiler, found at resume): the 04:57:54 stop did NOT end sub-session 1. TaskStop ended the wrapper shell, but the script kept running: it waited out cell 39 (NOT-CLEARED 05:02:52), ran cell 40 'T2-C n1048576 l32 b256' under the screensaver (flagged, idle 19%), re-ran it at 05:05:57 once the load cleared (idle 0-1%), and then died at about 05:06 with a bash syntax error, because I had edited run.sh (the RESUME_FROM option) while bash was still reading it. The clock logger had already been killed at 04:57:45, so 04:57:45-05:06 has no clock log. The 'selftest exit=1' line came from the garbled read (SFX unbound; the redirection failed and nothing ran); selftest.txt (04:32, PASS) is intact. Sub-session 2 (RESUME_FROM=39, from 11:29:37) re-measures cells 39 and 40 and supersedes them: logs are overwritten, and the duplicate cell-40 rows in tree2/p*/setC.csv from 05:06 are superseded by the later rows (the tree analysis reads logs).
+tree round 2 done 2026-10-18 11:35:55
+IC round done 2026-10-18 11:49:27
+session end 2026-10-18 11:49:54: 95 cells, 555 invocations

@@ -1,0 +1,102 @@
+﻿date: 2026-10-18T04:31:47.4369015+03:00
+tag: before
+cl: Microsoft (R) C/C++ Optimizing Compiler Version 19.51.36248 for x64
+nvcc: Cuda compilation tools, release 13.4, V13.4.92
+nvidia-smi static (csv):
+name, driver_version, power.limit [W], power.default_limit [W], enforced.power.limit [W], clocks.max.sm [MHz], pstate
+NVIDIA GeForce RTX 4080 SUPER, 617.42, 272.00 W, 320.00 W, 272.00 W, 3105 MHz, P8
+idle samples (util %, VRAM MiB, SM MHz, W, C) x10 @200ms:
+0, 1504, 210, 8.35, 39
+0, 1504, 210, 8.58, 39
+0, 1504, 210, 8.58, 39
+0, 1504, 210, 8.43, 39
+0, 1504, 210, 8.43, 39
+3, 1504, 210, 8.13, 39
+3, 1504, 210, 8.13, 39
+0, 1504, 210, 7.97, 38
+0, 1504, 210, 7.97, 38
+0, 1505, 210, 7.86, 38
+median idle utilisation: 0 %
+background load: controlled (<= 5%)
+attached GPU processes (task request: recorded here; no measurable load at idle):
+nvidia-smi --query-compute-apps=pid,process_name,used_memory:
+pid, process_name, used_gpu_memory [MiB]
+8948, C:\Windows\explorer.exe, [N/A]
+10116, C:\Windows\SystemApps\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\StartMenuExperienceHost.exe, [N/A]
+10092, C:\Windows\SystemApps\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\SearchHost.exe, [N/A]
+14204, C:\Program Files\NVIDIA Corporation\NVIDIA App\CEF\NVIDIA Overlay.exe, [N/A]
+252, C:\Program Files\NVIDIA Corporation\NVIDIA App\CEF\NVIDIA Overlay.exe, [N/A]
+13168, C:\Program Files\Riot Vanguard\vgtray.exe, [N/A]
+15564, C:\Windows\SystemApps\MicrosoftWindows.Client.CBS_cw5n1h2txyewy\TextInputHost.exe, [N/A]
+16540, C:\Program Files\Parsec\parsecd.exe, [N/A]
+17332, C:\Users\petya\AppData\Local\Programs\Blitz\Blitz.exe, [N/A]
+18224, C:\Program Files\WindowsApps\28017CharlesMilette.TranslucentTB_2026.2.0.0_x64__v826wp6bftszj\TranslucentTB.exe, [N/A]
+16148, C:\Windows\SystemApps\ShellExperienceHost_cw5n1h2txyewy\ShellExperienceHost.exe, [N/A]
+10424, C:\Program Files\WindowsApps\Claude_2.42304.0.0_x64__pzs8sxrjxfjjc\app\claude.exe, [N/A]
+2288, C:\Program Files\WindowsApps\Claude_2.42304.0.0_x64__pzs8sxrjxfjjc\app\claude.exe, [N/A]
+11068, C:\Program Files\WindowsApps\Microsoft.ZuneVideo_10.26061.10051.0_x64__8wekyb3d8bbwe\Video.UI.exe, [N/A]
+17020, C:\Windows\ImmersiveControlPanel\SystemSettings.exe, [N/A]
+8228, C:\Program Files\WindowsApps\Microsoft.YourPhone_1.25072.81.0_x64__8wekyb3d8bbwe\PhoneExperienceHost.exe, [N/A]
+27248, C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe, [N/A]
+26468, C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe, [N/A]
+21316, C:\Program Files\Audient\iD\iD.exe, [N/A]
+nvidia-smi process table:
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             252    C+G   ...IA App\CEF\NVIDIA Overlay.exe      N/A      |
+|    0   N/A  N/A            2288    C+G   ..._pzs8sxrjxfjjc\app\claude.exe      N/A      |
+|    0   N/A  N/A            8228    C+G   ...8bbwe\PhoneExperienceHost.exe      N/A      |
+|    0   N/A  N/A            8948    C+G   C:\Windows\explorer.exe               N/A      |
+|    0   N/A  N/A           10092    C+G   ..._cw5n1h2txyewy\SearchHost.exe      N/A      |
+|    0   N/A  N/A           10116    C+G   ...y\StartMenuExperienceHost.exe      N/A      |
+|    0   N/A  N/A           10424    C+G   ..._pzs8sxrjxfjjc\app\claude.exe      N/A      |
+|    0   N/A  N/A           11068    C+G   ...4__8wekyb3d8bbwe\Video.UI.exe      N/A      |
+|    0   N/A  N/A           13168    C+G   ...iles\Riot Vanguard\vgtray.exe      N/A      |
+|    0   N/A  N/A           14204    C+G   ...IA App\CEF\NVIDIA Overlay.exe      N/A      |
+|    0   N/A  N/A           15564    C+G   ...5n1h2txyewy\TextInputHost.exe      N/A      |
+|    0   N/A  N/A           16148    C+G   ...xyewy\ShellExperienceHost.exe      N/A      |
+|    0   N/A  N/A           16540    C+G   ...gram Files\Parsec\parsecd.exe      N/A      |
+|    0   N/A  N/A           17020    C+G   ...ntrolPanel\SystemSettings.exe      N/A      |
+|    0   N/A  N/A           17332    C+G   ...ocal\Programs\Blitz\Blitz.exe      N/A      |
+|    0   N/A  N/A           18224    C+G   ...26wp6bftszj\TranslucentTB.exe      N/A      |
+|    0   N/A  N/A           21316    C+G   ...ogram Files\Audient\iD\iD.exe      N/A      |
+|    0   N/A  N/A           26468    C+G   ...Browser\Application\brave.exe      N/A      |
+|    0   N/A  N/A           27248    C+G   ...Browser\Application\brave.exe      N/A      |
++-----------------------------------------------------------------------------------------+
+binaries (sha256):
+2b7896830db05c5977bde12e49be96e0c18ea14e4066d6c4a7656d4490dcfd43 *../../build/nbody_bench.exe
+73a55db5dcc095809a2199d65dd329894e40889ac4288de1721ad7ab7eb81aba *../../build/src/viewer/nbody_viewer.exe
+720996cd4d15be87a0580269a543ac82bc9fe7884c0bd8e3d5879dbd8e9811f5 */c/Users/petya/AppData/Local/Temp/claude/D--life-system/cf99499d-78af-474a-80e1-0ba28ceb4299/scratchpad/nbody_bench_before.exe
+bench SASS md5 8e3d4a221b053bfce2267b46b7fd7677 = viewer-round bench_after.sass (222/222 functions identical)
+power limit 272 W (default 320 W), not changed
+
+== resume 2026-10-18 11:29:37 (sub-session 2, from cell 39; run.sh resume option committed as 92e9598)
+idle check before resume: util 0-1%, SM 210 MHz, VRAM 1510-1511 MiB, no Mystify.scr process
+session condition: the main session holds a display-required request (SetThreadExecutionState ES_CONTINUOUS|ES_SYSTEM_REQUIRED|ES_DISPLAY_REQUIRED, hidden powershell pid 23120, self-exits after 90 min) to block the screensaver; a per-process request, no setting changed
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A             252    C+G   ...IA App\CEF\NVIDIA Overlay.exe      N/A      |
+|    0   N/A  N/A            2288    C+G   ..._pzs8sxrjxfjjc\app\claude.exe      N/A      |
+|    0   N/A  N/A            8228    C+G   ...8bbwe\PhoneExperienceHost.exe      N/A      |
+|    0   N/A  N/A            8948    C+G   C:\Windows\explorer.exe               N/A      |
+|    0   N/A  N/A           10092    C+G   ..._cw5n1h2txyewy\SearchHost.exe      N/A      |
+|    0   N/A  N/A           10116    C+G   ...y\StartMenuExperienceHost.exe      N/A      |
+|    0   N/A  N/A           10424    C+G   ..._pzs8sxrjxfjjc\app\claude.exe      N/A      |
+|    0   N/A  N/A           11068    C+G   ...4__8wekyb3d8bbwe\Video.UI.exe      N/A      |
+|    0   N/A  N/A           13168    C+G   ...iles\Riot Vanguard\vgtray.exe      N/A      |
+|    0   N/A  N/A           14204    C+G   ...IA App\CEF\NVIDIA Overlay.exe      N/A      |
+|    0   N/A  N/A           15564    C+G   ...5n1h2txyewy\TextInputHost.exe      N/A      |
+|    0   N/A  N/A           16148    C+G   ...xyewy\ShellExperienceHost.exe      N/A      |
+|    0   N/A  N/A           16540    C+G   ...gram Files\Parsec\parsecd.exe      N/A      |
+|    0   N/A  N/A           17332    C+G   ...ocal\Programs\Blitz\Blitz.exe      N/A      |
+|    0   N/A  N/A           18224    C+G   ...26wp6bftszj\TranslucentTB.exe      N/A      |
+|    0   N/A  N/A           21316    C+G   ...ogram Files\Audient\iD\iD.exe      N/A      |
+|    0   N/A  N/A           25656    C+G   ...yb3d8bbwe\WindowsTerminal.exe      N/A      |
+|    0   N/A  N/A           26468    C+G   ...Browser\Application\brave.exe      N/A      |
+|    0   N/A  N/A           27248    C+G   ...Browser\Application\brave.exe      N/A      |
++-----------------------------------------------------------------------------------------+
+CORRECTION 2026-10-18 11:30:02: the hold attributed to pid 23120 above failed to compile and never held anything (killed by the main session). A working hold is active from about 11:30:02 as pid 17844 (scratchpad\display_hold.ps1, SetThreadExecutionState 0x80000003 succeeded, previous state 0x80000000, self-exits after 90 min). Cells of sub-session 2 run before this time had NO display hold; if one of them is flagged, the screensaver is the suspect.

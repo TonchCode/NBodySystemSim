@@ -501,3 +501,35 @@ trade-off of D-022/D-030 on screen (smoke runs, galaxies 262144 at t ≈ 0.5: se
 bench's twins and definitions means the viewer cannot show a metric the bench does not define.
 **Rules out:** viewer code in `nbody_core` kernels; quoting viewer FPS or ms/step as results; host
 O(N²) energy per frame; presets in the bench without selftest coverage.
+
+## D-033 — The clean re-run numbers are canonical for the thesis (2026-10-18, bench-profiler, clean re-run)
+
+**Measured:** `results/2026-10-18_clean_rerun/` (pre-registered fbe0742, resume option bfe3c5b).
+- Same binary as the viewer round; 0% idle utilisation; 272 W cap; every cell A/B/B/A-interleaved.
+- 59 primary items re-scored against their original ranges: 39 → 36 HIT. The flips are S4-262144,
+  Q4-disk-1M (pass-unstable) and V2 (disputed).
+- No #6 verdict changed. All 153 deterministic values reproduce.
+
+**Decided:**
+- For every re-run item, the thesis quotes the **clean value**: round-2 sets A, A2, B, C, E, F, G and
+  IC-round sets A, B, K, T, X, V2. The old value may be quoted only as "under 20–22% / 30–37% load",
+  with its folder.
+- Deterministic quantities (work counts, union ratios, errors, depths, gate verdicts) keep their
+  original sources.
+- Set D (occupancy) and the exploratory runs keep their old values with the load label until
+  re-measured.
+- The load explanation is stated as measured:
+  - Round 2's load cost about 3% on per-thread walks, inside the ±4% session-to-session spread.
+  - The IC round's load cost 7–17% on long (≥ ~8–10 ms) and late cells, #7 included.
+  - The mechanism is duration and time-slicing, not walk type.
+- D-025's best-tuned settings stand: #5 leaf 32 b256 is within 1.1% of the new 262144 optimum (leaf 16
+  b256); #7 leaf 8–16 are within 0.6% at 1M.
+
+**Why:** rule 2 requires the background load to be recorded, and these runs remove it. The
+replication changed only edge verdicts, so the thesis conclusions (the #7 gain, the #6 negative, the
+crossover) stand on clean numbers.
+
+**Rules out:**
+- Quoting load-labelled numbers for items that now have clean values.
+- Attributing #6's loss to the background load.
+- Claiming that coherent walks are load-proof.

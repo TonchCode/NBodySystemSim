@@ -1,0 +1,13 @@
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=4096 block=256 q=1 prefetch=-1 unroll=-1  regs=40 smem=0 B  resident 6 blocks/SM (100% occupancy)  blocks/SM=51.20 (busiest 52)  waves=8.53
+# ic=cube_edges seed=42 theta=0.5 leaf=32 mass_spectrum=equal bh_mass=0.01 ic_hash=09af0b954ddc486d | mass total 1.000000000, min 9.537e-07, max 9.537e-07 (max/min 1) | dt advisory 1.65e-01 (dt 0.001)
+kernel=bh_sorted n=1048576 block=256 q=1 prefetch=-1 unroll=-1 runs=11 batch=1  median=0.9871 ms  min=0.9708  max=1.0567  1113840.059 G N^2-equivalent interactions/s (not the tree rate; see the work: line)
+phases (median of 11, ms):  keys 0.0225  sort 0.2130  tree 0.3368  order 0.0010  traverse 0.4209  | build(keys+sort+tree) 0.5723  order 0.0010  traverse 0.4209  sum 0.9964  (production total 0.9871)
+work: 92.2 interactions/body (9.665e+07 total), 98.1 nodes popped/body | per-warp max/mean 1.138 (median warp 1.141) | SIMT eff interactions 0.513, pops 0.987 | warp-cost max/mean 1.54 | traversal 229.6 G interactions/s  -> results/2026-10-18_clean_rerun/ic/p2/warps/A_bh_sorted_cube_edges_1048576.csv
+rates: real 97.91 G interactions/s over the full pipeline (0.9871 ms), 229.64 over the traversal; N^2-equivalent 1113840.1 G/s
+tree: max depth 48, push depth 38 -> stack bound 40 (capacity: per-thread 96, warp 64), duplicate keys 21793 (2.078% of bodies)
+validate vs allpairs_naive: max rel err 1.507e+00  rms 3.554e-01
+validate vs FP64 (528 bodies, kappa_max 6.0e+01): this rms 3.581e-01 max 1.324e+00 norm 2.522e-02  | naive rms 4.346e-04 max 2.846e-03 norm 1.183e-03
+tree error vs exact (all 1048576 bodies), per-body relative (legacy): rms 3.554e-01  p50 1.980e-01  p99 9.925e-01  max 1.507e+00
+tree error vs exact, normalised |da|/sum|f| (all bodies): rms 9.799e-03  p99 2.240e-02  max 2.754e-02 | global |da|/|a|_rms: rms 1.054e-01  p99 2.478e-01
+gates (tree, theta=0.50): TN1 PASS (norm rms 9.799e-03 <= 2.000e-02)  TN2 PASS (norm p99 2.240e-02 <= 4.500e-02)  stack ok  => PASS  | legacy TG1 FAIL (rms 3.554e-01 <= 3.000e-02) TG2 FAIL (p99 9.925e-01 <= 1.200e-01), not gating

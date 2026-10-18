@@ -1278,3 +1278,48 @@ Decision D-032. No force kernel, tree code or integrator changed; production SAS
 - **Presets** (viewer-only): `merger3` (three disks of 1/3, triangle of radius 1.6, bound),
   `flyby` (disk 0.8 + Plummer cluster 0.2, relative speed 0.75 vs escape 0.81), `unequal` (3:1 disk
   merger, bound). Not in the bench.
+
+## 22. Clean re-run of the load-sensitive items (2026-10-18)
+
+Decision D-033. Pre-registration `docs/predictions/2026-10-18-clean-rerun.md` (fbe0742); resume option
+bfe3c5b; results `results/2026-10-18_clean_rerun/` (`scorecard.csv`, `load_tests.txt`). Same binary as
+the viewer round (SASS md5 8e3d4a22…); `src/` frozen; 272 W cap; idle utilisation 0% before and after,
+≤ 1% at every scored between-cell check; SM median 2760 MHz in both sub-sessions.
+
+- **Protocol.** Original commands (round-2 sets A, A2, B, C, E, F, G; IC sets A, B, K, T, X; viewer
+  V2). Each cell runs its kernels in order, then reversed (A B … B A); the value is the mean of the two
+  pass medians. Re-scored against the original committed ranges.
+- **Two sub-sessions.** The Windows screensaver (Mystify.scr, 30–44% GPU) started at 04:56. The
+  idle check flagged it, and everything measured after 04:56 was discarded. Cells 39–95 were run at
+  11:29–11:50 under a display-required hold. Per-cell interleaving protects within-cell ratios.
+  Cross-cell comparisons that span the gap: the 1M best-vs-best of set C (cell 40 vs cell 29).
+- **Outcome (59 primary rows): 39 → 36 HIT.**
+  - S4-262144 and Q4-disk-1M flip to MISS. Both are edge cells; Q4-disk-1M is pass-unstable.
+  - V2 flips to MISS (367.9 G int/s, above 350). V2 is still a disputed reading with a viewer-binary
+    confound.
+  - Tree round 2: 13/23 HIT before and after. **No #6 verdict changed.**
+- **Clean numbers.**
+  - #7/#5 fixed config 3.1–7.1×; best vs best 5.76× (1M) and 4.82× (262144).
+  - #5/#4 best vs best 2.01× / 2.06×.
+  - #6 arms 0.63–0.97× of their sibling.
+  - Crossover N ≈ 28,700.
+  - The coherent control is 4.4–9.5× faster than #5; #7 closes 70–87% of that gap.
+  - IC 3D-IC speedups at 1M: 5.0–5.7× (they were 5.6–6.1× under load).
+- **What the load was.**
+  - Round 2 (20–22%): about −3% on #4/#5/#6 when clean, 0% on #7 and the control. That is within
+    the ±4% by which two clean sessions (tree round 1 and this one) differ per cell. Pre-registered
+    tests 1 and 2a fail on exactly that.
+  - IC round (30–37%): 7–17% on cells with traversal ≥ ~8–10 ms and on late sets (B, K), including
+    #7 at 1M in set B; ≤ 1–3% on short cells.
+  - The pattern follows kernel duration and session time (time-slicing with desktop contexts), not
+    walk coherence. The pre-registered mechanism ("per-thread walks inflated, coherent walks not") is
+    rejected. Its consequences (speedups slightly lower, #6 not rescued) held.
+- **Within-session drift.** In the clean session it is 0.21% median (set A vs set C 0.996). The 7%
+  drift in round 2 was the load.
+- **Not re-run:** set D (occupancy) and the exploratory `explore/` runs. They keep the 20–22% label.
+- **Lesson (process).** Two errors, both mine.
+  1. Stopping the background wrapper did not stop the script.
+  2. Editing a running bash script crashed it.
+
+  Both are logged in `flagged_cells.txt`. Future sessions: kill by process, and never edit a running
+  script; copy it first.

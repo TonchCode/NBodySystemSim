@@ -1,0 +1,15 @@
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=256 block=128 q=1 prefetch=-1 unroll=-1  regs=40 smem=0 B  resident 12 blocks/SM (100% occupancy)  blocks/SM=3.20 (busiest 4)  waves=0.27
+# ic=plummer seed=42 theta=0.5 leaf=16 mass_spectrum=equal bh_mass=0.01 ic_hash=3512ab4371d79249 | mass total 1.000000000, min 3.052e-05, max 3.052e-05 (max/min 1) | dt advisory 2.92e-02 (dt 0.001)
+kernel=bh_warp n=32768 block=128 q=1 prefetch=-1 unroll=-1 runs=11 batch=5  median=0.6729 ms  min=0.6639  max=0.7094  1595.733 G N^2-equivalent interactions/s (not the tree rate; see the work: line)
+phases (median of 11, ms):  keys 0.0154  sort 0.1352  tree 0.0440  order 0.0010  traverse 0.4782  | build(keys+sort+tree) 0.1946  order 0.0010  traverse 0.4782  sum 0.6892  (production total 0.6729)
+work: 1701.7 interactions/body (5.576e+07 total), 1326.9 nodes popped/body | per-warp max/mean 1.000 (median warp 1.000) | SIMT eff interactions 1.000, pops 1.000 | warp-cost max/mean 1.41 | traversal 116.6 G interactions/s
+rates: real 82.87 G interactions/s over the full pipeline (0.6729 ms), 116.61 over the traversal; N^2-equivalent 1595.7 G/s
+tree: max depth 28, push depth 22 -> stack bound 24 (capacity: per-thread 96, warp 64), duplicate keys 0 (0.000% of bodies)
+validate vs allpairs_naive: max rel err 3.828e-02  rms 4.401e-03
+validate vs FP64 (528 bodies, kappa_max 6.0e+01): this rms 6.070e-03 max 3.828e-02 norm 9.860e-03  | naive rms 2.669e-06 max 6.823e-06 norm 6.671e-06
+tree error vs exact (all 32768 bodies), per-body relative (legacy): rms 4.401e-03  p50 3.313e-03  p99 1.133e-02  max 3.828e-02
+tree error vs exact, normalised |da|/sum|f| (all bodies): rms 2.388e-03  p99 6.750e-03  max 1.458e-02 | global |da|/|a|_rms: rms 4.153e-03  p99 1.082e-02
+gates (tree, theta=0.50): TN1 PASS (norm rms 2.388e-03 <= 2.000e-02)  TN2 PASS (norm p99 6.750e-03 <= 4.500e-02)  stack ok  => PASS  | legacy TG1 PASS (rms 4.401e-03 <= 3.000e-02) TG2 PASS (p99 1.133e-02 <= 1.200e-01), not gating
+TG3n (normalised error <= bh_sorted at theta=0.50): rms 2.388e-03 vs 3.312e-03 (ratio 0.721), p99 6.750e-03 vs 8.374e-03 (ratio 0.806) => PASS  | legacy relative TG3: rms ratio 0.643, p99 ratio 0.634 => PASS (not gating)
+work vs bh_sorted: interactions x1.8377, pops x1.3205 | slots with fewer pops or interactions than bh_sorted: 0 (must be 0)

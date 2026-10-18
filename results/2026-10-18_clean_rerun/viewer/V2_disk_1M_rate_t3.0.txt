@@ -1,0 +1,7 @@
+GL 3.3.0 NVIDIA 617.42 | NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2
+ic=disk mass_spectrum=equal N=1048576 seed=42 ic_hash=76c31d93e501cad9
+screenshot -> results/2026-10-18_clean_rerun/viewer/V2_disk_1M_rate_t3.0.bmp (1600x900)
+N-body | disk (equal) | N=1048576 | bh_warp | 8.201 ms/step | 367.9 G int/s real (counted, incl. build + integrator) | 2877 int/body | 10 steps/frame | 12 FPS | no vsync
+simulated time t = 3.0000 (dt 0.001, 300 frames, camera dist 3.000 yaw 0.000 pitch 0.400)
+phases (smoothed ms): keys 0.0234 sort 0.2289 tree 0.6309 order 0.0016 traverse 7.8558
+load balance: per-warp max/mean 1.000 (median 1.000) | SIMT eff interactions 1.000, pops 1.000 | warp-cost max/mean 1.38 | 2877.4 int/body | overflows 0

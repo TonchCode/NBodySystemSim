@@ -1,0 +1,62 @@
+id,item,predicted_range,measured,source,verdict,anchored,note
+P2-C1,"control lane-rate, Plummer (G/s)","[75, 230]; [95, 300]; [110, 380]",rateC_plummer_65536=172.7; rateC_plummer_262144=245; rateC_plummer_1048576=261.2,logs/A_*,HIT,no,
+P2-C2,"control lane-rate, core (G/s)","[70, 220]; [100, 360]",rateC_core_65536=126.5; rateC_core_1048576=252.3,logs/A_*,HIT,no,
+P2-C3,T5/TC Plummer,"[2.2, 6.7]; [3.1, 9.9]; [3.8, 13]",T5_TC_plummer_65536=5.175; T5_TC_plummer_262144=8.074; T5_TC_plummer_1048576=9.056,logs/A_*,HIT,no,
+P2-C4,T5/TC core,"[2.4, 7.5]; [3.7, 13.4]",T5_TC_core_65536=4.36; T5_TC_core_1048576=9.518,logs/A_*,HIT,no,
+P2-C5,T5/TC grows with N (Plummer),directional,5.175 < 8.074 < 9.056,logs/A_*,HIT,no,
+P2-C6,"(C) control SIMT eff 1.000 both sites, per-warp max/mean 1.000",directional,min 1.0000 max 1.0000,logs/A_*,HIT,no,
+P2-W1,"union interactions ratio, Plummer","[1.55, 1.95]; [1.55, 1.95]; [1.55, 1.95]",uI_plummer_65536=1.852; uI_plummer_262144=1.79; uI_plummer_1048576=1.728,logs/A_*,HIT,yes,
+P2-W2,"union interactions ratio, core","[1.5, 2.1]; [1.5, 2.1]; [1.5, 2.1]",uI_core_65536=1.731; uI_core_262144=1.694; uI_core_1048576=1.642,logs/A_*,HIT,no,
+P2-W3,"union pops ratio, Plummer","[1.2, 1.5]; [1.2, 1.5]; [1.2, 1.5]",uV_plummer_65536=1.311; uV_plummer_262144=1.29; uV_plummer_1048576=1.263,logs/A_*,HIT,yes,
+P2-W4,"union pops ratio, core","[1.15, 1.55]; [1.15, 1.55]; [1.15, 1.55]",uV_core_65536=1.247; uV_core_262144=1.242; uV_core_1048576=1.224,logs/A_*,HIT,no,
+P2-W5,union interaction ratio flat in N: |r(1M) - r(65536)| <= 0.15,directional,0.1232,logs/A_*,HIT,yes,
+P2-W6,(C) bh_warp SIMT eff >= 0.999 both sites,directional,min 1.0000,logs/A_*,HIT,no,
+P2-W7,"T7/TC, Plummer and core, all N","[1.2, 1.8]; [1.2, 1.8]; [1.2, 1.8]; [1.2, 1.8]; [1.2, 1.8]; [1.2, 1.8]",T7_TC_plummer_65536=1.653; T7_TC_plummer_262144=1.536; T7_TC_plummer_1048576=1.407; T7_TC_core_65536=1.307; T7_TC_core_262144=1.367; T7_TC_core_1048576=1.342,logs/A_*,HIT,yes,
+P2-W8,#7 speedup T5/T7 Plummer,"[1.4, 4.6]; [2.0, 6.9]; [2.4, 9.0]",T5_T7_plummer_65536=3.131; T5_T7_plummer_262144=5.256; T5_T7_plummer_1048576=6.437,logs/A_*,HIT,no,
+P2-W9,#7 speedup T5/T7 core,"[1.5, 5.0]; [2.0, 7.0]; [2.4, 9.2]",T5_T7_core_65536=3.337; T5_T7_core_262144=6.344; T5_T7_core_1048576=7.091,logs/A_*,HIT,no,
+P2-W10,total speedup Plummer,"[1.3, 3.2]; [1.9, 5.7]; [2.4, 8.0]",tot5_tot7_plummer_65536=2.572; tot5_tot7_plummer_262144=4.718; tot5_tot7_plummer_1048576=5.932,logs/A_*,HIT,no,
+P2-W11,bh_warp real traversal rate Plummer (G/s),"[85, 280]; [110, 370]; [120, 450]",rate7_plummer_65536=193.6; rate7_plummer_262144=285.5; rate7_plummer_1048576=320.9,logs/A_*,HIT,no,
+P2-W12,T5/T7 grows with N (Plummer and core),directional,plummer 3.131 5.256 6.437; core 3.337 6.344 7.091,logs/A_*,HIT,no,
+P2-W13,"T(bh_warp)/T(bh_warp_list), 6 cells","[0.95, 1.2]; [0.95, 1.2]; [0.95, 1.2]; [0.95, 1.2]; [0.95, 1.2]; [0.95, 1.2]",Tw_Tl_plummer_65536=0.9727; Tw_Tl_plummer_262144=0.9508; Tw_Tl_plummer_1048576=0.9256; Tw_Tl_core_65536=0.9701; Tw_Tl_core_262144=0.9343; Tw_Tl_core_1048576=0.9243,logs/A_*,MISS,yes,
+P2-W14a,"TG3 rms ratio Plummer (262144, 1M)","[0.55, 0.78]; [0.55, 0.78]",tg3rms_plummer_262144=0.701; tg3rms_plummer_1048576=0.713,logs/A_*,HIT,yes,
+P2-W14b,TG3 rms ratio core,"[0.6, 0.85]; [0.6, 0.85]",tg3rms_core_262144=0.79; tg3rms_core_1048576=0.845,logs/A_*,HIT,yes,
+P2-W14c,TG3 p99 ratio Plummer,"[0.48, 0.72]; [0.48, 0.72]",tg3p99_plummer_262144=0.63; tg3p99_plummer_1048576=0.629,logs/A_*,HIT,yes,
+P2-W14d,TG3 p99 ratio core,"[0.75, 1.0]; [0.75, 1.0]",tg3p99_core_262144=0.893; tg3p99_core_1048576=0.905,logs/A_*,HIT,yes,
+P2-W15,"TG3 passes in every run (A, F)",directional,60/60 PASS,"logs/A_*, F_*",HIT,no,
+P2-W16,"warp_naive vs #4: interactions ratio (3 N) and T4/T(warp_naive) (65536, 1M)","[7, 20]; [9, 28]; [11, 35]; [0.5, 2.2]; [0.25, 1.3]",W16I_65536=12.87; W16I_262144=13.99; W16I_1048576=14.75; W16T_65536=1.256; W16T_1048576=1.496,logs/A_*,MISS,no,
+P2-W17,T(warp_naive) > 3 T(bh_warp) at every N,directional,4.11 6.51 8.06,logs/A_*,HIT,no,
+P2-W18,bh_warp core 65536 warp-unit SM eff,"[0.65, 0.92]",smeffw_bh_warp_core_65536=0.7337,timeline/tlw_bh_warp_core_65536.csv,HIT,no,
+P2-P1,"warp queue on #5, Plummer","[0.96, 1.03]; [0.98, 1.05]; [0.99, 1.04]",P1_plummer_65536=0.8792; P1_plummer_262144=0.8953; P1_plummer_1048576=0.9313,logs/A_*,MISS,no,yes (background load)
+P2-P2,"warp queue on #5, core","[0.96, 1.03]; [0.98, 1.07]; [0.99, 1.05]",P1_core_65536=0.9041; P1_core_262144=0.8969; P1_core_1048576=0.9262,logs/A_*,MISS,no,yes (background load)
+P2-P3,"lane refill on #5, Plummer and core","[0.75, 1.0]; [0.82, 1.05]; [0.85, 1.08]; [0.75, 1.0]; [0.82, 1.05]; [0.85, 1.08]",P3_plummer_65536=0.6253; P3_plummer_262144=0.753; P3_plummer_1048576=0.6969; P3_core_65536=0.6879; P3_core_262144=0.7362; P3_core_1048576=0.6958,logs/A_*,MISS,yes,yes (background load)
+P2-P4,"lane refill on #4, Plummer","[0.78, 1.02]; [0.95, 1.22]; [0.97, 1.25]",P4_plummer_65536=0.7033; P4_plummer_262144=0.87; P4_plummer_1048576=0.8773,logs/A_*,MISS,no,yes (background load)
+P2-P5,"lane refill on #4, core","[0.78, 1.02]; [1.02, 1.42]; [1.08, 1.55]",P4_core_65536=0.6973; P4_core_262144=0.8649; P4_core_1048576=0.8866,logs/A_*,MISS,no,yes (background load)
+P2-P6,eff_pop of lane_naive: #4 +-0.05 / >= 0.88 / >= 0.93,see desc,plummer: 0.756 (#4 0.752) / 0.824 / 0.935; core: 0.565 (#4 0.552) / 0.694 / 0.906,logs/A_*,MISS,no,
+P2-P7,"warp queue on #7, Plummer and core","[0.96, 1.03]; [0.97, 1.07]; [0.98, 1.04]; [0.96, 1.03]; [0.97, 1.07]; [0.98, 1.04]",P7_plummer_65536=0.8893; P7_plummer_262144=0.9366; P7_plummer_1048576=0.9501; P7_core_65536=0.9105; P7_core_262144=0.9283; P7_core_1048576=0.9456,logs/A_*,MISS,no,yes (background load)
+P2-P8,"static partition on #5, Plummer and core","[0.8, 1.02]; [0.9, 1.04]; [0.93, 1.03]; [0.8, 1.02]; [0.9, 1.04]; [0.93, 1.03]",P8_plummer_65536=0.8641; P8_plummer_262144=0.8937; P8_plummer_1048576=0.8475; P8_core_65536=0.9686; P8_core_262144=0.925; P8_core_1048576=0.8718,logs/A_*,MISS,no,yes (background load)
+P2-P9,lane-refill gain on #4: core > Plummer at 262144 and 1M,directional,core 0.865 0.887 vs plummer 0.870 0.877,logs/A_*,MISS,no,yes (background load)
+P2-P10,lane-refill gain on #4: 1M >= 262144 > 65536 (both ICs),directional,plummer 0.703 0.870 0.877; core 0.697 0.865 0.887,logs/A_*,HIT,no,yes (background load)
+P2-P11,T(static) >= 0.99 T(warp queue) in every cell,directional,1.017 1.002 1.099 0.933 0.970 1.062,logs/A_*,MISS,no,yes (background load)
+P2-P12,(C) persistent runs bitwise equal + equal counts,directional,36/36,logs/A_*,HIT,no,
+P2-P13,"1M warp-unit fill bh_sorted in [0.90, 0.98], < block fill; persistent >= sorted","[0.90, 0.98] + directional","sorted w 0.946 b 0.978, persistent w 0.976; sorted w 0.947 b 0.977, persistent w 0.980",timeline/,HIT,no,yes (background load)
+P2-L1,"best leaf for bh_sorted in [8, 16] (both N)",directional,"262144: 16, 1M: 32",logs/C_*,MISS,no,
+P2-L2,"best leaf for bh_naive in [8, 16] (both N)",directional,"262144: 32, 1M: 32",logs/C_*,MISS,no,
+P2-L3,"best leaf for bh_warp in [16, 32] (both N)",directional,"262144: 16, 1M: 16",logs/C_*,HIT,no,
+P2-L4,best block at leaf 16 within 5% of block 128,directional,0.032 0.029 0.105 0.108 0.006 0.002,logs/C_*,MISS,no,
+P2-L5,best-vs-best T5/T7 at 1M within +-25% of the leaf-16 b128 value,directional,best-best 5.758 vs 6.459 (-10.8%),logs/C_*,HIT,no,
+P2-L6,"bh_warp leaf 32/16: I ratio, V ratio (both N)","[1.3, 1.8]; [1.3, 1.8]; [0.6, 0.8]; [0.6, 0.8]",L6I_262144=1.504; L6I_1048576=1.396; L6V_262144=0.9115; L6V_1048576=0.9284,logs/C_*,MISS,no,
+P2-L7,"bh_sorted leaf 8/16: I ratio, V ratio (both N)","[0.75, 0.95]; [0.75, 0.95]; [1.15, 1.5]; [1.15, 1.5]",L7I_262144=0.8413; L7I_1048576=0.8587; L7V_262144=1.034; L7V_1048576=1.029,logs/C_*,MISS,no,
+P2-O1,bh_sorted rate(12)/rate(4) <= 1.35,directional,nan,logs/D_*,MISS,no,
+P2-O2,bh_coherent rate(12)/rate(4) >= 1.8,directional,nan,logs/D_*,MISS,no,
+P2-O3,bh_warp rate(12)/rate(4) >= 1.6,directional,nan,logs/D_*,MISS,no,
+P2-O4,rate(2)/rate(1) >= 1.6 for each,directional,nan nan nan,logs/D_*,MISS,no,
+P2-O5,"L1: unpadded/padded-12 speed, bh_sorted","[1.0, 1.5]",O_L1_bh_sorted=nan,logs/D_*,MISS,no,
+P2-O6,"L1: unpadded/padded-12 speed, bh_coherent and bh_warp","[0.95, 1.25]; [0.95, 1.25]",O_L1_bh_coherent=nan; O_L1_bh_warp=nan,logs/D_*,MISS,no,
+P2-D1,share of the #5-control gap closed by #7 (Plummer),"[0.45, 0.9]; [0.55, 0.95]",f_plummer_65536=0.6943; f_plummer_1048576=0.8451,logs/A_*,HIT,no,
+P2-D2,#7 SM-level loss at 1M (1 - warp-unit fill) <= 0.10,directional,0.112 0.105,timeline/,MISS,no,
+P2-X1,crossover N bh_warp vs best all-pairs,"[20000, 36000]",X1=2.87e+04,logs/E_*,HIT,no,
+P2-X2,"bh_warp crossover below 39,700",directional,28703,logs/E_*,HIT,no,
+P2-X3,bh_warp total speedup over best all-pairs,"[2.4, 5.5]; [11, 28]; [55, 170]",X3_65536=4.389; X3_262144=27.34; X3_1048576=124.4,"logs/E_*, A_*",HIT,no,262144 and 1M against the round-1 all-pairs times (1M [D])
+P2-X4,union ratio grows with theta (0.3 < 0.5 < 1.0) and T5/T7(0.3) > T5/T7(1.0),directional,uI 1.553 1.790 2.113; T5/T7 7.815 vs 2.966,logs/F_*,HIT,no,
+P2-X5,"theta 0: bh_warp D-009 PASS, traversal within +-15% of bh_sorted",directional,"D-009 PASS, ratio 0.978",logs/G_*,HIT,no,
+P2-G1,every A-G run exits 0 with all gates PASS,directional,"317 runs, gate FAILs: []",logs/index.txt,HIT,no,

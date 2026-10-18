@@ -1,0 +1,459 @@
+session start 2026-10-18 04:32:02
+selftest exit=0
+# ---- tree round 2
+## cell 1: T2-A plummer 65536 (both)
+A_bh_naive_plummer_65536 exit=0
+A_bh_persistent_lane_naive_plummer_65536 exit=0
+A_bh_sorted_plummer_65536 exit=0
+A_bh_persistent_plummer_65536 exit=0
+A_bh_persistent_lane_plummer_65536 exit=0
+A_bh_persistent_static_plummer_65536 exit=0
+A_bh_coherent_plummer_65536 exit=0
+A_bh_warp_plummer_65536 exit=0
+A_bh_warp_list_plummer_65536 exit=0
+A_bh_persistent_warp_plummer_65536 exit=0
+A_bh_warp_naive_plummer_65536 exit=0
+A_bh_warp_naive_plummer_65536 exit=0
+A_bh_persistent_warp_plummer_65536 exit=0
+A_bh_warp_list_plummer_65536 exit=0
+A_bh_warp_plummer_65536 exit=0
+A_bh_coherent_plummer_65536 exit=0
+A_bh_persistent_static_plummer_65536 exit=0
+A_bh_persistent_lane_plummer_65536 exit=0
+A_bh_persistent_plummer_65536 exit=0
+A_bh_sorted_plummer_65536 exit=0
+A_bh_persistent_lane_naive_plummer_65536 exit=0
+A_bh_naive_plummer_65536 exit=0
+## cell 2: T2-A plummer 262144 (both)
+A_bh_naive_plummer_262144 exit=0
+A_bh_persistent_lane_naive_plummer_262144 exit=0
+A_bh_sorted_plummer_262144 exit=0
+A_bh_persistent_plummer_262144 exit=0
+A_bh_persistent_lane_plummer_262144 exit=0
+A_bh_persistent_static_plummer_262144 exit=0
+A_bh_coherent_plummer_262144 exit=0
+A_bh_warp_plummer_262144 exit=0
+A_bh_warp_list_plummer_262144 exit=0
+A_bh_persistent_warp_plummer_262144 exit=0
+A_bh_warp_naive_plummer_262144 exit=0
+A_bh_warp_naive_plummer_262144 exit=0
+A_bh_persistent_warp_plummer_262144 exit=0
+A_bh_warp_list_plummer_262144 exit=0
+A_bh_warp_plummer_262144 exit=0
+A_bh_coherent_plummer_262144 exit=0
+A_bh_persistent_static_plummer_262144 exit=0
+A_bh_persistent_lane_plummer_262144 exit=0
+A_bh_persistent_plummer_262144 exit=0
+A_bh_sorted_plummer_262144 exit=0
+A_bh_persistent_lane_naive_plummer_262144 exit=0
+A_bh_naive_plummer_262144 exit=0
+## cell 3: T2-A plummer 1048576 (both)
+A_bh_naive_plummer_1048576 exit=0
+A_bh_persistent_lane_naive_plummer_1048576 exit=0
+A_bh_sorted_plummer_1048576 exit=0
+A_bh_persistent_plummer_1048576 exit=0
+A_bh_persistent_lane_plummer_1048576 exit=0
+A_bh_persistent_static_plummer_1048576 exit=0
+A_bh_coherent_plummer_1048576 exit=0
+A_bh_warp_plummer_1048576 exit=0
+A_bh_warp_list_plummer_1048576 exit=0
+A_bh_persistent_warp_plummer_1048576 exit=0
+A_bh_warp_naive_plummer_1048576 exit=0
+A_bh_warp_naive_plummer_1048576 exit=0
+A_bh_persistent_warp_plummer_1048576 exit=0
+A_bh_warp_list_plummer_1048576 exit=0
+A_bh_warp_plummer_1048576 exit=0
+A_bh_coherent_plummer_1048576 exit=0
+A_bh_persistent_static_plummer_1048576 exit=0
+A_bh_persistent_lane_plummer_1048576 exit=0
+A_bh_persistent_plummer_1048576 exit=0
+A_bh_sorted_plummer_1048576 exit=0
+A_bh_persistent_lane_naive_plummer_1048576 exit=0
+A_bh_naive_plummer_1048576 exit=0
+## cell 4: T2-A core 65536 (both)
+A_bh_naive_core_65536 exit=0
+A_bh_persistent_lane_naive_core_65536 exit=0
+A_bh_sorted_core_65536 exit=0
+A_bh_persistent_core_65536 exit=0
+A_bh_persistent_lane_core_65536 exit=0
+A_bh_persistent_static_core_65536 exit=0
+A_bh_coherent_core_65536 exit=0
+A_bh_warp_core_65536 exit=0
+A_bh_warp_list_core_65536 exit=0
+A_bh_persistent_warp_core_65536 exit=0
+A_bh_persistent_warp_core_65536 exit=0
+A_bh_warp_list_core_65536 exit=0
+A_bh_warp_core_65536 exit=0
+A_bh_coherent_core_65536 exit=0
+A_bh_persistent_static_core_65536 exit=0
+A_bh_persistent_lane_core_65536 exit=0
+A_bh_persistent_core_65536 exit=0
+A_bh_sorted_core_65536 exit=0
+A_bh_persistent_lane_naive_core_65536 exit=0
+A_bh_naive_core_65536 exit=0
+## cell 5: T2-A core 262144 (both)
+A_bh_naive_core_262144 exit=0
+A_bh_persistent_lane_naive_core_262144 exit=0
+A_bh_sorted_core_262144 exit=0
+A_bh_persistent_core_262144 exit=0
+A_bh_persistent_lane_core_262144 exit=0
+A_bh_persistent_static_core_262144 exit=0
+A_bh_coherent_core_262144 exit=0
+A_bh_warp_core_262144 exit=0
+A_bh_warp_list_core_262144 exit=0
+A_bh_persistent_warp_core_262144 exit=0
+A_bh_persistent_warp_core_262144 exit=0
+A_bh_warp_list_core_262144 exit=0
+A_bh_warp_core_262144 exit=0
+A_bh_coherent_core_262144 exit=0
+A_bh_persistent_static_core_262144 exit=0
+A_bh_persistent_lane_core_262144 exit=0
+A_bh_persistent_core_262144 exit=0
+A_bh_sorted_core_262144 exit=0
+A_bh_persistent_lane_naive_core_262144 exit=0
+A_bh_naive_core_262144 exit=0
+## cell 6: T2-A core 1048576 (both)
+A_bh_naive_core_1048576 exit=0
+A_bh_persistent_lane_naive_core_1048576 exit=0
+A_bh_sorted_core_1048576 exit=0
+A_bh_persistent_core_1048576 exit=0
+A_bh_persistent_lane_core_1048576 exit=0
+A_bh_persistent_static_core_1048576 exit=0
+A_bh_coherent_core_1048576 exit=0
+A_bh_warp_core_1048576 exit=0
+A_bh_warp_list_core_1048576 exit=0
+A_bh_persistent_warp_core_1048576 exit=0
+A_bh_persistent_warp_core_1048576 exit=0
+A_bh_warp_list_core_1048576 exit=0
+A_bh_warp_core_1048576 exit=0
+A_bh_coherent_core_1048576 exit=0
+A_bh_persistent_static_core_1048576 exit=0
+A_bh_persistent_lane_core_1048576 exit=0
+A_bh_persistent_core_1048576 exit=0
+A_bh_sorted_core_1048576 exit=0
+A_bh_persistent_lane_naive_core_1048576 exit=0
+A_bh_naive_core_1048576 exit=0
+## cell 7: T2-A2 r1 plummer (once)
+A2_r1_bh_sorted_plummer_1048576_bh_sorted-bh_persistent exit=0
+A2_r1_bh_persistent_plummer_1048576_bh_sorted-bh_persistent exit=0
+A2_r1_bh_sorted_plummer_1048576_bh_sorted-bh_persistent_lane exit=0
+A2_r1_bh_persistent_lane_plummer_1048576_bh_sorted-bh_persistent_lane exit=0
+A2_r1_bh_naive_plummer_1048576_bh_naive-bh_persistent_lane_naive exit=0
+A2_r1_bh_persistent_lane_naive_plummer_1048576_bh_naive-bh_persistent_lane_naive exit=0
+A2_r1_bh_warp_plummer_1048576_bh_warp-bh_persistent_warp exit=0
+A2_r1_bh_persistent_warp_plummer_1048576_bh_warp-bh_persistent_warp exit=0
+A2_r1_bh_sorted_plummer_1048576_bh_sorted-bh_persistent_static exit=0
+A2_r1_bh_persistent_static_plummer_1048576_bh_sorted-bh_persistent_static exit=0
+## cell 8: T2-A2 r1 core (once)
+A2_r1_bh_sorted_core_1048576_bh_sorted-bh_persistent exit=0
+A2_r1_bh_persistent_core_1048576_bh_sorted-bh_persistent exit=0
+A2_r1_bh_sorted_core_1048576_bh_sorted-bh_persistent_lane exit=0
+A2_r1_bh_persistent_lane_core_1048576_bh_sorted-bh_persistent_lane exit=0
+A2_r1_bh_naive_core_1048576_bh_naive-bh_persistent_lane_naive exit=0
+A2_r1_bh_persistent_lane_naive_core_1048576_bh_naive-bh_persistent_lane_naive exit=0
+A2_r1_bh_warp_core_1048576_bh_warp-bh_persistent_warp exit=0
+A2_r1_bh_persistent_warp_core_1048576_bh_warp-bh_persistent_warp exit=0
+A2_r1_bh_sorted_core_1048576_bh_sorted-bh_persistent_static exit=0
+A2_r1_bh_persistent_static_core_1048576_bh_sorted-bh_persistent_static exit=0
+## cell 9: T2-A2 r2 plummer (once)
+A2_r2_bh_sorted_plummer_1048576_bh_sorted-bh_persistent exit=0
+A2_r2_bh_persistent_plummer_1048576_bh_sorted-bh_persistent exit=0
+A2_r2_bh_sorted_plummer_1048576_bh_sorted-bh_persistent_lane exit=0
+A2_r2_bh_persistent_lane_plummer_1048576_bh_sorted-bh_persistent_lane exit=0
+A2_r2_bh_naive_plummer_1048576_bh_naive-bh_persistent_lane_naive exit=0
+A2_r2_bh_persistent_lane_naive_plummer_1048576_bh_naive-bh_persistent_lane_naive exit=0
+A2_r2_bh_warp_plummer_1048576_bh_warp-bh_persistent_warp exit=0
+A2_r2_bh_persistent_warp_plummer_1048576_bh_warp-bh_persistent_warp exit=0
+A2_r2_bh_sorted_plummer_1048576_bh_sorted-bh_persistent_static exit=0
+A2_r2_bh_persistent_static_plummer_1048576_bh_sorted-bh_persistent_static exit=0
+## cell 10: T2-A2 r2 core (once)
+A2_r2_bh_sorted_core_1048576_bh_sorted-bh_persistent exit=0
+A2_r2_bh_persistent_core_1048576_bh_sorted-bh_persistent exit=0
+A2_r2_bh_sorted_core_1048576_bh_sorted-bh_persistent_lane exit=0
+A2_r2_bh_persistent_lane_core_1048576_bh_sorted-bh_persistent_lane exit=0
+A2_r2_bh_naive_core_1048576_bh_naive-bh_persistent_lane_naive exit=0
+A2_r2_bh_persistent_lane_naive_core_1048576_bh_naive-bh_persistent_lane_naive exit=0
+A2_r2_bh_warp_core_1048576_bh_warp-bh_persistent_warp exit=0
+A2_r2_bh_persistent_warp_core_1048576_bh_warp-bh_persistent_warp exit=0
+A2_r2_bh_sorted_core_1048576_bh_sorted-bh_persistent_static exit=0
+A2_r2_bh_persistent_static_core_1048576_bh_sorted-bh_persistent_static exit=0
+## cell 11: T2-A2 r3 plummer (once)
+A2_r3_bh_sorted_plummer_1048576_bh_sorted-bh_persistent exit=0
+A2_r3_bh_persistent_plummer_1048576_bh_sorted-bh_persistent exit=0
+A2_r3_bh_sorted_plummer_1048576_bh_sorted-bh_persistent_lane exit=0
+A2_r3_bh_persistent_lane_plummer_1048576_bh_sorted-bh_persistent_lane exit=0
+A2_r3_bh_naive_plummer_1048576_bh_naive-bh_persistent_lane_naive exit=0
+A2_r3_bh_persistent_lane_naive_plummer_1048576_bh_naive-bh_persistent_lane_naive exit=0
+A2_r3_bh_warp_plummer_1048576_bh_warp-bh_persistent_warp exit=0
+A2_r3_bh_persistent_warp_plummer_1048576_bh_warp-bh_persistent_warp exit=0
+A2_r3_bh_sorted_plummer_1048576_bh_sorted-bh_persistent_static exit=0
+A2_r3_bh_persistent_static_plummer_1048576_bh_sorted-bh_persistent_static exit=0
+## cell 12: T2-A2 r3 core (once)
+A2_r3_bh_sorted_core_1048576_bh_sorted-bh_persistent exit=0
+A2_r3_bh_persistent_core_1048576_bh_sorted-bh_persistent exit=0
+A2_r3_bh_sorted_core_1048576_bh_sorted-bh_persistent_lane exit=0
+A2_r3_bh_persistent_lane_core_1048576_bh_sorted-bh_persistent_lane exit=0
+A2_r3_bh_naive_core_1048576_bh_naive-bh_persistent_lane_naive exit=0
+A2_r3_bh_persistent_lane_naive_core_1048576_bh_naive-bh_persistent_lane_naive exit=0
+A2_r3_bh_warp_core_1048576_bh_warp-bh_persistent_warp exit=0
+A2_r3_bh_persistent_warp_core_1048576_bh_warp-bh_persistent_warp exit=0
+A2_r3_bh_sorted_core_1048576_bh_sorted-bh_persistent_static exit=0
+A2_r3_bh_persistent_static_core_1048576_bh_sorted-bh_persistent_static exit=0
+## cell 13: T2-B plummer 65536 (both)
+B_bh_sorted_plummer_65536 exit=0
+B_bh_coherent_plummer_65536 exit=0
+B_bh_warp_plummer_65536 exit=0
+B_bh_persistent_plummer_65536 exit=0
+B_bh_persistent_lane_plummer_65536 exit=0
+B_bh_persistent_lane_naive_plummer_65536 exit=0
+B_bh_persistent_warp_plummer_65536 exit=0
+Bb_bh_sorted_plummer_65536 exit=0
+Bb_bh_warp_plummer_65536 exit=0
+Bb_bh_warp_plummer_65536 exit=0
+Bb_bh_sorted_plummer_65536 exit=0
+B_bh_persistent_warp_plummer_65536 exit=0
+B_bh_persistent_lane_naive_plummer_65536 exit=0
+B_bh_persistent_lane_plummer_65536 exit=0
+B_bh_persistent_plummer_65536 exit=0
+B_bh_warp_plummer_65536 exit=0
+B_bh_coherent_plummer_65536 exit=0
+B_bh_sorted_plummer_65536 exit=0
+## cell 14: T2-B plummer 1048576 (both)
+B_bh_sorted_plummer_1048576 exit=0
+B_bh_coherent_plummer_1048576 exit=0
+B_bh_warp_plummer_1048576 exit=0
+B_bh_persistent_plummer_1048576 exit=0
+B_bh_persistent_lane_plummer_1048576 exit=0
+B_bh_persistent_lane_naive_plummer_1048576 exit=0
+B_bh_persistent_warp_plummer_1048576 exit=0
+Bb_bh_sorted_plummer_1048576 exit=0
+Bb_bh_warp_plummer_1048576 exit=0
+Bb_bh_warp_plummer_1048576 exit=0
+Bb_bh_sorted_plummer_1048576 exit=0
+B_bh_persistent_warp_plummer_1048576 exit=0
+B_bh_persistent_lane_naive_plummer_1048576 exit=0
+B_bh_persistent_lane_plummer_1048576 exit=0
+B_bh_persistent_plummer_1048576 exit=0
+B_bh_warp_plummer_1048576 exit=0
+B_bh_coherent_plummer_1048576 exit=0
+B_bh_sorted_plummer_1048576 exit=0
+## cell 15: T2-B core 65536 (both)
+B_bh_sorted_core_65536 exit=0
+B_bh_coherent_core_65536 exit=0
+B_bh_warp_core_65536 exit=0
+B_bh_persistent_core_65536 exit=0
+B_bh_persistent_lane_core_65536 exit=0
+B_bh_persistent_lane_naive_core_65536 exit=0
+B_bh_persistent_warp_core_65536 exit=0
+Bb_bh_sorted_core_65536 exit=0
+Bb_bh_warp_core_65536 exit=0
+Bb_bh_warp_core_65536 exit=0
+Bb_bh_sorted_core_65536 exit=0
+B_bh_persistent_warp_core_65536 exit=0
+B_bh_persistent_lane_naive_core_65536 exit=0
+B_bh_persistent_lane_core_65536 exit=0
+B_bh_persistent_core_65536 exit=0
+B_bh_warp_core_65536 exit=0
+B_bh_coherent_core_65536 exit=0
+B_bh_sorted_core_65536 exit=0
+## cell 16: T2-B core 1048576 (both)
+B_bh_sorted_core_1048576 exit=0
+B_bh_coherent_core_1048576 exit=0
+B_bh_warp_core_1048576 exit=0
+B_bh_persistent_core_1048576 exit=0
+B_bh_persistent_lane_core_1048576 exit=0
+B_bh_persistent_lane_naive_core_1048576 exit=0
+B_bh_persistent_warp_core_1048576 exit=0
+Bb_bh_sorted_core_1048576 exit=0
+Bb_bh_warp_core_1048576 exit=0
+Bb_bh_warp_core_1048576 exit=0
+Bb_bh_sorted_core_1048576 exit=0
+B_bh_persistent_warp_core_1048576 exit=0
+B_bh_persistent_lane_naive_core_1048576 exit=0
+B_bh_persistent_lane_core_1048576 exit=0
+B_bh_persistent_core_1048576 exit=0
+B_bh_warp_core_1048576 exit=0
+B_bh_coherent_core_1048576 exit=0
+B_bh_sorted_core_1048576 exit=0
+## cell 17: T2-C n262144 l4 b64 (both)
+C_bh_naive_n262144_l4_b64 exit=0
+C_bh_sorted_n262144_l4_b64 exit=0
+C_bh_warp_n262144_l4_b64 exit=0
+C_bh_warp_n262144_l4_b64 exit=0
+C_bh_sorted_n262144_l4_b64 exit=0
+C_bh_naive_n262144_l4_b64 exit=0
+## cell 18: T2-C n262144 l4 b128 (both)
+C_bh_naive_n262144_l4_b128 exit=0
+C_bh_sorted_n262144_l4_b128 exit=0
+C_bh_warp_n262144_l4_b128 exit=0
+C_bh_warp_n262144_l4_b128 exit=0
+C_bh_sorted_n262144_l4_b128 exit=0
+C_bh_naive_n262144_l4_b128 exit=0
+## cell 19: T2-C n262144 l4 b256 (both)
+C_bh_naive_n262144_l4_b256 exit=0
+C_bh_sorted_n262144_l4_b256 exit=0
+C_bh_warp_n262144_l4_b256 exit=0
+C_bh_warp_n262144_l4_b256 exit=0
+C_bh_sorted_n262144_l4_b256 exit=0
+C_bh_naive_n262144_l4_b256 exit=0
+## cell 20: T2-C n262144 l8 b64 (both)
+C_bh_naive_n262144_l8_b64 exit=0
+C_bh_sorted_n262144_l8_b64 exit=0
+C_bh_warp_n262144_l8_b64 exit=0
+C_bh_warp_n262144_l8_b64 exit=0
+C_bh_sorted_n262144_l8_b64 exit=0
+C_bh_naive_n262144_l8_b64 exit=0
+## cell 21: T2-C n262144 l8 b128 (both)
+C_bh_naive_n262144_l8_b128 exit=0
+C_bh_sorted_n262144_l8_b128 exit=0
+C_bh_warp_n262144_l8_b128 exit=0
+C_bh_warp_n262144_l8_b128 exit=0
+C_bh_sorted_n262144_l8_b128 exit=0
+C_bh_naive_n262144_l8_b128 exit=0
+## cell 22: T2-C n262144 l8 b256 (both)
+C_bh_naive_n262144_l8_b256 exit=0
+C_bh_sorted_n262144_l8_b256 exit=0
+C_bh_warp_n262144_l8_b256 exit=0
+C_bh_warp_n262144_l8_b256 exit=0
+C_bh_sorted_n262144_l8_b256 exit=0
+C_bh_naive_n262144_l8_b256 exit=0
+## cell 23: T2-C n262144 l16 b64 (both)
+C_bh_naive_n262144_l16_b64 exit=0
+C_bh_sorted_n262144_l16_b64 exit=0
+C_bh_warp_n262144_l16_b64 exit=0
+C_bh_warp_n262144_l16_b64 exit=0
+C_bh_sorted_n262144_l16_b64 exit=0
+C_bh_naive_n262144_l16_b64 exit=0
+## cell 24: T2-C n262144 l16 b128 (both)
+C_bh_naive_n262144_l16_b128 exit=0
+C_bh_sorted_n262144_l16_b128 exit=0
+C_bh_warp_n262144_l16_b128 exit=0
+C_bh_warp_n262144_l16_b128 exit=0
+C_bh_sorted_n262144_l16_b128 exit=0
+C_bh_naive_n262144_l16_b128 exit=0
+## cell 25: T2-C n262144 l16 b256 (both)
+C_bh_naive_n262144_l16_b256 exit=0
+C_bh_sorted_n262144_l16_b256 exit=0
+C_bh_warp_n262144_l16_b256 exit=0
+C_bh_warp_n262144_l16_b256 exit=0
+C_bh_sorted_n262144_l16_b256 exit=0
+C_bh_naive_n262144_l16_b256 exit=0
+## cell 26: T2-C n262144 l32 b64 (both)
+C_bh_naive_n262144_l32_b64 exit=0
+C_bh_sorted_n262144_l32_b64 exit=0
+C_bh_warp_n262144_l32_b64 exit=0
+C_bh_warp_n262144_l32_b64 exit=0
+C_bh_sorted_n262144_l32_b64 exit=0
+C_bh_naive_n262144_l32_b64 exit=0
+## cell 27: T2-C n262144 l32 b128 (both)
+C_bh_naive_n262144_l32_b128 exit=0
+C_bh_sorted_n262144_l32_b128 exit=0
+C_bh_warp_n262144_l32_b128 exit=0
+C_bh_warp_n262144_l32_b128 exit=0
+C_bh_sorted_n262144_l32_b128 exit=0
+C_bh_naive_n262144_l32_b128 exit=0
+## cell 28: T2-C n262144 l32 b256 (both)
+C_bh_naive_n262144_l32_b256 exit=0
+C_bh_sorted_n262144_l32_b256 exit=0
+C_bh_warp_n262144_l32_b256 exit=0
+C_bh_warp_n262144_l32_b256 exit=0
+C_bh_sorted_n262144_l32_b256 exit=0
+C_bh_naive_n262144_l32_b256 exit=0
+## cell 29: T2-C n1048576 l4 b64 (both)
+C_bh_naive_n1048576_l4_b64 exit=0
+C_bh_sorted_n1048576_l4_b64 exit=0
+C_bh_warp_n1048576_l4_b64 exit=0
+C_bh_warp_n1048576_l4_b64 exit=0
+C_bh_sorted_n1048576_l4_b64 exit=0
+C_bh_naive_n1048576_l4_b64 exit=0
+## cell 30: T2-C n1048576 l4 b128 (both)
+C_bh_naive_n1048576_l4_b128 exit=0
+C_bh_sorted_n1048576_l4_b128 exit=0
+C_bh_warp_n1048576_l4_b128 exit=0
+C_bh_warp_n1048576_l4_b128 exit=0
+C_bh_sorted_n1048576_l4_b128 exit=0
+C_bh_naive_n1048576_l4_b128 exit=0
+## cell 31: T2-C n1048576 l4 b256 (both)
+C_bh_naive_n1048576_l4_b256 exit=0
+C_bh_sorted_n1048576_l4_b256 exit=0
+C_bh_warp_n1048576_l4_b256 exit=0
+C_bh_warp_n1048576_l4_b256 exit=0
+C_bh_sorted_n1048576_l4_b256 exit=0
+C_bh_naive_n1048576_l4_b256 exit=0
+## cell 32: T2-C n1048576 l8 b64 (both)
+C_bh_naive_n1048576_l8_b64 exit=0
+C_bh_sorted_n1048576_l8_b64 exit=0
+C_bh_warp_n1048576_l8_b64 exit=0
+C_bh_warp_n1048576_l8_b64 exit=0
+C_bh_sorted_n1048576_l8_b64 exit=0
+C_bh_naive_n1048576_l8_b64 exit=0
+## cell 33: T2-C n1048576 l8 b128 (both)
+C_bh_naive_n1048576_l8_b128 exit=0
+C_bh_sorted_n1048576_l8_b128 exit=0
+C_bh_warp_n1048576_l8_b128 exit=0
+C_bh_warp_n1048576_l8_b128 exit=0
+C_bh_sorted_n1048576_l8_b128 exit=0
+C_bh_naive_n1048576_l8_b128 exit=0
+## cell 34: T2-C n1048576 l8 b256 (both)
+C_bh_naive_n1048576_l8_b256 exit=0
+C_bh_sorted_n1048576_l8_b256 exit=0
+C_bh_warp_n1048576_l8_b256 exit=0
+C_bh_warp_n1048576_l8_b256 exit=0
+C_bh_sorted_n1048576_l8_b256 exit=0
+C_bh_naive_n1048576_l8_b256 exit=0
+## cell 35: T2-C n1048576 l16 b64 (both)
+C_bh_naive_n1048576_l16_b64 exit=0
+C_bh_sorted_n1048576_l16_b64 exit=0
+C_bh_warp_n1048576_l16_b64 exit=0
+C_bh_warp_n1048576_l16_b64 exit=0
+C_bh_sorted_n1048576_l16_b64 exit=0
+C_bh_naive_n1048576_l16_b64 exit=0
+## cell 36: T2-C n1048576 l16 b128 (both)
+C_bh_naive_n1048576_l16_b128 exit=0
+C_bh_sorted_n1048576_l16_b128 exit=0
+C_bh_warp_n1048576_l16_b128 exit=0
+C_bh_warp_n1048576_l16_b128 exit=0
+C_bh_sorted_n1048576_l16_b128 exit=0
+C_bh_naive_n1048576_l16_b128 exit=0
+## cell 37: T2-C n1048576 l16 b256 (both)
+C_bh_naive_n1048576_l16_b256 exit=0
+C_bh_sorted_n1048576_l16_b256 exit=0
+C_bh_warp_n1048576_l16_b256 exit=0
+C_bh_warp_n1048576_l16_b256 exit=0
+C_bh_sorted_n1048576_l16_b256 exit=0
+C_bh_naive_n1048576_l16_b256 exit=0
+## cell 38: T2-C n1048576 l32 b64 (both)
+C_bh_naive_n1048576_l32_b64 exit=0
+C_bh_sorted_n1048576_l32_b64 exit=0
+C_bh_warp_n1048576_l32_b64 exit=0
+C_bh_warp_n1048576_l32_b64 exit=0
+C_bh_sorted_n1048576_l32_b64 exit=0
+C_bh_naive_n1048576_l32_b64 exit=0
+## cell 39: T2-C n1048576 l32 b128 (both)
+C_bh_naive_n1048576_l32_b128 exit=0
+C_bh_sorted_n1048576_l32_b128 exit=0
+C_bh_warp_n1048576_l32_b128 exit=0
+C_bh_warp_n1048576_l32_b128 exit=0
+C_bh_sorted_n1048576_l32_b128 exit=0
+C_bh_naive_n1048576_l32_b128 exit=0
+2026-10-18 04:56:44 FLAGGED T2-C n1048576 l32 b128 (idle 14%)
+2026-10-18 05:02:52 NOT-CLEARED T2-C n1048576 l32 b128 EXCLUDE (first attempt kept)
+## cell 40: T2-C n1048576 l32 b256 (both)
+C_bh_naive_n1048576_l32_b256 exit=0
+C_bh_sorted_n1048576_l32_b256 exit=0
+C_bh_warp_n1048576_l32_b256 exit=0
+C_bh_warp_n1048576_l32_b256 exit=0
+C_bh_sorted_n1048576_l32_b256 exit=0
+C_bh_naive_n1048576_l32_b256 exit=0
+2026-10-18 05:03:48 FLAGGED T2-C n1048576 l32 b256 (idle 19%)
+2026-10-18 05:05:57 RERUN T2-C n1048576 l32 b256
+C_bh_naive_n1048576_l32_b256 exit=0
+C_bh_sorted_n1048576_l32_b256 exit=0
+C_bh_warp_n1048576_l32_b256 exit=0
+C_bh_warp_n1048576_l32_b256 exit=0
+C_bh_sorted_n1048576_l32_b256 exit=0
+C_bh_naive_n1048576_l32_b256 exit=0
+results/2026-10-18_clean_rerun/run.sh: line 278: SFX: unbound variable
+selftest exit=1
+results/2026-10-18_clean_rerun/run.sh: line 279: syntax error near unexpected token `fi'
+results/2026-10-18_clean_rerun/run.sh: line 279: `fi'

@@ -1,0 +1,13 @@
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=4096 block=256 q=1 prefetch=-1 unroll=-1  regs=40 smem=0 B  resident 6 blocks/SM (100% occupancy)  blocks/SM=51.20 (busiest 52)  waves=8.53
+# ic=plummer seed=42 theta=0.5 leaf=32 mass_spectrum=equal bh_mass=0.01 ic_hash=d05ab553b27cfaed | mass total 1.000000000, min 9.537e-07, max 9.537e-07 (max/min 1) | dt advisory 1.65e-01 (dt 0.001)
+kernel=bh_sorted n=1048576 block=256 q=1 prefetch=-1 unroll=-1 runs=11 batch=1  median=34.7720 ms  min=34.7022  max=35.4999  31620.632 G N^2-equivalent interactions/s (not the tree rate; see the work: line)
+phases (median of 11, ms):  keys 0.0573  sort 0.2540  tree 0.3267  order 0.0010  traverse 34.1637  | build(keys+sort+tree) 0.6379  order 0.0010  traverse 34.1637  sum 34.8426  (production total 34.7720)
+work: 1414.6 interactions/body (1.483e+09 total), 1555.3 nodes popped/body | per-warp max/mean 1.076 (median warp 1.071) | SIMT eff interactions 0.158, pops 0.976 | warp-cost max/mean 1.25 | traversal 43.4 G interactions/s
+rates: real 42.66 G interactions/s over the full pipeline (34.7720 ms), 43.42 over the traversal; N^2-equivalent 31620.6 G/s
+tree: max depth 34, push depth 26 -> stack bound 28 (capacity: per-thread 96, warp 64), duplicate keys 0 (0.000% of bodies)
+validate vs allpairs_naive: max rel err 5.462e-01  rms 6.564e-03
+validate vs FP64 (528 bodies, kappa_max 2.2e+02): this rms 5.033e-02 max 5.462e-01 norm 1.276e-02  | naive rms 1.629e-05 max 4.313e-05 norm 3.236e-05
+tree error vs exact (all 1048576 bodies), per-body relative (legacy): rms 6.564e-03  p50 4.760e-03  p99 1.733e-02  max 5.462e-01
+tree error vs exact, normalised |da|/sum|f| (all bodies): rms 3.043e-03  p99 7.713e-03  max 1.599e-02 | global |da|/|a|_rms: rms 6.299e-03  p99 1.840e-02
+gates (tree, theta=0.50): TN1 PASS (norm rms 3.043e-03 <= 2.000e-02)  TN2 PASS (norm p99 7.713e-03 <= 4.500e-02)  stack ok  => PASS  | legacy TG1 PASS (rms 6.564e-03 <= 3.000e-02) TG2 PASS (p99 1.733e-02 <= 1.200e-01), not gating

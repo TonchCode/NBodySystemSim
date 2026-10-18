@@ -1,0 +1,17 @@
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=480 block=256 q=1 prefetch=-1 unroll=-1  regs=38 smem=0 B  resident 6 blocks/SM (100% occupancy)  blocks/SM=6.00 (busiest 6)  waves=1.00
+# persistent: grid = min(resident blocks/SM x 80 SMs, blocks with work) = 480 blocks (3840 warps)
+# ic=galaxies seed=42 theta=0.5 leaf=32 mass_spectrum=equal bh_mass=0.01 ic_hash=35003ffd3a86a1b8 | mass total 1.000000026, min 3.777e-06, max 5.000e-03 (max/min 1.32e+03) | dt advisory 2.28e-03 (dt 0.001)
+kernel=bh_persistent n=262144 block=256 q=1 prefetch=-1 unroll=-1 runs=11 batch=1  median=5.2183 ms  min=5.1610  max=5.5276  13168.929 G N^2-equivalent interactions/s (not the tree rate; see the work: line)
+phases (median of 11, ms):  keys 0.0256  sort 0.2109  tree 0.0932  order 0.0020  traverse 4.9062  | build(keys+sort+tree) 0.3297  order 0.0020  traverse 4.9062  sum 5.2520  (production total 5.2183)
+work: 1224.3 interactions/body (3.209e+08 total), 700.4 nodes popped/body | per-warp max/mean 1.131 (median warp 1.120) | SIMT eff interactions 0.127, pops 0.945 | warp-cost max/mean 1.79 | traversal 65.4 G interactions/s
+rates: real 61.50 G interactions/s over the full pipeline (5.2183 ms), 65.42 over the traversal; N^2-equivalent 13168.9 G/s
+tree: max depth 34, push depth 27 -> stack bound 29 (capacity: per-thread 96, warp 64), duplicate keys 0 (0.000% of bodies)
+validate vs allpairs_naive: max rel err 6.277e-02  rms 1.184e-02
+validate vs FP64 (528 bodies, kappa_max 7.5e+01): this rms 1.284e-02 max 6.276e-02 norm 1.828e-02  | naive rms 3.644e-04 max 1.512e-03 norm 5.495e-04
+tree error vs exact (all 262144 bodies), per-body relative (legacy): rms 1.184e-02  p50 9.198e-03  p99 2.685e-02  max 6.277e-02
+tree error vs exact, normalised |da|/sum|f| (all bodies): rms 5.629e-03  p99 1.448e-02  max 3.442e-02 | global |da|/|a|_rms: rms 7.989e-03  p99 2.881e-02
+normalised error by mass: heavy (m >= 10 x median, 2 bodies) rms 7.147e-04 max 8.342e-04 | light (262142) rms 5.629e-03 p99 1.448e-02 max 3.442e-02
+gates (tree, theta=0.50): TN1 PASS (norm rms 5.629e-03 <= 2.000e-02)  TN2 PASS (norm p99 1.448e-02 <= 4.500e-02)  stack ok  => PASS  | legacy TG1 PASS (rms 1.184e-02 <= 3.000e-02) TG2 PASS (p99 2.685e-02 <= 1.200e-01), not gating
+work vs bh_sorted: interactions x1.0000, pops x1.0000
+exact vs bh_sorted: accelerations bitwise equal, per-slot pop/interaction counts yes (0 slots differ; equal counts = every body processed exactly once)

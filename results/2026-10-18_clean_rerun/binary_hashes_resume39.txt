@@ -1,0 +1,3 @@
+2b7896830db05c5977bde12e49be96e0c18ea14e4066d6c4a7656d4490dcfd43 *./build/nbody_bench.exe
+73a55db5dcc095809a2199d65dd329894e40889ac4288de1721ad7ab7eb81aba *./build/src/viewer/nbody_viewer.exe
+720996cd4d15be87a0580269a543ac82bc9fe7884c0bd8e3d5879dbd8e9811f5 */c/Users/petya/AppData/Local/Temp/claude/D--life-system/cf99499d-78af-474a-80e1-0ba28ceb4299/scratchpad/nbody_bench_before.exe

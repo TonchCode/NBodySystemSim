@@ -1,0 +1,76 @@
+## T1: clean #4/#5 (leaf 16 b128, set A) vs tree round 1 (0% load)
+  A_bh_naive_plummer_65536           round1     2.862  clean     2.965  clean/round1 1.0358
+  A_bh_naive_plummer_262144          round1    16.223  clean    15.862  clean/round1 0.9778
+  A_bh_naive_plummer_1048576         round1    73.046  clean    73.025  clean/round1 0.9997
+  A_bh_naive_core_65536              round1     3.983  clean     3.876  clean/round1 0.9730
+  A_bh_naive_core_262144             round1    20.748  clean    21.621  clean/round1 1.0421
+  A_bh_naive_core_1048576            round1    90.303  clean    92.264  clean/round1 1.0217
+  A_bh_sorted_plummer_65536          round1     1.757  clean     1.798  clean/round1 1.0230
+  A_bh_sorted_plummer_262144         round1     8.475  clean     8.408  clean/round1 0.9921
+  A_bh_sorted_plummer_1048576        round1    38.552  clean    38.600  clean/round1 1.0012
+  A_bh_sorted_core_65536             round1     2.422  clean     2.433  clean/round1 1.0046
+  A_bh_sorted_core_262144            round1    10.839  clean    11.189  clean/round1 1.0323
+  A_bh_sorted_core_1048576           round1    47.252  clean    48.007  clean/round1 1.0160
+  within +-3%: 9/12, median |d| 2.20%  -> FAIL (need >= 10/12 and <= 2%)
+
+## clean/old traversal time, round-2 set A (mean of passes vs old single pass)
+  bh_coherent                median 0.9927  range 0.9836..1.0092  (6 cells)
+  bh_naive                   median 0.9820  range 0.9298..1.0505  (6 cells)
+  bh_persistent              median 0.9730  range 0.9647..1.0305  (6 cells)
+  bh_persistent_lane         median 0.9840  range 0.9515..1.0156  (6 cells)
+  bh_persistent_lane_naive   median 0.9825  range 0.9434..1.0055  (6 cells)
+  bh_persistent_static       median 0.9738  range 0.9626..1.0009  (6 cells)
+  bh_persistent_warp         median 1.0015  range 0.9875..1.0060  (6 cells)
+  bh_sorted                  median 0.9728  range 0.9638..0.9995  (6 cells)
+  bh_warp                    median 0.9994  range 0.9966..1.0038  (6 cells)
+  bh_warp_list               median 0.9999  range 0.9993..1.0087  (6 cells)
+  bh_warp_naive              median 0.9991  range 0.9795..1.0009  (3 cells)
+T2: #5 cells >= 1% faster clean: 4/6 -> FAIL
+T4a (round 2): #7 median clean/old 0.9994 -> PASS (need >= 0.97)
+  T5/T7 plummer     65536 old 3.135 clean 3.134 ratio 0.9997
+  T5/T7 plummer    262144 old 5.429 clean 5.226 ratio 0.9626
+  T5/T7 plummer   1048576 old 6.608 clean 6.428 ratio 0.9729
+  T5/T7 core        65536 old 3.444 clean 3.339 ratio 0.9697
+  T5/T7 core       262144 old 6.363 clean 6.371 ratio 1.0012
+  T5/T7 core      1048576 old 7.314 clean 7.091 ratio 0.9696
+T3a (round 2): W8/W9 median clean/old 0.9713 -> PASS (need <= 1.00)
+
+## IC round: clean/old traversal per kernel (set A best-tuned, set B, set K)
+  setA.csv bh_naive       median 0.9748  range 0.8600..1.0116  (18 cells)
+  setA.csv bh_persistent  median 0.9826  range 0.8604..1.0001  (18 cells)
+  setA.csv bh_sorted      median 0.9905  range 0.9034..1.0267  (18 cells)
+  setA.csv bh_warp        median 0.9982  range 0.9901..1.0092  (18 cells)
+  setB.csv bh_sorted      median 0.9811  range 0.8274..1.0067  (18 cells)
+  setB.csv bh_warp        median 0.9952  range 0.8513..1.0057  (18 cells)
+  setK.csv bh_sorted      median 0.8850  range 0.8814..0.8891  (3 cells)
+  setK.csv bh_warp        median 0.9859  range 0.9647..0.9888  (3 cells)
+
+## IC S ratios (#7/#5) and Q ratios (T5/T6), clean/old
+  plummer       65536  S old 3.187 clean 3.177 (0.9967) | Q old 0.839 clean 0.850 (1.0132)
+  plummer      262144  S old 4.930 clean 4.884 (0.9906) | Q old 0.838 clean 0.863 (1.0296)
+  plummer     1048576  S old 6.144 clean 5.698 (0.9274) | Q old 0.881 clean 0.872 (0.9894)
+  disk          65536  S old 3.022 clean 3.018 (0.9989) | Q old 0.967 clean 0.979 (1.0122)
+  disk         262144  S old 4.229 clean 4.169 (0.9857) | Q old 0.796 clean 0.821 (1.0320)
+  disk        1048576  S old 5.953 clean 5.431 (0.9123) | Q old 0.845 clean 0.838 (0.9921)
+  galaxies      65536  S old 2.286 clean 2.289 (1.0014) | Q old 0.957 clean 0.957 (0.9999)
+  galaxies     262144  S old 3.772 clean 3.761 (0.9970) | Q old 0.799 clean 0.802 (1.0038)
+  galaxies    1048576  S old 5.561 clean 5.016 (0.9020) | Q old 0.848 clean 0.835 (0.9848)
+  cube_shell    65536  S old 1.594 clean 1.644 (1.0314) | Q old 0.867 clean 0.890 (1.0266)
+  cube_shell   262144  S old 2.150 clean 2.094 (0.9740) | Q old 0.775 clean 0.759 (0.9790)
+  cube_shell  1048576  S old 2.182 clean 2.191 (1.0038) | Q old 0.755 clean 0.766 (1.0140)
+  cube_edges    65536  S old 1.059 clean 1.059 (1.0000) | Q old 0.947 clean 0.947 (1.0000)
+  cube_edges   262144  S old 1.209 clean 1.186 (0.9813) | Q old 0.912 clean 0.919 (1.0081)
+  cube_edges  1048576  S old 1.040 clean 1.036 (0.9963) | Q old 0.958 clean 0.961 (1.0033)
+  uniform       65536  S old 2.684 clean 2.677 (0.9972) | Q old 0.958 clean 0.965 (1.0074)
+  uniform      262144  S old 3.300 clean 3.207 (0.9719) | Q old 0.750 clean 0.804 (1.0726)
+  uniform     1048576  S old 4.295 clean 3.907 (0.9096) | Q old 0.770 clean 0.810 (1.0524)
+
+## Falsification tests (§5)
+1. round-1 anchors: 9/12 within 3%, median |d| 2.20% -> FAIL
+2a. round-2 #5 faster clean by >= 1%: 4/6 -> FAIL
+2b. IC #5 plummer 262144 l16 b128: clean 8.516 vs 8.475 (+0.48%) (old 9.724) -> PASS
+3. median clean/old speedup: round-2 W8/W9 0.9713; IC 3D S 0.9857 -> PASS
+4. #7 median clean/old: round 2 0.9994, IC set A 0.9982; IC set B #7 1M l16 b128 clean 5.979 vs old 6.703 (0.8919) -> PASS
+5. #6 same-family ratios: median |clean/old - 1| 1.22% over 39 cells (round 2 1.21%, IC Q 1.22%) -> PASS (verdict flips: see scorecard)
+6. drift: median |pass2/pass1 - 1| 0.21% over 309 runs (p90 0.85%); #5 1M l16 b128 set A / set C 0.9960 -> PASS
+7. H-coh: cube_edges S max |clean/old - 1| 1.87% (3D median +1.43% fall) -> PASS

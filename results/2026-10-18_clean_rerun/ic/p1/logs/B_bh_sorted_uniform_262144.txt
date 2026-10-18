@@ -1,0 +1,13 @@
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=2048 block=128 q=1 prefetch=-1 unroll=-1  regs=40 smem=0 B  resident 12 blocks/SM (100% occupancy)  blocks/SM=25.60 (busiest 26)  waves=2.13
+# ic=uniform seed=42 theta=0.5 leaf=16 mass_spectrum=equal bh_mass=0.01 ic_hash=7dab93d2ae137760 | mass total 1.000000000, min 3.815e-06, max 3.815e-06 (max/min 1) | dt advisory 8.25e-02 (dt 0.001)
+kernel=bh_sorted n=262144 block=128 q=1 prefetch=-1 unroll=-1 runs=11 batch=1  median=3.2872 ms  min=3.1557  max=3.4794  20905.374 G N^2-equivalent interactions/s (not the tree rate; see the work: line)
+phases (median of 11, ms):  keys 0.0316  sort 0.1731  tree 0.0850  order 0.0010  traverse 2.9297  | build(keys+sort+tree) 0.2897  order 0.0010  traverse 2.9297  sum 3.2326  (production total 3.2872)
+work: 468.4 interactions/body (1.228e+08 total), 447.8 nodes popped/body | per-warp max/mean 1.155 (median warp 1.127) | SIMT eff interactions 0.129, pops 0.914 | warp-cost max/mean 1.31 | traversal 41.9 G interactions/s
+rates: real 37.36 G interactions/s over the full pipeline (3.2872 ms), 41.91 over the traversal; N^2-equivalent 20905.4 G/s
+tree: max depth 22, push depth 15 -> stack bound 17 (capacity: per-thread 96, warp 64), duplicate keys 0 (0.000% of bodies)
+validate vs allpairs_naive: max rel err 6.902e-01  rms 1.330e-02
+validate vs FP64 (528 bodies, kappa_max 2.8e+02): this rms 3.998e-02 max 6.902e-01 norm 7.758e-03  | naive rms 7.460e-06 max 2.170e-05 norm 9.271e-06
+tree error vs exact (all 262144 bodies), per-body relative (legacy): rms 1.330e-02  p50 8.145e-03  p99 4.462e-02  max 6.902e-01
+tree error vs exact, normalised |da|/sum|f| (all bodies): rms 3.269e-03  p99 6.453e-03  max 9.444e-03 | global |da|/|a|_rms: rms 9.488e-03  p99 1.981e-02
+gates (tree, theta=0.50): TN1 PASS (norm rms 3.269e-03 <= 2.000e-02)  TN2 PASS (norm p99 6.453e-03 <= 4.500e-02)  stack ok  => PASS  | legacy TG1 PASS (rms 1.330e-02 <= 3.000e-02) TG2 PASS (p99 4.462e-02 <= 1.200e-01), not gating
