@@ -587,8 +587,7 @@ come from the common-prefix length δ with its neighbours, and the split from a 
 δ. Equal keys are made distinct by appending the index (δ = 64 + clz(i ⊕ j)), so duplicates are
 legal. Every node then covers a **contiguous range** [first, last] of the sorted array, which
 makes leaf buckets free: a small node is just a range. This is Karras' parallel radix-tree
-construction [TODO(source): T. Karras, "Maximizing parallelism in the construction of BVHs,
-octrees, and k-d trees", HPG 2012; not in `references.bib`, so not cited]. Child encoding:
+construction [P:karras2012maximizing]. Child encoding:
 ≥ 0 = internal node, < 0 = ~(sorted body index).
 
 *Why binary and not an octree:* the radix tree is built in one O(N) kernel with no atomics and
@@ -622,8 +621,7 @@ summed directly over its contiguous range, a larger node pushes both children, a
 single-body child is one body interaction.
 - *Safety:* any point inside the node's box is within bmax of the COM, so for θ ≤ 1 a body
   inside a node's box always opens it. The classic size criterion s/d < θ can accept a cell that
-  contains the body when the COM sits near an edge [TODO(source): Salmon & Warren 1994, not in
-  `references.bib`].
+  contains the body when the COM sits near an edge [P:salmon1994skeletons].
 - *Meaning of θ:* θ trades accuracy against cost [P:barnes1986hierarchical]. Our θ is defined
   on bmax, not on the cell side, so it is not numerically the classic θ. For a cube with the COM
   at its centre bmax = 0.87 s, so our θ ≈ 0.87 × the classic one; with tight AABBs and binary
@@ -849,7 +847,7 @@ fill (timeline). Method: `tools/tree_analysis.py`.
   accepts vs bucket bodies.
 - An octree (or a wider radix node) to cut the 1.5 pops/interaction.
 - Quadrupole (§11.3), deferred.
-- Karras, Skilling and Salmon & Warren are still TODO(source).
+- Karras, Skilling and Salmon & Warren: resolved 2026-10-20 (now in `references.bib`).
 
 ---
 

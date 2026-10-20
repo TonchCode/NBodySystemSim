@@ -49,6 +49,18 @@ Third pass (critic #8: Chinese leads, R3 evidence): **2026-10-17**. See [R3-evid
 | [burtscher2011barneshut](burtscher2011barneshut.md) | 2011 | GPU Computing Gems Emerald, ch. 6 | All-GPU Barnes-Hut; sort + warp-vote traversal | USA | **#4, #5, #7** | ✅ |
 | [wang2021photonsgpu](wang2021photonsgpu.md) | 2021 | RAA 21(11) 281 | PhotoNs-GPU: PM-FMM on GPU; FP32 ≈ 2x FP64 | China (affiliation not fetched) | bg #1 (FP32) | ✅ |
 
+### C2. Algorithm foundations (added 2026-10-20 for docs/final/03-algorithm.md; BACKGROUND)
+| Key | Year | Venue | Topic | ✓ |
+|---|---|---|---|---|
+| plummer1911distribution | 1911 | MNRAS 71(5) | Plummer sphere (test IC) | ✅ Crossref |
+| verlet1967computer | 1967 | Phys. Rev. 159 | Verlet integration (leapfrog family) | ✅ Crossref |
+| warren1993hashed | 1993 | Supercomputing '93 | parallel hashed oct-tree, SFC keys | ✅ Crossref |
+| salmon1994skeletons | 1994 | J. Comput. Phys. 111 | treecode error analysis, opening-criterion pathologies | ✅ Crossref |
+| skilling2004hilbert | 2004 | AIP Conf. Proc. 707 | Hilbert-curve keys | ✅ Crossref |
+| karras2012maximizing | 2012 | HPG 2012 | parallel binary radix-tree build | ✅ NVIDIA Research page + EG DOI |
+
+Found, not used (content not checked): Balarezo & Pineda, "Numerical Performance Analysis of the Direct and Barnes-Hut Algorithm for Solving the N-Body Problem", CCIS (TICEC 2025), pp. 365–376, DOI 10.1007/978-3-032-08366-1_24. A 2026-10-20 search again found no 2025–26 Chinese-led GPU Barnes-Hut paper.
+
 ### D. NVIDIA documentation
 | Key | Version | Date | Use | ✓ |
 |---|---|---|---|---|
