@@ -664,7 +664,7 @@ paths, which is the warp-vote idea of [P:burtscher2011barneshut] (background). C
   node or body load is a same-address (broadcast) load: one L1 wavefront instead of up to 32.
 - **The stack lives in registers.** The 64-entry stack is spread over two registers per lane (entry
   k in lane k mod 32), so a push is a predicated move and a pop is one `__shfl_sync`. There is no
-  shared memory and no local memory: a 0 B stack frame, against #5's 256 B local stack.
+  shared memory and no local memory: a 0 B stack frame, against #5's 384 B local stack (96 entries since D-028; `cuobjdump` `STACK:384`, 2026-10-22).
 - **Resources** [M]: 40 registers, 0 spills, 12 blocks per SM at block 128, 100 % occupancy
   (`docs/03-design.md` §17.2).
 - **The price is extra work.** A lane whose own test would accept a node that the warp opens gets

@@ -1,0 +1,82 @@
+
+=== allpairs_tiled_1048576 ===
+  Device: 3 allocations, peak live 48.0 MiB; largest (MiB): 16.00, 16.00, 16.00
+  memcpy Host-to-Device: 2 x, 32.0 MiB total
+  kernel allPairsTiledKernel                   5 x  avg  861007.4 us  100.0 %
+
+=== allpairs_tiled_65536 ===
+  Device: 3 allocations, peak live 3.0 MiB; largest (MiB): 1.00, 1.00, 1.00
+  memcpy Host-to-Device: 2 x, 2.0 MiB total
+  kernel allPairsTiledKernel                   8 x  avg    4854.6 us  100.0 %
+
+=== bh_sorted_1048576 ===
+  Device Static: 58 allocations, peak live 0.0 MiB; largest (MiB): 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00
+  Device: 28 allocations, peak live 212.8 MiB; largest (MiB): 16.00, 16.00, 16.00, 16.00, 16.00, 16.00, 16.00, 16.00, 16.00, 12.28, 8.00, 8.00
+  memcpy Host-to-Device: 2 x, 32.0 MiB total
+  memcpy Device-to-Host: 4 x, 40.0 MiB total
+  memset: 157 x, 102.1 MiB total
+  kernel bhTraverseKernel                     14 x  avg   42358.7 us   98.3 %
+  kernel multipoleKernel                      14 x  avg     460.5 us    1.1 %
+  kernel DeviceRadixSortOnesweepKernel       112 x  avg      21.1 us    0.4 %
+  kernel radixTreeKernel                      14 x  avg      47.4 us    0.1 %
+  kernel bboxPartialKernel                    14 x  avg      25.6 us    0.1 %
+  kernel gatherKernel                         14 x  avg      22.3 us    0.1 %
+  kernel DeviceRadixSortHistogramKernel       14 x  avg       9.6 us    0.0 %
+  kernel keyKernel                            14 x  avg       8.8 us    0.0 %
+  kernel bboxFinalKernel                      14 x  avg       2.2 us    0.0 %
+  kernel DeviceRadixSortExclusiveSumKernel    14 x  avg       1.1 us    0.0 %
+  kernel iotaKernel                            1 x  avg       3.6 us    0.0 %
+
+=== bh_warp_1048576 ===
+  Device Static: 58 allocations, peak live 0.0 MiB; largest (MiB): 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00
+  Device: 28 allocations, peak live 212.8 MiB; largest (MiB): 16.00, 16.00, 16.00, 16.00, 16.00, 16.00, 16.00, 16.00, 16.00, 12.28, 8.00, 8.00
+  memcpy Host-to-Device: 2 x, 32.0 MiB total
+  memcpy Device-to-Host: 4 x, 40.0 MiB total
+  memset: 157 x, 102.1 MiB total
+  kernel bhWarpKernel                         14 x  avg    7678.6 us   92.5 %
+  kernel multipoleKernel                      14 x  avg     334.0 us    4.0 %
+  kernel DeviceRadixSortOnesweepKernel       112 x  avg      21.7 us    2.1 %
+  kernel radixTreeKernel                      14 x  avg      48.9 us    0.6 %
+  kernel gatherKernel                         14 x  avg      23.3 us    0.3 %
+  kernel bboxPartialKernel                    14 x  avg      17.3 us    0.2 %
+  kernel DeviceRadixSortHistogramKernel       14 x  avg      10.1 us    0.1 %
+  kernel keyKernel                            14 x  avg       9.2 us    0.1 %
+  kernel bboxFinalKernel                      14 x  avg       2.3 us    0.0 %
+  kernel DeviceRadixSortExclusiveSumKernel    14 x  avg       1.1 us    0.0 %
+  kernel iotaKernel                            1 x  avg       3.6 us    0.0 %
+
+=== bh_warp_262144 ===
+  Device Static: 58 allocations, peak live 0.0 MiB; largest (MiB): 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00
+  Device: 28 allocations, peak live 53.2 MiB; largest (MiB): 4.00, 4.00, 4.00, 4.00, 4.00, 4.00, 4.00, 4.00, 4.00, 3.08, 2.00, 2.00
+  memcpy Host-to-Device: 2 x, 8.0 MiB total
+  memcpy Device-to-Host: 4 x, 10.0 MiB total
+  memset: 91 x, 16.4 MiB total
+  kernel bhWarpKernel                          8 x  avg    2066.1 us   91.6 %
+  kernel multipoleKernel                       8 x  avg      77.2 us    3.4 %
+  kernel DeviceRadixSortOnesweepKernel        64 x  avg       9.1 us    3.2 %
+  kernel radixTreeKernel                       8 x  avg      17.0 us    0.8 %
+  kernel gatherKernel                          8 x  avg       7.3 us    0.3 %
+  kernel DeviceRadixSortHistogramKernel        8 x  avg       4.6 us    0.2 %
+  kernel bboxPartialKernel                     8 x  avg       3.8 us    0.2 %
+  kernel keyKernel                             8 x  avg       3.3 us    0.1 %
+  kernel bboxFinalKernel                       8 x  avg       2.3 us    0.1 %
+  kernel DeviceRadixSortExclusiveSumKernel     8 x  avg       1.1 us    0.1 %
+  kernel iotaKernel                            1 x  avg       1.8 us    0.0 %
+
+=== bh_warp_4194304 ===
+  Device Static: 58 allocations, peak live 0.0 MiB; largest (MiB): 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00
+  Device: 28 allocations, peak live 851.1 MiB; largest (MiB): 64.00, 64.00, 64.00, 64.00, 64.00, 64.00, 64.00, 64.00, 64.00, 49.08, 32.00, 32.00
+  memcpy Host-to-Device: 2 x, 128.0 MiB total
+  memcpy Device-to-Host: 4 x, 160.0 MiB total
+  memset: 91 x, 260.4 MiB total
+  kernel bhWarpKernel                          8 x  avg   27777.9 us   89.3 %
+  kernel multipoleKernel                       8 x  avg    1075.0 us    3.5 %
+  kernel DeviceRadixSortOnesweepKernel        64 x  avg     127.6 us    3.3 %
+  kernel gatherKernel                          8 x  avg     737.1 us    2.4 %
+  kernel radixTreeKernel                       8 x  avg     197.4 us    0.6 %
+  kernel keyKernel                             8 x  avg     134.9 us    0.4 %
+  kernel bboxPartialKernel                     8 x  avg     118.9 us    0.4 %
+  kernel DeviceRadixSortHistogramKernel        8 x  avg      30.2 us    0.1 %
+  kernel bboxFinalKernel                       8 x  avg       2.4 us    0.0 %
+  kernel iotaKernel                            1 x  avg      10.5 us    0.0 %
+  kernel DeviceRadixSortExclusiveSumKernel     8 x  avg       1.1 us    0.0 %

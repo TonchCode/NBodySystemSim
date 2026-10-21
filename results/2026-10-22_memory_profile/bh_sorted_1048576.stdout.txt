@@ -1,0 +1,5 @@
+Collecting data...
+Generating 'C:\Users\petya\AppData\Local\Temp\nsys-petya\nsys-report-7b74.qdstrm'
+[1/1] [0%                          ] bh_sorted_1048576.nsys-rep[1/1] [0%                          ] bh_sorted_1048576.nsys-rep[1/1] [1%                          ] bh_sorted_1048576.nsys-rep[1/1] [2%                          ] bh_sorted_1048576.nsys-rep[1/1] [5%                          ] bh_sorted_1048576.nsys-rep[1/1] [==19%                       ] bh_sorted_1048576.nsys-rep[1/1] [==20%                       ] bh_sorted_1048576.nsys-rep[1/1] [======================91%   ] bh_sorted_1048576.nsys-rep[1/1] [=======================96%  ] bh_sorted_1048576.nsys-rep[1/1] [========================98% ] bh_sorted_1048576.nsys-rep[1/1] [========================100%] bh_sorted_1048576.nsys-rep[1/1] [========================100%] bh_sorted_1048576.nsys-rep
+Generated:
+	D:\NBodyProblemSim\results/2026-10-22_memory_profile/bh_sorted_1048576.nsys-rep

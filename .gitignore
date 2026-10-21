@@ -23,3 +23,7 @@ Thumbs.db
 # python
 __pycache__/
 .venv/
+
+# nsys traces embed the full process environment (emails, tokens); keep local
+results/**/*.nsys-rep
+results/**/*.sqlite

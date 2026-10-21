@@ -61,6 +61,23 @@ Third pass (critic #8: Chinese leads, R3 evidence): **2026-10-17**. See [R3-evid
 
 Found, not used (content not checked): Balarezo & Pineda, "Numerical Performance Analysis of the Direct and Barnes-Hut Algorithm for Solving the N-Body Problem", CCIS (TICEC 2025), pp. 365–376, DOI 10.1007/978-3-032-08366-1_24. A 2026-10-20 search again found no 2025–26 Chinese-led GPU Barnes-Hut paper.
 
+### C3. Parallelism, memory and applications (added 2026-10-22 for docs/final/05 and 06)
+| Key | Year | Venue | Topic | ✓ |
+|---|---|---|---|---|
+| volkov2010lower | 2010 | GTC 2010 talk (slides, nvidia.com) | ILP vs TLP, lower occupancy (BACKGROUND) | ✅ PDF title slide |
+| hepkema2026instructionwall | 2026 | arXiv:2608.13696 | instruction wall on L4 (Ada) / GH200 | ✅ arXiv |
+| luo2025hopper | 2025 | arXiv:2501.12084 | microbenchmarks incl. RTX 4090 latencies; **Chinese-led** | ✅ arXiv + HTML (affiliations, Table 3) |
+| jarmusch2025blackwell | 2025 | arXiv:2507.10789 | Blackwell microbenchmarks | ✅ arXiv |
+| springel2021gadget4 | 2021 | MNRAS 506 | GADGET-4 (BACKGROUND) | ✅ Crossref |
+| potter2017pkdgrav3 | 2017 | Comput. Astrophys. Cosmol. 4 | PKDGRAV3, trillion particles on GPUs (BACKGROUND) | ✅ Crossref |
+| bedorf2012bonsai | 2012 | J. Comput. Phys. 231 | Bonsai GPU tree code (BACKGROUND) | ✅ Crossref |
+| grimm2014genga | 2014 | ApJ 796 | GENGA GPU planetary N-body (BACKGROUND) | ✅ Crossref |
+| rein2012rebound | 2012 | A&A 537 | REBOUND (BACKGROUND) | ✅ Crossref |
+| vandermaaten2014tsne | 2014 | JMLR 15 | Barnes-Hut t-SNE (BACKGROUND) | ✅ JMLR page |
+| jacomy2014forceatlas2 | 2014 | PLoS ONE 9 | ForceAtlas2 / Gephi, Barnes-Hut repulsion (BACKGROUND) | ✅ Crossref |
+
+Repositories checked 2026-10-22 via the GitHub API (existence, description, licence, last push): NVIDIA/cuda-samples (`cpp/5_Domain_Specific/nbody`), treecode/Bonsai, hannorein/rebound, N-BodyShop/changa, govertb/GPUGraphLayout, CannyLab/tsne-cuda (README: FIt-SNE based), d3/d3-force (`theta2 = 0.81`). ECL-BH v4.5 page at userweb.cs.txstate.edu. Not built or benchmarked.
+
 ### D. NVIDIA documentation
 | Key | Version | Date | Use | ✓ |
 |---|---|---|---|---|

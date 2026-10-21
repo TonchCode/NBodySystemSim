@@ -1,0 +1,4 @@
+﻿allpairs_tiled N=65536 peakWorkingSet=121.9 MiB
+bh_sorted N=1048576 peakWorkingSet=214.9 MiB
+bh_warp N=1048576 peakWorkingSet=214.6 MiB
+bh_warp N=4194304 peakWorkingSet=478.1 MiB
