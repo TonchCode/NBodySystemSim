@@ -1,0 +1,35 @@
+<section id="memprofile" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Profiling 1 · memory and RAM · Nsight Systems</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">Memory grows exactly linearly with N</h2>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FFFFFF;padding:40px;border:1px solid #DDE1E3;border-radius:16px">
+<p style="font-size:96px;font-weight:600;line-height:1.1;color:#13202B">48 B</p>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">per body, all-pairs: position, velocity, acceleration (3 MiB at 65k)</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FFFFFF;padding:40px;border:1px solid #DDE1E3;border-radius:16px">
+<p style="font-size:96px;font-weight:600;line-height:1.1;color:#13202B">197 B</p>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">per body, tree: + keys, order, nodes, sort buffer (213 in the bench)</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#13202B;padding:40px;border-radius:16px">
+<p style="font-size:96px;font-weight:600;line-height:1.1;color:#F0A35E">70–80 M</p>
+<p style="font-size:28px;line-height:1.4;color:#C9D3DA">bodies would fit in the 16 GB card</p>
+</div>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;border-left:6px solid #2F6DB0;padding:8px 0 8px 24px">
+<p style="font-size:28px;line-height:1.4;color:#4A5568"><b style="color:#13202B">No copies inside a step.</b> At 1M: 2 uploads, 4 downloads per run, all at start and end.</p>
+</div>
+<div style="flex:1;border-left:6px solid #E07A2E;padding:8px 0 8px 24px">
+<p style="font-size:28px;line-height:1.4;color:#4A5568"><b style="color:#13202B">Host RAM:</b> ≈ 120 MiB fixed + 88 B per body (215 MiB at 1M).</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Docs: ch.5 §5.5.2 (method), §5.6 (results) · results/2026-10-22_memory_profile</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">16</p>
+<aside>Requirement: profiling, on RAM. Tool: Nsight Systems with --cuda-memory-usage, which records every allocation and free; our script replays them to get the peak live device memory.
+VRAM: all-pairs 48 bytes per body (3 MiB at 65,536, 48 MiB at 1M). Tree 212.8 bytes per body in the bench: state 48, per-body tree data 60, per-node 76, CUB sort buffer 12.3, plus 16 bytes of bench-only work counters; production is about 197. So 1M bodies need 213 MiB and 4M need 851 MiB; with about 2 GB already used by the desktop, 70–80 million bodies would fit.
+Transfers: at 1M, 2 host-to-device and 4 device-to-host copies per run, all outside the time steps. The state never leaves the GPU during a step.
+Host RAM, peak working set: 122 MiB for all-pairs at 65k, 215 MiB for the tree at 1M, 478 MiB at 4M, so about 120 MiB fixed plus 88 bytes per body.
+Phase shares at 1M: traversal 98.3 % of the step for #5, 92.5 % for #7.
+Privacy note if asked why traces are not in the repo: the raw .nsys-rep file records the process environment, so only the text outputs are committed.
+Docs: 05-parallelism-and-memory.md §5.5.2 (commands), §5.6.1 (VRAM tables), §5.6.2 (transfers and phases), §5.6.3 (host RAM).</aside>
+</section>

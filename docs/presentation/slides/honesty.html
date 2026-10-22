@@ -1,0 +1,35 @@
+<section id="honesty" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Method</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">Predictions written down before every run</h2>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FFFFFF;padding:40px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:36px;font-weight:600;color:#13202B">Scored, misses kept</h3>
+<ul style="font-size:28px;line-height:1.5;color:#4A5568">
+<li>Tree round 2: 39 hit, 22 miss</li>
+<li>CPU + GPU: 70 hit, 12 miss</li>
+<li>Read-only path for #7: 5 of 5</li>
+<li>Re-run at 0 % background load</li>
+</ul>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FFFFFF;padding:40px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:36px;font-weight:600;color:#13202B">Where we were wrong</h3>
+<ul style="font-size:28px;line-height:1.5;color:#4A5568">
+<li>Block 64: +8 %, predicted +20 %</li>
+<li>#6 queues: slower, not faster</li>
+<li>#7 “latency-bound”: corrected</li>
+<li>“10× from sorting fails”: withdrawn</li>
+</ul>
+</div>
+</div>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">Rules: speedups only against the best-tuned baseline; tree rates count real interactions, never N²-equivalent.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Docs: docs/predictions/ · ch.4 rules and §4.9 scorecards · ch.7 §7.5</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">18</p>
+<aside>How we kept the results honest. Before each measurement round we committed a file of predictions with ranges (docs/predictions/), then scored every item HIT or MISS in a committed scorecard. Misses stay in the report.
+Examples of being wrong, and what we learned:
+Block 64 removed the wave tail exactly as modelled but was 8 % faster, not 20 %: the model's per-block cost was too small.
+#6: we expected persistent queues to help; they were slower everywhere, and the diagnosis taught us that L1 locality matters more than balance.
+#7: called latency-bound from occupancy sweeps; Nsight Compute showed it is closer to balanced.
+An early draft said "Burtscher's 10× from sorting fails on Ada"; withdrawn, because his statement was about different code on different hardware.
+Other rules: every speedup is against the best-tuned baseline of the same session; tree rates are real interaction rates, not N²-equivalent; load-sensitive results were replicated at 0 % background load and the clean values are canonical. Platform caveat: all runs at the 272 W power cap, so faster kernels run at lower clocks.
+Docs: docs/predictions/*.md; 04-load-balancing.md header rules and §4.9 scorecards; 07-defence-guide.md §7.5.</aside>
+</section>

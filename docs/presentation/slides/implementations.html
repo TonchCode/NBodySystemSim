@@ -1,0 +1,22 @@
+<section id="implementations" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Other implementations · GitHub and forums</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">How ours compares with public GPU codes</h2>
+<table style="font-size:26px;color:#1B2733">
+<tr><th style="width:26%">Implementation</th><th style="width:34%">What it does</th><th style="width:40%">Compared with ours</th></tr>
+<tr><td>NVIDIA cuda-samples nbody</td><td>all-pairs, shared-memory tiling (GPU Gems 3)</td><td>same as #1; we add tuning (#2) and q-split (#3)</td></tr>
+<tr style="background:#FFFFFF"><td>ECL-BH (Burtscher)</td><td>octree built with atomics, warp-vote walk</td><td>source of #7’s idea; we build a radix tree from Morton keys</td></tr>
+<tr><td>Bonsai</td><td>octree, build and walk on the GPU</td><td>both GPU-resident; ours binary tree + warp union walk</td></tr>
+<tr style="background:#FFFFFF"><td>RT-core Barnes-Hut (2025)</td><td>walks the tree with ray-tracing hardware</td><td>possible on our card, but needs OptiX; out of scope</td></tr>
+<tr><td>NVIDIA forum t/68567</td><td>ILP versus occupancy discussion</td><td>we measured it ourselves: the prefetch test</td></tr>
+</table>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Docs: ch.6 §6.3 · ch.2 §2.2.6 (why no RT or tensor cores)</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">20</p>
+<aside>Requirement: other implementations on the internet. All repositories were checked on GitHub on 2026-10-22 (existence, description, licence, activity); none was built or benchmarked here, so the comparison is about design, not speed.
+NVIDIA cuda-samples, cpp/5_Domain_Specific/nbody: the all-pairs tiling that goes with GPU Gems 3 chapter 31 (Nyland et al. 2007). Our #1 is that design; #2 and #3 go further, measured at 2.40–2.56× at small N.
+ECL-BH v4.5 (Burtscher, Texas State): Barnes-Hut entirely on the GPU, octree with atomics and a warp-vote traversal; that is the idea our #7 builds on. Our tree is a Karras binary radix tree from sorted Morton keys, built without locks.
+Bonsai (Bédorf, Gaburov, Portegies Zwart 2012, github.com/treecode/Bonsai): GPU octree, build and walk on the GPU. Like ours, the whole step stays on the GPU.
+RT-core Barnes-Hut (Nagarajan et al. 2025): reformulates the node-opening decisions as ray tracing on the RT cores, through OptiX. That would run on our card, but it needs OptiX instead of plain CUDA, so it is out of scope (chapter 2 §2.2.6).
+Forum: the NVIDIA Developer Forums thread on instruction-level parallelism; a moderator notes Volkov's 2010 numbers come from much older hardware, which is why we rely on our own prefetch measurement.
+Also: d3-force, GPUGraphLayout, tsne-cuda (now FFT-based, not Barnes-Hut) in ch.6 §6.2.3.
+Docs: 06-context-and-implementations.md §6.3; references/INDEX.md (repositories checked).</aside>
+</section>

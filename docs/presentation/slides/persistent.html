@@ -1,0 +1,23 @@
+<section id="persistent" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Technique #6 · a negative result</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">Better balance, worse speed</h2>
+<div style="display:flex;gap:64px;align-items:center">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:120px;font-weight:600;line-height:1.05;color:#13202B">0.63–0.97×</p>
+<p style="font-size:28px;color:#4A5568">of the hardware scheduler, in every cell</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:24px">
+<p style="font-size:32px;line-height:1.4;color:#4A5568">Persistent warps pull work from a software queue: per warp, per lane, or a static balanced split. <b style="color:#13202B">Each one improved its balance metric.</b></p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">But a warp queue scatters Morton neighbours over different SMs, and they stop sharing L1. A queue of 4-warp blocks recovers most of it (0.94–0.98×).</p>
+</div>
+</div>
+<div style="background:#13202B;padding:36px 40px;border-radius:16px">
+<p style="font-size:32px;line-height:1.4;color:#F6F5F1">The hardware block scheduler is already a dynamic queue that keeps neighbours together. When the limit is L1, balance is not the goal.</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Docs: ch.4 §4.6 (4.6.3 result, 4.6.4 diagnosis) · D-023</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">12</p>
+<aside>This is the result I find most instructive. Persistent threads with work queues are a standard load-balancing technique. We built three versions on top of the tree: a warp-granular atomic queue, lane refill (idle lanes take the next body), and a static partition balanced on measured costs. Every one of them made its balance metric better, and every one ran slower: 0.63 to 0.97 of the plain launch.
+Why (exploratory diagnosis, not pre-registered): the hardware hands an SM a block of 4 Morton-adjacent warps that share L1 lines. The warp queue spreads them across SMs, and #5 is L1-bound, so that costs directly. A block-granular queue that keeps 4 neighbours together gets most of it back. Lane refill pays for warp-wide calls in every loop iteration; that explanation is not yet confirmed in SASS.
+Not a strawman: the lane-granular arm a reviewer asked for was built, verified bit for bit, and measured. Replicated at 0 % background load on 2026-10-18.
+Docs: 04-load-balancing.md §4.6.1 (arms), §4.6.3 (numbers), §4.6.4 (diagnosis), §4.6.5 (limits); decisions D-023.</aside>
+</section>

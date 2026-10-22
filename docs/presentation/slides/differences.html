@@ -1,0 +1,25 @@
+<section id="differences" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:32px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">The eight techniques side by side</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">What changed, and what limits each one</h2>
+<table style="font-size:25px;color:#1B2733">
+<tr><th style="width:6%">#</th><th style="width:22%">Unit of work</th><th style="width:24%">Hot data lives in</th><th style="width:24%">Result</th><th style="width:24%">Limited by</th></tr>
+<tr><td>1</td><td>thread per body</td><td>shared-memory tile</td><td>76/80 SMs idle at 1k</td><td>too few blocks</td></tr>
+<tr style="background:#FFFFFF"><td>2</td><td>thread per body</td><td>shared + registers</td><td>1.14–1.54× over #1</td><td>issue + rsqrt unit</td></tr>
+<tr><td>3</td><td>q threads per body</td><td>shared + registers</td><td>2.56× at small N</td><td>issue + rsqrt unit</td></tr>
+<tr style="background:#FFFFFF"><td>4</td><td>thread per body, tree</td><td>L1/L2; stack in local</td><td>tree baseline</td><td>divergence</td></tr>
+<tr><td>5</td><td>sorted thread per body</td><td>L1/L2; stack in local</td><td>2.06× over #4</td><td>L1 misses saturate L2</td></tr>
+<tr style="background:#FFFFFF"><td>6</td><td>software queue</td><td>as #5</td><td>0.63–0.97× (slower)</td><td>lost L1 sharing</td></tr>
+<tr><td>7</td><td>warp per 32 bodies</td><td>L1/L2; stack in registers</td><td><b>5.8× over #5</b></td><td>pop chain + issue</td></tr>
+<tr style="background:#FFFFFF"><td>8</td><td>CPU + GPU</td><td>pinned host + VRAM</td><td>+1.3 % at best</td><td>PCIe, 18× rate gap</td></tr>
+</table>
+<p style="font-size:28px;color:#4A5568">Tile it → tune it → split it → change the algorithm → sort it → (don’t hand-schedule it) → walk it as a warp → (don’t offload it)</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Docs: ch.7 §7.4 (this table) · ch.4 §4.9 (summary)</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">15</p>
+<aside>Read the table row by row; each row's "limited by" is the motivation for the next row.
+All-pairs (#1–#3): the problem is between SMs, fixed by creating the right number of work items. The gain is 2.4–2.6× at small N and disappears once every SM has work.
+Trees (#4–#7): the dominant loss is inside the warp. Sorting is the necessary first step, the warp walk removes most of the rest.
+#6 and #8 are negative results with a mechanism, which is as useful as a speedup: they show the hardware scheduler and the GPU-resident design were already right.
+The bottom line is the story in one sentence; say it out loud.
+Speedups are best against best, tuned per variant, at θ = 0.5, Plummer initial condition, clean 0 % load runs.
+Docs: 07-defence-guide.md §7.4 (table), §7.5 (how to read results); 04-load-balancing.md §4.9 (summary and four conclusions).</aside>
+</section>

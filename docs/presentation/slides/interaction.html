@@ -1,0 +1,30 @@
+<section id="interaction" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">The unit of work</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">One function, called by every variant</h2>
+<div style="display:flex;gap:48px;align-items:start">
+<div style="flex:3;background:#13202B;padding:48px;border-radius:16px;display:flex;flex-direction:row;gap:48px">
+<p style="flex:1;font-family:'JetBrains Mono', 'Courier New', monospace;font-size:32px;line-height:1.6;color:#E6ECEF">r = x<span style="color:#F0A35E">j</span> − x<span style="color:#F0A35E">i</span><br>d2 = r·r + ε²<br>inv = <span style="color:#F0A35E">rsqrt</span>(d2)<br>s = m<span style="color:#F0A35E">j</span> · inv³<br>a += r · s</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:32px;line-height:1.6;color:#8FA3B0">3 FADD<br>3 FFMA<br>1 MUFU.RSQ<br>3 FMUL<br>3 FFMA</p>
+</div>
+<div style="flex:2;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:44px;font-weight:600;color:#13202B">≈ 20 FLOP</h3>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">per interaction, in FP32</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:44px;font-weight:600;color:#13202B">1 rsqrt</h3>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">on the special-function unit: 16 per clock per SM, against 128 FMA</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:44px;font-weight:600;color:#13202B">Same everywhere</h3>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">so all-pairs and tree rates count the same unit and can be compared</p>
+</div>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Docs: src/core/interaction.cuh · ch.2 §2.2.3 · ch.7 §7.1</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">3</p>
+<aside>Say: this is the only physics in the code. Each interaction is about 20 floating-point operations and exactly one reciprocal square root, which runs on the special-function unit. That unit is 8 times slower than the FMA lanes, which is why it shows up later in the profiler.
+Point to make: every kernel, all-pairs and tree, calls exactly this function, so "one interaction" is the same work everywhere. That is what makes the speedups comparable.
+ε is the softening length: it stops the force from blowing up when two bodies get very close.
+Docs: src/core/interaction.cuh; 02-gpu-architecture.md §2.2.3 (SFU throughput, 8:1); 07-defence-guide.md §7.1.</aside>
+</section>

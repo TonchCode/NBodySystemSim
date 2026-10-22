@@ -1,0 +1,43 @@
+<section id="publications" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Publications</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">The sources behind each part</h2>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFFFF;padding:40px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600;color:#13202B">Foundations</h3>
+<ul style="font-size:26px;line-height:1.5;color:#4A5568">
+<li>Barnes & Hut 1986: the tree</li>
+<li>Nyland et al. 2007: GPU tiling</li>
+<li>Burtscher & Pingali 2011: GPU tree, warp vote</li>
+<li>Karras 2012: parallel radix tree</li>
+<li>Volkov 2010: ILP vs occupancy</li>
+</ul>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFFFF;padding:40px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600;color:#13202B">2025–2026</h3>
+<ul style="font-size:26px;line-height:1.5;color:#4A5568">
+<li>Luo et al. 2025: GPU memory latencies*</li>
+<li>Hepkema et al. 2026: the instruction wall</li>
+<li>Zhang 2025, Shi 2025: load balancing*</li>
+<li>CUBE 2026, Jiutian 2025: cosmology*</li>
+<li>CRK-HACC 2025; RT-core and stochastic BH</li>
+</ul>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#13202B;padding:40px;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600;color:#F6F5F1">NVIDIA documentation</h3>
+<ul style="font-size:26px;line-height:1.5;color:#C9D3DA">
+<li>CUDA Best Practices Guide (2026)</li>
+<li>CUDA Programming Guide (2026)</li>
+<li>Ada Tuning Guide (2026)</li>
+<li>Ada architecture whitepaper (2023)</li>
+</ul>
+</div>
+</div>
+<p style="font-size:26px;color:#4A5568">* Chinese-led. Every source is checked and listed in references/references.bib.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Docs: ch.6 §6.4 · ch.3 §3.7 · ch.4 per technique · references/INDEX.md</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">21</p>
+<aside>Requirement: publications on the topic, preferably 2025–26 and Chinese. Every entry is in references/references.bib and was checked against Crossref, arXiv or the publisher's page; nothing is cited from memory.
+Foundations: Barnes & Hut 1986 (the algorithm); Nyland, Harris, Prins 2007, GPU Gems 3 ch.31 (all-pairs tiling, our #1); Burtscher & Pingali 2011 (first all-GPU Barnes-Hut, sorting and warp vote, our #5 and #7); Karras 2012 (radix tree built in parallel without locks, our step 4); Volkov 2010 (better performance at lower occupancy: ILP replaces TLP).
+Recent: Luo et al. 2025, HKUST Guangzhou and HIT Shenzhen, microbenchmarks that include the RTX 4090, our latency numbers; Hepkema et al. 2026, once bandwidth stops being the limit, kernels become instruction-bound, which matches our all-pairs result; Chinese-led load-balancing papers in chapter 4 (keys zhang2025hytis, shi2025libra, zhong2025hybrimoe); Chinese cosmology codes CUBE and Jiutian in chapter 3; CRK-HACC (GPU-resident solvers), RT-core Barnes-Hut and stochastic Barnes-Hut (2025).
+NVIDIA documentation (requirement R5): Best Practices Guide, CUDA Programming Guide, Ada Tuning Guide, Ada whitepaper.
+Docs: 06-context-and-implementations.md §6.4 (with the R4 note); 03-algorithm.md §3.7; references/INDEX.md (verification status of every key).</aside>
+</section>

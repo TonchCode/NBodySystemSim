@@ -1,0 +1,23 @@
+<section id="ncu" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:32px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Profiling 2 · hardware counters · Nsight Compute</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">From memory-bound to compute-bound</h2>
+<table style="font-size:27px;color:#1B2733">
+<tr><th style="width:28%">Counter</th><th style="width:18%">all-pairs</th><th style="width:18%">#4 naive</th><th style="width:18%">#5 sorted</th><th style="width:18%">#7 warp</th></tr>
+<tr><td>Issue slots busy</td><td><b>68 %</b></td><td>21 %</td><td>25 %</td><td><b>69 %</b></td></tr>
+<tr style="background:#FFFFFF"><td>Active lanes of 32</td><td>32</td><td>6.1</td><td>10.8</td><td>32</td></tr>
+<tr><td>Main stall</td><td>none: ready</td><td>memory 74 %</td><td>memory 86 %</td><td>spread</td></tr>
+<tr style="background:#FFFFFF"><td>L2 throughput</td><td>2 %</td><td><b>95 %</b></td><td><b>95 %</b></td><td>24 %</td></tr>
+<tr><td>DRAM throughput</td><td>0.5 %</td><td>1 %</td><td>1 %</td><td>2 %</td></tr>
+<tr style="background:#FFFFFF"><td>Memory sectors read</td><td>8 M</td><td>4,599 M</td><td>2,874 M</td><td><b>200 M</b></td></tr>
+</table>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">#5’s L1 misses saturate L2, and 39 % of them are the stack. #7 reads 14× less and uses its issue slots like all-pairs does.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Docs: ch.5 §5.5.4 · results/2026-10-22_ncu/summary.md · D-038</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">17</p>
+<aside>Nsight Compute reads the GPU's hardware counters per kernel. It was blocked for most of the project (performance-counter permission); it was run at the end from an administrator prompt. Diagnostic run, not pre-registered; the times under the profiler are not bench times.
+How to read the stall row: "memory" is long_scoreboard, a warp waiting for a load from L1/L2. "none: ready" is not_selected: the warp was ready but the scheduler picked another one, which means the SM is busy, which is good.
+All-pairs: two-thirds of issue slots used, DRAM and L2 idle: issue-bound, as claimed. The FMA pipe is at 69 % and the rsqrt (XU) pipe at 39 %, the SFU co-limit. Its achieved occupancy is only 39 %: 256 blocks for 80 SMs, the starvation from slide 10, seen by the hardware.
+#4 and #5: the warps mostly wait for memory. L1 serves only half the tree loads; the misses go to L2, which is at 95 % of its throughput, while DRAM is idle (L2 hit rate 99.7 %). So "L1-capacity bound" means L1 misses saturate the L1-to-L2 path, and 39 % of that traffic is the per-thread stack.
+#7: no local memory, 14× fewer sectors than #5 (25× per interaction), L2 down to 24 %, issue slots 69 % busy. The tree kernel became compute-bound.
+One correction: we had called #7 latency-bound. At full occupancy the counters show it near balance between the latency of its pop chain and instruction issue (ALU pipe 62 %). The next step is the same either way: wider tree nodes, fewer pops.
+Docs: 05-parallelism-and-memory.md §5.5.4; results/2026-10-22_ncu/summary.md (full table), stall_breakdown.txt; decision D-038.</aside>
+</section>

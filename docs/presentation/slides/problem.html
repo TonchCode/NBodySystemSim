@@ -1,0 +1,24 @@
+<section id="problem" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">The problem</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">Every body pulls on every other body</h2>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFFFF;padding:40px;border:1px solid #DDE1E3;border-radius:16px">
+<p style="font-size:96px;font-weight:600;line-height:1.1;color:#13202B">N</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">bodies, each with a mass and a position; gravity a ∝ m / r²</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFFFF;padding:40px;border:1px solid #DDE1E3;border-radius:16px">
+<p style="font-size:96px;font-weight:600;line-height:1.1;color:#13202B">N²</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">interactions per time step if every pair is computed directly</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#13202B;padding:40px;border-radius:16px">
+<p style="font-size:96px;font-weight:600;line-height:1.1;color:#F0A35E">10¹²</p>
+<p style="font-size:32px;line-height:1.4;color:#C9D3DA">interactions per step at N = 1 million</p>
+</div>
+</div>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">One step = compute every acceleration (the expensive part), then move the bodies with the leapfrog integrator (cheap, O(N)).</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Docs: ch.3 §3.1, §3.3 · ch.7 §7.1</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">2</p>
+<aside>Say: N bodies, each one feels the gravity of all the others. Computing every pair is N squared; at a million bodies that is a trillion interactions per step. Moving the bodies afterwards is cheap; the force computation is everything.
+If asked about the integrator: leapfrog (kick-drift-kick), symplectic, so energy stays bounded over long runs.
+Docs: docs/final/03-algorithm.md §3.1 (the problem), §3.3 (leapfrog). Study guide: 07-defence-guide.md §7.1.</aside>
+</section>

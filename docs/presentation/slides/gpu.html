@@ -1,0 +1,41 @@
+<section id="gpu" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">GPU architecture · RTX 4080 SUPER (AD103, Ada, sm_89)</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">80 small processors that each juggle 48 warps</h2>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FFFFFF;padding:40px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:36px;font-weight:600;color:#13202B">The chip</h3>
+<ul style="font-size:28px;line-height:1.5;color:#4A5568">
+<li>80 streaming multiprocessors (SMs)</li>
+<li>64 MB L2 cache, shared by all SMs</li>
+<li>16 GB GDDR6X, 736 GB/s</li>
+<li>PCIe 4.0 ×16 to the CPU</li>
+</ul>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FFFFFF;padding:40px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:36px;font-weight:600;color:#13202B">One SM</h3>
+<ul style="font-size:28px;line-height:1.5;color:#4A5568">
+<li>4 partitions, 1 scheduler each</li>
+<li>128 FP32 lanes; rsqrt 16 per clock</li>
+<li>256 KB of registers</li>
+<li>128 KB L1, shared memory carved from it</li>
+</ul>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#13202B;padding:40px;border-radius:16px">
+<h3 style="font-size:36px;font-weight:600;color:#F6F5F1">How it runs</h3>
+<ul style="font-size:28px;line-height:1.5;color:#C9D3DA">
+<li>warp = 32 threads, one instruction</li>
+<li>up to 48 warps per SM</li>
+<li>a waiting warp is swapped for a ready one</li>
+<li>different paths in a warp run one after another</li>
+</ul>
+</div>
+</div>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">Two ways to waste it: <b style="color:#13202B">idle SMs</b> (too little work) and <b style="color:#13202B">idle lanes</b> (the 32 threads of a warp want different things).</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Docs: ch.2 §2.1–2.4 (chip, SM, warps, memory) · ch.7 §7.2</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">6</p>
+<aside>This is the architecture map the lecturer asked for. Three levels: the chip (80 SMs, a big 64 MB L2, 16 GB of VRAM), one SM (4 schedulers, 128 FP32 lanes, registers, L1/shared), and the execution model.
+The key idea: a warp is 32 threads that execute the same instruction. If they want different things (divergence), the warp runs each path in turn while the other lanes idle. And an SM hides memory latency by keeping many warps resident and switching to a ready one.
+Last line sets up the rest of the talk: every load-balancing technique fights either idle SMs or idle lanes.
+Numbers: 80 SMs, 48 warps per SM, 1,536 threads; 40 registers per thread is exactly what lets 6 blocks of 256 fit (100 % occupancy, zero headroom: 41 registers would drop it to 83 %).
+Docs: 02-gpu-architecture.md §2.1 (chip hierarchy), §2.2 (SM in depth), §2.3 (warps, occupancy, worked example), §2.4 (memory hierarchy); 07-defence-guide.md §7.2.</aside>
+</section>

@@ -1,0 +1,21 @@
+<section id="memory" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">The memories and what each one holds</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">Keep reused data close to the SM</h2>
+<table style="font-size:26px;color:#1B2733">
+<tr><th style="width:17%">Memory</th><th style="width:15%">Latency</th><th style="width:34%">What our code keeps there</th><th style="width:34%">Why</th></tr>
+<tr><td>Registers</td><td>none</td><td>the body’s position and its force sums; #7’s stack</td><td>used every interaction</td></tr>
+<tr style="background:#FFFFFF"><td>Shared</td><td>≈ 30 cycles</td><td>all-pairs tile of 256 positions</td><td>load once, reuse 256×</td></tr>
+<tr><td>L1</td><td>≈ 32 cycles</td><td>tree nodes; #5’s stack (local memory)</td><td>its size limits the tree</td></tr>
+<tr style="background:#FFFFFF"><td>L2 (64 MB)</td><td>≈ 270–285</td><td>top of the tree; all positions up to ~4M</td><td>no DRAM wall for the tree</td></tr>
+<tr><td>VRAM</td><td>≈ 570</td><td>every array between steps</td><td>the home; touch it rarely</td></tr>
+<tr style="background:#FFFFFF"><td>Host RAM</td><td>PCIe</td><td>start and end; #8’s pinned buffers</td><td>keep it out of the step</td></tr>
+</table>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Latencies: RTX 4090, same architecture (Luo et al. 2025, Table 3) · Docs: ch.5 §5.2, §5.3</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">7</p>
+<aside>This answers "which memory is used for what, and which suits the project best".
+Rule of thumb: the right place depends on how often a byte is reused. Registers for what each body uses every interaction. Shared memory for the all-pairs tile: one load from VRAM, then all 256 threads read it, so VRAM traffic drops by the block size. The tree cannot go in shared memory (it is far too big), so it lives in VRAM but must be read through L1 and L2; the sort is what makes that work.
+Local memory is a trap: it is private per thread but physically in VRAM. #5's 384-byte stack lives there; #7 moved it into registers.
+Constant memory: only kernel parameters, 380–456 bytes. Read-only path: tested for #7, no effect (next section).
+Latency numbers are from a 2025 microbenchmark paper (Chinese-led, HKUST Guangzhou) on the RTX 4090, the same Ada architecture; our card is not separately measured.
+Docs: 05-parallelism-and-memory.md §5.2 (full table incl. local, constant, read-only), §5.3 (where the algorithm should live); paper luo2025hopper.</aside>
+</section>

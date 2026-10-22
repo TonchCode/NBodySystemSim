@@ -1,0 +1,32 @@
+<section id="sorting" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Techniques #4 and #5 · the tree</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">Sort the threads, and neighbours walk the same path</h2>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFFFF;padding:40px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:36px;font-weight:600;color:#13202B">#4 naive: original order</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">A warp’s 32 bodies are scattered over the galaxy; each wants a different path.</p>
+<p style="font-size:28px;line-height:1.5;color:#1B2733"><b>6.1</b> of 32 lanes active · L1 hit <b>19 %</b><br>71.1 ms per traversal at 1M</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFFFF;padding:40px;border:2px solid #E07A2E;border-radius:16px">
+<h3 style="font-size:36px;font-weight:600;color:#13202B">#5 sorted: Morton order</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">Thread i takes the i-th body along the curve, so a warp holds spatial neighbours.</p>
+<p style="font-size:28px;line-height:1.5;color:#1B2733"><b>10.8</b> of 32 lanes active · L1 hit <b>50 %</b><br>34.5 ms at 1M: <b>2.06× faster</b></p>
+</div>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;border-left:6px solid #2F6DB0;padding:8px 0 8px 24px">
+<p style="font-size:28px;line-height:1.4;color:#4A5568">Beats the best all-pairs from <b style="color:#13202B">N ≈ 39,700</b></p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;border-left:6px solid #E07A2E;padding:8px 0 8px 24px">
+<p style="font-size:28px;line-height:1.4;color:#4A5568">New limit: <b style="color:#13202B">L1 size</b>. ×1.51 with the full L1; more warps change nothing</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Docs: ch.4 §4.5 · ch.3 §3.5 (why the sort) · ch.5 §5.5.4 (lane and L1 counters)</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">11</p>
+<aside>#4 and #5 run the identical kernel; the only difference is which body each thread gets. In #4 a warp's 32 bodies are random, so their walks diverge and the warp runs them one after another. In #5 they are neighbours along the Morton curve, so they mostly open the same nodes, and neighbouring warps share tree nodes in L1.
+Numbers: best vs best at 1M, θ = 0.5: 71.11 ms → 34.45 ms, 2.06×; 2.01× at 262,144. Hilbert order gives the same as Morton. Active lanes and L1 hit rate are from Nsight Compute.
+Crossover: the sorted tree (build + traversal) beats the best all-pairs kernel from about 39,700 bodies, at θ = 0.5.
+What limits #5: not occupancy (flat from 2 to 11 blocks per SM) but L1 capacity: with the full L1 it is 1.51× faster. The profiler later showed why: half the loads miss L1 and saturate L2.
+Honesty point: Burtscher 2011 says sorting gives about an order of magnitude; we measured 2× on different code and hardware, and we do not claim a contradiction.
+Docs: 04-load-balancing.md §4.5.1 (results, L1 finding), §4.5.3 (crossover), §4.5.5 (coherent control: incoherence still costs 4–10×); 03-algorithm.md §3.5 "Why the sort is essential".</aside>
+</section>

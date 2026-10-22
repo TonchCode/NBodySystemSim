@@ -1,0 +1,59 @@
+<section id="pipeline" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Our GPU version</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">Seven parallel steps per time step, all on the GPU</h2>
+<div style="display:grid;grid-template-columns:repeat(7, 1fr);gap:16px">
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:24px;border:1px solid #DDE1E3;border-radius:12px">
+<p style="font-size:24px;color:#B35A14;font-weight:600">1</p>
+<p style="font-size:28px;font-weight:600;color:#13202B">Bounding box</p>
+<p style="font-size:24px;line-height:1.35;color:#4A5568">parallel min/max reduction</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:24px;border:1px solid #DDE1E3;border-radius:12px">
+<p style="font-size:24px;color:#B35A14;font-weight:600">2</p>
+<p style="font-size:28px;font-weight:600;color:#13202B">Morton keys</p>
+<p style="font-size:24px;line-height:1.35;color:#4A5568">interleave x, y, z bits into one 63-bit key</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:24px;border:1px solid #DDE1E3;border-radius:12px">
+<p style="font-size:24px;color:#B35A14;font-weight:600">3</p>
+<p style="font-size:28px;font-weight:600;color:#13202B">Sort</p>
+<p style="font-size:24px;line-height:1.35;color:#4A5568">CUB radix sort by key</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:24px;border:1px solid #DDE1E3;border-radius:12px">
+<p style="font-size:24px;color:#B35A14;font-weight:600">4</p>
+<p style="font-size:28px;font-weight:600;color:#13202B">Build tree</p>
+<p style="font-size:24px;line-height:1.35;color:#4A5568">Karras radix tree: 1 thread per node, no locks</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:24px;border:1px solid #DDE1E3;border-radius:12px">
+<p style="font-size:24px;color:#B35A14;font-weight:600">5</p>
+<p style="font-size:28px;font-weight:600;color:#13202B">Summarise</p>
+<p style="font-size:24px;line-height:1.35;color:#4A5568">mass and centre of mass, leaves up, atomics</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#13202B;padding:24px;border-radius:12px">
+<p style="font-size:24px;color:#F0A35E;font-weight:600">6</p>
+<p style="font-size:28px;font-weight:600;color:#F6F5F1">Traverse</p>
+<p style="font-size:24px;line-height:1.35;color:#C9D3DA">walk the tree per body: the force kernel</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:24px;border:1px solid #DDE1E3;border-radius:12px">
+<p style="font-size:24px;color:#B35A14;font-weight:600">7</p>
+<p style="font-size:28px;font-weight:600;color:#13202B">Integrate</p>
+<p style="font-size:24px;line-height:1.35;color:#4A5568">leapfrog kick and drift</p>
+</div>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;border-left:6px solid #E07A2E;padding:8px 0 8px 24px">
+<p style="font-size:44px;font-weight:600;color:#13202B">92–98 %</p>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">of the step is step 6, the traversal (1M bodies, Nsight Systems)</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;border-left:6px solid #2F6DB0;padding:8px 0 8px 24px">
+<p style="font-size:44px;font-weight:600;color:#13202B">0 copies</p>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">between CPU and GPU inside a time step: the state is GPU-resident</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Docs: ch.3 §3.5 (steps 1–7) · ch.5 §5.6 (phase shares, transfers)</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">5</p>
+<aside>Walk left to right. The classic algorithm inserts bodies one by one, which is sequential; every step here is massively parallel.
+Step 2: Morton keys. Cut space into a 2^21 grid per axis and interleave the bits of x, y, z. Sorting by that key puts bodies that are close in space next to each other in memory. Slide example: x = 5 (101), y = 3 (011) interleave to 27.
+Step 4: Karras 2012. For sorted keys, each internal node can find its own range and split point with no help from other nodes, so all N−1 nodes are built at once, without locks. We build a binary tree, not an octree: one kernel, but about 3× deeper.
+Step 5: each leaf climbs up; at each parent the first child to arrive stops, the second computes the parent. Each node is done exactly once.
+Step 6 is where all the time goes, so every technique on the next slides is about step 6.
+Docs: 03-algorithm.md §3.5 (each step), 05-parallelism-and-memory.md §5.6 (traversal 98.3 % for #5, 92.5 % for #7 at 1M; no transfers inside a step).</aside>
+</section>

@@ -1,0 +1,39 @@
+<section id="uses" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Where it is used, and why</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">Anything where everything pulls on everything</h2>
+<div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:24px">
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:32px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600;color:#13202B">Cosmology</h3>
+<p style="font-size:26px;line-height:1.4;color:#4A5568">10⁹–10¹² dark-matter particles: GADGET-4, PKDGRAV3</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:32px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600;color:#13202B">Galaxies, star clusters</h3>
+<p style="font-size:26px;line-height:1.4;color:#4A5568">collisions and mergers, like our two-galaxy demo</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:32px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600;color:#13202B">Planetary systems</h3>
+<p style="font-size:26px;line-height:1.4;color:#4A5568">planet formation: GENGA (GPU), REBOUND</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:32px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600;color:#13202B">t-SNE</h3>
+<p style="font-size:26px;line-height:1.4;color:#4A5568">machine-learning plots: Barnes-Hut repulsion between millions of points</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:32px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600;color:#13202B">Graph drawing</h3>
+<p style="font-size:26px;line-height:1.4;color:#4A5568">Gephi’s ForceAtlas2; d3-force in web pages, θ = 0.9</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:32px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600;color:#13202B">Molecules, plasma</h3>
+<p style="font-size:26px;line-height:1.4;color:#4A5568">electrostatics has the same 1/r² form (FMM, PME)</p>
+</div>
+</div>
+<p style="font-size:30px;line-height:1.4;color:#4A5568">Why a GPU: every body’s force is independent, so millions of identical jobs.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Docs: ch.6 §6.1 (why useful), §6.2 (codes and papers)</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">19</p>
+<aside>Requirement: where it is used and why it is useful. The idea, "summarise far-away groups by one number", turns O(N²) into about O(N log N) wherever a force falls off with distance.
+Cosmology: GADGET-4 (Springel et al. 2021, tree plus fast multipole), PKDGRAV3 (Potter et al. 2017, trillion-particle simulations for the Euclid satellite on 4,000+ GPU nodes).
+Planets: GENGA (Grimm & Stadel 2014, GPU, up to 30× faster than the CPU code Mercury), REBOUND (Rein & Liu 2012, open source, widely used).
+Outside physics: Barnes-Hut t-SNE (van der Maaten 2014); ForceAtlas2, Gephi's default layout (Jacomy et al. 2014); d3-force, the JavaScript library that lays out graphs in web pages, builds a quadtree and uses Barnes-Hut with θ = 0.9 by default. A web page drawing a network graph runs the same algorithm as our simulation, in 2D, with a looser θ.
+Why a GPU: in one step every body's force is independent of every other's, which is exactly what thousands of FP32 lanes are for.
+Docs: 06-context-and-implementations.md §6.1 (fields table), §6.2.1–6.2.3 (codes, with sources).</aside>
+</section>

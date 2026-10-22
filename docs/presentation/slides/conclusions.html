@@ -1,0 +1,31 @@
+<section id="conclusions" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Conclusions</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">Four things we can say from the measurements</h2>
+<div style="display:grid;grid-template-columns:repeat(2, 1fr);gap:24px">
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:36px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600;color:#13202B">1 · All-pairs: SM level</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">Make enough work items (smaller blocks, q threads per body): 2.4–2.6× at small N, nothing once every SM is busy.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:36px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600;color:#13202B">2 · Trees: inside the warp</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">Sorting is the first step (2×); the warp walk removes the rest (5.8×), even though it does more work.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:36px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600;color:#13202B">3 · The hardware scheduler wins</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">Software queues balanced better and ran slower. Locality in L1 mattered more than balance.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#13202B;padding:36px;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600;color:#F6F5F1">4 · Memory decides the tree</h3>
+<p style="font-size:28px;line-height:1.4;color:#C9D3DA">Sorted tree: waiting on L2. Warp walk: 14× less memory traffic, compute-bound like all-pairs.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Docs: ch.4 §4.9 (conclusions) · ch.5 §5.7 · ch.7</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">22</p>
+<aside>Four conclusions, each limited to what was measured, on this one GPU, at θ = 0.5.
+1. For all-pairs the imbalance is entirely at SM level, fixed by creating the right number of work items.
+2. For trees the dominant loss is inside warps. Sorting is necessary; the warp-union walk on top of it gives 5.8× best against best at 1M.
+3. On sm_89 the hardware block scheduler is hard to beat: it is already a dynamic queue that keeps Morton-adjacent warps together. Better balance is not better performance when the kernel is bound by L1.
+4. The profiler ties it together: the sorted tree waits on L2 (95 % throughput); the warp walk cuts memory traffic 14× and becomes compute-bound.
+If there is time, mention what is next: wider tree nodes (fewer pops) for #7, and a locality-preserving block-granular queue at mid N, where #7 made the between-warp tail its largest remaining loss.
+Docs: 04-load-balancing.md §4.9; 05-parallelism-and-memory.md §5.7 (the four answers); 07-defence-guide.md.</aside>
+</section>

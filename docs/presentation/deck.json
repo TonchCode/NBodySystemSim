@@ -1,0 +1,20 @@
+{
+  "v": 4,
+  "createdOnFiles": {"v": 1, "at": "2026-10-22T07:00:00Z"},
+  "lists": "css",
+  "title": "GPU N-Body Simulation",
+  "cover": "cover",
+  "order": ["cover", "problem", "interaction", "barneshut", "pipeline", "gpu", "memory", "ilptlp", "levels", "allpairs", "sorting", "persistent", "warpwalk", "hybrid", "differences", "memprofile", "ncu", "honesty", "uses", "implementations", "publications", "conclusions", "questions"],
+  "sections": {
+    "s1": {"description": "The problem and the two algorithms: direct summation and Barnes-Hut on the GPU", "start": "cover"},
+    "s2": {"description": "The GPU: architecture, the memories and what each holds, ILP and TLP", "start": "gpu"},
+    "s3": {"description": "Eight load-balancing techniques, one at a time: what changed, the result, the mechanism", "start": "levels"},
+    "s4": {"description": "Profiling: memory and RAM with Nsight Systems, hardware counters with Nsight Compute", "start": "memprofile"},
+    "s5": {"description": "Context: uses, other implementations, publications, conclusions", "start": "uses"}
+  },
+  "faces": {
+    "ibm-plex-sans": {"family": "IBM Plex Sans", "href": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap"},
+    "jetbrains-mono": {"family": "JetBrains Mono", "href": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap"}
+  },
+  "designSystems": []
+}

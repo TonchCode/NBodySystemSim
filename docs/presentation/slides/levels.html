@@ -1,0 +1,21 @@
+<section id="levels" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Load balancing</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">Work can be unbalanced at four levels</h2>
+<table style="font-size:30px;color:#1B2733">
+<tr><th style="width:26%">Level</th><th style="width:44%">Symptom</th><th style="width:30%">Techniques</th></tr>
+<tr><td>Between SMs</td><td>idle SMs; a half-empty last wave</td><td>#1 baseline, #2, #3</td></tr>
+<tr style="background:#FFFFFF"><td>Between warps</td><td>some warps have more work</td><td>#6 queues</td></tr>
+<tr><td>Inside a warp</td><td>lanes follow different paths</td><td>#4 → #5 sort, #7 warp walk</td></tr>
+<tr style="background:#FFFFFF"><td>Between devices</td><td>CPU and GPU, P- and E-cores</td><td>#8 split</td></tr>
+</table>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">Measured without a profiler: each kernel has a twin that records which SM ran each block and when, plus per-warp work counters.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Docs: ch.4 §4.0 (levels), §4.1 (measurement method) · ch.7 §7.2</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">9</p>
+<aside>This is the map for the next six slides. Every technique attacks one of these levels.
+Between SMs: the grid has too few blocks for 80 SMs, or the last wave is half empty (the tail).
+Between warps: some warps finish early and their SM waits for the slowest.
+Inside a warp: the lanes of one warp want different tree paths, so they take turns. This turns out to be the big one for the tree.
+Between devices: the CPU and GPU, and inside the CPU the fast P-cores and slow E-cores.
+How we measured it: Nsight Compute was blocked for most of the project, so every force kernel has an instrumented twin that writes the SM id, a global timer and a clock per block, plus work counters per warp. From that: idle SMs, tail, SM efficiency, per-warp max/mean, SIMT efficiency. The twin differs from production by −3.4 to +6.2 % in time, so its timelines are used for structure, not for speed.
+Docs: 04-load-balancing.md §4.0 (where imbalance arises), §4.1 (measuring without a profiler), §4.1.1 (clean re-run at 0 % load).</aside>
+</section>

@@ -1,0 +1,26 @@
+<section id="warpwalk" data-transition="fade" style="background:#13202B;color:#F6F5F1;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#F0A35E;font-weight:600">Technique #7 · warp-cooperative traversal</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#F6F5F1">The warp walks the tree together</h2>
+<div style="display:flex;gap:64px;align-items:center">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:200px;font-weight:700;line-height:1;color:#F0A35E">5.8×</p>
+<p style="font-size:28px;color:#C9D3DA">over #5 at 1M: 34.5 → 6.0 ms</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px">
+<p style="font-size:32px;line-height:1.4;color:#C9D3DA">A node is opened if <b style="color:#F6F5F1">any</b> lane needs it (<span style="color:#F0A35E">__any_sync</span>), so all 32 lanes run every step: SIMT efficiency <b style="color:#F6F5F1">0.20 → 1.00</b>.</p>
+<p style="font-size:32px;line-height:1.4;color:#C9D3DA">Every load is one address for the whole warp, and the stack moves from local memory into <b style="color:#F6F5F1">registers</b>.</p>
+<p style="font-size:32px;line-height:1.4;color:#C9D3DA">It does <b style="color:#F6F5F1">1.6–1.9× more interactions</b>, and is still faster and more accurate.</p>
+</div>
+</div>
+<p style="font-size:28px;color:#C9D3DA">Beats all-pairs from N ≈ 28,700 · needs #5’s order · 321 G real interactions/s</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#8FA3B0">Docs: ch.4 §4.7 · ch.5 §5.4 (register stack) · ch.7 §7.3 (#7)</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#8FA3B0">13</p>
+<aside>The main result. Instead of each lane walking its own path, the warp pops one node at a time; every lane does its own opening test, and the warp opens the node if any lane needs it. So the warp walks the union of its 32 paths.
+The paradox to explain: it does 1.64–1.85× more interactions than #5 (a lane gets children of a node it would have accepted), yet it is 5.8× faster. Because: every instruction runs on all 32 lanes (SIMT efficiency 1.000 instead of 0.20); every node load is one broadcast instead of up to 32 scattered loads (the profiler measured 14× fewer memory sectors); and the stack is 64 entries spread over 2 registers per lane, push = predicated move, pop = one shuffle, no local memory.
+It adds work and removes incoherence. It is not work stealing.
+Accuracy: rms error 4.59e-3 vs 6.55e-3 at 262,144, because each lane uses at least the cells it would have used alone.
+Without the Morton order the union is huge and it is 12.9–14.8× slower: #7 needs #5.
+Numbers: best vs best at 1M: #5 leaf 32 block 256 34.45 ms; #7 leaf 16 block 64 5.99 ms; 4.8× at 262,144. Rate 321 G interactions/s vs 28.8 for #5.
+Idea from Burtscher & Pingali 2011 (warp vote); our tree is a Karras binary radix tree instead of an octree with locks.
+Docs: 04-load-balancing.md §4.7.1 (mapping), §4.7.2 (results), §4.7.3 (needs #5, θ), §4.7.4 (crossover).</aside>
+</section>

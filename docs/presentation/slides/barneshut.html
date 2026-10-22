@@ -1,0 +1,19 @@
+<section id="barneshut" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Algorithm 2</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">Barnes-Hut: a far-away group acts like one point</h2>
+<div style="display:flex;gap:64px;align-items:center">
+<div style="flex:1;display:flex;flex-direction:column;gap:28px">
+<p style="font-size:32px;line-height:1.4;color:#4A5568">Put the bodies in a tree of boxes. Each box stores its total mass and centre of mass.</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">Walking the tree for body i: if a box is <b style="color:#13202B">far enough</b>, use its centre of mass; otherwise open it and look inside.</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">“Far enough” is set by the opening angle <b style="color:#13202B">θ</b> (we use 0.5): smaller θ = more accurate, more work.</p>
+<p style="font-size:44px;font-weight:600;color:#13202B">O(N²) → about O(N log N)</p>
+</div>
+<svg aria-label="A body on the left; a distant cluster of bodies inside a box on the right is replaced by a single point at its centre of mass" width="720" height="460" viewBox="0 0 720 460"><rect x="0" y="0" width="720" height="460" rx="16" fill="#FFFFFF" stroke="#DDE1E3"/><circle cx="110" cy="230" r="18" fill="#2F6DB0"/><rect x="430" y="110" width="240" height="240" rx="8" fill="none" stroke="#5B6670" stroke-width="3" stroke-dasharray="10 8"/><circle cx="480" cy="160" r="9" fill="#8FA3B0"/><circle cx="560" cy="150" r="9" fill="#8FA3B0"/><circle cx="620" cy="200" r="9" fill="#8FA3B0"/><circle cx="500" cy="260" r="9" fill="#8FA3B0"/><circle cx="600" cy="300" r="9" fill="#8FA3B0"/><circle cx="530" cy="320" r="9" fill="#8FA3B0"/><circle cx="640" cy="270" r="9" fill="#8FA3B0"/><circle cx="555" cy="232" r="20" fill="#E07A2E"/><line x1="130" y1="230" x2="532" y2="232" stroke="#13202B" stroke-width="3"/><polygon points="532,232 512,222 512,242" fill="#13202B"/></svg>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Docs: ch.3 §3.4 (idea, worked example), §3.5 step 6 (opening test)</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">4</p>
+<aside>Point at the picture: the blue body on the left does not need seven separate interactions with the grey cluster; it uses one interaction with the orange point, the cluster's centre of mass. Close boxes get opened; far boxes get summarised.
+θ: the box is accepted when its size divided by its distance is below θ. We use bmax (distance from the centre of mass to the farthest corner) instead of the box side, which avoids a known failure case; our θ is about 0.87 of the classic one.
+Monopole only: each box is just a mass at a point, so a box interaction is the same function as a body interaction.
+Docs: 03-algorithm.md §3.4 (idea, 2D worked example), §3.5 step 6 (opening test, why bmax). Paper: Barnes & Hut 1986.</aside>
+</section>

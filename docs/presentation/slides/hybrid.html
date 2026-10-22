@@ -1,0 +1,29 @@
+<section id="hybrid" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Technique #8 · CPU + GPU · a second negative result</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">Adding the CPU does not help</h2>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFFFF;padding:40px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:36px;font-weight:600;color:#13202B">Split the work</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">Best gain over the GPU alone: <b style="color:#13202B">+1.3 %</b>; most cells 0.99–1.27× slower.</p>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">The GPU is <b style="color:#13202B">18×</b> the best CPU code on the 1M tree, and the body split moves 2.26 ms of PCIe per step.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFFFF;padding:40px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:36px;font-weight:600;color:#13202B">The trap we caught</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">The CPU-tree version looked 4–25 % faster. A GPU-only control that refits the old tree is just as fast (within 1.4 %).</p>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">The gain was never the CPU’s. Always ask: <b style="color:#13202B">what is the control?</b></p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#13202B;padding:40px;border-radius:16px">
+<h3 style="font-size:36px;font-weight:600;color:#F6F5F1">P- vs E-cores</h3>
+<p style="font-size:28px;line-height:1.4;color:#C9D3DA">An even split over 20 threads: <b style="color:#F6F5F1">21.4</b> G/s, below the P-cores alone (31.0).</p>
+<p style="font-size:28px;line-height:1.4;color:#C9D3DA">Dynamic scheduling: <b style="color:#F0A35E">37.8</b> G/s, +22 %. Equal work is not equal time.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Docs: ch.4 §4.8 (4.8.1 results) · D-034, D-035, D-036</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">14</p>
+<aside>CPU: Intel i5-13600K, 6 P-cores + 8 E-cores, with an AVX2 + FMA all-pairs and tree code, multithreaded. GPU vs CPU, best against best: 29–36× for all-pairs from 16,384 bodies, 18.3× for the tree at 1M.
+Two splits: hyb_bh gives a share of the bodies to the CPU; hyb_phase builds the tree on the CPU while the GPU computes forces. Neither beats the GPU alone; the best gain anywhere is 1.3 %.
+The trap: hyb_phase looked up to 25 % faster. But it reuses an older tree while the CPU builds the next one. A GPU-only kernel that does the same (bh_warp_refit) matches it within 1.4 %, so the speed-up is "refit instead of rebuild", not the CPU. And in the timing loop the bodies do not move, so the older tree costs nothing there; in a real 500-step run it costs 4–10 % more interactions.
+The CPU balancing lesson: an E-core does about 0.21 of a P-core's work. A static even split makes everyone wait for the E-cores, slower than not using them. Dynamic scheduling puts 78 % of the work on the P-cores and gains 22 %.
+Clean session: 438 runs, 70 of 82 predictions hit.
+Docs: 04-load-balancing.md §4.8.1; results/2026-10-18_cpu_gpu/phase2/summary.md; decisions D-034 (CPU baselines), D-035 (P/E scheduling), D-036 (no hybrid in production).</aside>
+</section>
