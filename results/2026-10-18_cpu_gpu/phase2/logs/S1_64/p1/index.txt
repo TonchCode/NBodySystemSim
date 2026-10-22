@@ -1,0 +1,14 @@
+== gpu_tuned_b128: ./build/nbody_bench.exe --kernel allpairs_tuned --n 64 --block 128 --unroll 0 --warmup-ms 300 --runs 11 --batch 20
+   exit=0 02:39:54
+== gpu_multi_b512: ./build/nbody_bench.exe --kernel allpairs_multi --n 64 --block 512 --q 0 --warmup-ms 300 --runs 11 --batch 20
+   exit=0 02:39:55
+== gpu_tuned_b128_wall: ./build/nbody_bench.exe --kernel allpairs_tuned --n 64 --block 128 --unroll 0 --warmup-ms 300 --runs 11 --batch 20 --wall
+   exit=0 02:39:55
+== gpu_multi_b512_wall: ./build/nbody_bench.exe --kernel allpairs_multi --n 64 --block 512 --q 0 --warmup-ms 300 --runs 11 --batch 20 --wall
+   exit=0 02:39:56
+== cpu_ap_all: ./build/nbody_bench.exe --kernel cpu_allpairs --n 64 --cpu-set all --cpu-sched dynamic --cpu-iv 2 --cpu-tile 2048 --warmup 2 --runs 7 --batch 20
+   exit=0 02:39:56
+== cpu_ap_p1: ./build/nbody_bench.exe --kernel cpu_allpairs --n 64 --cpu-set p1 --cpu-sched dynamic --cpu-iv 2 --cpu-tile 2048 --warmup 2 --runs 7 --batch 20
+   exit=0 02:39:56
+== cpu_ap_1t: ./build/nbody_bench.exe --kernel cpu_allpairs --n 64 --cpu-set p1 --cpu-threads 1 --cpu-sched dynamic --cpu-iv 2 --cpu-tile 2048 --warmup 2 --runs 7 --batch 20
+   exit=0 02:39:56

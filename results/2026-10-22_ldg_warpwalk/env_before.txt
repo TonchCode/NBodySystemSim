@@ -1,0 +1,2 @@
+utilization.gpu [%], power.draw [W], clocks.current.sm [MHz], temperature.gpu
+0 %, 7.32 W, 210 MHz, 37

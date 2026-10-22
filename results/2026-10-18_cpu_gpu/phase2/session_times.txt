@@ -1,0 +1,45 @@
+(dry run before the session, not a session line) H4 static f = <from hfrac.py>
+session start 2026-10-22 02:19:47 (resume from cell 1)
+selftest exit=0 selftest (tree): 10854 checks, 0 failed
+2026-10-22 02:20:53 cell 1 C1_16384 start
+2026-10-22 02:21:03 cell 2 C1_65536 start
+2026-10-22 02:21:43 cell 3 C1_262144 start
+2026-10-22 02:26:56 cell 4 C5_65536 start
+2026-10-22 02:27:08 cell 5 C5_262144 start
+2026-10-22 02:27:35 cell 6 C5_1048576 start
+2026-10-22 02:33:28 cell 7 C10_512 start
+2026-10-22 02:33:36 cell 8 C10_1024 start
+2026-10-22 02:33:44 cell 9 C10_2048 start
+2026-10-22 02:33:53 cell 10 C10_4096 start
+2026-10-22 02:34:01 cell 11 C10_8192 start
+2026-10-22 02:34:11 cell 12 C10_16384 start
+2026-10-22 02:34:22 cell 13 E1_65536 start
+2026-10-22 02:36:31 cell 14 E9_1M start
+2026-10-22 02:39:54 cell 15 S1_64 start
+2026-10-22 02:40:04 cell 16 S1_128 start
+2026-10-22 02:40:15 cell 17 S1_256 start
+2026-10-22 02:40:26 cell 18 S1_512 start
+2026-10-22 02:40:37 cell 19 S1_1024 start
+2026-10-22 02:40:48 cell 20 S1_4096 start
+2026-10-22 02:41:00 cell 21 S1_16384 start
+2026-10-22 02:41:08 cell 22 S1_65536 start
+2026-10-22 02:41:18 cell 23 S1_262144 start
+2026-10-22 02:41:35 cell 24 S5_plummer_65536 start
+2026-10-22 02:41:44 cell 25 S5_plummer_262144 start
+2026-10-22 02:41:56 cell 26 S5_plummer_1048576 start
+2026-10-22 02:42:30 cell 27 S5_cube_edges_1048576 start
+2026-10-22 02:43:48 cell 28 H1_16384 start
+2026-10-22 02:43:57 cell 29 H1_65536 start
+2026-10-22 02:44:09 cell 30 H1_131072 start
+2026-10-22 02:44:22 cell 31 H1_262144 start
+H4 static f = 0.9730
+2026-10-22 02:44:46 cell 32 H4_262144 start
+2026-10-22 02:45:11 cell 33 H5_plummer_65536_th0.5 start
+2026-10-22 02:45:26 cell 34 H5_plummer_262144_th0.5 start
+2026-10-22 02:45:48 cell 35 H5_plummer_1048576_th0.5 start
+2026-10-22 02:47:26 cell 36 H5_plummer_1048576_th0.3 start
+2026-10-22 02:48:29 cell 37 H5_cube_edges_262144_th0.5 start
+2026-10-22 02:48:49 cell 38 H5_cube_edges_1048576_th0.5 start
+2026-10-22 02:50:19 cell 39 L1_plummer start
+2026-10-22 02:50:27 cell 40 L1_galaxies start
+session end 2026-10-22 02:50:37: 40 cells, 438 invocations

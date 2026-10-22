@@ -1,0 +1,57 @@
+diff --git a/src/core/kernels_tree.cu b/src/core/kernels_tree.cu
+index 65a99f6..652c3dd 100644
+--- a/src/core/kernels_tree.cu
++++ b/src/core/kernels_tree.cu
+@@ -545,6 +545,7 @@ __device__ __forceinline__ void threadWalk(const TreeView& v, int t, uint4* wc,
+ // in a dense loop when it fills; the summation order equals the direct walk's, so
+ // bh_warp_list is bitwise equal to bh_warp.
+ template <bool TL, bool LIST>
++// EXPERIMENT exp/ldg-warpwalk (2026-10-22): tree reads through __ldg (read-only path).
+ __device__ __forceinline__ void warpWalk(const TreeView& v, int u, float4* list, uint4* wc, bool accWc)
+ {
+     const int    lane  = threadIdx.x & 31;
+@@ -587,18 +588,18 @@ __device__ __forceinline__ void warpWalk(const TreeView& v, int u, float4* list,
+         if (node < 0) {
+             if constexpr (LIST) {
+                 if (cnt == kList) flush();
+-                if (lane == 0) list[cnt] = v.sortedPos[~node];
++                if (lane == 0) list[cnt] = __ldg(&v.sortedPos[~node]);
+                 ++cnt;
+             } else {
+-                a = bodyBodyInteraction(bi, v.sortedPos[~node], a, v.eps2);
++                a = bodyBodyInteraction(bi, __ldg(&v.sortedPos[~node]), a, v.eps2);
+                 if constexpr (TL) { nInter += valid; lInter += leaderInc(); }
+             }
+             continue;
+         }
+-        const float4 c  = v.nodeCom[node];
++        const float4 c  = __ldg(&v.nodeCom[node]);
+         const float  dx = c.x - bi.x, dy = c.y - bi.y, dz = c.z - bi.z;
+         const float  d2 = fmaf(dx, dx, fmaf(dy, dy, dz * dz));
+-        const bool   open = __any_sync(kFull, valid && !(d2 >= v.nodeRc2[node]));
++        const bool   open = __any_sync(kFull, valid && !(d2 >= __ldg(&v.nodeRc2[node])));
+         if (!open) {
+             if constexpr (LIST) {
+                 if (cnt == kList) flush();
+@@ -609,18 +610,18 @@ __device__ __forceinline__ void warpWalk(const TreeView& v, int u, float4* list,
+                 if constexpr (TL) { nInter += valid; lInter += leaderInc(); }
+             }
+         } else {
+-            const int4 in = v.nodeInfo[node];
++            const int4 in = __ldg(&v.nodeInfo[node]);
+             if (in.w - in.z + 1 <= v.leafSize) {
+                 if constexpr (LIST) {
+                     for (int k0 = in.z; k0 <= in.w; k0 += 32) {
+                         const int m = min(32, in.w - k0 + 1);
+                         if (cnt + m > kList) flush();
+-                        if (lane < m) list[cnt + lane] = v.sortedPos[k0 + lane];
++                        if (lane < m) list[cnt + lane] = __ldg(&v.sortedPos[k0 + lane]);
+                         cnt += m;
+                     }
+                 } else {
+                     for (int k = in.z; k <= in.w; ++k) {
+-                        a = bodyBodyInteraction(bi, v.sortedPos[k], a, v.eps2);
++                        a = bodyBodyInteraction(bi, __ldg(&v.sortedPos[k]), a, v.eps2);
+                         if constexpr (TL) { nInter += valid; lInter += leaderInc(); }
+                     }
+                 }

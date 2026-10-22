@@ -1,0 +1,12 @@
+== ap_iv2_t8192: ./build/nbody_bench.exe --kernel cpu_allpairs --n 16384 --cpu-set all --cpu-sched dynamic --cpu-iv 2 --cpu-tile 8192 --warmup 2 --runs 7
+   exit=0 02:20:55
+== ap_iv2_t2048: ./build/nbody_bench.exe --kernel cpu_allpairs --n 16384 --cpu-set all --cpu-sched dynamic --cpu-iv 2 --cpu-tile 2048 --warmup 2 --runs 7
+   exit=0 02:20:56
+== ap_iv2_t512: ./build/nbody_bench.exe --kernel cpu_allpairs --n 16384 --cpu-set all --cpu-sched dynamic --cpu-iv 2 --cpu-tile 512 --warmup 2 --runs 7
+   exit=0 02:20:56
+== ap_iv1_t8192: ./build/nbody_bench.exe --kernel cpu_allpairs --n 16384 --cpu-set all --cpu-sched dynamic --cpu-iv 1 --cpu-tile 8192 --warmup 2 --runs 7
+   exit=0 02:20:56
+== ap_iv1_t2048: ./build/nbody_bench.exe --kernel cpu_allpairs --n 16384 --cpu-set all --cpu-sched dynamic --cpu-iv 1 --cpu-tile 2048 --warmup 2 --runs 7
+   exit=0 02:20:57
+== ap_iv1_t512: ./build/nbody_bench.exe --kernel cpu_allpairs --n 16384 --cpu-set all --cpu-sched dynamic --cpu-iv 1 --cpu-tile 512 --warmup 2 --runs 7
+   exit=0 02:20:57

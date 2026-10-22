@@ -145,7 +145,7 @@ binary [M].
 | **Shared memory** | on the SM, shared by one block | up to 100 KB per SM (carve-out from the 128 KB L1) | **≈ 30 cycles** (30.1 on RTX 4090) | the **tile of body positions** in all-pairs (#1/#2: blockDim × 16 B, 4 KB at block 256; #3: 16 KB); the per-warp interaction lists of `bh_warp_list`; the occupancy-sweep padding | **best for all-pairs**: every position loaded once per block is reused by all its threads |
 | **L1 data cache** | on the SM, hardware-managed | 128 KB minus the shared carve-out | **≈ 32 cycles** on a hit | caches every global and local load: tree nodes, `sortedPos`, #5's stack | **critical for the tree**: #5 is bound by L1 *capacity* (§5.3) |
 | **Constant memory** | read-only, cached, one copy for the whole GPU | small (kernel parameters + `__constant__` data) | very fast if **all lanes read the same address**; serialises otherwise | only the **kernel parameters** (`CONSTANT[0]`: 380–456 B per kernel [M]); no `__constant__` data | not for bodies or trees (far too large). #7's warp-uniform loads have the pattern it likes, but L1 broadcast already gives the same effect |
-| **Read-only / texture path** | the non-coherent read-only data path into L1 | — | like L1 | used **implicitly**: `const __restrict__` pointers let the compiler emit `LDG.E.128.CONSTANT` (#1, #5) [M]. #7 passes its pointers in a struct (`TreeView`) and gets plain `LDG.E.128` [M] | small effect at most; a cheap experiment (§5.5.3) |
+| **Read-only / texture path** | the non-coherent read-only data path into L1 | — | like L1 | used **implicitly**: `const __restrict__` pointers let the compiler emit `LDG.E.128.CONSTANT` (#1, #5) [M]. #7 passes its pointers in a struct (`TreeView`) and gets plain `LDG.E.128` [M] | **measured: no effect**: forcing it with `__ldg` gives `LDG.E.128.CONSTANT` and 0.0–0.3 % (§5.5.3, D-037) |
 | **L2 cache** | on the chip, shared by all 80 SMs | **64 MB** | **≈ 270–285 cycles** | every global access passes through it; the hot top of the tree and, for N ≤ ~4 M, all positions can stay here | **the reason the tree code does not hit a DRAM wall** (§5.3) |
 | **Global / device memory (GDDR6X)** | off-chip VRAM, visible to all threads | 16 GB, 736 GB/s theoretical | **≈ 570 cycles** | all arrays: positions, velocities, accelerations, keys, permutation, tree nodes (§5.6) | the home of the data; the goal is to touch it as rarely as possible |
 | **Host memory (system RAM)** | CPU side, across PCIe 4.0 × 16 | 31.5 GB/s per direction theoretical | ~20× below VRAM bandwidth | initial conditions, validation reference, results; **pinned** buffers (`cudaHostAlloc`, `src/core/host.h`) only for the CPU + GPU split (#8) | keep it out of the time step: our state is GPU-resident |
@@ -304,8 +304,12 @@ are the committed outputs, and the commands above regenerate the traces.
 
 - Nsight Compute, once counters are enabled: achieved occupancy, L1/L2 hit rates of #5 vs #7,
   FMA vs XU pipe utilisation of the all-pairs loop.
-- Read-only path for #7: pass `__restrict__` pointers so that `bhWarpKernel` also gets
-  `LDG.E.128.CONSTANT`, and time it. This is cheap, and the hypothesis is pre-registrable.
+- ~~Read-only path for #7~~ **done 2026-10-22, no effect.** Reading the four tree arrays through
+  `__ldg` turned #7's loads into `LDG.E.128.CONSTANT` (still 40 registers, 0 stack) and changed the
+  traversal time by +0.3 % at 262,144 and 0.0 % at 1M, 4 alternating pairs each, all within ±1.2 %
+  (`results/2026-10-22_ldg_warpwalk/`, pre-registered, 5/5 HIT; D-037). The loads were already
+  warp-uniform broadcasts in the same unified L1; #7's limit is its dependent pop chain (D-026).
+  **A useful negative:** the instruction changed, the time did not.
 
 ---
 

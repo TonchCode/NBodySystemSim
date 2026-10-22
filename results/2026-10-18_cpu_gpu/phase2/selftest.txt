@@ -1,0 +1,46 @@
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+selftest: exact dyadic lattice, eps = 1, masses {1,2} and an unequal-mass pass {1,2,4,8,128}
+selftest: 7840 cases, 0 failed, 0 timeline-record failures (1 of the analytic accelerations are 0)
+  tree plummer              n=65536: depth 31, 65535 internal nodes, 5992 leaf buckets, root mass err 0.0e+00, COM err 2.9e-08
+  tree collision            n=65536: depth 32, 65535 internal nodes, 6073 leaf buckets, root mass err 0.0e+00, COM err 4.1e-09
+  tree core                 n=65536: depth 43, 65535 internal nodes, 6051 leaf buckets, root mass err 0.0e+00, COM err 5.0e-08
+  tree disk                 n=65536: depth 31, 65535 internal nodes, 6340 leaf buckets, root mass err 1.7e-08, COM err 8.2e-09
+  tree galaxies             n=65536: depth 32, 65535 internal nodes, 6562 leaf buckets, root mass err 1.6e-08, COM err 7.7e-08
+  tree cube_shell           n=65536: depth 25, 65535 internal nodes, 6089 leaf buckets, root mass err 0.0e+00, COM err 6.2e-08
+  tree cube_edges           n=65536: depth 39, 65535 internal nodes, 5967 leaf buckets, root mass err 0.0e+00, COM err 3.0e-08
+  tree uniform              n=65536: depth 21, 65535 internal nodes, 5900 leaf buckets, root mass err 0.0e+00, COM err 4.0e-08
+  tree plummer:salpeter     n=65536: depth 31, 65535 internal nodes, 5992 leaf buckets, root mass err 6.0e-08, COM err 3.9e-08
+  tree disk:heavy-few       n=65536: depth 31, 65535 internal nodes, 6340 leaf buckets, root mass err 8.0e-08, COM err 2.2e-08
+  tree galaxies:salpeter    n=65536: depth 32, 65535 internal nodes, 6562 leaf buckets, root mass err 1.6e-08, COM err 1.6e-07
+  tree cube_shell:heavy-few n=65536: depth 25, 65535 internal nodes, 6089 leaf buckets, root mass err 1.2e-09, COM err 2.7e-08
+  exact host check plummer n=10007 #5 walk: 10006 nodes (max mass rel 1.6e-07, COM abs 9.5e-07, bmax abs 5.4e-07), 10007 bodies, count mismatches 0, max |da|/sum|f| = 0.050 of (I+10)u
+  exact host check plummer n=10007 union walk: 10006 nodes (max mass rel 1.6e-07, COM abs 9.5e-07, bmax abs 5.4e-07), 10007 bodies, count mismatches 0, max |da|/sum|f| = 0.027 of (I+10)u
+  union plummer              n=65536: normalised rms 2.340e-03 vs #5 3.134e-03, p99 6.502e-03 vs 8.057e-03
+  union collision            n=65536: normalised rms 3.133e-03 vs #5 4.470e-03, p99 9.763e-03 vs 1.274e-02
+  union core                 n=65536: normalised rms 3.747e-03 vs #5 5.437e-03, p99 1.047e-02 vs 1.296e-02
+  union disk                 n=65536: normalised rms 3.934e-03 vs #5 5.561e-03, p99 1.193e-02 vs 1.695e-02
+  union galaxies             n=65536: normalised rms 4.059e-03 vs #5 6.079e-03, p99 1.150e-02 vs 1.586e-02
+  union cube_shell           n=65536: normalised rms 5.478e-03 vs #5 6.719e-03, p99 9.112e-03 vs 1.073e-02
+  XFAIL cube_edges n=10007 bh_warp_naive th0.5: TG3n rms 1.435e-02 > 1.378e-02 or p99 3.923e-02 > 3.814e-02 (known, D-027; not counted)
+  XFAIL cube_edges n=10007 bh_warp_naive th0.7: TG3n rms 3.422e-02 > 3.339e-02 or p99 9.771e-02 > 9.701e-02 (known, D-027; not counted)
+  union cube_edges           n=65536: normalised rms 8.107e-03 vs #5 9.543e-03, p99 2.129e-02 vs 2.356e-02
+  XFAIL cube_edges n=65536 bh_warp_naive th0.5: TG3n rms 1.080e-02 > 9.543e-03 or p99 2.657e-02 > 2.356e-02 (known, D-027; not counted)
+  XFAIL cube_edges n=65536 bh_warp_naive th0.7: TG3n rms 2.447e-02 > 2.241e-02 or p99 6.458e-02 > 5.909e-02 (known, D-027; not counted)
+  union uniform              n=65536: normalised rms 2.132e-03 vs #5 3.199e-03, p99 4.313e-03 vs 6.271e-03
+  union plummer:salpeter     n=65536: normalised rms 2.422e-03 vs #5 3.196e-03, p99 6.724e-03 vs 8.205e-03
+  union disk:heavy-few       n=65536: normalised rms 3.807e-03 vs #5 5.334e-03, p99 1.199e-02 vs 1.665e-02
+  union galaxies:salpeter    n=65536: normalised rms 4.071e-03 vs #5 6.003e-03, p99 1.145e-02 vs 1.563e-02
+  union cube_shell:heavy-few n=65536: normalised rms 5.174e-03 vs #5 6.279e-03, p99 8.835e-03 vs 1.021e-02
+selftest (tree round 2): 7731 checks, 0 failed; exact host check worst |da|/sum|f| = 0.274 of its (I+10)u bound
+selftest (IC invariants): 126 checks, 0 failed (mass 1, COM, momentum, finite, positive masses, deterministic, legacy hashes)
+  rsqrt P vs E: 0 of 1048576 inputs give different _mm256_rsqrt_ps bits (observation; the production result can depend on which core type ran an item)
+  cpu_allpairs rsqrt1 frac-1 iv2 n=65536: normMax 5.837e-06 = 0.38 u sqrtN (naive 5.840e-06), max rel vs naive 1.86e-06
+  cpu_allpairs rsqrt1 frac-1 iv1 n=65536: normMax 5.837e-06 = 0.38 u sqrtN (naive 5.840e-06), max rel vs naive 1.86e-06
+  cpu_allpairs rsqrt0 frac-1 iv2 n=65536: normMax 5.840e-06 = 0.38 u sqrtN (naive 5.840e-06), max rel vs naive 1.17e-06
+  hyb_allpairs rsqrt1 frac0.5 iv2 n=65536: normMax 5.840e-06 = 0.38 u sqrtN (naive 5.840e-06), max rel vs naive 6.84e-07
+  hyb_allpairs rsqrt1 frac-1 iv2 n=65536: normMax 5.840e-06 = 0.38 u sqrtN (naive 5.840e-06), max rel vs naive 6.35e-07
+  stale topology hyb_phase plummer n=10007 (positions moved by 0.02 rms per axis): tree ok, exact host check 0.028 of bound, norm rms 2.161e-03 p99 7.057e-03
+  stale topology bh_warp_refit plummer n=10007 (positions moved by 0.02 rms per axis): tree ok, exact host check 0.028 of bound, norm rms 2.161e-03 p99 7.057e-03
+selftest (R3 #8 CPU/hybrid): 2563 checks, 0 failed; CPU vs GPU walks worst |da|/sum|f| = 0.125 of the (2I+64)u bound
+selftest (tree): 10854 checks, 0 failed
+selftest: PASS

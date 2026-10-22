@@ -1,0 +1,7 @@
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=1 block=128 q=1 prefetch=-1 unroll=0  regs=40 smem=2048 B  resident 12 blocks/SM (100% occupancy)  blocks/SM=0.01 (busiest 1)  waves=0.00
+# ic=plummer seed=42 theta=0.5 leaf=16 mass_spectrum=equal bh_mass=0.01 ic_hash=48069df7dfb9bc6f | mass total 1.000000000, min 7.812e-03, max 7.812e-03 (max/min 1) | dt advisory 1.82e-03 (dt 0.001)
+kernel=allpairs_tuned n=128 block=128 q=1 prefetch=-1 unroll=0 runs=11 batch=20  median=0.0056 ms  min=0.0051  max=0.0070  2.918 Ginteractions/s  58.4 GFLOP/s (@20 FLOP/interaction)
+validate vs allpairs_naive: max rel err 0.000e+00  rms 0.000e+00  (bitwise equal)
+validate vs FP64 (128 bodies, kappa_max 1.2e+01): this rms 1.772e-07 max 4.164e-07 norm 3.423e-07  | naive rms 1.772e-07 max 4.164e-07 norm 3.423e-07
+gates (D-009): G1 PASS (normMax 3.423e-07 <= 6.743e-07 = 1.0 u sqrtN; naive 3.423e-07 passes)  G2 PASS (<= 1.5 x naive = 5.135e-07)  G0 PASS (max rel vs naive 0.00e+00 <= 1e-02)  => PASS

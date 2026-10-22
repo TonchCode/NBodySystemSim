@@ -794,7 +794,7 @@ for gravity on Ada, so the coherent-control comparison is our own contribution.
 - The best-against-best speedups are for the Plummer IC only (set C).
 - The 1M all-pairs comparison is extrapolated [D].
 
-## 4.8 Technique #8: CPU + GPU split (planned)
+## 4.8 Technique #8: CPU + GPU split (measured: negative)
 
 **Imbalance targeted.** Between devices. The CPU is an Intel Core i5-13600K with 6 P-cores and
 8 E-cores (`docs/01-hardware.md` §1). A static even split across its threads would be limited
@@ -816,9 +816,36 @@ CPU/GPU split that minimises the slower side's time is an analogy from MoE infer
 solvers GPU-resident [P:frontiere2025crkhacc]. No 2025–26 source covers P-core/E-core hybrid CPUs
 in a CPU+GPU split (`references/R3-evidence-map.md` §8).
 
-**Planned measurement.** A phase split (tree on the CPU, forces on the GPU) against the
-GPU-resident #5 of the same session, with the CPU work split statically and dynamically across P-
-and E-cores. Not run in tree round 2 (`TODO(results: #8, future round)`).
+### 4.8.1 Measured effect (phase 2, 2026-10-22)
+
+Clean session (GPU ≤ 1 %, CPU ≤ 4 % idle between cells), 438 runs, pre-registered, **70 HIT /
+12 MISS of 82 items** (`results/2026-10-18_cpu_gpu/phase2/summary.md`; D-034–D-036). Milliseconds
+per force evaluation, ratio against `bh_warp`:
+
+| Case | `bh_warp` | `hyb_bh` (body split) | `hyb_phase` (CPU tree, GPU forces) | `bh_warp_refit` (GPU only) |
+|---|---|---|---|---|
+| Plummer 65,536 | 0.787 | 1.002 (1.27×) | 0.624 (0.79×) | 0.617 |
+| Plummer 262,144 | 1.856 | 1.975 (1.06×) | 1.681 (0.91×) | 1.681 |
+| Plummer 1M | 6.639 | 6.654 (1.00×) | 6.367 (0.96×) | 6.351 |
+| cube_edges 1M | 0.981 | 1.023 (1.04×) | 0.736 (0.75×) | 0.737 |
+
+- **No split beats the GPU alone.** The best gain of any hybrid over the best GPU-only
+  configuration of its cell is 1.3 %. The all-pairs split is 2.4–24 % slower.
+- **The phase split looks faster, but not because of the CPU.** A GPU-only kernel that reuses and
+  refits the previous tree (`bh_warp_refit`) matches it within 1.4 % in every cell. The gain is
+  "refit instead of rebuild", and the timing loop (static positions) does not charge for the older
+  tree: in 500-step runs it costs 4–10 % more interactions (D-036).
+- **Why it cannot win.** The GPU is 18.3× the best CPU code on the Plummer 1M tree and 29–36× on
+  all-pairs (D-034), so the CPU's share is small; and the tree body split moves 56 B/body over PCIe,
+  2.26 ms per step at 1M, which is 2.3× a whole cube_edges `bh_warp` step.
+- **P-cores and E-cores** (the second balancing problem). A static even split over all 20 threads
+  is *slower than the P-cores alone* (21.4 vs 31.0 G/s): each E-core thread finishes ≈ 2.4× later.
+  Dynamic scheduling gives 37.8 G/s (+22 %), with 77.8 % of the work landing on the P-cores; one
+  E-core ≈ 0.21 of a P-core (D-035). Equal work is not equal time on unequal cores.
+- **Defect found, not fixed:** the background CPU build inside `hyb_phase` takes 29–307 ms instead
+  of ≈ 1–10 ms; suspected worker-pool wake-up [T2]. It changes no verdict.
+
+**Result: a negative answer with a mechanism.** The hybrids stay bench-only (D-036).
 
 ---
 
@@ -834,7 +861,7 @@ and E-cores. Not run in tree round 2 (`TODO(results: #8, future round)`).
 | 5 | Morton / Hilbert order | inside warps | **2.01× / 2.06× vs #4** best vs best at N = 262,144 / 1M (θ = 0.5); 1.6–2.1× at the fixed protocol config; Hilbert ≈ Morton; L1-capacity-bound; crossover N ≈ 39,700 | done |
 | 6 | Persistent threads + queues (warp, lane, static, on #7) | between warps / blocks; loop level (lane arm) | **slower in every cell: 0.63–0.97×** of the hardware scheduler, although each arm improves its balance metric; mechanism: lost L1 locality (warp queue), loop structure (lane refill, not verified in SASS) | measured negative; replicated clean 2026-10-18 |
 | 7 | Warp-cooperative union walk | inside warps (idle lanes, divergent loads) | **5.8× / 4.8× vs #5** best vs best at 1M / 262,144 (θ = 0.5); 3.1–7.1× at the fixed config; SIMT eff. 1.000; ×1.6–1.9 interactions; more accurate (TG3 60/60); closes 70–87 % of the coherent gap; needs #5's order; crossover N ≈ 28,700 | done; replicated clean 2026-10-18 |
-| 8 | CPU + GPU split | between devices, P/E cores | `TODO(results: #8, future round)` | planned |
+| 8 | CPU + GPU split | between devices, P/E cores | **no gain**: best hybrid +1.3 %, most cells 0.99–1.27× slower; the phase split's apparent gain is GPU refit (matches within 1.4 %); GPU/CPU 18.3× (tree 1M); on the CPU a static even split is below P-cores alone, dynamic +22 % | measured negative 2026-10-22 (D-034–D-036) |
 
 **Scorecards.** All-pairs round 2: 18 HIT / 7 MISS (`results/2026-10-17_round2/summary.md` §7).
 Tree round 1: disputed, not used (§4.5.6). Tree round 2: **39 HIT / 22 MISS of 61 items**, from the

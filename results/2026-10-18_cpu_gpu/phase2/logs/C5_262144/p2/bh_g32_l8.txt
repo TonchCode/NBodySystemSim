@@ -1,0 +1,16 @@
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# host: 13th Gen Intel(R) Core(TM) i5-13600K | set=all threads=0 -> 20 workers (12 on P LPs, 8 on E LPs) sched=dynamic chunk=0 | rsqrt=rsqrt+newton group=32 tile=2048 iv=2 | hyb_frac=-1 refit_every=8 hyb_sync=0 | timing: host clock + device sync
+# ic=plummer seed=42 theta=0.5 leaf=8 mass_spectrum=equal bh_mass=0.01 ic_hash=36003f8a752e9252 | mass total 1.000000000, min 3.815e-06, max 3.815e-06 (max/min 1) | dt advisory 8.25e-02 (dt 0.001)
+kernel=cpu_bh n=262144 block=256 q=1 prefetch=-1 unroll=-1 runs=7 batch=1  median=29.7440 ms  min=27.2495  max=163.1230  2310.364 G N^2-equivalent interactions/s (not the tree rate; see the work: line)  [timing: wall]
+host: d2h 0.1695 ms  h2d 0.2190 ms (median of 7; the bench's GPU-resident state, not CPU compute) | pool: 20 workers (12 P, 8 E), 24 regions/launch, worker busy max/mean 1.039, mean busy P 25.949 ms E 26.015 ms per launch, items on P 65.0%
+phases (host clock, median of 7, ms):  keys 0.2144  sort 1.5753  tree 0.8819  order 0.0000  traverse 24.2772  | build(keys+sort+tree) 2.6716  traverse 24.2772  (production total 29.7440 incl. copies)
+work: 1361.8 interactions/body (3.570e+08 total), 1991.1 nodes popped/body | per-warp max/mean 1.000 (median warp 1.000) | SIMT eff interactions 0.000, pops 0.000 | warp-cost max/mean 1.46 | traversal 14.7 G interactions/s
+rates: real 12.00 G interactions/s over the full pipeline (29.7440 ms), 14.71 over the traversal; N^2-equivalent 2310.4 G/s
+tree: max depth 32, push depth 27 -> stack bound 29 (capacity: per-thread 160, warp 160), duplicate keys 0 (0.000% of bodies)
+validate vs allpairs_naive: max rel err 1.188e-01  rms 4.660e-03
+validate vs FP64 (528 bodies, kappa_max 8.8e+01): this rms 1.424e-02 max 1.188e-01 norm 1.109e-02  | naive rms 7.253e-06 max 2.286e-05 norm 1.668e-05
+tree error vs exact (all 262144 bodies), per-body relative (legacy): rms 4.660e-03  p50 3.819e-03  p99 1.133e-02  max 1.188e-01
+tree error vs exact, normalised |da|/sum|f| (all bodies): rms 2.459e-03  p99 6.432e-03  max 1.359e-02 | global |da|/|a|_rms: rms 4.409e-03  p99 1.053e-02
+gates (tree, theta=0.50): TN1 PASS (norm rms 2.459e-03 <= 2.000e-02)  TN2 PASS (norm p99 6.432e-03 <= 4.500e-02)  stack ok  => PASS  | legacy TG1 PASS (rms 4.660e-03 <= 3.000e-02) TG2 PASS (p99 1.133e-02 <= 1.200e-01), not gating
+work vs bh_warp: interactions x1.0000, pops x1.0000
+same work as bh_warp: per-slot pop/interaction counts EQUAL (0 slots differ) | accelerations: max |da|/sum|f| 3.253e-07, 0 bodies above the roundoff bound (2 I_max + 64) u = 2.410e-04 => PASS

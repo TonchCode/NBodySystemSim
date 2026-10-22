@@ -1,0 +1,4 @@
+main {'LDG.E': 2, 'LDG.E.128': 11}
+main REG:40 STACK:0
+exp {'LDG.E': 1, 'LDG.E.128': 1, 'LDG.E.128.CONSTANT': 10, 'LDG.E.CONSTANT': 1}
+exp REG:40 STACK:0

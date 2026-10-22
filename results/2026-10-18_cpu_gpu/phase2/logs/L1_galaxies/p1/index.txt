@@ -1,0 +1,4 @@
+== hyb_phase_lag: ./build/nbody_bench.exe --kernel hyb_phase --n 65536 --ic galaxies --theta 0.5 --leaf 16 --block 128 --steps 500 --dt 1e-3 --lag-check --warmup 2 --runs 3 --cpu-set all --cpu-sched dynamic
+   exit=0 02:50:28
+== refit_k16_lag: ./build/nbody_bench.exe --kernel bh_warp_refit --n 65536 --ic galaxies --theta 0.5 --leaf 16 --block 128 --steps 500 --dt 1e-3 --lag-check --warmup 2 --runs 3 --refit-every 16
+   exit=0 02:50:28

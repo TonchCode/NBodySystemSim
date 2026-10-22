@@ -1,0 +1,15 @@
+# cpu  13th Gen Intel(R) Core(TM) i5-13600K | 6 P-cores (12 LPs) + 8 E-cores (8 LPs) = 20 logical processors
+# P LPs: 0 1 2 3 4 5 6 7 8 9 10 11
+# E LPs: 12 13 14 15 16 17 18 19
+# set all   : 20 workers (12 on P LPs, 8 on E LPs)
+# set p     : 12 workers (12 on P LPs, 0 on E LPs)
+# set p1    :  6 workers (6 on P LPs, 0 on E LPs)
+# set e     :  8 workers (0 on P LPs, 8 on E LPs)
+# set cores : 14 workers (6 on P LPs, 8 on E LPs)
+clock 1 P LP alone                :  1 LPs busy  P mean 4.939 GHz (1)  E mean 0.000 GHz (0)  min 4.939  max 4.939
+clock 1 E LP alone                :  1 LPs busy  P mean 0.000 GHz (0)  E mean 3.832 GHz (1)  min 3.832  max 3.832
+clock one LP per P-core           :  6 LPs busy  P mean 5.039 GHz (6)  E mean 0.000 GHz (0)  min 4.997  max 5.080
+clock all P LPs (HT pairs busy)   : 12 LPs busy  P mean 4.676 GHz (12)  E mean 0.000 GHz (0)  min 4.669  max 4.679
+clock all E LPs                   :  8 LPs busy  P mean 0.000 GHz (0)  E mean 3.856 GHz (8)  min 3.804  max 3.878
+clock all LPs                     : 20 LPs busy  P mean 4.656 GHz (12)  E mean 3.845 GHz (8)  min 3.797  max 4.682
+note: each probe thread runs 16 dependent 1-cycle integer ops per iteration; GHz = 16 * iterations / time. The chain is latency-bound (one ALU per cycle), so the two hyper-threads of a P-core each run at the core clock: the figure is the core clock under that load, not a share of the core's throughput.

@@ -1,0 +1,6 @@
+== gpu_bh_warp_wall: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic plummer --theta 0.3 --leaf 8 --block 256 --warmup-ms 300 --runs 11 --wall
+   exit=0 02:47:33
+== gpu_bh_sorted_wall: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --theta 0.3 --leaf 32 --block 256 --warmup-ms 300 --runs 11 --wall
+   exit=0 02:47:47
+== hyb_bh_dyn: ./build/nbody_bench.exe --kernel hyb_bh --n 1048576 --ic plummer --theta 0.3 --leaf 8 --block 256 --hyb-frac -1 --cpu-set all --cpu-sched dynamic --warmup-ms 300 --runs 11
+   exit=0 02:47:54

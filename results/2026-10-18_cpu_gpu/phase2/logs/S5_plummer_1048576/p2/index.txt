@@ -1,0 +1,4 @@
+== gpu_bh_sorted: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic plummer --theta 0.5 --leaf 32 --block 256 --warmup-ms 300 --runs 11
+   exit=0 02:42:17
+== gpu_bh_warp: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic plummer --theta 0.5 --leaf 8 --block 256 --warmup-ms 300 --runs 11
+   exit=0 02:42:23

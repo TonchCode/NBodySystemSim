@@ -1,0 +1,12 @@
+== gpu_refit_k16_wall: ./build/nbody_bench.exe --kernel bh_warp_refit --n 262144 --ic cube_edges --theta 0.5 --leaf 16 --block 128 --refit-every 16 --warmup-ms 300 --runs 11 --wall
+   exit=0 02:48:37
+== gpu_refit_k4_wall: ./build/nbody_bench.exe --kernel bh_warp_refit --n 262144 --ic cube_edges --theta 0.5 --leaf 16 --block 128 --refit-every 4 --warmup-ms 300 --runs 11 --wall
+   exit=0 02:48:38
+== hyb_phase: ./build/nbody_bench.exe --kernel hyb_phase --n 262144 --ic cube_edges --theta 0.5 --leaf 16 --block 128 --cpu-set all --cpu-sched dynamic --warmup-ms 300 --runs 11
+   exit=0 02:48:39
+== hyb_bh_dyn: ./build/nbody_bench.exe --kernel hyb_bh --n 262144 --ic cube_edges --theta 0.5 --leaf 16 --block 128 --hyb-frac -1 --cpu-set all --cpu-sched dynamic --warmup-ms 300 --runs 11
+   exit=0 02:48:40
+== gpu_bh_sorted_wall: ./build/nbody_bench.exe --kernel bh_sorted --n 262144 --ic cube_edges --theta 0.5 --leaf 32 --block 256 --warmup-ms 300 --runs 11 --wall
+   exit=0 02:48:42
+== gpu_bh_warp_wall: ./build/nbody_bench.exe --kernel bh_warp --n 262144 --ic cube_edges --theta 0.5 --leaf 16 --block 128 --warmup-ms 300 --runs 11 --wall
+   exit=0 02:48:43

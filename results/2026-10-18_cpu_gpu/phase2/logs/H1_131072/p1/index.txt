@@ -1,0 +1,6 @@
+== gpu_tuned_b128_wall: ./build/nbody_bench.exe --kernel allpairs_tuned --n 131072 --block 128 --unroll 0 --warmup-ms 300 --runs 11 --batch 1 --wall
+   exit=0 02:44:10
+== gpu_multi_b256_wall: ./build/nbody_bench.exe --kernel allpairs_multi --n 131072 --block 256 --q 0 --warmup-ms 300 --runs 11 --batch 1 --wall
+   exit=0 02:44:11
+== hyb_ap_dyn: ./build/nbody_bench.exe --kernel hyb_allpairs --n 131072 --block 128 --hyb-frac -1 --cpu-set all --cpu-sched dynamic --warmup-ms 300 --runs 11 --batch 1
+   exit=0 02:44:12

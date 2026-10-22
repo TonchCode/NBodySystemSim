@@ -1,0 +1,30 @@
+== ap_all_static: ./build/nbody_bench.exe --kernel cpu_allpairs --n 65536 --cpu-set all --cpu-sched static --cpu-iv 2 --cpu-tile 2048 --warmup 2 --runs 7
+   exit=0 02:34:25
+== ap_all_dynamic: ./build/nbody_bench.exe --kernel cpu_allpairs --n 65536 --cpu-set all --cpu-sched dynamic --cpu-iv 2 --cpu-tile 2048 --warmup 2 --runs 7
+   exit=0 02:34:28
+== ap_all_weighted: ./build/nbody_bench.exe --kernel cpu_allpairs --n 65536 --cpu-set all --cpu-sched weighted --cpu-iv 2 --cpu-tile 2048 --warmup 2 --runs 7
+   exit=0 02:34:30
+== ap_p_static: ./build/nbody_bench.exe --kernel cpu_allpairs --n 65536 --cpu-set p --cpu-sched static --cpu-iv 2 --cpu-tile 2048 --warmup 2 --runs 7
+   exit=0 02:34:33
+== ap_p_dynamic: ./build/nbody_bench.exe --kernel cpu_allpairs --n 65536 --cpu-set p --cpu-sched dynamic --cpu-iv 2 --cpu-tile 2048 --warmup 2 --runs 7
+   exit=0 02:34:35
+== ap_p_weighted: ./build/nbody_bench.exe --kernel cpu_allpairs --n 65536 --cpu-set p --cpu-sched weighted --cpu-iv 2 --cpu-tile 2048 --warmup 2 --runs 7
+   exit=0 02:34:38
+== ap_p1_static: ./build/nbody_bench.exe --kernel cpu_allpairs --n 65536 --cpu-set p1 --cpu-sched static --cpu-iv 2 --cpu-tile 2048 --warmup 2 --runs 7
+   exit=0 02:34:41
+== ap_p1_dynamic: ./build/nbody_bench.exe --kernel cpu_allpairs --n 65536 --cpu-set p1 --cpu-sched dynamic --cpu-iv 2 --cpu-tile 2048 --warmup 2 --runs 7
+   exit=0 02:34:43
+== ap_p1_weighted: ./build/nbody_bench.exe --kernel cpu_allpairs --n 65536 --cpu-set p1 --cpu-sched weighted --cpu-iv 2 --cpu-tile 2048 --warmup 2 --runs 7
+   exit=0 02:34:46
+== ap_e_static: ./build/nbody_bench.exe --kernel cpu_allpairs --n 65536 --cpu-set e --cpu-sched static --cpu-iv 2 --cpu-tile 2048 --warmup 2 --runs 7
+   exit=0 02:34:55
+== ap_e_dynamic: ./build/nbody_bench.exe --kernel cpu_allpairs --n 65536 --cpu-set e --cpu-sched dynamic --cpu-iv 2 --cpu-tile 2048 --warmup 2 --runs 7
+   exit=0 02:35:04
+== ap_e_weighted: ./build/nbody_bench.exe --kernel cpu_allpairs --n 65536 --cpu-set e --cpu-sched weighted --cpu-iv 2 --cpu-tile 2048 --warmup 2 --runs 7
+   exit=0 02:35:13
+== ap_cores_static: ./build/nbody_bench.exe --kernel cpu_allpairs --n 65536 --cpu-set cores --cpu-sched static --cpu-iv 2 --cpu-tile 2048 --warmup 2 --runs 7
+   exit=0 02:35:18
+== ap_cores_dynamic: ./build/nbody_bench.exe --kernel cpu_allpairs --n 65536 --cpu-set cores --cpu-sched dynamic --cpu-iv 2 --cpu-tile 2048 --warmup 2 --runs 7
+   exit=0 02:35:20
+== ap_cores_weighted: ./build/nbody_bench.exe --kernel cpu_allpairs --n 65536 --cpu-set cores --cpu-sched weighted --cpu-iv 2 --cpu-tile 2048 --warmup 2 --runs 7
+   exit=0 02:35:23

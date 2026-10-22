@@ -1,0 +1,12 @@
+== cpu_bh_g32_l16: ./build/nbody_bench.exe --kernel cpu_bh --n 1048576 --ic cube_edges --theta 0.5 --leaf 16 --cpu-group 32 --cpu-set all --cpu-sched dynamic --warmup 2 --runs 7
+   exit=0 02:43:12
+== cpu_bh_g32_l8: ./build/nbody_bench.exe --kernel cpu_bh --n 1048576 --ic cube_edges --theta 0.5 --leaf 8 --cpu-group 32 --cpu-set all --cpu-sched dynamic --warmup 2 --runs 7
+   exit=0 02:43:18
+== cpu_bh_g16_l16: ./build/nbody_bench.exe --kernel cpu_bh --n 1048576 --ic cube_edges --theta 0.5 --leaf 16 --cpu-group 16 --cpu-set all --cpu-sched dynamic --warmup 2 --runs 7
+   exit=0 02:43:24
+== cpu_bh_g16_l8: ./build/nbody_bench.exe --kernel cpu_bh --n 1048576 --ic cube_edges --theta 0.5 --leaf 8 --cpu-group 16 --cpu-set all --cpu-sched dynamic --warmup 2 --runs 7
+   exit=0 02:43:30
+== gpu_bh_sorted: ./build/nbody_bench.exe --kernel bh_sorted --n 1048576 --ic cube_edges --theta 0.5 --leaf 32 --block 256 --warmup-ms 300 --runs 11
+   exit=0 02:43:35
+== gpu_bh_warp: ./build/nbody_bench.exe --kernel bh_warp --n 1048576 --ic cube_edges --theta 0.5 --leaf 8 --block 256 --warmup-ms 300 --runs 11
+   exit=0 02:43:41

@@ -1,0 +1,9 @@
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# host: 13th Gen Intel(R) Core(TM) i5-13600K | set=p1 threads=0 -> 6 workers (6 on P LPs, 0 on E LPs) sched=dynamic chunk=0 | rsqrt=rsqrt+newton group=32 tile=2048 iv=2 | hyb_frac=-1 refit_every=8 hyb_sync=0 | timing: host clock + device sync
+# ic=plummer seed=42 theta=0.5 leaf=16 mass_spectrum=equal bh_mass=0.01 ic_hash=dba8ed4426cf2e28 | mass total 1.000000000, min 1.562e-02, max 1.562e-02 (max/min 1) | dt advisory 1.29e-03 (dt 0.001)
+kernel=cpu_allpairs n=64 block=256 q=1 prefetch=-1 unroll=-1 runs=7 batch=20  median=0.0278 ms  min=0.0264  max=0.0345  0.148 Ginteractions/s  3.0 GFLOP/s (@20 FLOP/interaction)  [timing: wall]
+host: d2h 0.0056 ms  h2d 0.0083 ms (median of 7; the bench's GPU-resident state, not CPU compute) | pool: 6 workers (6 P, 0 E), 1 regions/launch, worker busy max/mean 1.618, mean busy P 0.000 ms E 0.000 ms per launch, items on P 100.0%
+phases (host clock, median of 7, ms):  compute 0.0118  (production total 0.0278 incl. copies)
+validate vs allpairs_naive: max rel err 2.946e-07  rms 1.170e-07
+validate vs FP64 (64 bodies, kappa_max 4.5e+00): this rms 1.631e-07 max 4.913e-07 norm 2.089e-07  | naive rms 1.454e-07 max 4.074e-07 norm 2.061e-07
+gates (D-009): G1 PASS (normMax 2.089e-07 <= 4.768e-07 = 1.0 u sqrtN; naive 2.061e-07 passes)  G2 PASS (<= 1.5 x naive = 3.091e-07)  G0 PASS (max rel vs naive 2.95e-07 <= 1e-02)  => PASS

@@ -1,0 +1,18 @@
+== bh_all_static: ./build/nbody_bench.exe --kernel cpu_bh --n 1048576 --ic plummer --theta 0.5 --leaf 16 --cpu-group 32 --cpu-set all --cpu-sched static --warmup 2 --runs 7
+   exit=0 02:36:40
+== bh_all_dynamic: ./build/nbody_bench.exe --kernel cpu_bh --n 1048576 --ic plummer --theta 0.5 --leaf 16 --cpu-group 32 --cpu-set all --cpu-sched dynamic --warmup 2 --runs 7
+   exit=0 02:36:49
+== bh_all_weighted: ./build/nbody_bench.exe --kernel cpu_bh --n 1048576 --ic plummer --theta 0.5 --leaf 16 --cpu-group 32 --cpu-set all --cpu-sched weighted --warmup 2 --runs 7
+   exit=0 02:36:58
+== bh_p_static: ./build/nbody_bench.exe --kernel cpu_bh --n 1048576 --ic plummer --theta 0.5 --leaf 16 --cpu-group 32 --cpu-set p --cpu-sched static --warmup 2 --runs 7
+   exit=0 02:37:07
+== bh_p_dynamic: ./build/nbody_bench.exe --kernel cpu_bh --n 1048576 --ic plummer --theta 0.5 --leaf 16 --cpu-group 32 --cpu-set p --cpu-sched dynamic --warmup 2 --runs 7
+   exit=0 02:37:16
+== bh_p_weighted: ./build/nbody_bench.exe --kernel cpu_bh --n 1048576 --ic plummer --theta 0.5 --leaf 16 --cpu-group 32 --cpu-set p --cpu-sched weighted --warmup 2 --runs 7
+   exit=0 02:37:25
+== bh_e_static: ./build/nbody_bench.exe --kernel cpu_bh --n 1048576 --ic plummer --theta 0.5 --leaf 16 --cpu-group 32 --cpu-set e --cpu-sched static --warmup 2 --runs 7
+   exit=0 02:37:40
+== bh_e_dynamic: ./build/nbody_bench.exe --kernel cpu_bh --n 1048576 --ic plummer --theta 0.5 --leaf 16 --cpu-group 32 --cpu-set e --cpu-sched dynamic --warmup 2 --runs 7
+   exit=0 02:37:55
+== bh_e_weighted: ./build/nbody_bench.exe --kernel cpu_bh --n 1048576 --ic plummer --theta 0.5 --leaf 16 --cpu-group 32 --cpu-set e --cpu-sched weighted --warmup 2 --runs 7
+   exit=0 02:38:09

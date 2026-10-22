@@ -1,0 +1,12 @@
+== bh_g32_l32: ./build/nbody_bench.exe --kernel cpu_bh --n 65536 --ic plummer --theta 0.5 --leaf 32 --cpu-group 32 --cpu-set all --cpu-sched dynamic --warmup 2 --runs 7
+   exit=0 02:26:59
+== bh_g32_l16: ./build/nbody_bench.exe --kernel cpu_bh --n 65536 --ic plummer --theta 0.5 --leaf 16 --cpu-group 32 --cpu-set all --cpu-sched dynamic --warmup 2 --runs 7
+   exit=0 02:27:00
+== bh_g32_l8: ./build/nbody_bench.exe --kernel cpu_bh --n 65536 --ic plummer --theta 0.5 --leaf 8 --cpu-group 32 --cpu-set all --cpu-sched dynamic --warmup 2 --runs 7
+   exit=0 02:27:01
+== bh_g16_l32: ./build/nbody_bench.exe --kernel cpu_bh --n 65536 --ic plummer --theta 0.5 --leaf 32 --cpu-group 16 --cpu-set all --cpu-sched dynamic --warmup 2 --runs 7
+   exit=0 02:27:01
+== bh_g16_l16: ./build/nbody_bench.exe --kernel cpu_bh --n 65536 --ic plummer --theta 0.5 --leaf 16 --cpu-group 16 --cpu-set all --cpu-sched dynamic --warmup 2 --runs 7
+   exit=0 02:27:02
+== bh_g16_l8: ./build/nbody_bench.exe --kernel cpu_bh --n 65536 --ic plummer --theta 0.5 --leaf 8 --cpu-group 16 --cpu-set all --cpu-sched dynamic --warmup 2 --runs 7
+   exit=0 02:27:02

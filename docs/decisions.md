@@ -533,3 +533,75 @@ crossover) stand on clean numbers.
 - Quoting load-labelled numbers for items that now have clean values.
 - Attributing #6's loss to the background load.
 - Claiming that coherent walks are load-proof.
+
+## D-034 — CPU baselines and the GPU/CPU speedups (2026-10-22, cuda-architect, R3 #8)
+
+**Measured** (`results/2026-10-18_cpu_gpu/phase2/`):
+- Clean session: idle GPU ≤ 1%, CPU ≤ 4%, 0 cells flagged. Phase-1 binary md5 5745a8c1, not rebuilt.
+- Scorecard: 70 HIT / 12 MISS of 82 rows.
+- `cpu_allpairs` (AVX2+FMA, rsqrt + Newton, 20 LPs, dynamic):
+  - 37.8 G int/s; tile- and IV-insensitive (±2%).
+  - Exact sqrt + div is 1.42× slower.
+- `cpu_bh` (group walk, same tree as the GPU's):
+  - Traversal 18.8–23.1 G int/s; build 10.5 ms at 1M.
+  - Best configuration at 1M: G64 leaf 8; G16 is 1.23× slower than G32.
+- GPU/CPU, best vs best:
+  - All-pairs: 22.8× at 4096; 29–36× at N ≥ 16384.
+  - Trees: 8.7× / 14.3× / 18.3× (Plummer 65536 / 262144 / 1M); 15.6× on cube_edges 1M.
+  - Crossover (compute only): N ≈ 64–128. It is fragile, and the GPU wins at every N once the host copies are counted.
+
+**Decided:**
+- The headline is "the best GPU kernel is 18× the best CPU kernel at 1M Plummer".
+- The CPU baseline is the multithreaded AVX2 code with dynamic scheduling, not a single thread.
+
+**Rules out:**
+- Quoting speedups against a scalar or single-thread CPU.
+- Claiming that the CPU wins below some N without stating "compute only, copies excluded".
+
+## D-035 — Heterogeneous CPU: dynamic scheduling is required, E-cores add ~22% (2026-10-22, cuda-architect, R3 #8)
+
+**Measured** (`cpu_allpairs` 65536):
+- Static even split over all 20 LPs: 21.4 G int/s, *below* P-only (31.0).
+- Dynamic: 37.8, with 77.8% of the items done on P workers. Weighted equals dynamic.
+- One E-core ≈ 0.21 of a P-core; the second hyper-thread adds 0.1%.
+- Tree traversal at 1M: static/dynamic = 1.64.
+
+**Decided:** every host parallel loop uses dynamic (or speed-weighted) scheduling.
+
+**Rules out:**
+- Static even splits on this CPU.
+- Counting hyper-threads as cores in rate models.
+
+## D-036 — No CPU+GPU split in production; the phase split's gain is GPU refit (2026-10-22, cuda-architect, R3 #8)
+
+**Measured:**
+- The best gain from any hybrid over the best GPU-only configuration of its cell is 1.3% (`hyb_allpairs`, 262144).
+  Elsewhere the hybrids are 0.99–1.27×.
+- The tree body split needs 2.26 ms of PCIe per step at 1M (56 B/body). That is 2.3× a whole cube_edges `bh_warp` step.
+- `hyb_phase` is 0.51–0.96× `bh_warp`, and GPU-only `bh_warp_refit` matches it within 1.4% in all 5 cells.
+- Lag gates LG1/LG2 PASS in 4/4 runs. But a K = 16 stale tree does +4–10% interactions after 500 steps; the timing
+  loop, with static positions, does not see this cost.
+- `hyb_phase`'s background topology build is 3–100× slower than standalone (29–307 ms). [T2] Pool wake-up latency
+  is suspected; not investigated, because `kernels_tree.cu` is frozen.
+
+**Decided:**
+- The hybrids stay bench-only; the viewer does not get them.
+- R3 #8's answer is negative with a mechanism: PCIe per step and the 5–35× rate gap.
+- If refit is pursued, it is a GPU-only `bh_warp_refit` decision that needs a measured integration-run cost first.
+  That one is Toncho's call.
+
+**Rules out:**
+- Attributing `hyb_phase`'s speed-up to the CPU.
+- Quoting refit gains from static-position timing as integration speed-ups.
+
+## D-037 — #7's read-only path: no effect, branch not merged (2026-10-22, main session)
+
+**Measured** (`results/2026-10-22_ldg_warpwalk/`, pre-registered): reading the four tree arrays
+through `__ldg` turns #7's tree loads into `LDG.E.128.CONSTANT` (40 registers, 0 stack, unchanged)
+and changes the traversal time by **+0.3 % at 262,144 and 0.0 % at 1M** (4 alternating pairs each;
+all pairs within ±1.2 %). 5/5 items HIT.
+
+**Decided:** `exp/ldg-warpwalk` is not merged; `TreeView` stays as it is. Chapter 5 records the
+result: the load path is not #7's limit; the dependent pop chain is (D-026).
+
+**Rules out:** listing "add `__restrict__` to #7" as an open optimisation.

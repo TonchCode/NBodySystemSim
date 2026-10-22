@@ -1,0 +1,4 @@
+== gpu_multi_b256: ./build/nbody_bench.exe --kernel allpairs_multi --n 16384 --block 256 --q 0 --warmup-ms 300 --runs 11 --batch 5
+   exit=0 02:41:02
+== gpu_tuned_b128: ./build/nbody_bench.exe --kernel allpairs_tuned --n 16384 --block 128 --unroll 0 --warmup-ms 300 --runs 11 --batch 5
+   exit=0 02:41:02

@@ -1,0 +1,222 @@
+cell,entry,passes,spread_med,med,compute,build,trav,d2h,h2d,busy,itemsP,share,last,gpart,cpart,xfer,topo,lag,topobuild,ipb,gates,same,exact
+C10_1024,ap_all,p1+p2,0.0859,0.05935,0.0388,,,0.00755,0.0112,1.3085,75,,,,,,,,,,PASS/PASS,None/None,None/None
+C10_1024,ap_p1,p1+p2,0.0170,0.0707,0.0432,,,0.0099,0.0135,1.1115,100,,,,,,,,,,PASS/PASS,None/None,None/None
+C10_1024,bh_all_g16_l8,p1+p2,0.0183,0.2727,,0.21665,0.035,0.0077,0.0117,1.202,81.75,,,,,,,,,436.1,PASS/PASS,None/None,None/None
+C10_1024,bh_all_g32_l16,p1+p2,0.0457,0.28695,,0.2128,0.0429,0.00935,0.0141,1.1965,81.25,,,,,,,,,699.9,PASS/PASS,PASS/PASS,None/None
+C10_1024,bh_p1_g16_l8,p1+p2,0.1104,0.1902,,0.10715,0.0407,0.01025,0.01485,1.167,100,,,,,,,,,436.1,PASS/PASS,None/None,None/None
+C10_1024,bh_p1_g32_l16,p1+p2,0.0326,0.17505,,0.10705,0.0398,0.01005,0.0137,1.183,100,,,,,,,,,699.9,PASS/PASS,PASS/PASS,None/None
+C10_16384,ap_all,p1+p2,0.0016,7.0637,7.0204,,,0.01725,0.0252,1.021,77.7,,,,,,,,,,PASS/PASS,None/None,None/None
+C10_16384,ap_p1,p1+p2,0.0009,8.8225,8.7853,,,0.02085,0.04055,1.0125,100,,,,,,,,,,PASS/PASS,None/None,None/None
+C10_16384,bh_all_g16_l8,p1+p2,0.0019,1.8725,,0.5176,1.2131,0.0198,0.0341,1.346,72.3,,,,,,,,,892.5,PASS/PASS,None/None,None/None
+C10_16384,bh_all_g32_l16,p1+p2,0.0697,1.9897,,0.51815,1.3144,0.0181,0.0278,1.224,71.75,,,,,,,,,1749,PASS/PASS,PASS/PASS,None/None
+C10_16384,bh_p1_g16_l8,p1+p2,0.0335,2.8324,,0.5346,2.2164,0.0221,0.0341,1.103,100,,,,,,,,,892.5,PASS/PASS,None/None,None/None
+C10_16384,bh_p1_g32_l16,p1+p2,0.0112,2.6152,,0.5267,2.0196,0.0208,0.04055,1.109,100,,,,,,,,,1749,PASS/PASS,PASS/PASS,None/None
+C10_2048,ap_all,p1+p2,0.0100,0.14945,0.12855,,,0.00875,0.01205,1.1105,75,,,,,,,,,,PASS/PASS,None/None,None/None
+C10_2048,ap_p1,p1+p2,0.0369,0.18685,0.15665,,,0.0162,0.01085,1.0255,100,,,,,,,,,,PASS/PASS,None/None,None/None
+C10_2048,bh_all_g16_l8,p1+p2,0.0345,0.31055,,0.18825,0.08225,0.0091,0.01295,1.2675,79.2,,,,,,,,,571,PASS/PASS,None/None,None/None
+C10_2048,bh_all_g32_l16,p1+p2,0.0169,0.3423,,0.1907,0.11205,0.0089,0.0134,1.352,78.1,,,,,,,,,1026.4,PASS/PASS,PASS/PASS,None/None
+C10_2048,bh_p1_g16_l8,p1+p2,0.0115,0.28765,,0.13575,0.13615,0.01025,0.0163,1.158,100,,,,,,,,,571,PASS/PASS,None/None,None/None
+C10_2048,bh_p1_g32_l16,p1+p2,0.0718,0.28535,,0.1394,0.1215,0.0099,0.013,1.199,100,,,,,,,,,1026.4,PASS/PASS,PASS/PASS,None/None
+C10_4096,ap_all,p1+p2,0.0085,0.47965,0.4514,,,0.01045,0.0135,1.0795,78.4,,,,,,,,,,PASS/PASS,None/None,None/None
+C10_4096,ap_p1,p1+p2,0.0374,0.6151,0.5662,,,0.0133,0.0204,1.009,100,,,,,,,,,,PASS/PASS,None/None,None/None
+C10_4096,bh_all_g16_l8,p1+p2,0.0311,0.5018,,0.2511,0.2137,0.01095,0.01485,1.2575,76.45,,,,,,,,,708.3,PASS/PASS,None/None,None/None
+C10_4096,bh_all_g32_l16,p1+p2,0.0099,0.53665,,0.24745,0.2402,0.01085,0.0146,1.277,75.55,,,,,,,,,1329.3,PASS/PASS,PASS/PASS,None/None
+C10_4096,bh_p1_g16_l8,p1+p2,0.0090,0.6014,,0.1828,0.3656,0.01275,0.0199,1.1285,100,,,,,,,,,708.3,PASS/PASS,None/None,None/None
+C10_4096,bh_p1_g32_l16,p1+p2,0.0416,0.5769,,0.1869,0.3318,0.0132,0.01995,1.1535,100,,,,,,,,,1329.3,PASS/PASS,PASS/PASS,None/None
+C10_512,ap_all,p1+p2,0.1092,0.03755,0.01615,,,0.00695,0.01035,1.8425,75,,,,,,,,,,PASS/PASS,None/None,None/None
+C10_512,ap_p1,p1+p2,0.0044,0.0458,0.01685,,,0.0093,0.01245,1.2865,100,,,,,,,,,,PASS/PASS,None/None,None/None
+C10_512,bh_all_g16_l8,p1+p2,0.0958,0.17855,,0.1271,0.01555,0.0073,0.01155,1.2345,82.6,,,,,,,,,316,PASS/PASS,None/None,None/None
+C10_512,bh_all_g32_l16,p1+p2,0.1915,0.19265,,0.12405,0.02305,0.007,0.0108,1.3295,84.25,,,,,,,,,422.6,PASS/PASS,PASS/PASS,None/None
+C10_512,bh_p1_g16_l8,p1+p2,0.0251,0.1437,,0.10195,0.01365,0.00925,0.0128,1.171,100,,,,,,,,,316,PASS/PASS,None/None,None/None
+C10_512,bh_p1_g32_l16,p1+p2,0.0155,0.1423,,0.10165,0.0138,0.00925,0.01285,1.1435,100,,,,,,,,,422.6,PASS/PASS,PASS/PASS,None/None
+C10_8192,ap_all,p1+p2,0.0009,1.8497,1.8138,,,0.0137,0.01725,1.053,77.4,,,,,,,,,,PASS/PASS,None/None,None/None
+C10_8192,ap_p1,p1+p2,0.0117,2.3224,2.2193,,,0.01595,0.03155,1.008,100,,,,,,,,,,PASS/PASS,None/None,None/None
+C10_8192,bh_all_g16_l8,p1+p2,0.0305,0.96665,,0.35315,0.52865,0.01245,0.0181,1.2695,74.7,,,,,,,,,836.2,PASS/PASS,None/None,None/None
+C10_8192,bh_all_g32_l16,p1+p2,0.0116,1.0236,,0.3529,0.6041,0.01245,0.0189,1.278,74.45,,,,,,,,,1646,PASS/PASS,PASS/PASS,None/None
+C10_8192,bh_p1_g16_l8,p1+p2,0.0290,1.3418,,0.3117,0.9685,0.01515,0.03565,1.1145,100,,,,,,,,,836.2,PASS/PASS,None/None,None/None
+C10_8192,bh_p1_g32_l16,p1+p2,0.0061,1.2179,,0.3037,0.86045,0.01455,0.0261,1.1815,100,,,,,,,,,1646,PASS/PASS,PASS/PASS,None/None
+C1_16384,ap_iv1_t2048,p1+p2,0.0011,7.2956,7.2957,,,0.01815,0.0325,1.0355,80.25,,,,,,,,,,PASS/PASS,None/None,None/None
+C1_16384,ap_iv1_t512,p1+p2,0.0054,7.3489,7.2771,,,0.0191,0.02955,1.026,80.15,,,,,,,,,,PASS/PASS,None/None,None/None
+C1_16384,ap_iv1_t8192,p1+p2,0.0013,7.3291,7.273,,,0.01805,0.03175,1.03,80.25,,,,,,,,,,PASS/PASS,None/None,None/None
+C1_16384,ap_iv2_t2048,p1+p2,0.0049,7.0655,7.0113,,,0.01785,0.02415,1.022,77.6,,,,,,,,,,PASS/PASS,None/None,None/None
+C1_16384,ap_iv2_t512,p1+p2,0.0118,7.0901,7.0042,,,0.0176,0.0244,1.0215,77.7,,,,,,,,,,PASS/PASS,None/None,None/None
+C1_16384,ap_iv2_t8192,p1+p2,0.0029,7.0983,7.0458,,,0.01715,0.0242,1.018,77.6,,,,,,,,,,PASS/PASS,None/None,None/None
+C1_262144,ap_iv1_t2048,p1+p2,0.0007,1910.6,1906.6,,,1.2647,1.3362,1.0345,80.1,,,,,,,,,,PASS/PASS,None/None,None/None
+C1_262144,ap_iv1_t512,p1+p2,0.0019,1908.2,1913.4,,,1.2691,1.3465,1.035,80.1,,,,,,,,,,PASS/PASS,None/None,None/None
+C1_262144,ap_iv1_t8192,p1+p2,0.0019,1904.7,1906.6,,,1.2699,1.3356,1.0375,80.1,,,,,,,,,,PASS/PASS,None/None,None/None
+C1_262144,ap_iv2_t2048,p1+p2,0.0024,1816.1,1835.3,,,1.2851,1.3371,1.023,77.8,,,,,,,,,,PASS/PASS,None/None,None/None
+C1_262144,ap_iv2_t512,p1+p2,0.0101,1817.9,1867,,,1.2666,1.3341,1.034,77.75,,,,,,,,,,PASS/PASS,None/None,None/None
+C1_262144,ap_iv2_t8192,p1+p2,0.0014,1867.5,1815.4,,,1.2655,1.3139,1.02,77.9,,,,,,,,,,PASS/PASS,None/None,None/None
+C1_65536,ap_iv1_t2048,p1+p2,0.0099,117.59,117.97,,,0.08415,0.08535,1.0295,80.2,,,,,,,,,,PASS/PASS,None/None,None/None
+C1_65536,ap_iv1_t512,p1+p2,0.0166,117.84,117.75,,,0.08025,0.08435,1.0305,80.15,,,,,,,,,,PASS/PASS,None/None,None/None
+C1_65536,ap_iv1_t8192,p1+p2,0.0102,117.49,117.9,,,0.0815,0.0852,1.029,80.2,,,,,,,,,,PASS/PASS,None/None,None/None
+C1_65536,ap_iv2_t2048,p1+p2,0.0030,114.3,115.91,,,0.06665,0.08835,1.042,77.7,,,,,,,,,,PASS/PASS,None/None,None/None
+C1_65536,ap_iv2_t2048_rsqrt0,p1+p2,0.0015,166.02,165.11,,,0.0811,0.0871,1.0185,78.95,,,,,,,,,,PASS/PASS,None/None,None/None
+C1_65536,ap_iv2_t512,p1+p2,0.0025,114.38,113.9,,,0.0772,0.08845,1.0415,77.8,,,,,,,,,,PASS/PASS,None/None,None/None
+C1_65536,ap_iv2_t8192,p1+p2,0.0049,114.36,114.04,,,0.0796,0.0901,1.0435,77.65,,,,,,,,,,PASS/PASS,None/None,None/None
+C5_1048576,bh_g16_l16,p1+p2,0.0025,160.81,,10.514,149.13,0.6476,0.739,1.0205,65.55,,,,,,,,,1576.8,PASS/PASS,None/None,None/None
+C5_1048576,bh_g16_l32,p1+p2,0.0037,179.5,,11.751,167.54,0.64595,0.7367,1.021,65.65,,,,,,,,,2187.3,PASS/PASS,None/None,None/None
+C5_1048576,bh_g16_l8,p1+p2,0.0022,154.77,,10.567,143.58,0.6457,0.73775,1.027,65.45,,,,,,,,,1269.6,PASS/PASS,None/None,None/None
+C5_1048576,bh_g32_l16,p1+p2,0.0021,133.99,,10.544,123.28,0.6458,0.7305,1.021,65.15,,,,,,,,,1836.6,PASS/PASS,PASS/PASS,None/None
+C5_1048576,bh_g32_l32,p1+p2,0.0026,155.32,,9.8961,143.2,0.64565,0.7408,1.033,65.45,,,,,,,,,2564.7,PASS/PASS,PASS/PASS,None/None
+C5_1048576,bh_g32_l8,p1+p2,0.0129,125.49,,10.357,113.72,0.64605,0.7356,1.0215,65.55,,,,,,,,,1455.2,PASS/PASS,PASS/PASS,None/None
+C5_1048576,bh_g64_l16,p1+p2,0.0031,132.96,,10.704,122.17,0.6457,0.7314,1.023,65.5,,,,,,,,,2213,PASS/PASS,None/None,None/None
+C5_1048576,bh_g64_l32,p1+p2,0.0047,158.16,,10.212,147.13,0.64595,0.7343,1.026,65.45,,,,,,,,,3105.8,PASS/PASS,None/None,None/None
+C5_1048576,bh_g64_l8,p1+p2,0.0111,121.26,,10.585,110.36,0.6459,0.7344,1.0215,65.8,,,,,,,,,1728.3,PASS/PASS,None/None,None/None
+C5_1048576,bh_g8_l16,p1+p2,0.0028,209.97,,10.812,198.47,0.64565,0.73655,1.021,65.6,,,,,,,,,1390.5,PASS/PASS,None/None,None/None
+C5_1048576,bh_g8_l32,p1+p2,0.0005,227.11,,10.358,216.7,0.64545,0.7394,1.022,65.5,,,,,,,,,1913.8,PASS/PASS,None/None,None/None
+C5_1048576,bh_g8_l8,p1+p2,0.0050,202.21,,10.74,191.15,0.64585,0.734,1.0235,65.8,,,,,,,,,1138,PASS/PASS,None/None,None/None
+C5_1048576,bhs_l16,p1+p2,0.0008,867.47,,11.409,855.5,5.3368,5.1251,1.0075,65.35,,,,,,,,,1062.6,PASS/PASS,PASS/PASS,None/None
+C5_1048576,bhs_l32,p1+p2,0.0137,906.99,,11.639,891.52,5.3665,5.1292,1.008,65.25,,,,,,,,,1414.6,PASS/PASS,PASS/PASS,None/None
+C5_1048576,bhs_l8,p1+p2,0.0016,859.95,,10.804,849,5.2692,5.1257,1.007,65.3,,,,,,,,,912.5,PASS/PASS,PASS/PASS,None/None
+C5_262144,bh_g16_l16,p1+p2,0.0027,35.645,,2.8948,31.657,0.16915,0.22415,1.0375,65,,,,,,,,,1488.3,PASS/PASS,None/None,None/None
+C5_262144,bh_g16_l32,p1+p2,0.1608,45.485,,2.8268,37.784,0.16905,0.22995,1.041,64.5,,,,,,,,,2235.6,PASS/PASS,None/None,None/None
+C5_262144,bh_g16_l8,p1+p2,0.0242,34.346,,3.0629,29.955,0.16985,0.2245,1.0465,64.95,,,,,,,,,1176.5,PASS/PASS,None/None,None/None
+C5_262144,bh_g32_l16,p1+p2,0.0145,31.665,,5.4269,27.867,0.1751,0.2264,1.0955,65.1,,,,,,,,,1747.7,PASS/PASS,PASS/PASS,None/None
+C5_262144,bh_g32_l32,p1+p2,0.0527,40.724,,3.1759,34.15,0.1689,0.23225,1.0565,64.95,,,,,,,,,2627.7,PASS/PASS,PASS/PASS,None/None
+C5_262144,bh_g32_l8,p1+p2,0.0462,29.073,,2.8201,24.568,0.16925,0.2211,1.0395,65.1,,,,,,,,,1361.8,PASS/PASS,PASS/PASS,None/None
+C5_65536,bh_g16_l16,p1+p2,0.0293,9.1208,,1.7403,6.8895,0.0492,0.07025,1.1635,67.6,,,,,,,,,1435.3,PASS/PASS,None/None,None/None
+C5_65536,bh_g16_l32,p1+p2,0.0237,11.051,,1.945,9.1112,0.05015,0.07345,1.284,68.6,,,,,,,,,2521.3,PASS/PASS,None/None,None/None
+C5_65536,bh_g16_l8,p1+p2,0.0352,8.3837,,1.7791,6.2999,0.04945,0.074,1.1665,68.35,,,,,,,,,1052.5,PASS/PASS,None/None,None/None
+C5_65536,bh_g32_l16,p1+p2,0.0195,7.9268,,1.8334,6.0438,0.0497,0.0701,1.175,67.85,,,,,,,,,1695.1,PASS/PASS,PASS/PASS,None/None
+C5_65536,bh_g32_l32,p1+p2,0.0215,10.232,,1.7883,8.3104,0.0494,0.0724,1.142,67.15,,,,,,,,,2924.8,PASS/PASS,PASS/PASS,None/None
+C5_65536,bh_g32_l8,p1+p2,0.0066,7.2394,,2.3365,5.3287,0.0507,0.0803,1.2065,67.75,,,,,,,,,1231,PASS/PASS,PASS/PASS,None/None
+E1_65536,ap_all_dynamic,p1+p2,0.0064,113.47,113.67,,,0.0834,0.0818,1.0235,77.75,,,,,,,,,,PASS/PASS,None/None,None/None
+E1_65536,ap_all_static,p1+p2,0.0134,201.42,200.53,,,0.05325,0.12735,1.557,60,,,,,,,,,,PASS/PASS,None/None,None/None
+E1_65536,ap_all_weighted,p1+p2,0.0043,112.71,113.65,,,0.08495,0.0861,1.048,78.15,,,,,,,,,,PASS/PASS,None/None,None/None
+E1_65536,ap_cores_dynamic,p1+p2,0.0024,115,114.59,,,0.0847,0.1171,1.0315,77.25,,,,,,,,,,PASS/PASS,None/None,None/None
+E1_65536,ap_cores_static,p1+p2,0.0021,286.49,288.06,,,0.0676,0.12935,1.5385,42.8,,,,,,,,,,PASS/PASS,None/None,None/None
+E1_65536,ap_cores_weighted,p1+p2,0.0049,111.64,112.01,,,0.08245,0.10395,1.0175,77.9,,,,,,,,,,PASS/PASS,None/None,None/None
+E1_65536,ap_e_dynamic,p1+p2,0.0000,500.14,500.85,,,0.0745,0.1646,1.0165,0,,,,,,,,,,PASS/PASS,None/None,None/None
+E1_65536,ap_e_static,p1+p2,0.0039,500.29,499.95,,,0.07,0.15855,1.0185,0,,,,,,,,,,PASS/PASS,None/None,None/None
+E1_65536,ap_e_weighted,p1+p2,0.0001,496.37,510.16,,,0.0513,0.17045,1.023,0,,,,,,,,,,PASS/PASS,None/None,None/None
+E1_65536,ap_p1_dynamic,p1+p2,0.0020,139.19,138.77,,,0.0637,0.0822,1.0115,100,,,,,,,,,,PASS/PASS,None/None,None/None
+E1_65536,ap_p1_static,p1+p2,0.0033,138.92,139.04,,,0.08265,0.13175,1.0185,100,,,,,,,,,,PASS/PASS,None/None,None/None
+E1_65536,ap_p1_weighted,p1+p2,0.0029,137.9,137.73,,,0.0505,0.08455,1.0075,100,,,,,,,,,,PASS/PASS,None/None,None/None
+E1_65536,ap_p_dynamic,p1+p2,0.0032,138.86,138.7,,,0.0551,0.0856,1.015,100,,,,,,,,,,PASS/PASS,None/None,None/None
+E1_65536,ap_p_static,p1+p2,0.0021,137.67,138.12,,,0.0591,0.0822,1.01,100,,,,,,,,,,PASS/PASS,None/None,None/None
+E1_65536,ap_p_weighted,p1+p2,0.0046,137.66,137.47,,,0.04915,0.08185,1.006,100,,,,,,,,,,PASS/PASS,None/None,None/None
+E9_1M,bh_all_dynamic,p1+p2,0.0001,133.57,,10.328,121.95,0.64565,0.73375,1.023,65.6,,,,,,,,,1836.6,PASS/PASS,PASS/PASS,None/None
+E9_1M,bh_all_static,p1+p2,0.0054,214.7,,11.664,200.48,0.648,0.75795,1.5325,60,,,,,,,,,1836.6,PASS/PASS,PASS/PASS,None/None
+E9_1M,bh_all_weighted,p1+p2,0.1306,144.54,,10.812,123.31,0.6459,0.74135,1.033,66.1,,,,,,,,,1836.6,PASS/PASS,PASS/PASS,None/None
+E9_1M,bh_e_dynamic,p1+p2,0.0058,482.19,,23.817,457.13,0.6469,1.6725,1.012,0,,,,,,,,,1836.6,PASS/PASS,PASS/PASS,None/None
+E9_1M,bh_e_static,p1+p2,0.0044,491.13,,23.969,465.21,0.6478,2.6085,1.0295,0,,,,,,,,,1836.6,PASS/PASS,PASS/PASS,None/None
+E9_1M,bh_e_weighted,p1+p2,0.0093,481.9,,23.947,454.76,0.64735,0.7594,1.011,0,,,,,,,,,1836.6,PASS/PASS,PASS/PASS,None/None
+E9_1M,bh_p_dynamic,p1+p2,0.0028,172.33,,14.932,155.94,0.6464,0.73875,1.013,100,,,,,,,,,1836.6,PASS/PASS,PASS/PASS,None/None
+E9_1M,bh_p_static,p1+p2,0.0012,180.25,,14.682,164.29,0.6456,0.74075,1.0615,100,,,,,,,,,1836.6,PASS/PASS,PASS/PASS,None/None
+E9_1M,bh_p_weighted,p1+p2,0.0024,173.2,,14.741,156.35,0.66675,0.75195,1.005,100,,,,,,,,,1836.6,PASS/PASS,PASS/PASS,None/None
+H1_131072,gpu_multi_b256_wall,p1+p2,0.0001,13.23,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+H1_131072,gpu_tuned_b128_wall,p1+p2,0.0009,12.905,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+H1_131072,hyb_ap_dyn,p1+p2,0.0525,13.214,,,,0,0,1.0685,77.7,0.97275,0.9736,12.693,12.834,0.11965,0,-1,-1,,PASS/PASS,None/None,None/None
+H1_16384,gpu_multi_b256_wall,p1+p2,0.0017,0.2404,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+H1_16384,gpu_tuned_b128_wall,p1+p2,0.0038,0.2665,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+H1_16384,hyb_ap_dyn,p1+p2,0.0067,0.298,,,,,,,,1,1,0.2684,0,0,0,-1,-1,,PASS/PASS,None/None,None/None
+H1_262144,gpu_multi_b256_wall,p1+p2,0.0049,52.472,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+H1_262144,gpu_tuned_b128_wall,p1+p2,0.0043,51.222,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+H1_262144,hyb_ap_dyn,p1+p2,0.0037,51.112,,,,0,0,1.151,77.5,0.9755,0.9736,50.15,49.857,0.27875,0,-1,-1,,PASS/PASS,None/None,None/None
+H1_65536,gpu_multi_b256_wall,p1+p2,0.0000,3.4192,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+H1_65536,gpu_tuned_b128_wall,p1+p2,0.0019,3.467,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+H1_65536,hyb_ap_dyn,p1+p2,0.0030,3.7032,,,,0,0,1.1405,78,0.9722,0.9727,3.4245,3.4693,0.07085,0,-1,-1,,PASS/PASS,None/None,None/None
+H4_262144,gpu_tuned_b128_wall,p1+p2,0.0084,51.298,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+H4_262144,hyb_ap_dyn,p1+p2,0.0368,50.624,,,,0,0,1.0355,77.8,0.97305,0.97315,49.563,49.795,0.27505,0,-1,-1,,PASS/PASS,None/None,None/None
+H4_262144,hyb_ap_static,p1+p2,0.0009,51.632,,,,0,0,1.045,77.2,0.9727,0.9727,49.122,51.238,0.29535,0,-1,-1,,PASS/PASS,None/None,None/None
+H5_cube_edges_1048576_th0.5,gpu_bh_sorted_wall,p1+p2,0.0025,0.99075,,0.6153,0.4235,,,,,,,,,,,,,92.2,PASS/PASS,None/None,None/None
+H5_cube_edges_1048576_th0.5,gpu_bh_warp_wall,p1+p2,0.0011,0.98065,,0.5707,0.4076,,,,,,,,,,,,,92.9,PASS/PASS,None/None,None/None
+H5_cube_edges_1048576_th0.5,gpu_refit_k16_wall,p1+p2,0.0081,0.7367,,,,,,,,,,,,,,,,92.9,PASS/PASS,None/None,bitwise equal/bitwise equal
+H5_cube_edges_1048576_th0.5,gpu_refit_k4_wall,p1+p2,0.0080,0.73835,,,,,,,,,,,,,,,,92.9,PASS/PASS,None/None,bitwise equal/bitwise equal
+H5_cube_edges_1048576_th0.5,hyb_bh_dyn,p1+p2,0.0548,1.023,,,,,,,,1,1,0.4074,0,0,0,-1,-1,92.9,PASS/PASS,PASS/PASS,None/None
+H5_cube_edges_1048576_th0.5,hyb_bh_f095,p1+p2,0.0036,3.5106,,,,0,0,1.636,87.15,0.95,0.95,0.39025,0.4774,2.2586,0,-1,-1,92.9,PASS/PASS,PASS/PASS,None/None
+H5_cube_edges_1048576_th0.5,hyb_phase,p1+p2,0.0008,0.7365,,,,,,,,1,1,0.7539,0,0,1,98,72.454,92.9,PASS/PASS,None/None,bitwise equal/bitwise equal
+H5_cube_edges_262144_th0.5,gpu_bh_sorted_wall,p1+p2,0.0161,0.37895,,0.2787,0.107,,,,,,,,,,,,,88.1,PASS/PASS,None/None,None/None
+H5_cube_edges_262144_th0.5,gpu_bh_warp_wall,p1+p2,0.0031,0.35015,,0.277,0.08705,,,,,,,,,,,,,99,PASS/PASS,None/None,None/None
+H5_cube_edges_262144_th0.5,gpu_refit_k16_wall,p1+p2,0.0028,0.17745,,,,,,,,,,,,,,,,99,PASS/PASS,None/None,bitwise equal/bitwise equal
+H5_cube_edges_262144_th0.5,gpu_refit_k4_wall,p1+p2,0.0164,0.17725,,,,,,,,,,,,,,,,99,PASS/PASS,None/None,bitwise equal/bitwise equal
+H5_cube_edges_262144_th0.5,hyb_bh_dyn,p1+p2,0.2842,0.4447,,,,,,,,1,1,0.08775,0,0,0,-1,-1,99,PASS/PASS,PASS/PASS,None/None
+H5_cube_edges_262144_th0.5,hyb_phase,p1+p2,0.0133,0.1798,,,,,,,,1,1,0.2061,0,0,0.5,881.5,152.91,99,PASS/PASS,None/None,bitwise equal/bitwise equal
+H5_plummer_1048576_th0.3,gpu_bh_sorted_wall,p1+p2,0.0003,171.82,,0.6349,170.96,,,,,,,,,,,,,5702.2,PASS/PASS,None/None,None/None
+H5_plummer_1048576_th0.3,gpu_bh_warp_wall,p1+p2,0.0027,19.89,,0.66605,19.254,,,,,,,,,,,,,4520.2,PASS/PASS,None/None,None/None
+H5_plummer_1048576_th0.3,hyb_bh_dyn,p1+p2,0.0018,19.72,,,,0,0,1.02,73.95,0.94505,0.94405,18.876,16.137,2.3964,0,-1,-1,4520.2,PASS/PASS,PASS/PASS,None/None
+H5_plummer_1048576_th0.5,gpu_bh_sorted_wall,p1+p2,0.0010,35.068,,0.62975,34.49,,,,,,,,,,,,,1414.6,PASS/PASS,None/None,None/None
+H5_plummer_1048576_th0.5,gpu_bh_warp_wall,p1+p2,0.0044,6.6391,,0.62205,6.0186,,,,,,,,,,,,,1455.2,PASS/PASS,None/None,None/None
+H5_plummer_1048576_th0.5,gpu_refit_k16_wall,p1+p2,0.0001,6.3511,,,,,,,,,,,,,,,,1455.2,PASS/PASS,None/None,bitwise equal/bitwise equal
+H5_plummer_1048576_th0.5,gpu_refit_k4_wall,p1+p2,0.0088,6.3797,,,,,,,,,,,,,,,,1455.2,PASS/PASS,None/None,bitwise equal/bitwise equal
+H5_plummer_1048576_th0.5,hyb_bh_dyn,p1+p2,0.0096,6.6544,,,,0,0,1.0325,74.7,0.96285,0.96255,5.9004,3.5569,2.3344,0,-1,-1,1455.2,PASS/PASS,PASS/PASS,None/None
+H5_plummer_1048576_th0.5,hyb_phase,p1+p2,0.0005,6.3674,,,,,,,,1,1,6.3647,0,0,3,6.5,31.335,1455.2,PASS/PASS,None/None,bitwise equal/bitwise equal
+H5_plummer_1048576_th0.5,hyb_phase_sync,p1+p2,0.0072,18.21,,,,0,0,1.1505,59.85,1,1,6.3567,0,0,11,0,11.901,1455.2,PASS/PASS,None/None,bitwise equal/bitwise equal
+H5_plummer_262144_th0.5,gpu_bh_sorted_wall,p1+p2,0.0036,8.1477,,0.3133,7.7992,,,,,,,,,,,,,1432.6,PASS/PASS,None/None,None/None
+H5_plummer_262144_th0.5,gpu_bh_warp_wall,p1+p2,0.0049,1.856,,0.3213,1.5995,,,,,,,,,,,,,1747.7,PASS/PASS,None/None,None/None
+H5_plummer_262144_th0.5,gpu_refit_k16_wall,p1+p2,0.0033,1.6813,,,,,,,,,,,,,,,,1747.7,PASS/PASS,None/None,bitwise equal/bitwise equal
+H5_plummer_262144_th0.5,gpu_refit_k4_wall,p1+p2,0.0127,1.6906,,,,,,,,,,,,,,,,1747.7,PASS/PASS,None/None,bitwise equal/bitwise equal
+H5_plummer_262144_th0.5,hyb_bh_dyn,p1+p2,0.0082,1.9754,,,,0,0,1.0385,75.5,0.9599,0.9582,1.6138,1.114,0.58995,0,-1,-1,1747.7,PASS/PASS,PASS/PASS,None/None
+H5_plummer_262144_th0.5,hyb_phase,p1+p2,0.0016,1.6812,,,,,,,,1,1,1.6842,0,0,3,18.665,29.107,1747.7,PASS/PASS,None/None,bitwise equal/bitwise equal
+H5_plummer_65536_th0.5,gpu_bh_sorted_wall,p1+p2,0.0425,2.1145,,0.22765,1.8043,,,,,,,,,,,,,1671,PASS/PASS,None/None,None/None
+H5_plummer_65536_th0.5,gpu_bh_warp_wall,p1+p2,0.0119,0.7874,,0.21275,0.57445,,,,,,,,,,,,,1695.1,PASS/PASS,None/None,None/None
+H5_plummer_65536_th0.5,gpu_refit_k16_wall,p1+p2,0.0013,0.6166,,,,,,,,,,,,,,,,1695.1,PASS/PASS,None/None,bitwise equal/bitwise equal
+H5_plummer_65536_th0.5,gpu_refit_k4_wall,p1+p2,0.0336,0.62725,,,,,,,,,,,,,,,,1695.1,PASS/PASS,None/None,bitwise equal/bitwise equal
+H5_plummer_65536_th0.5,hyb_bh_dyn,p1+p2,0.0075,1.0019,,,,,,,,1,1,0.5737,0,0,0,-1,-1,1695.1,PASS/PASS,PASS/PASS,None/None
+H5_plummer_65536_th0.5,hyb_phase,p1+p2,0.0120,0.62435,,,,,,,,1,1,0.6308,0,0,2,154.25,94.736,1695.1,PASS/PASS,None/None,bitwise equal/bitwise equal
+H5_plummer_65536_th0.5,hyb_phase_sync,p1+p2,0.0499,2.3461,,,,0,0,3.6755,60.6,1,1,0.6314,0,0,11,0,1.565,1695.1,PASS/PASS,None/None,bitwise equal/bitwise equal
+L1_galaxies,hyb_phase_lag,p1,nan,0.5533,,,,,,,,1,1,0.5338,0,0,0,-1,-1,992.4,PASS,None,bitwise equal
+L1_galaxies,refit_k16_lag,p1,nan,0.4688,,,,,,,,,,,,,,,,992.4,PASS,None,bitwise equal
+L1_plummer,hyb_phase_lag,p1,nan,0.6719,,,,,,,,1,1,0.6724,0,0,0,-1,-1,1695.1,PASS,None,bitwise equal
+L1_plummer,refit_k16_lag,p1,nan,0.6523,,,,,,,,,,,,,,,,1695.1,PASS,None,bitwise equal
+S1_1024,cpu_ap_1t,p1+p2,0.0186,0.2695,0.22995,,,0.0086,0.0104,1,100,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_1024,cpu_ap_all,p1+p2,0.2435,0.06775,0.03565,,,0.00745,0.0108,1.1625,75,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_1024,cpu_ap_p1,p1+p2,0.0447,0.0627,0.0428,,,0.00975,0.01315,1.113,100,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_1024,gpu_multi_b512,p1+p2,0.0174,0.00575,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_1024,gpu_multi_b512_wall,p1+p2,0.0690,0.0058,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_1024,gpu_tuned_b128,p1+p2,0.0000,0.0134,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_1024,gpu_tuned_b128_wall,p1+p2,0.0361,0.01385,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_128,cpu_ap_1t,p1+p2,0.8596,0.03455,0.01275,,,0.0193,0.00685,1,100,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_128,cpu_ap_all,p1+p2,0.0037,0.02715,0.0114,,,0.00625,0.0088,3.1105,89.3,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_128,cpu_ap_p1,p1+p2,0.5640,0.0344,0.0135,,,0.0075,0.0091,1.39,100,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_128,gpu_multi_b512,p1+p2,0.0377,0.0053,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_128,gpu_multi_b512_wall,p1+p2,0.7473,0.0091,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_128,gpu_tuned_b128,p1+p2,0.0351,0.0057,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_128,gpu_tuned_b128_wall,p1+p2,0.0351,0.0057,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_16384,gpu_multi_b256,p1+p2,0.0008,0.2399,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_16384,gpu_tuned_b128,p1+p2,0.0060,0.2658,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_256,cpu_ap_1t,p1+p2,0.6768,0.04625,0.0233,,,0.01405,0.0083,1,100,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_256,cpu_ap_all,p1+p2,0.0598,0.02845,0.01175,,,0.00665,0.0095,1.965,62.05,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_256,cpu_ap_p1,p1+p2,0.5224,0.03465,0.0139,,,0.0073,0.01025,1.391,100,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_256,gpu_multi_b512,p1+p2,0.0531,0.00565,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_256,gpu_multi_b512_wall,p1+p2,0.0351,0.0057,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_256,gpu_tuned_b128,p1+p2,0.0000,0.0073,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_256,gpu_tuned_b128_wall,p1+p2,0.0138,0.00725,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_262144,gpu_multi_b256,p1+p2,0.0051,52.453,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_262144,gpu_tuned_b128,p1+p2,0.0019,51.075,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_4096,cpu_ap_1t,p1+p2,0.0009,3.3747,3.3409,,,0.01125,0.02095,1,100,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_4096,cpu_ap_all,p1+p2,0.0067,0.4811,0.4473,,,0.01025,0.01345,1.0495,78.15,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_4096,cpu_ap_p1,p1+p2,0.0420,0.6189,0.57195,,,0.01295,0.02005,1.016,100,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_4096,gpu_multi_b512,p1+p2,0.0306,0.0196,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_4096,gpu_multi_b512_wall,p1+p2,0.0049,0.02035,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_4096,gpu_tuned_b128,p1+p2,0.0082,0.0485,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_4096,gpu_tuned_b128_wall,p1+p2,0.0081,0.0495,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_512,cpu_ap_1t,p1+p2,0.1823,0.07955,0.063,,,0.01415,0.00855,1,100,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_512,cpu_ap_all,p1+p2,0.0701,0.02995,0.0122,,,0.00675,0.0101,1.3185,75,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_512,cpu_ap_p1,p1+p2,0.3182,0.0396,0.0174,,,0.00905,0.0123,1.2775,100,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_512,gpu_multi_b512,p1+p2,0.0690,0.0058,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_512,gpu_multi_b512_wall,p1+p2,0.0522,0.00575,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_512,gpu_tuned_b128,p1+p2,0.0000,0.0086,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_512,gpu_tuned_b128_wall,p1+p2,0.0000,0.0078,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_64,cpu_ap_1t,p1+p2,0.0880,0.01705,0.0028,,,0.0054,0.00595,1,100,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_64,cpu_ap_all,p1+p2,0.0145,0.0276,0.0117,,,0.0064,0.0093,2.4635,96.45,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_64,cpu_ap_p1,p1+p2,0.2036,0.03095,0.0149,,,0.0073,0.01015,1.586,100,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_64,gpu_multi_b512,p1+p2,0.0177,0.00565,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_64,gpu_multi_b512_wall,p1+p2,0.0531,0.00565,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_64,gpu_tuned_b128,p1+p2,0.6813,0.0091,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_64,gpu_tuned_b128_wall,p1+p2,0.0000,0.006,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_65536,gpu_multi_b256,p1+p2,0.0000,3.417,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S1_65536,gpu_tuned_b128,p1+p2,0.0017,3.4718,,,,,,,,,,,,,,,,,PASS/PASS,None/None,None/None
+S5_cube_edges_1048576,cpu_bh_g16_l16,p1+p2,0.0169,18.256,,9.8224,6.942,0.6496,0.7365,1.0685,65.4,,,,,,,,,86.6,PASS/PASS,None/None,None/None
+S5_cube_edges_1048576,cpu_bh_g16_l8,p1+p2,0.0077,17.993,,9.6051,6.8258,0.65315,0.7404,1.062,65.6,,,,,,,,,76.8,PASS/PASS,None/None,None/None
+S5_cube_edges_1048576,cpu_bh_g32_l16,p1+p2,0.0420,17.671,,9.544,6.415,0.6486,0.74055,1.0635,65.45,,,,,,,,,102.7,PASS/PASS,PASS/PASS,None/None
+S5_cube_edges_1048576,cpu_bh_g32_l8,p1+p2,0.0062,17.545,,9.7015,6.3148,0.65475,0.74285,1.0705,65.2,,,,,,,,,92.9,PASS/PASS,PASS/PASS,None/None
+S5_cube_edges_1048576,gpu_bh_sorted,p1+p2,0.0055,0.9885,,0.557,0.4229,,,,,,,,,,,,,92.2,PASS/PASS,None/None,None/None
+S5_cube_edges_1048576,gpu_bh_warp,p1+p2,0.1045,1.0209,,0.57675,0.4072,,,,,,,,,,,,,92.9,PASS/PASS,None/None,None/None
+S5_plummer_1048576,gpu_bh_sorted,p1+p2,0.0023,35.004,,0.61735,34.373,,,,,,,,,,,,,1414.6,PASS/PASS,None/None,None/None
+S5_plummer_1048576,gpu_bh_warp,p1+p2,0.0013,6.6036,,0.6098,6.0149,,,,,,,,,,,,,1455.2,PASS/PASS,None/None,None/None
+S5_plummer_262144,gpu_bh_sorted,p1+p2,0.0050,8.0133,,0.3072,7.6985,,,,,,,,,,,,,1432.6,PASS/PASS,None/None,None/None
+S5_plummer_262144,gpu_bh_warp,p1+p2,0.0479,1.9221,,0.3957,1.5862,,,,,,,,,,,,,1747.7,PASS/PASS,None/None,None/None
+S5_plummer_65536,gpu_bh_sorted,p1+p2,0.0048,2.0386,,0.22355,1.8033,,,,,,,,,,,,,1671,PASS/PASS,None/None,None/None
+S5_plummer_65536,gpu_bh_warp,p1+p2,0.2099,0.8786,,0.31155,0.57395,,,,,,,,,,,,,1695.1,PASS/PASS,None/None,None/None

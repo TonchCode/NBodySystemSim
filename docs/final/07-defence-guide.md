@@ -182,15 +182,24 @@ next card.
   with more L1 (×1.12). The dependent pop chain (shuffle → load → test → vote → branch) is the
   limit, so the next step would be wider tree nodes (fewer pops), not more occupancy (D-026).
 
-### #8 CPU + GPU split (in progress)
+### #8 CPU + GPU split (a second **negative** result)
 
-- **Idea.** Build the tree on the CPU (i5-13600K: 6 P-cores + 8 E-cores), compute forces on the GPU.
-- **Why we expect little.** The tree build is only 12.6 % / 4.5 % / 1.6 % of the step at N = 65,536 /
-  262,144 / 1M, and every step would add PCIe transfers (ch.4, §4.8).
-- **Status.** Phase 1 is **built and validated functionally**: the CPU-built tree is bitwise
-  identical to the GPU one on all 16 IC × mass-spectrum cases at 1M
-  (`results/2026-10-18_cpu_gpu/phase1/tree_compare_1M.txt`). It is the only variant that uses
-  **pinned host memory**. Performance numbers: `TODO(results: #8 phase 2)`.
+- **Idea.** Use the CPU too (i5-13600K: 6 P-cores + 8 E-cores): split the bodies between CPU and
+  GPU (`hyb_bh`), or build the tree on the CPU while the GPU computes forces (`hyb_phase`).
+- **Measured.** **No split beats the GPU alone**: best gain +1.3 %, most cells 0.99–1.27× *slower*
+  (ch.4, §4.8.1).
+- **Why.** The GPU is **18.3× the best CPU code** on the 1M tree and 29–36× on all-pairs, so the
+  CPU can take only a tiny share; and the body split moves 56 B/body over PCIe every step
+  (2.26 ms at 1M, 2.3× a whole cube_edges step).
+- **The trap we caught.** `hyb_phase` *looked* 4–25 % faster. A GPU-only control that just reuses
+  and refits the old tree (`bh_warp_refit`) is equally fast (within 1.4 %), so the gain was never
+  the CPU's. And the timing loop keeps bodies still, so it does not charge for the older tree
+  (+4–10 % interactions in a real 500-step run). **Always ask: what is the control?**
+- **Load balancing on the CPU itself.** Splitting the work evenly over P- and E-cores is *slower
+  than using the P-cores alone* (21.4 vs 31.0 G/s), because each E-core finishes ≈ 2.4× later.
+  Dynamic scheduling fixes it: +22 % (37.8 G/s). Equal work ≠ equal time on unequal cores.
+- **Memory.** The only variant that uses **pinned host memory** (`cudaHostAlloc`): 21–26 GB/s
+  device→host. The CPU-built tree is bitwise identical to the GPU tree (phase 1).
 
 ---
 
@@ -206,10 +215,10 @@ next card.
 | 5 | thread per body, sorted | tree in **L1**, stack in local | 3 (and locality) | — (ordering) | 2.0× over #4 | **L1 capacity** |
 | 6 | persistent warps + queue | as #5 | 1–2 | dynamic scheduling | 0.63–0.97× (**slower**) | lost L1 locality |
 | 7 | **warp** per 32 bodies | tree in L1/L2, **stack in registers** | 3 | warp-uniform SIMT | 5.8× over #5 | **pop latency** |
-| 8 | CPU tree + GPU forces | host (pinned) + VRAM | between devices | heterogeneous | TODO | PCIe, CPU |
+| 8 | CPU + GPU split | host (pinned) + VRAM | between devices; P/E cores | heterogeneous | **no gain** (best +1.3 %); on the CPU, dynamic +22 % over P-only | PCIe, 18× rate gap |
 
 **The story in one line per row:** tile it → tune it → split it → change the algorithm → sort it →
-(don't hand-schedule it) → walk it as a warp → (offload it).
+(don't hand-schedule it) → walk it as a warp → (don't offload it).
 
 ---
 
@@ -256,13 +265,19 @@ next card.
     broadcast loads, stack in registers instead of local memory.
 11. *Why is #7 more accurate?* → each lane uses at least the cells it would have accepted alone.
 12. *Why not use tensor cores or RT cores?* → ch.2, §2.2.6.
-13. *Why not do the tree on the CPU?* → the build is 1.6 % of the step at 1M; PCIe would cost more
-    (ch.4, §4.8; #8 phase 2 will measure it).
-14. *How much memory does the simulation need, and how many bodies fit?* → ≈ 197 B/body in
+13. *Why not use the CPU as well?* → measured: no gain. The GPU is 18× the CPU on the 1M tree, PCIe
+    costs 2.26 ms per step for the body split, and the phase split's apparent gain is matched by a
+    GPU-only refit (ch.4, §4.8.1).
+14. *How did you balance work between P-cores and E-cores?* → dynamic scheduling; a static even
+    split was slower than P-cores alone (21.4 vs 31.0 G/s), dynamic gave 37.8.
+15. *Did you try `__restrict__` / the read-only cache for #7?* → yes, pre-registered: the loads
+    became `LDG.E.128.CONSTANT`, the time did not change (0.0–0.3 %), because #7 is latency-bound
+    (D-037).
+16. *How much memory does the simulation need, and how many bodies fit?* → ≈ 197 B/body in
     production BH → 70–80 M bodies in 16 GB (ch.5, §5.6).
-15. *Where is Barnes-Hut used outside astronomy?* → t-SNE, graph layout (Gephi ForceAtlas2,
+17. *Where is Barnes-Hut used outside astronomy?* → t-SNE, graph layout (Gephi ForceAtlas2,
     d3-force with θ = 0.9) (ch.6, §6.2.3).
-16. *Which result surprised you, and what did you learn from it?* → #6: better balance, worse
+18. *Which result surprised you, and what did you learn from it?* → #6: better balance, worse
     performance. Balance is a means; the real limit was L1.
 
 ---

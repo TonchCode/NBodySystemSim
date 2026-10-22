@@ -1,0 +1,12 @@
+== bh_p1_g32_l16: ./build/nbody_bench.exe --kernel cpu_bh --n 512 --ic plummer --theta 0.5 --leaf 16 --cpu-group 32 --cpu-set p1 --cpu-sched dynamic --warmup 2 --runs 7 --batch 20
+   exit=0 02:33:29
+== bh_p1_g16_l8: ./build/nbody_bench.exe --kernel cpu_bh --n 512 --ic plummer --theta 0.5 --leaf 8 --cpu-group 16 --cpu-set p1 --cpu-sched dynamic --warmup 2 --runs 7 --batch 20
+   exit=0 02:33:29
+== ap_p1: ./build/nbody_bench.exe --kernel cpu_allpairs --n 512 --cpu-set p1 --cpu-sched dynamic --cpu-iv 2 --cpu-tile 2048 --warmup 2 --runs 7 --batch 20
+   exit=0 02:33:29
+== bh_all_g32_l16: ./build/nbody_bench.exe --kernel cpu_bh --n 512 --ic plummer --theta 0.5 --leaf 16 --cpu-group 32 --cpu-set all --cpu-sched dynamic --warmup 2 --runs 7 --batch 20
+   exit=0 02:33:29
+== bh_all_g16_l8: ./build/nbody_bench.exe --kernel cpu_bh --n 512 --ic plummer --theta 0.5 --leaf 8 --cpu-group 16 --cpu-set all --cpu-sched dynamic --warmup 2 --runs 7 --batch 20
+   exit=0 02:33:30
+== ap_all: ./build/nbody_bench.exe --kernel cpu_allpairs --n 512 --cpu-set all --cpu-sched dynamic --cpu-iv 2 --cpu-tile 2048 --warmup 2 --runs 7 --batch 20
+   exit=0 02:33:30

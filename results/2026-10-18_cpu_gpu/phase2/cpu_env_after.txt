@@ -1,0 +1,9 @@
+﻿date: 2026-10-22T02:50:59.8731746+03:00
+tag: after
+cpu: 13th Gen Intel(R) Core(TM) i5-13600K | cores 14 | logical 20 | MaxClockSpeed 3500 MHz | CurrentClockSpeed 3500 MHz | LoadPercentage 0
+power plan: Power Scheme GUID: 20f80ff0-ccc1-4a6b-8330-5b09a9f37ba6  (ChrisTitus - Ultimate Power Plan)
+power mode overlay (AC): '' -> unknown / not set
+idle CPU utilisation samples (%): 0.8, 0, 0.5, 0.3, 0.9, 0.2, 0, 0.7, 0.2, 0.1
+median idle CPU utilisation: 0.3 %
+screensaver: SCRNSAVE.EXE=(not set) | ScreenSaveActive=1 | ScreenSaveTimeOut=600 s
+CPU temperature: not readable without admin (Access denied )
