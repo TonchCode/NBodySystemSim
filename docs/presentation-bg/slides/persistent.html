@@ -1,0 +1,25 @@
+<section id="persistent" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:44px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Техника #6 · отрицателен резултат</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">По-добър баланс, по-лоша скорост</h2>
+<div style="display:flex;gap:64px;align-items:center">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:112px;font-weight:600;line-height:1.05;color:#13202B">0,63–0,97×</p>
+<p style="font-size:26px;color:#4A5568">спрямо хардуерния планировчик, във всяка клетка</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:24px">
+<p style="font-size:28px;line-height:1.4;color:#4A5568">Постоянни warp-ове взимат работа от софтуерна опашка: по warp, по лента или статично балансирано разделяне. <b style="color:#13202B">Всеки вариант подобри метриката си за баланс.</b></p>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">Но опашката по warp разпръсква съседите по Мортън на различни SM-и и те спират да делят L1. Опашка от блокове по 4 warp-а връща повечето (0,94–0,98×).</p>
+</div>
+</div>
+<div style="background:#13202B;padding:32px 40px;border-radius:16px">
+<p style="font-size:30px;line-height:1.4;color:#F6F5F1">Хардуерният планировчик на блокове вече е динамична опашка, която държи съседите заедно. Когато границата е L1, балансът не е целта.</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Документи: гл. 4 §4.6 (4.6.3 резултат, 4.6.4 диагноза) · D-023 · БГ §7 (#6)</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">12</p>
+<aside>Това е резултатът, от който научих най-много. Постоянните нишки (persistent threads) с опашки от задачи са стандартна техника за балансиране. Построихме три версии върху дървото: атомарна опашка по warp, пълнене на ленти (празните ленти взимат следващото тяло) и статично разделяне, балансирано по измерени цени. Всяка подобри метриката си за баланс и всяка вървеше по-бавно: 0,63 до 0,97 от обикновеното пускане.
+Защо (изследователска диагноза, не предварително регистрирана): хардуерът дава на един SM блок от 4 съседни по Мортън warp-а, които делят редове в L1. Опашката по warp ги разпръсква по различни SM-и, а #5 е ограничен от L1, така че това струва директно. Опашка по блок, която държи 4-те съседа заедно, връща почти всичко. Пълненето на ленти плаща колективни операции на целия warp при всяка итерация; това обяснение още не е потвърдено в SASS.
+Не е „сламено чучело“: вариантът с пълнене на ленти, който поиска рецензент, беше построен, проверен бит по бит и измерен. Повторен при 0 % фоново натоварване на 2026-10-18.
+Урокът: по-добър баланс не е по-добра производителност, когато границата е L1. Добре измерен отрицателен резултат също е резултат.
+Термини: постоянни нишки – persistent threads; опашка от задачи – work queue; хардуерен планировчик на блокове – hardware block scheduler; статично / динамично разпределение – static / dynamic scheduling; отрицателен резултат – negative result.
+Документи: 04-load-balancing.md §4.6.1 (вариантите), §4.6.3 (числа), §4.6.4 (диагноза), §4.6.5 (ограничения); решение D-023. БГ файл: §7 (#6), въпрос 9 и 19 в §12.</aside>
+</section>

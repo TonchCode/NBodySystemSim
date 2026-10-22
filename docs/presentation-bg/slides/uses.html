@@ -1,0 +1,40 @@
+<section id="uses" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Къде се използва и защо</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">Навсякъде, където всичко привлича всичко</h2>
+<div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:24px">
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:28px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:30px;font-weight:600;color:#13202B">Космология</h3>
+<p style="font-size:25px;line-height:1.4;color:#4A5568">10⁹–10¹² частици тъмна материя: GADGET-4, PKDGRAV3</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:28px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:30px;font-weight:600;color:#13202B">Галактики, купове</h3>
+<p style="font-size:25px;line-height:1.4;color:#4A5568">сблъсъци и сливания, като демото ни с две галактики</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:28px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:30px;font-weight:600;color:#13202B">Планетни системи</h3>
+<p style="font-size:25px;line-height:1.4;color:#4A5568">формиране на планети: GENGA (GPU), REBOUND</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:28px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:30px;font-weight:600;color:#13202B">t-SNE</h3>
+<p style="font-size:25px;line-height:1.4;color:#4A5568">графики в машинното обучение: отблъскване по Barnes-Hut между милиони точки</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:28px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:30px;font-weight:600;color:#13202B">Изчертаване на графи</h3>
+<p style="font-size:25px;line-height:1.4;color:#4A5568">ForceAtlas2 в Gephi; d3-force в уеб страници, θ = 0,9</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:28px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:30px;font-weight:600;color:#13202B">Молекули, плазма</h3>
+<p style="font-size:25px;line-height:1.4;color:#4A5568">електростатиката има същата форма 1/r² (FMM, PME)</p>
+</div>
+</div>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">Защо GPU: силата на всяко тяло е независима, т.е. милиони еднакви задачи.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Документи: гл. 6 §6.1 (защо е полезно), §6.2 (кодове и статии) · БГ §10.1</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">19</p>
+<aside>Изискване: къде се използва и защо е полезно. Идеята „обобщи далечните групи с едно число“ превръща O(N²) в около O(N log N) навсякъде, където силата намалява с разстоянието.
+Космология: GADGET-4 (Springel et al. 2021, дърво плюс бърз мултиполен метод), PKDGRAV3 (Potter et al. 2017, симулации с трилион частици за спътника Euclid на над 4 000 GPU възела).
+Планети: GENGA (Grimm & Stadel 2014, на GPU, до 30 пъти по-бърз от кода за CPU Mercury), REBOUND (Rein & Liu 2012, отворен код, широко използван).
+Извън физиката: Barnes-Hut t-SNE (van der Maaten 2014); ForceAtlas2, подредбата по подразбиране в Gephi (Jacomy et al. 2014); d3-force, библиотеката на JavaScript, която подрежда графи в уеб страниците, строи квадродърво и ползва Barnes-Hut с θ = 0,9 по подразбиране. Уеб страница, която рисува мрежов граф, върти същия алгоритъм като нашата симулация, в 2D, с по-голямо θ.
+Защо GPU: в една стъпка силата на всяко тяло е независима от силата на всяко друго, а точно за това са хилядите FP32 ленти.
+Термини: тъмна материя – dark matter; бърз мултиполен метод – fast multipole method (FMM); изчертаване на графи – graph drawing / graph layout; квадродърво – quadtree; отблъскване – repulsion.
+Документи: 06-context-and-implementations.md §6.1 (таблица с областите), §6.2.1–6.2.3 (кодове, с източници). БГ файл: §10.1, въпрос 18 в §12.</aside>
+</section>

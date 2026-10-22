@@ -1,0 +1,24 @@
+<section id="ncu" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:28px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Профилиране 2 · хардуерни броячи · Nsight Compute</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.15;color:#13202B">От чакане на паметта към изчисления</h2>
+<table style="font-size:25px;color:#1B2733">
+<tr><th style="width:32%">Брояч</th><th style="width:17%">all-pairs</th><th style="width:17%">#4 наивно</th><th style="width:17%">#5 сортирано</th><th style="width:17%">#7 warp</th></tr>
+<tr><td>Заети слотове за издаване</td><td><b>68 %</b></td><td>21 %</td><td>25 %</td><td><b>69 %</b></td></tr>
+<tr style="background:#FFFFFF"><td>Активни ленти от 32</td><td>32</td><td>6,1</td><td>10,8</td><td>32</td></tr>
+<tr><td>Основен престой</td><td>няма: готов</td><td>памет 74 %</td><td>памет 86 %</td><td>разпределен</td></tr>
+<tr style="background:#FFFFFF"><td>Натоварване на L2</td><td>2 %</td><td><b>95 %</b></td><td><b>95 %</b></td><td>24 %</td></tr>
+<tr><td>Натоварване на DRAM</td><td>0,5 %</td><td>1 %</td><td>1 %</td><td>2 %</td></tr>
+<tr style="background:#FFFFFF"><td>Прочетени сектори</td><td>8 M</td><td>4 599 M</td><td>2 874 M</td><td><b>200 M</b></td></tr>
+</table>
+<p style="font-size:26px;line-height:1.4;color:#4A5568">Пропуските в L1 на #5 насищат L2, а 39 % от тях са стекът. #7 чете 14 пъти по-малко и използва слотовете си като all-pairs.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Документи: гл. 5 §5.5.4 · results/2026-10-22_ncu/summary.md · D-038 · БГ §9.2</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">17</p>
+<aside>Nsight Compute чете хардуерните броячи на GPU за всеки кернел. През по-голямата част от проекта беше заключен (разрешение за броячите на производителността); пуснахме го накрая от администраторски прозорец. Диагностично пускане, не предварително регистрирано; времената под профилиращия инструмент не са времената от бенчмарка.
+Как се чете редът за престоя: „памет“ е long_scoreboard, warp, който чака четене от L1/L2. „Няма: готов“ е not_selected: warp-ът е бил готов, но планировчикът е избрал друг, т.е. SM-ът е зает, а това е добре.
+All-pairs: две трети от слотовете за издаване са заети, DRAM и L2 почиват: ограничен от издаването, както твърдяхме. FMA конвейерът е на 69 %, конвейерът за rsqrt (XU) на 39 %: съограничението от SFU. Постигнатата заетост е само 39 %: 256 блока за 80 SM-а, „гладуването“ от слайд 10, видяно от хардуера.
+#4 и #5: warp-овете главно чакат паметта. L1 обслужва само половината от четенията на дървото; пропуските отиват в L2, натоварен до 95 %, докато DRAM почива (попадения в L2 99,7 %). Значи „ограничен от капацитета на L1“ означава, че пропуските в L1 насищат пътя L1 → L2, а 39 % от този трафик е стекът на всяка нишка.
+#7: няма локална памет, 14 пъти по-малко сектори от #5 (25 пъти на взаимодействие), L2 пада до 24 %, слотовете за издаване са заети 69 %. Дървесният кернел стана ограничен от изчисленията.
+Една поправка: бяхме нарекли #7 „ограничен от латентността“. При пълна заетост броячите го показват близо до баланс между латентността на веригата от pop-ове и издаването (ALU 62 %). Следващата стъпка е същата и в двата случая: по-широки възли на дървото, по-малко pop-ове.
+Термини: хардуерни броячи – hardware counters; слот за издаване – issue slot; престой – stall; ограничен от паметта / от изчисленията – memory-bound / compute-bound; пропускателна способност (натоварване) – throughput; сектор – sector (32 B); постигната заетост – achieved occupancy; конвейер – pipe.
+Документи: 05-parallelism-and-memory.md §5.5.4; results/2026-10-22_ncu/summary.md (пълната таблица), stall_breakdown.txt; решение D-038. БГ файл: §9.2, въпрос 17 в §12.</aside>
+</section>

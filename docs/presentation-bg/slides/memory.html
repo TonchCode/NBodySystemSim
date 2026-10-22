@@ -1,0 +1,23 @@
+<section id="memory" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Паметите и какво държи всяка</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">Дръж многократно ползваните данни близо до SM</h2>
+<table style="font-size:25px;color:#1B2733">
+<tr><th style="width:17%">Памет</th><th style="width:15%">Латентност</th><th style="width:36%">Какво държи нашият код там</th><th style="width:32%">Защо</th></tr>
+<tr><td>Регистри</td><td>няма</td><td>позицията на тялото и сумите на силата; стекът на #7</td><td>ползва се на всяко взаимодействие</td></tr>
+<tr style="background:#FFFFFF"><td>Shared</td><td>≈ 30 такта</td><td>плочката от 256 позиции при all-pairs</td><td>зареждаш веднъж, ползваш 256×</td></tr>
+<tr><td>L1</td><td>≈ 32 такта</td><td>възлите на дървото; стекът на #5 (локална памет)</td><td>размерът му ограничава дървото</td></tr>
+<tr style="background:#FFFFFF"><td>L2 (64 MB)</td><td>≈ 270–285</td><td>върхът на дървото; всички позиции до ~4M</td><td>дървото не опира в DRAM</td></tr>
+<tr><td>VRAM</td><td>≈ 570</td><td>всеки масив между стъпките</td><td>домът; пипай го рядко</td></tr>
+<tr style="background:#FFFFFF"><td>RAM на хоста</td><td>PCIe</td><td>начало и край; pinned буферите на #8</td><td>дръж я извън стъпката</td></tr>
+</table>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Латентности: RTX 4090, същата архитектура (Luo et al. 2025, табл. 3) · гл. 5 §5.2, §5.3 · БГ §6.4</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">7</p>
+<aside>Това отговаря на въпроса „коя памет за какво се ползва и коя е най-подходяща за проекта“.
+Основното правило: правилното място зависи от това колко често се ползва всеки байт. Регистри за това, което всяко тяло ползва на всяко взаимодействие. Shared memory за плочката при all-pairs: едно зареждане от VRAM, после всичките 256 нишки я четат, така че трафикът към VRAM пада с размера на блока. Дървото не може да е в shared memory (твърде е голямо: 76 MiB при 1M срещу 100 KB на SM), затова живее във VRAM, но трябва да се чете през L1 и L2; сортирането е това, което го прави възможно.
+Локалната памет е капан: тя е лична за всяка нишка, но физически е във VRAM. Стекът от 384 байта на #5 е там; #7 го премести в регистрите.
+Константна памет: само параметрите на кернелите, 380–456 байта. Пътят само за четене: тестван за #7, без ефект.
+Латентностите са от статия от 2025 г. с микротестове (китайски екип, HKUST Гуанджоу) на RTX 4090, същата архитектура Ada; нашата карта не е измерена отделно.
+Стълбата за запомняне: регистър ≈ безплатно; L1/shared ≈ 30 такта; L2 ≈ 9 пъти повече; DRAM ≈ 19 пъти повече.
+Термини: регистри – registers; споделена памет – shared memory; локална памет – local memory; константна памет – constant memory; кеш – cache; видеопамет – device memory, VRAM; памет на хоста – host memory; закрепена памет – pinned memory; латентност – latency; такт – clock cycle.
+Документи: 05-parallelism-and-memory.md §5.2 (пълната таблица, вкл. локална, константна, само за четене), §5.3 (къде трябва да живее алгоритъмът); статия luo2025hopper. БГ файл: §6.4.</aside>
+</section>

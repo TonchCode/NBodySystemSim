@@ -1,0 +1,26 @@
+<section id="differences" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:28px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Осемте техники една до друга</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.15;color:#13202B">Какво се промени и какво ограничава всяка</h2>
+<table style="font-size:24px;color:#1B2733">
+<tr><th style="width:5%">#</th><th style="width:23%">Единица работа</th><th style="width:24%">Горещите данни са в</th><th style="width:22%">Резултат</th><th style="width:26%">Ограничена от</th></tr>
+<tr><td>1</td><td>нишка на тяло</td><td>плочка в shared memory</td><td>76/80 SM празни при 1k</td><td>твърде малко блокове</td></tr>
+<tr style="background:#FFFFFF"><td>2</td><td>нишка на тяло</td><td>shared + регистри</td><td>1,14–1,54× над #1</td><td>издаване + блокът за rsqrt</td></tr>
+<tr><td>3</td><td>q нишки на тяло</td><td>shared + регистри</td><td>2,56× при малко N</td><td>издаване + блокът за rsqrt</td></tr>
+<tr style="background:#FFFFFF"><td>4</td><td>нишка на тяло, дърво</td><td>L1/L2; стек в локалната</td><td>база за дървото</td><td>дивергенция</td></tr>
+<tr><td>5</td><td>сортирана нишка на тяло</td><td>L1/L2; стек в локалната</td><td>2,06× над #4</td><td>пропуските в L1 насищат L2</td></tr>
+<tr style="background:#FFFFFF"><td>6</td><td>софтуерна опашка</td><td>като #5</td><td>0,63–0,97× (по-бавно)</td><td>загубено споделяне на L1</td></tr>
+<tr><td>7</td><td>warp на 32 тела</td><td>L1/L2; стек в регистри</td><td><b>5,8× над #5</b></td><td>веригата от pop + издаване</td></tr>
+<tr style="background:#FFFFFF"><td>8</td><td>CPU + GPU</td><td>pinned хост + VRAM</td><td>+1,3 % най-много</td><td>PCIe, разлика 18×</td></tr>
+</table>
+<p style="font-size:26px;color:#4A5568">Плочки → настройка → разделяне → нов алгоритъм → сортиране → (без ръчно планиране) → обхождане от warp → (без прехвърляне към CPU)</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Документи: гл. 7 §7.4 (тази таблица) · гл. 4 §4.9 (обобщение) · БГ §7 (таблицата)</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">15</p>
+<aside>Чети таблицата ред по ред; колоната „ограничена от“ на всеки ред е мотивацията за следващия ред.
+All-pairs (#1–#3): проблемът е между SM-ите и се оправя, като създадем правилния брой работни единици. Печалбата е 2,4–2,6× при малко N и изчезва, щом всеки SM има работа.
+Дървета (#4–#7): основната загуба е вътре в warp-а. Сортирането е задължителната първа стъпка, обхождането от warp маха повечето от останалото.
+#6 и #8 са отрицателни резултати с механизъм, което е толкова полезно, колкото и едно ускорение: показват, че хардуерният планировчик и дизайнът „всичко на GPU“ вече бяха правилни.
+Последният ред е историята в едно изречение; кажи го на глас.
+Ускоренията са най-добро срещу най-добро, настроени за всеки вариант, при θ = 0,5, начални условия Plummer, чисти пускания при 0 % натоварване.
+Термини: единица работа – unit of work; горещи данни – hot data; ограничен от – bound by / limited by; пропуск в кеша – cache miss; насищане – saturation.
+Документи: 07-defence-guide.md §7.4 (таблицата), §7.5 (как се четат резултатите); 04-load-balancing.md §4.9 (обобщение и четири извода). БГ файл: §7 („Разликите в една таблица“), §9.1.</aside>
+</section>

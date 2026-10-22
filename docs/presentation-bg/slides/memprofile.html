@@ -1,0 +1,36 @@
+<section id="memprofile" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Профилиране 1 · памет и RAM · Nsight Systems</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">Паметта расте точно линейно с N</h2>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FFFFFF;padding:36px;border:1px solid #DDE1E3;border-radius:16px">
+<p style="font-size:96px;font-weight:600;line-height:1.1;color:#13202B">48 B</p>
+<p style="font-size:26px;line-height:1.4;color:#4A5568">на тяло при all-pairs: позиция, скорост, ускорение (3 MiB при 65k)</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FFFFFF;padding:36px;border:1px solid #DDE1E3;border-radius:16px">
+<p style="font-size:96px;font-weight:600;line-height:1.1;color:#13202B">197 B</p>
+<p style="font-size:26px;line-height:1.4;color:#4A5568">на тяло при дървото: + ключове, ред, възли, буфер за сортиране (213 в бенчмарка)</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#13202B;padding:36px;border-radius:16px">
+<p style="font-size:96px;font-weight:600;line-height:1.1;color:#F0A35E">70–80 M</p>
+<p style="font-size:26px;line-height:1.4;color:#C9D3DA">тела биха се побрали в картата с 16 GB</p>
+</div>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;border-left:6px solid #2F6DB0;padding:8px 0 8px 24px">
+<p style="font-size:26px;line-height:1.4;color:#4A5568"><b style="color:#13202B">Няма копия в рамките на стъпката.</b> При 1M: 2 качвания и 4 сваляния на пускане, всички в началото и в края.</p>
+</div>
+<div style="flex:1;border-left:6px solid #E07A2E;padding:8px 0 8px 24px">
+<p style="font-size:26px;line-height:1.4;color:#4A5568"><b style="color:#13202B">RAM на хоста:</b> ≈ 120 MiB фиксирано + 88 B на тяло (215 MiB при 1M).</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Документи: гл. 5 §5.5.2 (метод), §5.6 (резултати) · БГ §9.3</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">16</p>
+<aside>Изискване: профилиране, за RAM. Инструмент: Nsight Systems с --cuda-memory-usage, който записва всяко заделяне и освобождаване на памет; нашият скрипт ги възпроизвежда и намира пиковата използвана видеопамет.
+VRAM: all-pairs 48 байта на тяло (3 MiB при 65 536, 48 MiB при 1M). Дърво 212,8 байта на тяло в бенчмарка: състояние 48, данни на тяло за дървото 60, на възел 76, буфер на CUB за сортиране 12,3, плюс 16 байта броячи, които има само бенчмаркът; в нормалната програма около 197. Така 1M тела искат 213 MiB, а 4M искат 851 MiB; при около 2 GB, вече заети от работния плот, биха се побрали 70–80 милиона тела.
+Трансфери: при 1M, 2 копия от хоста към устройството и 4 от устройството към хоста на пускане, всички извън времевите стъпки. Състоянието никога не напуска GPU по време на стъпка.
+RAM на хоста, пиково работно множество: 122 MiB за all-pairs при 65k, 215 MiB за дървото при 1M, 478 MiB при 4M, т.е. около 120 MiB фиксирано плюс 88 байта на тяло.
+Дялове на фазите при 1M: обхождането е 98,3 % от стъпката за #5 и 92,5 % за #7.
+Ако питат защо файловете от профилирането не са в репото: суровият .nsys-rep записва средата на процеса, затова се комитват само текстовите изводи.
+Термини: профилиране – profiling; времева линия – timeline; заделяне на памет – allocation; пиково работно множество – peak working set; обем на използваната памет – memory footprint; трансфер – transfer, copy; линейно по N – linear in N.
+Документи: 05-parallelism-and-memory.md §5.5.2 (командите), §5.6.1 (таблици за VRAM), §5.6.2 (трансфери и фази), §5.6.3 (RAM на хоста). БГ файл: §9.3, въпрос 16 в §12.</aside>
+</section>

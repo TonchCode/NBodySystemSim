@@ -1,0 +1,29 @@
+<section id="ilptlp" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Паралелизъм на ниво инструкции и на ниво нишки</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">Два начина да скрием чакането, измерени</h2>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFFFF;padding:36px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:34px;font-weight:600;color:#13202B">ILP: в една нишка</h3>
+<p style="font-size:26px;line-height:1.4;color:#4A5568">Независимите инструкции се издават една след друга. Едно взаимодействие е верига от ~11 зависими стъпки; разгъването на цикъла застъпва няколко вериги.</p>
+<p style="font-size:26px;line-height:1.5;color:#1B2733">Без разгъване: <b>−21 %</b> · unroll 16: <b>+5 %</b> · пълно: <b>+8 %</b><br>Пълно при блок 1024: <b>−18 %</b> (инструкционен кеш)</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFFFF;padding:36px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:34px;font-weight:600;color:#13202B">TLP: много warp-ове на SM</h3>
+<p style="font-size:26px;line-height:1.4;color:#4A5568">Когато един warp чака, планировчикът издава от друг. Трябват достатъчно нишки: заетост (occupancy).</p>
+<p style="font-size:26px;line-height:1.5;color:#1B2733">q нишки на тяло (#3): <b>2,56×</b> при N = 4 096<br>Дървото: без промяна от 2 до 11 блока/SM</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;background:#13202B;padding:32px 40px;border-radius:16px">
+<p style="font-size:26px;color:#C9D3DA">Предварително зареждане (prefetch) на следващата плочка, по резидентни warp-ове на SM:</p>
+<p style="font-size:32px;font-weight:600;color:#F6F5F1">2 warp-а <span style="color:#F0A35E">+16,1 %</span> · 4 <span style="color:#F0A35E">+10,1 %</span> · 8 <span style="color:#F0A35E">+7,7 %</span> · пълна заетост <span style="color:#F0A35E">0 %</span> → ILP замества липсващия TLP</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Документи: гл. 5 §5.1 (верига, доказателства, заетост) · Volkov 2010 · БГ §6.3</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">8</p>
+<aside>Изискване: ILP и TLP.
+ILP (instruction-level parallelism) = паралелизъм вътре в една нишка. Едно взаимодействие е верига от зависимости: изваждане, квадрат, rsqrt, умножение, натрупване; всяка стъпка чака предишната. Но две различни взаимодействия са независими, освен финалното събиране в акумулатора, така че разгъването на цикъла позволява на компилатора да ги преплете. Без разгъване: 21 % по-бавно. Твърде много разгъване при блок 1024: цикълът вече не се побира в инструкционния кеш, 18 % по-бавно. ILP също има цена.
+TLP (thread-level parallelism) = паралелизъм между warp-овете. Планировчикът скрива чакането, като превключва warp-а. #3 дели сумата на всяко тяло между q нишки: q пъти повече нишки, 2,56× при N = 4 096, където SM-ите „гладуваха“.
+Тъмната кутия е най-чистият експеримент: prefetch-ът помага много при 2 warp-а на SM и изобщо не помага при пълна заетост. С достатъчно warp-ове TLP вече скрива четенето; с малко warp-ове трябва да го направи ILP. Това е резултатът на Volkov от 2010 г., повторен на нашата карта.
+И двете решават един и същ проблем: латентността.
+Термини: паралелизъм на ниво инструкции – ILP; паралелизъм на ниво нишки – TLP; скриване на латентността – latency hiding; верига от зависимости – dependency chain; разгъване на цикъл – loop unrolling; предварително зареждане – prefetch; издаване на инструкции – instruction issue.
+Документи: 05-parallelism-and-memory.md §5.1.1 (верига), §5.1.2 (таблица за ILP), §5.1.3 (TLP, заетост); 04-load-balancing.md §4.4 (prefetch). БГ файл: §6.3.</aside>
+</section>

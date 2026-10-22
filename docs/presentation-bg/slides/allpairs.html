@@ -1,0 +1,19 @@
+<section id="allpairs" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Техники #1–#3 · all-pairs</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">Равни нишки не означават зает GPU</h2>
+<table style="font-size:25px;color:#1B2733">
+<tr><th style="width:16%">Вариант</th><th style="width:30%">Какво се промени</th><th style="width:27%">Резултат</th><th style="width:27%">Защо</th></tr>
+<tr><td>#1 tiled</td><td>плочка от 256 позиции в shared memory</td><td>76 от 80 SM празни при N = 1 000</td><td>4 блока за 80 SM-а</td></tr>
+<tr style="background:#FFFFFF"><td>#2 tuned</td><td>размер на блока × разгъване, 25 версии</td><td>1,14–1,54× над #1</td><td>повече блокове, разгъване</td></tr>
+<tr><td>#3 multi</td><td>q нишки на тяло, сума с warp shuffle</td><td><b>2,56×</b> при 4 096; 1,02× при 65 536</td><td>q пъти повече нишки запълват всички SM</td></tr>
+</table>
+<p style="font-size:30px;line-height:1.4;color:#4A5568">Печалбата е точно толкова голяма, колкото беше „гладуването“, и изчезва, щом всеки SM е зает. Оттам единственият път напред е <b style="color:#13202B">по-малко взаимодействия</b>: дървото.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Документи: гл. 4 §4.2–4.4 · гл. 7 §7.3 (#1–#3) · БГ §3.3, §7</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">10</p>
+<aside>#1: класическите плочки от GPU Gems. Една нишка на тяло; блокът зарежда 256 позиции в shared memory и всяка нишка ги използва. Работата на нишка е напълно равна, и въпреки това при N = 1 000 има само 4 блока, така че 76 SM-а не правят нищо.
+#2: пробвахме 5 размера на блока × 5 степени на разгъване. Най-добрият (блок 128, пълно разгъване) е официалната базова линия за всяко ускорение при all-pairs. Пропуск на модела, който записахме: блок 64 маха опашката точно както беше прогнозирано, но е само с 8 % по-бърз, не с 20 %, защото 4 пъти повече бариери и зареждания на плочки правят всяко взаимодействие с около 12 % по-скъпо.
+#3: делим сумата на едно тяло между q нишки (нишка s взема всяко q-то тяло), после събираме q частични суми с __shfl_xor_sync за log2(q) стъпки, само в регистри („пеперуда“). Това е повече TLP: 2,4–2,6× там, където GPU-то „гладуваше“, нищо при 65 536.
+Правилото, което спазихме: всяко ускорение е спрямо най-добре настроената база от същата сесия, никога спрямо ненастроена.
+Термини: плочка, разбиване на плочки – tile, tiling; бариера – barrier (__syncthreads); разгъване – unroll; базова линия – baseline; размяна между ленти – warp shuffle; редукция „пеперуда“ – butterfly reduction; ускорение – speedup.
+Документи: 04-load-balancing.md §4.2 (#1), §4.3 (#2 и пропускът на модела), §4.4 (#3); 07-defence-guide.md §7.3. БГ файл: §3.3 (плочки), §7 (#1–#3).</aside>
+</section>

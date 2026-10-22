@@ -1,0 +1,33 @@
+<section id="sorting" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Техники #4 и #5 · дървото</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">Сортирай нишките и съседите минават по един път</h2>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFFFF;padding:36px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:34px;font-weight:600;color:#13202B">#4 наивно: оригинален ред</h3>
+<p style="font-size:26px;line-height:1.4;color:#4A5568">32-те тела на warp-а са разпръснати из галактиката; всяко иска различен път.</p>
+<p style="font-size:26px;line-height:1.5;color:#1B2733"><b>6,1</b> от 32 активни ленти · попадения в L1 <b>19 %</b><br>71,1 ms на обхождане при 1M</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFFFF;padding:36px;border:2px solid #E07A2E;border-radius:16px">
+<h3 style="font-size:34px;font-weight:600;color:#13202B">#5 сортирано: ред на Мортън</h3>
+<p style="font-size:26px;line-height:1.4;color:#4A5568">Нишка i взема i-тото тяло по кривата, така че warp-ът държи съседи в пространството.</p>
+<p style="font-size:26px;line-height:1.5;color:#1B2733"><b>10,8</b> от 32 активни ленти · попадения в L1 <b>50 %</b><br>34,5 ms при 1M: <b>2,06× по-бързо</b></p>
+</div>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;border-left:6px solid #2F6DB0;padding:8px 0 8px 24px">
+<p style="font-size:26px;line-height:1.4;color:#4A5568">Бие най-добрия all-pairs от <b style="color:#13202B">N ≈ 39 700</b></p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;border-left:6px solid #E07A2E;padding:8px 0 8px 24px">
+<p style="font-size:26px;line-height:1.4;color:#4A5568">Нова граница: <b style="color:#13202B">размерът на L1</b>. ×1,51 с целия L1; повече warp-ове не променят нищо</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Документи: гл. 4 §4.5 · гл. 3 §3.5 (защо сортиране) · гл. 5 §5.5.4 · БГ §5, §7</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">11</p>
+<aside>#4 и #5 изпълняват един и същ кернел; единствената разлика е кое тяло взема всяка нишка. В #4 32-те тела на един warp са случайни, така че обхожданията им се разклоняват (дивергират) и warp-ът ги изпълнява едно след друго. В #5 те са съседи по кривата на Мортън, така че отварят почти същите възли, а съседните warp-ове делят възлите на дървото в L1.
+Числа: най-добро срещу най-добро при 1M, θ = 0,5: 71,11 ms → 34,45 ms, 2,06×; 2,01× при 262 144. Кривата на Хилберт дава същото като Мортън. Активните ленти и попаденията в L1 са от Nsight Compute.
+Пресичане: сортираното дърво (строене + обхождане) бие най-добрия all-pairs кернел от около 39 700 тела, при θ = 0,5.
+Какво ограничава #5: не заетостта (без промяна от 2 до 11 блока на SM), а капацитетът на L1: с целия L1 е 1,51 пъти по-бърз. По-късно профилиращият инструмент показа защо: половината четения пропускат L1 и насищат L2.
+Честност: Burtscher 2011 казва, че сортирането дава около порядък; ние измерихме 2× на различен код и хардуер и не твърдим, че има противоречие.
+Термини: кривата на Мортън, Z-ред – Morton curve, Z-order; кривата на Хилберт – Hilbert curve; попадение в кеша – cache hit; капацитет на L1 – L1 capacity; работно множество – working set; локалност – locality; точка на пресичане – crossover.
+Документи: 04-load-balancing.md §4.5.1 (резултати, L1), §4.5.3 (пресичане), §4.5.5 (контрол с еднакви пътища: несъгласуваността още струва 4–10×); 03-algorithm.md §3.5 „Why the sort is essential“. БГ файл: §5 („Защо сортирането е задължително“), §7 (#4, #5).</aside>
+</section>

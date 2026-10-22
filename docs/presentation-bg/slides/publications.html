@@ -1,0 +1,45 @@
+<section id="publications" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Публикации</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">Източниците зад всяка част</h2>
+<div style="display:flex;gap:28px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFFFF;padding:36px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600;color:#13202B">Основи</h3>
+<ul style="font-size:24px;line-height:1.5;color:#4A5568">
+<li>Barnes & Hut 1986: дървото</li>
+<li>Nyland et al. 2007: плочки на GPU</li>
+<li>Burtscher & Pingali 2011: дърво на GPU, гласуване в warp</li>
+<li>Karras 2012: паралелно радикс дърво</li>
+<li>Volkov 2010: ILP срещу заетост</li>
+</ul>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFFFF;padding:36px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600;color:#13202B">2025–2026</h3>
+<ul style="font-size:24px;line-height:1.5;color:#4A5568">
+<li>Luo et al. 2025: латентности на паметта на GPU*</li>
+<li>Hepkema et al. 2026: „стената на инструкциите“</li>
+<li>Zhang 2025, Shi 2025: балансиране*</li>
+<li>CUBE2 2026, Jiutian 2025: космология*</li>
+<li>CRK-HACC 2025; RT ядра и стохастичен BH</li>
+</ul>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#13202B;padding:36px;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600;color:#F6F5F1">Документация на NVIDIA</h3>
+<ul style="font-size:24px;line-height:1.5;color:#C9D3DA">
+<li>CUDA Best Practices Guide (2026)</li>
+<li>CUDA Programming Guide (2026)</li>
+<li>Ada Tuning Guide (2026)</li>
+<li>Ada architecture whitepaper (2023)</li>
+</ul>
+</div>
+</div>
+<p style="font-size:24px;color:#4A5568">* Водещ екип от Китай. Всеки източник е проверен и записан в references/references.bib.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Документи: гл. 6 §6.4 · гл. 3 §3.7 · гл. 4 по техники · references/INDEX.md · БГ §10.3</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">21</p>
+<aside>Изискване: публикации по темата, за предпочитане от 2025–26 г. и китайски. Всеки запис е в references/references.bib и е проверен в Crossref, arXiv или на страницата на издателя; нищо не е цитирано по памет.
+Основи: Barnes & Hut 1986 (алгоритъмът); Nyland, Harris, Prins 2007, GPU Gems 3, гл. 31 (плочки за all-pairs, нашият #1); Burtscher & Pingali 2011 (първият Barnes-Hut изцяло на GPU, сортиране и гласуване в warp, нашите #5 и #7); Karras 2012 (радикс дърво, строено паралелно без заключвания, нашата стъпка 4); Volkov 2010 (по-добра производителност при по-ниска заетост: ILP замества TLP).
+Нови: Luo et al. 2025, HKUST Гуанджоу и HIT Шънджън, микротестове, включително RTX 4090, оттам са нашите латентности; Hepkema et al. 2026, щом пропускателната способност на паметта престане да е границата, кернелите стават ограничени от инструкциите, което съвпада с нашия резултат за all-pairs; статиите за балансиране с китайски водещи автори в глава 4 (ключове zhang2025hytis, shi2025libra, zhong2025hybrimoe); китайските космологични кодове CUBE2 и Jiutian в глава 3; CRK-HACC (решатели, живеещи на GPU), Barnes-Hut с RT ядра и стохастичен Barnes-Hut (2025).
+Честно за „за предпочитане китайски“: три търсения не намериха китайска статия от 2025–26 г. за Barnes-Hut на GPU; китайските източници, които ползваме, са за балансиране на натоварването и за космологични кодове на CPU.
+Документация на NVIDIA (изискване R5): Best Practices Guide, CUDA Programming Guide, Ada Tuning Guide, Ada whitepaper.
+Термини: публикация – publication; рецензирана статия – peer-reviewed paper; препринт – preprint; микротест – microbenchmark.
+Документи: 06-context-and-implementations.md §6.4 (с бележката за R4); 03-algorithm.md §3.7; references/INDEX.md (статус на проверката на всеки ключ). БГ файл: §10.3.</aside>
+</section>

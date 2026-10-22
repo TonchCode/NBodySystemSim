@@ -1,0 +1,43 @@
+<section id="gpu" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:44px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Архитектура на GPU · RTX 4080 SUPER (AD103, Ada, sm_89)</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">80 малки процесора, всеки жонглира с 48 warp-а</h2>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FFFFFF;padding:36px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:34px;font-weight:600;color:#13202B">Чипът</h3>
+<ul style="font-size:26px;line-height:1.5;color:#4A5568">
+<li>80 поточни мултипроцесора (SM)</li>
+<li>64 MB L2 кеш, общ за всички SM</li>
+<li>16 GB GDDR6X, 736 GB/s</li>
+<li>PCIe 4.0 ×16 към процесора</li>
+</ul>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FFFFFF;padding:36px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:34px;font-weight:600;color:#13202B">Един SM</h3>
+<ul style="font-size:26px;line-height:1.5;color:#4A5568">
+<li>4 дяла, по 1 планировчик</li>
+<li>128 FP32 ленти; rsqrt 16 на такт</li>
+<li>256 KB регистри</li>
+<li>128 KB L1, от него се заделя shared memory</li>
+</ul>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#13202B;padding:36px;border-radius:16px">
+<h3 style="font-size:34px;font-weight:600;color:#F6F5F1">Как се изпълнява</h3>
+<ul style="font-size:26px;line-height:1.5;color:#C9D3DA">
+<li>warp = 32 нишки, една инструкция</li>
+<li>до 48 warp-а на SM</li>
+<li>чакащ warp се сменя с готов</li>
+<li>различните пътища в warp-а вървят един след друг</li>
+</ul>
+</div>
+</div>
+<p style="font-size:30px;line-height:1.4;color:#4A5568">Два начина да го пропилеем: <b style="color:#13202B">празни SM-и</b> (твърде малко работа) и <b style="color:#13202B">празни ленти</b> (32-те нишки на warp-а искат различни неща).</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Документи: гл. 2 §2.1–2.4 (чип, SM, warp, памет) · БГ §6.1, §6.2</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">6</p>
+<aside>Това е картата на архитектурата, която лекторката поиска. Три нива: чипът (80 SM-а, голям L2 от 64 MB, 16 GB видеопамет), един SM (4 планировчика, 128 FP32 ленти, регистри, L1/shared) и моделът на изпълнение.
+Ключовата идея: warp е 32 нишки, които изпълняват една и съща инструкция. Ако искат различни неща (дивергенция), warp-ът изпълнява всеки път поред, а другите ленти чакат. И SM-ът скрива латентността на паметта, като държи много резидентни warp-а и превключва на готов.
+Последният ред подготвя останалата част: всяка техника за балансиране се бори или с празни SM-и, или с празни ленти.
+Числа: 80 SM-а, 48 warp-а на SM, 1 536 нишки; 40 регистъра на нишка е точно колкото позволява 6 блока по 256 (100 % заетост, без резерв: с 41 регистъра пада до 83 %).
+Тензорни и RT ядра: има ги (320 и 80), но не ги ползваме; виж въпрос 12 в БГ файла.
+Термини: поточен мултипроцесор – streaming multiprocessor (SM); планировчик – warp scheduler; лента – lane; нишка – thread; дивергенция – divergence; заетост – occupancy; латентност – latency; резидентен – resident.
+Документи: 02-gpu-architecture.md §2.1 (йерархия), §2.2 (SM в дълбочина), §2.3 (warp, заетост, пример), §2.4 (памет). БГ файл: §6.1, §6.2.</aside>
+</section>

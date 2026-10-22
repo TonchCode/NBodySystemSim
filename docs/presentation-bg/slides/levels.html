@@ -1,0 +1,22 @@
+<section id="levels" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Балансиране на натоварването</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">Работата може да е небалансирана на четири нива</h2>
+<table style="font-size:28px;color:#1B2733">
+<tr><th style="width:26%">Ниво</th><th style="width:42%">Симптом</th><th style="width:32%">Техники</th></tr>
+<tr><td>Между SM-ите</td><td>празни SM-и; полупразна последна вълна</td><td>#1 база, #2, #3</td></tr>
+<tr style="background:#FFFFFF"><td>Между warp-овете</td><td>някои warp-ове имат повече работа</td><td>#6 опашки</td></tr>
+<tr><td>Вътре в warp-а</td><td>лентите вървят по различни пътища</td><td>#4 → #5 сортиране, #7 обхождане от warp</td></tr>
+<tr style="background:#FFFFFF"><td>Между устройствата</td><td>CPU и GPU, P- и E-ядра</td><td>#8 разделяне</td></tr>
+</table>
+<p style="font-size:30px;line-height:1.4;color:#4A5568">Измерено без профилиращ инструмент: всеки кернел има близнак, който записва кой SM е изпълнил всеки блок и кога, плюс броячи на работата на warp.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Документи: гл. 4 §4.0 (нива), §4.1 (метод на измерване) · БГ §6.5, §8.4</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">9</p>
+<aside>Това е картата за следващите шест слайда. Всяка техника атакува едно от тези нива.
+Между SM-ите: решетката има твърде малко блокове за 80 SM-а или последната вълна е полупразна (опашката, tail).
+Между warp-овете: някои warp-ове свършват рано и техният SM чака най-бавния.
+Вътре в warp-а: лентите на един warp искат различни пътища в дървото и се редуват. Оказва се, че при дървото това е голямото.
+Между устройствата: CPU и GPU, а вътре в процесора бързите P-ядра и бавните E-ядра.
+Как го измерихме: Nsight Compute беше заключен през по-голямата част от проекта, затова всеки кернел на силите има инструментиран близнак, който записва номера на SM-а (%smid) и брояча на тактове (clock64) за всеки блок, плюс броячи на работата за всеки warp. От това: празни SM-и, опашка, SM ефективност, max/mean на warp, SIMT ефективност. Близнакът се различава от истинския кернел с −3,4 до +6,2 % по време, затова времевите му линии се ползват за структурата, не за скоростта.
+Термини: балансиране на натоварването – load balancing; дисбаланс – imbalance; вълна – wave; опашка – tail; „гладуване“ – starvation; инструментиран близнак – instrumented twin; SIMT ефективност – SIMT efficiency; P-/E-ядра – performance/efficiency cores.
+Документи: 04-load-balancing.md §4.0 (къде възниква дисбалансът), §4.1 (измерване без профилиращ инструмент), §4.1.1 (чисто повторение при 0 % натоварване). БГ файл: §6.5, §8.4.</aside>
+</section>

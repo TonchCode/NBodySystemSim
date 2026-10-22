@@ -1,0 +1,32 @@
+<section id="conclusions" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Изводи</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">Четири неща, които измерванията показват</h2>
+<div style="display:grid;grid-template-columns:repeat(2, 1fr);gap:24px">
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:32px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:30px;font-weight:600;color:#13202B">1 · All-pairs: ниво SM</h3>
+<p style="font-size:26px;line-height:1.4;color:#4A5568">Създай достатъчно работни единици (по-малки блокове, q нишки на тяло): 2,4–2,6× при малко N, нищо, щом всеки SM е зает.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:32px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:30px;font-weight:600;color:#13202B">2 · Дървета: вътре в warp-а</h3>
+<p style="font-size:26px;line-height:1.4;color:#4A5568">Сортирането е първата стъпка (2×); обхождането от warp маха останалото (5,8×), макар да прави повече работа.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:32px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:30px;font-weight:600;color:#13202B">3 · Хардуерният планировчик печели</h3>
+<p style="font-size:26px;line-height:1.4;color:#4A5568">Софтуерните опашки балансираха по-добре и вървяха по-бавно. Локалността в L1 се оказа по-важна от баланса.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#13202B;padding:32px;border-radius:16px">
+<h3 style="font-size:30px;font-weight:600;color:#F6F5F1">4 · Паметта решава при дървото</h3>
+<p style="font-size:26px;line-height:1.4;color:#C9D3DA">Сортираното дърво чака L2. Обхождането от warp: 14 пъти по-малко трафик, ограничено от изчисленията като all-pairs.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Документи: гл. 4 §4.9 (изводи) · гл. 5 §5.7 · гл. 7 · БГ §9.1</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">22</p>
+<aside>Четири извода, всеки ограничен до това, което е измерено, на този един GPU, при θ = 0,5.
+1. При all-pairs дисбалансът е изцяло на ниво SM и се оправя, като създадем правилния брой работни единици.
+2. При дърветата основната загуба е вътре в warp-овете. Сортирането е задължително; обхождането от warp върху него дава 5,8× най-добро срещу най-добро при 1M.
+3. На sm_89 хардуерният планировчик на блокове трудно се бие: той вече е динамична опашка, която държи съседните по Мортън warp-ове заедно. По-добър баланс не е по-добра производителност, когато кернелът е ограничен от L1.
+4. Профилиращият инструмент свързва всичко: сортираното дърво чака L2 (95 % натоварване); обхождането от warp намалява трафика към паметта 14 пъти и става ограничено от изчисленията.
+Ако има време, кажи какво следва: по-широки възли на дървото (по-малко pop-ове) за #7 и опашка по блокове, която пази локалността, при средно N, където #7 направи опашката между warp-овете най-голямата си останала загуба.
+Термини: извод – conclusion; работна единица – work item; трафик към паметта – memory traffic; локалност – locality.
+Документи: 04-load-balancing.md §4.9; 05-parallelism-and-memory.md §5.7 (четирите отговора); 07-defence-guide.md. БГ файл: §9.1, §9.5 (числата за запомняне).</aside>
+</section>

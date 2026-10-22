@@ -1,0 +1,27 @@
+<section id="warpwalk" data-transition="fade" style="background:#13202B;color:#F6F5F1;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#F0A35E;font-weight:600">Техника #7 · обхождане от целия warp</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#F6F5F1">Warp-ът обхожда дървото заедно</h2>
+<div style="display:flex;gap:64px;align-items:center">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:200px;font-weight:700;line-height:1;color:#F0A35E">5,8×</p>
+<p style="font-size:26px;color:#C9D3DA">над #5 при 1M: 34,5 → 6,0 ms</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px">
+<p style="font-size:28px;line-height:1.4;color:#C9D3DA">Възел се отваря, ако <b style="color:#F6F5F1">поне една</b> лента има нужда от него (<span style="color:#F0A35E">__any_sync</span>), така че всички 32 ленти работят на всяка стъпка: SIMT ефективност <b style="color:#F6F5F1">0,20 → 1,00</b>.</p>
+<p style="font-size:28px;line-height:1.4;color:#C9D3DA">Всяко четене е един адрес за целия warp, а стекът се мести от локалната памет в <b style="color:#F6F5F1">регистри</b>.</p>
+<p style="font-size:28px;line-height:1.4;color:#C9D3DA">Прави <b style="color:#F6F5F1">1,6–1,9× повече взаимодействия</b> и въпреки това е по-бърз и по-точен.</p>
+</div>
+</div>
+<p style="font-size:26px;color:#C9D3DA">Бие all-pairs от N ≈ 28 700 · иска реда от #5 · 321 G реални взаимодействия/s</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#8FA3B0">Документи: гл. 4 §4.7 · гл. 5 §5.4 (стек в регистри) · БГ §7 (#7)</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#8FA3B0">13</p>
+<aside>Главният резултат. Вместо всяка лента да минава по свой път, warp-ът вади по един възел наведнъж; всяка лента прави собствения си тест за отваряне, а warp-ът отваря възела, ако поне една лента има нужда от него. Така warp-ът минава по обединението на своите 32 пътя.
+Парадоксът, който трябва да обясниш: прави 1,64–1,85 пъти повече взаимодействия от #5 (лентата получава децата на възел, който би приела), и все пак е 5,8 пъти по-бърз. Защото: всяка инструкция върви на всичките 32 ленти (SIMT ефективност 1,000 вместо 0,20); всяко четене на възел е едно разпространение (broadcast) вместо до 32 разпръснати четения (профилиращият инструмент измери 14 пъти по-малко сектори от паметта); и стекът е 64 елемента, разпределени по 2 регистъра на лента, push = условно преместване, pop = една размяна (shuffle), без локална памет.
+Добавя работа и маха несъгласуваността. Не е кражба на работа (work stealing).
+Точност: rms грешка 4,59e-3 срещу 6,55e-3 при 262 144, защото всяка лента използва поне клетките, които би използвала сама.
+Без реда на Мортън обединението е огромно и е 12,9–14,8 пъти по-бавно: #7 се нуждае от #5.
+Числа: най-добро срещу най-добро при 1M: #5 листо 32, блок 256, 34,45 ms; #7 листо 16, блок 64, 5,99 ms; 4,8× при 262 144. Темп 321 G взаимодействия/s срещу 28,8 за #5.
+Идеята е от Burtscher & Pingali 2011 (гласуване в warp); нашето дърво е двоично радикс дърво по Karras вместо октодърво със заключвания.
+Термини: обхождане от целия warp – warp-cooperative traversal, union walk; гласуване в warp-а – warp vote (__any_sync); размяна между ленти – warp shuffle (__shfl_sync); разпространение – broadcast; изливане на регистри – register spill; кражба на работа – work stealing.
+Документи: 04-load-balancing.md §4.7.1 (как се изобразява на sm_89), §4.7.2 (резултати), §4.7.3 (нуждае се от #5, θ), §4.7.4 (пресичане). БГ файл: §7 (#7), въпрос 10 и 11 в §12.</aside>
+</section>

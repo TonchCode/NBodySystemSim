@@ -1,0 +1,60 @@
+<section id="pipeline" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Нашата версия за GPU</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">Седем паралелни стъпки на всяка времева стъпка, всички на GPU</h2>
+<div style="display:grid;grid-template-columns:repeat(7, 1fr);gap:16px">
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:20px;border:1px solid #DDE1E3;border-radius:12px">
+<p style="font-size:24px;color:#B35A14;font-weight:600">1</p>
+<p style="font-size:26px;font-weight:600;color:#13202B">Обхващаща кутия</p>
+<p style="font-size:24px;line-height:1.35;color:#4A5568">паралелна редукция min/max</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:20px;border:1px solid #DDE1E3;border-radius:12px">
+<p style="font-size:24px;color:#B35A14;font-weight:600">2</p>
+<p style="font-size:26px;font-weight:600;color:#13202B">Morton ключове</p>
+<p style="font-size:24px;line-height:1.35;color:#4A5568">преплитаме битовете на x, y, z в 63-битов ключ</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:20px;border:1px solid #DDE1E3;border-radius:12px">
+<p style="font-size:24px;color:#B35A14;font-weight:600">3</p>
+<p style="font-size:26px;font-weight:600;color:#13202B">Сортиране</p>
+<p style="font-size:24px;line-height:1.35;color:#4A5568">radix sort от CUB по ключа</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:20px;border:1px solid #DDE1E3;border-radius:12px">
+<p style="font-size:24px;color:#B35A14;font-weight:600">4</p>
+<p style="font-size:26px;font-weight:600;color:#13202B">Дървото</p>
+<p style="font-size:24px;line-height:1.35;color:#4A5568">радикс дърво по Karras: 1 нишка на възел, без заключвания</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:20px;border:1px solid #DDE1E3;border-radius:12px">
+<p style="font-size:24px;color:#B35A14;font-weight:600">5</p>
+<p style="font-size:26px;font-weight:600;color:#13202B">Обобщаване</p>
+<p style="font-size:24px;line-height:1.35;color:#4A5568">маса и център на масата, от листата нагоре, атомарно</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#13202B;padding:20px;border-radius:12px">
+<p style="font-size:24px;color:#F0A35E;font-weight:600">6</p>
+<p style="font-size:26px;font-weight:600;color:#F6F5F1">Обхождане</p>
+<p style="font-size:24px;line-height:1.35;color:#C9D3DA">дървото за всяко тяло: кернелът на силите</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:20px;border:1px solid #DDE1E3;border-radius:12px">
+<p style="font-size:24px;color:#B35A14;font-weight:600">7</p>
+<p style="font-size:26px;font-weight:600;color:#13202B">Интеграция</p>
+<p style="font-size:24px;line-height:1.35;color:#4A5568">leapfrog: kick и drift</p>
+</div>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;border-left:6px solid #E07A2E;padding:8px 0 8px 24px">
+<p style="font-size:44px;font-weight:600;color:#13202B">92–98 %</p>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">от стъпката е стъпка 6, обхождането (1M тела, Nsight Systems)</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;border-left:6px solid #2F6DB0;padding:8px 0 8px 24px">
+<p style="font-size:44px;font-weight:600;color:#13202B">0 копия</p>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">между CPU и GPU в рамките на стъпката: състоянието живее на GPU</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Документи: гл. 3 §3.5 (стъпки 1–7) · гл. 5 §5.6 (дялове, трансфери) · БГ §5</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">5</p>
+<aside>Минавай отляво надясно. Класическият алгоритъм вмъква телата едно по едно, а това е последователно; тук всяка стъпка е масово паралелна.
+Стъпка 2: Morton ключове. Делим пространството на решетка 2^21 по всяка ос и преплитаме битовете на x, y, z. Сортирането по този ключ слага телата, които са близо в пространството, едно до друго в паметта. Пример: x = 5 (101), y = 3 (011) се преплитат в 27.
+Стъпка 4: Karras 2012. При сортирани ключове всеки вътрешен възел сам намира своя интервал и точката си на разделяне, без помощ от другите възли, така че всичките N−1 възела се строят наведнъж, без заключвания. Строим двоично дърво, не октодърво: един кернел, но около 3 пъти по-дълбоко.
+Стъпка 5: всяко листо се изкачва нагоре; във всеки родител първото пристигнало дете спира, второто изчислява родителя (atomicAdd). Всеки възел се изчислява точно веднъж.
+Стъпка 6 е мястото, където отива цялото време, затова всяка техника на следващите слайдове е за стъпка 6.
+Термини: обхващаща кутия – bounding box; паралелна редукция – parallel reduction; крива, запълваща пространството – space-filling curve; преплитане на битове – bit interleaving; двоично радикс дърво – binary radix tree; без заключвания – lock-free; атомарна операция – atomic operation; живее на GPU – GPU-resident.
+Документи: 03-algorithm.md §3.5 (всяка стъпка), 05-parallelism-and-memory.md §5.6 (обхождането е 98,3 % от стъпката за #5 и 92,5 % за #7 при 1M; няма трансфери в стъпката). БГ файл: §5.</aside>
+</section>

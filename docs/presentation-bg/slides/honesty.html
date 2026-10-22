@@ -1,0 +1,37 @@
+<section id="honesty" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Метод</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">Прогнози, записани преди всяко пускане</h2>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FFFFFF;padding:36px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:34px;font-weight:600;color:#13202B">Оценени, пропуските остават</h3>
+<ul style="font-size:26px;line-height:1.5;color:#4A5568">
+<li>Дървета, кръг 2: 39 познати, 22 пропуснати</li>
+<li>CPU + GPU: 70 познати, 12 пропуснати</li>
+<li>Пътят само за четене при #7: 5 от 5</li>
+<li>Повторено при 0 % фоново натоварване</li>
+</ul>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FFFFFF;padding:36px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:34px;font-weight:600;color:#13202B">Къде сгрешихме</h3>
+<ul style="font-size:26px;line-height:1.5;color:#4A5568">
+<li>Блок 64: +8 %, прогноза +20 %</li>
+<li>#6 опашки: по-бавно, не по-бързо</li>
+<li>#7 „ограничен от латентността“: поправено</li>
+<li>„10× от сортирането не важи“: оттеглено</li>
+</ul>
+</div>
+</div>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">Правила: ускорения само спрямо най-добре настроената база; дървото се мери в реални взаимодействия, никога в N²-еквивалент.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Документи: docs/predictions/ · гл. 4 правила и §4.9 · гл. 7 §7.5 · БГ §8</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">18</p>
+<aside>Как пазихме резултатите честни. Преди всеки кръг измервания комитвахме файл с прогнози и интервали (docs/predictions/), после оценявахме всяка точка като ПОПАДЕНИЕ (HIT) или ПРОПУСК (MISS) в комитната таблица. Пропуските остават в доклада.
+Примери, когато сгрешихме, и какво научихме:
+Блок 64 махна опашката точно както беше моделирано, но беше с 8 % по-бърз, не с 20 %: цената на блок в модела беше твърде малка.
+#6: очаквахме постоянните опашки да помогнат; бяха по-бавни навсякъде, а диагнозата ни научи, че локалността в L1 е по-важна от баланса.
+#7: от измерванията на заетостта го нарекохме ограничен от латентността; Nsight Compute показа, че е по-близо до баланс.
+Ранна чернова казваше „10-те пъти от сортирането при Burtscher не важат на Ada“; оттеглено, защото твърдението му беше за друг код на друг хардуер.
+Други правила: всяко ускорение е спрямо най-добре настроената база от същата сесия; темповете на дървото са реални взаимодействия, не N²-еквивалент; чувствителните към натоварване резултати бяха повторени при 0 % фоново натоварване и чистите стойности са каноничните. Уговорка за платформата: всичко е при ограничение на мощността 272 W, така че по-бързите кернели вървят на по-ниски тактове.
+Как мерим времето, ако питат: CUDA събития (cudaEventRecord / cudaEventElapsedTime), загряване, медиана от повторения, ред A–B–B–A; всеки кернел минава прагове за коректност спрямо директната сума.
+Термини: предварително регистрирана прогноза – pre-registered prediction; попадение / пропуск – HIT / MISS; възпроизводимост – reproducibility; медиана – median; загряване – warm-up; ограничение на мощността – power cap; CUDA събития – CUDA events.
+Документи: docs/predictions/*.md; 04-load-balancing.md правилата в началото и §4.9; 07-defence-guide.md §7.5. БГ файл: §8 (как мерим), §9.4 (грешките, които хванахме).</aside>
+</section>

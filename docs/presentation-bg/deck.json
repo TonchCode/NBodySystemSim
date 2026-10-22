@@ -1,0 +1,20 @@
+{
+  "v": 4,
+  "createdOnFiles": {"v": 1, "at": "2026-10-22T12:00:00Z"},
+  "lists": "css",
+  "title": "Симулация на N тела върху GPU (БГ)",
+  "cover": "cover",
+  "order": ["cover", "problem", "interaction", "barneshut", "pipeline", "gpu", "memory", "ilptlp", "levels", "allpairs", "sorting", "persistent", "warpwalk", "hybrid", "differences", "memprofile", "ncu", "honesty", "uses", "implementations", "publications", "conclusions", "questions"],
+  "sections": {
+    "s1": {"description": "Задачата и двата алгоритъма: директно сумиране и Barnes-Hut върху GPU", "start": "cover"},
+    "s2": {"description": "Видеокартата: архитектура, паметите и какво държи всяка, ILP и TLP", "start": "gpu"},
+    "s3": {"description": "Осем техники за балансиране на натоварването, една по една: промяна, резултат, механизъм", "start": "levels"},
+    "s4": {"description": "Профилиране: памет и RAM с Nsight Systems, хардуерни броячи с Nsight Compute", "start": "memprofile"},
+    "s5": {"description": "Контекст: приложения, други реализации, публикации, изводи", "start": "uses"}
+  },
+  "faces": {
+    "ibm-plex-sans": {"family": "IBM Plex Sans", "href": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap"},
+    "jetbrains-mono": {"family": "JetBrains Mono", "href": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap"}
+  },
+  "designSystems": []
+}

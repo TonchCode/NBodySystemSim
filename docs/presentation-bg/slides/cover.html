@@ -1,0 +1,14 @@
+<section id="cover" data-transition="fade" style="background:#13202B;color:#F6F5F1;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:space-between">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#F0A35E;font-weight:600">Курсов проект · магистратура · изчисления върху GPU</p>
+<div style="display:flex;flex-direction:column;gap:40px">
+<h1 style="font-size:88px;font-weight:600;line-height:1.08;color:#F6F5F1">Гравитационна задача за N тела върху RTX 4080 SUPER</h1>
+<p style="font-size:40px;line-height:1.3;color:#C9D3DA">От директно сумиране O(N²) до дърво Barnes-Hut, обхождано от целия warp, и какво ограничава всяка стъпка</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:32px;font-weight:600;color:#F6F5F1">Тончо Николов</p>
+<p style="font-size:24px;color:#C9D3DA">Технически университет – София, Филиал Пловдив · Факултет по електроника и автоматика · [Име на курса] · [Дата]</p>
+</div>
+<aside>Започни с историята в едно изречение: симулираме гравитацията между до милиони тела на един GPU, пробваме осем техники за балансиране на натоварването (load balancing) и с измервания обясняваме защо всяка помогна или не помогна. Главният резултат: обхождането на дървото от целия warp (warp-cooperative traversal) е 5,8 пъти по-бързо от сортираното дърво и 18 пъти по-бързо от най-добрия код за CPU при 1M тела.
+Термини: задача за N тела – N-body problem; балансиране на натоварването – load balancing; обхождане на дървото – tree traversal.
+Документи: README.md (компилиране и пускане), docs/final/03–07. Подготовка за защитата: docs/bg/proektat-ot-A-do-Ya.md (на български), docs/final/07-defence-guide.md (на английски).</aside>
+</section>

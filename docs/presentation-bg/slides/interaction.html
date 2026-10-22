@@ -1,0 +1,31 @@
+<section id="interaction" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Единицата работа</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">Една функция, която всички варианти извикват</h2>
+<div style="display:flex;gap:48px;align-items:start">
+<div style="flex:3;background:#13202B;padding:48px;border-radius:16px;display:flex;flex-direction:row;gap:48px">
+<p style="flex:1;font-family:'JetBrains Mono', 'Courier New', monospace;font-size:32px;line-height:1.6;color:#E6ECEF">r = x<span style="color:#F0A35E">j</span> − x<span style="color:#F0A35E">i</span><br>d2 = r·r + ε²<br>inv = <span style="color:#F0A35E">rsqrt</span>(d2)<br>s = m<span style="color:#F0A35E">j</span> · inv³<br>a += r · s</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:32px;line-height:1.6;color:#8FA3B0">3 FADD<br>3 FFMA<br>1 MUFU.RSQ<br>3 FMUL<br>3 FFMA</p>
+</div>
+<div style="flex:2;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:44px;font-weight:600;color:#13202B">≈ 20 FLOP</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">на взаимодействие, във FP32</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:44px;font-weight:600;color:#13202B">1 rsqrt</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">в специалния функционален блок (SFU): 16 на такт на SM срещу 128 FMA</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:44px;font-weight:600;color:#13202B">Еднаква навсякъде</h3>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">затова all-pairs и дървото броят една и съща единица и могат да се сравняват</p>
+</div>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Документи: src/core/interaction.cuh · гл. 2 §2.2.3 · БГ §3.2</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">3</p>
+<aside>Кажи: това е цялата физика в кода. Всяко взаимодействие е около 20 операции с плаваща запетая и точно един обратен квадратен корен (rsqrt), който се изпълнява в специалния функционален блок (SFU). Този блок е 8 пъти по-бавен от FMA лентите, затова по-късно го виждаме в профилиращия инструмент.
+Важното: всеки кернел, и all-pairs, и дървесен, извиква точно тази функция, така че „едно взаимодействие“ е една и съща работа навсякъде. Затова ускоренията могат да се сравняват.
+ε е гравитационното омекотяване (softening): не дава на силата да избухне, когато две тела се приближат много.
+Термини: операция с плаваща запетая – floating-point operation (FLOP); обратен квадратен корен – reciprocal square root (rsqrt); специален функционален блок – special function unit (SFU, MUFU); умножение със събиране – fused multiply-add (FMA); омекотяване – softening.
+Документи: src/core/interaction.cuh; 02-gpu-architecture.md §2.2.3 (SFU, 8 : 1). БГ файл: §3.2 (функцията), §6.1 (SFU).</aside>
+</section>

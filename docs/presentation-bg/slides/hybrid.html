@@ -1,0 +1,30 @@
+<section id="hybrid" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Техника #8 · CPU + GPU · втори отрицателен резултат</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">Процесорът не помага</h2>
+<div style="display:flex;gap:28px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFFFF;padding:32px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600;color:#13202B">Разделяне на работата</h3>
+<p style="font-size:25px;line-height:1.4;color:#4A5568">Най-добра печалба спрямо самия GPU: <b style="color:#13202B">+1,3 %</b>; повечето клетки 0,99–1,27× по-бавни.</p>
+<p style="font-size:25px;line-height:1.4;color:#4A5568">GPU е <b style="color:#13202B">18×</b> по-бърз от най-добрия код за CPU при дървото с 1M, а разделянето по тела струва 2,26 ms PCIe на стъпка.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFFFF;padding:32px;border:1px solid #DDE1E3;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600;color:#13202B">Капанът, който хванахме</h3>
+<p style="font-size:25px;line-height:1.4;color:#4A5568">Версията с дърво от CPU изглеждаше 4–25 % по-бърза. Контрол само на GPU, който опреснява старото дърво, е също толкова бърз (до 1,4 %).</p>
+<p style="font-size:25px;line-height:1.4;color:#4A5568">Печалбата никога не е била от CPU. Винаги питай: <b style="color:#13202B">какъв е контролът?</b></p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#13202B;padding:32px;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600;color:#F6F5F1">P- срещу E-ядра</h3>
+<p style="font-size:25px;line-height:1.4;color:#C9D3DA">Равно разделяне на 20 нишки: <b style="color:#F6F5F1">21,4</b> G/s, под самите P-ядра (31,0).</p>
+<p style="font-size:25px;line-height:1.4;color:#C9D3DA">Динамично разпределение: <b style="color:#F0A35E">37,8</b> G/s, +22 %. Равна работа не е равно време.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Документи: гл. 4 §4.8 (4.8.1 резултати) · D-034, D-035, D-036 · БГ §7 (#8)</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">14</p>
+<aside>Процесорът: Intel i5-13600K, 6 P-ядра + 8 E-ядра, с многонишков код за all-pairs и за дърво, с AVX2 + FMA. GPU срещу CPU, най-добро срещу най-добро: 29–36 пъти при all-pairs от 16 384 тела нагоре, 18,3 пъти при дървото с 1M.
+Две разделяния: hyb_bh дава част от телата на CPU; hyb_phase строи дървото на CPU, докато GPU смята силите. Нито едно не бие самия GPU; най-добрата печалба където и да е е 1,3 %.
+Капанът: hyb_phase изглеждаше до 25 % по-бърз. Но той преизползва по-старо дърво, докато CPU строи следващото. Кернел само на GPU, който прави същото (bh_warp_refit), го догонва в рамките на 1,4 %, така че ускорението е „опресняване вместо ново строене“, не процесорът. А в цикъла за измерване телата не се движат, така че по-старото дърво там не струва нищо; в истинска симулация от 500 стъпки струва 4–10 % повече взаимодействия.
+Урокът за балансиране на CPU: едно E-ядро върши около 0,21 от работата на P-ядро. Равното статично разделяне кара всички да чакат E-ядрата и е по-бавно, отколкото изобщо да не ги ползваме. Динамичното разпределение слага 78 % от работата на P-ядрата и печели 22 %.
+Чиста сесия: 438 пускания, 70 от 82 прогнози познати.
+Термини: хетерогенно изчисление – heterogeneous computing; разделяне по тела / по фази – body split / phase split; опресняване на дървото – refit; контролен експеримент – control; закрепена памет – pinned memory; производителни / ефективни ядра – P-cores / E-cores; равна работа ≠ равно време – equal work is not equal time.
+Документи: 04-load-balancing.md §4.8.1; results/2026-10-18_cpu_gpu/phase2/summary.md; решения D-034 (базови линии на CPU), D-035 (планиране по P/E ядра), D-036 (без хибрид в нормалната програма). БГ файл: §7 (#8), въпроси 13 и 14 в §12.</aside>
+</section>

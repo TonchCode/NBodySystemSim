@@ -1,0 +1,21 @@
+<section id="barneshut" data-transition="fade" style="background:#F6F5F1;color:#1B2733;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<p style="font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#B35A14;font-weight:600">Алгоритъм 2</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.15;color:#13202B">Barnes-Hut: далечната група действа като една точка</h2>
+<div style="display:flex;gap:64px;align-items:center">
+<div style="flex:1;display:flex;flex-direction:column;gap:24px">
+<p style="font-size:30px;line-height:1.4;color:#4A5568">Слагаме телата в дърво от кутии. Всяка кутия пази общата си маса и центъра на масата.</p>
+<p style="font-size:30px;line-height:1.4;color:#4A5568">При обхождането за тяло i: ако кутията е <b style="color:#13202B">достатъчно далеч</b>, взимаме центъра ѝ на масата; иначе я отваряме и гледаме вътре.</p>
+<p style="font-size:30px;line-height:1.4;color:#4A5568">„Достатъчно далеч“ се задава с ъгъла на отваряне <b style="color:#13202B">θ</b> (ние ползваме 0,5): по-малко θ = по-точно, повече работа.</p>
+<p style="font-size:44px;font-weight:600;color:#13202B">O(N²) → около O(N log N)</p>
+</div>
+<svg aria-label="Тяло вляво; далечна група тела в кутия вдясно е заменена с една точка в центъра на масата ѝ" width="720" height="460" viewBox="0 0 720 460"><rect x="0" y="0" width="720" height="460" rx="16" fill="#FFFFFF" stroke="#DDE1E3"/><circle cx="110" cy="230" r="18" fill="#2F6DB0"/><rect x="430" y="110" width="240" height="240" rx="8" fill="none" stroke="#5B6670" stroke-width="3" stroke-dasharray="10 8"/><circle cx="480" cy="160" r="9" fill="#8FA3B0"/><circle cx="560" cy="150" r="9" fill="#8FA3B0"/><circle cx="620" cy="200" r="9" fill="#8FA3B0"/><circle cx="500" cy="260" r="9" fill="#8FA3B0"/><circle cx="600" cy="300" r="9" fill="#8FA3B0"/><circle cx="530" cy="320" r="9" fill="#8FA3B0"/><circle cx="640" cy="270" r="9" fill="#8FA3B0"/><circle cx="555" cy="232" r="20" fill="#E07A2E"/><line x1="130" y1="230" x2="532" y2="232" stroke="#13202B" stroke-width="3"/><polygon points="532,232 512,222 512,242" fill="#13202B"/></svg>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5B6670">Документи: гл. 3 §3.4 (идея, пример), §3.5 стъпка 6 (тестът) · БГ §4</p>
+<p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-size:24px;color:#5B6670">4</p>
+<aside>Покажи картинката: синьото тяло вляво няма нужда от седем отделни взаимодействия със сивата група; прави едно взаимодействие с оранжевата точка, центъра на масата на групата. Близките кутии се отварят, далечните се обобщават.
+θ: кутията се приема, когато размерът ѝ, делен на разстоянието, е под θ. Ние ползваме bmax (разстоянието от центъра на масата до най-далечния ъгъл на кутията) вместо страната на кутията, което избягва известен проблем на класическия тест; нашето θ е около 0,87 от класическото.
+Пример за слайда, ако питат: кутия със страна 2 на разстояние 10, s/d = 0,2 < 0,5, приема се: 1 взаимодействие вместо 4, грешка 1,4 %.
+Само монопол: всяка кутия е просто маса в точка, така че взаимодействието с кутия е същата функция като с тяло.
+Термини: център на масата – centre of mass (COM); ъгъл на отваряне – opening angle; отваряне на възел – opening a node; дърво, възел, листо – tree, node, leaf; монопол – monopole.
+Документи: 03-algorithm.md §3.4 (идея, пример в 2D), §3.5 стъпка 6 (тестът, защо bmax). Статия: Barnes & Hut 1986. БГ файл: §4.</aside>
+</section>
