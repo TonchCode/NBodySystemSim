@@ -1,0 +1,31 @@
+Warp stall reasons: smsp__average_warps_issue_stalled_<reason>_per_issue_active.ratio
+(cycles a warp spends stalled on <reason> per issued instruction; share of the total)
+
+== ap_tiled_65536  total 5.48 stall cycles per issued instruction
+   not_selected             2.78  (50.8 %)
+   selected                 1.00  (18.3 %)
+   wait                     0.69  (12.6 %)
+   dispatch_stall           0.38  ( 7.0 %)
+   short_scoreboard         0.23  ( 4.2 %)
+   barrier                  0.14  ( 2.6 %)
+== bh_naive_1M  total 54.46 stall cycles per issued instruction
+   long_scoreboard         40.21  (73.8 %)
+   lg_throttle             10.59  (19.5 %)
+   wait                     1.52  ( 2.8 %)
+   selected                 1.00  ( 1.8 %)
+   not_selected             0.48  ( 0.9 %)
+   branch_resolving         0.35  ( 0.6 %)
+== bh_sorted_1M  total 43.75 stall cycles per issued instruction
+   long_scoreboard         37.40  (85.5 %)
+   lg_throttle              2.21  ( 5.1 %)
+   wait                     1.83  ( 4.2 %)
+   selected                 1.00  ( 2.3 %)
+   not_selected             0.50  ( 1.1 %)
+   branch_resolving         0.40  ( 0.9 %)
+== bh_warp_1M  total 15.74 stall cycles per issued instruction
+   long_scoreboard          6.12  (38.9 %)
+   wait                     3.33  (21.1 %)
+   not_selected             2.49  (15.8 %)
+   math_pipe_throttle       1.27  ( 8.1 %)
+   selected                 1.00  ( 6.4 %)
+   short_scoreboard         0.75  ( 4.8 %)

@@ -270,14 +270,14 @@ SM's own L1 serves it.**
 | Tool | What it measures | Works on this machine? |
 |---|---|---|
 | **Nsight Systems** (`nsys`) | timeline: kernels, copies, memsets, API calls, **device memory allocations over time**, CPU threads | **yes**. CUDA tracing does not need GPU performance counters. Used in §5.6 |
-| **Nsight Compute** (`ncu`) | per-kernel hardware counters: achieved occupancy, cache hit rates, pipe utilisation, memory throughput | **no**: GPU performance counters are blocked on this machine (D-011, owner's decision). Every `TODO(measure: Nsight Compute …)` in this report waits for this |
+| **Nsight Compute** (`ncu`) | per-kernel hardware counters: achieved occupancy, cache hit rates, pipe utilisation, memory throughput | **yes, since 2026-10-22**, from an administrator prompt (counters were blocked before, D-011). Used in §5.5.4 |
 | `cuobjdump --dump-resource-usage`, `-sass` | registers, stack, shared and constant memory per kernel; the actual instructions | yes. Used in §5.1–5.2 |
 | CUDA occupancy API | theoretical blocks per SM | yes (chapter 2, §2.3) |
 | **Our own instrumentation** | per-block and per-warp `%smid`, `%globaltimer`, `clock64` timelines; per-warp interaction counters | yes. This is how chapter 4 measured load imbalance *without* a profiler (D-011) |
 | `cudaEvent` timing | kernel and phase times | yes. Every rate in chapters 3 and 4 |
 | Windows process counters | host RAM (working set) of the process | yes. §5.6.3 |
 
-The project's own timeline instrumentation exists *because* Nsight Compute was not available.
+The project's own timeline instrumentation exists *because* Nsight Compute was not available until the end.
 It is a legitimate profiling method: it reports which SM ran each block and when. That is enough
 to compute per-SM busy time, idle SMs and the wave tail (chapter 4, §4.1).
 
@@ -302,14 +302,62 @@ are the committed outputs, and the commands above regenerate the traces.
 
 ### 5.5.3 Profiling work still open
 
-- Nsight Compute, once counters are enabled: achieved occupancy, L1/L2 hit rates of #5 vs #7,
-  FMA vs XU pipe utilisation of the all-pairs loop.
+- ~~Nsight Compute~~ **done 2026-10-22**, §5.5.4.
 - ~~Read-only path for #7~~ **done 2026-10-22, no effect.** Reading the four tree arrays through
   `__ldg` turned #7's loads into `LDG.E.128.CONSTANT` (still 40 registers, 0 stack) and changed the
   traversal time by +0.3 % at 262,144 and 0.0 % at 1M, 4 alternating pairs each, all within ±1.2 %
   (`results/2026-10-22_ldg_warpwalk/`, pre-registered, 5/5 HIT; D-037). The loads were already
-  warp-uniform broadcasts in the same unified L1; #7's limit is its dependent pop chain (D-026).
+  warp-uniform broadcasts in the same unified L1; #7's limit is its pop chain and instruction issue, not the load path (D-026, D-038).
   **A useful negative:** the instruction changed, the time did not.
+
+### 5.5.4 Nsight Compute: what limits each kernel, measured with hardware counters
+
+Run with `tools/ncu_profile.bat` from an administrator prompt (`--set full`, one launch per kernel
+after two warm-ups, caches flushed between replay passes). **Diagnostic, not pre-registered**; the
+durations under the profiler are not bench times. Full table:
+`results/2026-10-22_ncu/summary.md`; raw exports in the same folder [M].
+
+| | all-pairs #1 (65,536) | #4 naive (1M) | #5 sorted (1M) | #7 warp (1M) |
+|---|---|---|---|---|
+| issue slots busy | **68 %** | 21 % | 25 % | **69 %** |
+| active threads per warp | 32 | **6.1** | **10.8** | 32 |
+| achieved occupancy | **39 %** | 96 % | 92 % | 93 % |
+| top stall reason | not_selected 51 % | long_scoreboard 74 % + lg_throttle 20 % | **long_scoreboard 86 %** | long_scoreboard 39 %, wait 21 % |
+| L1 hit (global / stack) | 2 % / – | 19 % / 22 % | 50 % / 30 % | 52 % / no stack |
+| **L2 throughput** | 2 % | **95 %** | **95 %** | 24 % |
+| DRAM throughput | 0.5 % | 1 % | 1 % | 2 % |
+| busiest pipe | FMA 69 % (XU 39 %) | – | – | ALU 62 % |
+| global load sectors | 8 M | 4,599 M | 2,874 M | **200 M** |
+| local (stack) sectors | 0 | 2,004 M | 1,304 M | **0** |
+
+**How to read the stall reasons.** `long_scoreboard` = the warp waits for a memory load (L1/L2);
+`not_selected` = the warp was *ready* but the scheduler issued another one (the SM is busy, which
+is good); `lg_throttle` = the load/store queue is full; `wait` = a fixed-latency dependency on the
+previous instruction.
+
+**What the counters confirm, and what they correct:**
+1. **All-pairs is issue-bound, not memory-bound: confirmed.** Two-thirds of the issue slots are
+   used, the main "stall" is `not_selected`, and DRAM and L2 are idle. The XU (rsqrt) pipe at 39 %
+   next to FMA at 69 % is the SFU co-limit of chapter 2, §2.2.3. The 39 % achieved occupancy is the
+   starvation of chapter 4, §4.2 seen by the hardware: 256 blocks for 80 SMs is 3.2 blocks per SM.
+2. **#5 waits on memory because L1 is too small: confirmed and sharpened.** 86 % of stall cycles
+   are loads. L1 serves only half of the tree loads and 30 % of the stack loads, so the misses go
+   to **L2, which runs at 95 % of its throughput** while DRAM is idle (L2 hit 99.7 %). "L1-capacity
+   bound" (§5.3, D-026) therefore means: the working set misses L1, and the misses saturate the
+   L1→L2 path. **39 % of that miss traffic is the per-thread stack in local memory** [D].
+3. **#4 → #5 (sorting):** active lanes 6.1 → 10.8, L1 hit 19 % → 50 %, global sectors −37 %, and
+   the `lg_throttle` stalls (a queue full of 32 scattered per-lane requests) nearly disappear.
+4. **#7 removes the memory wall: confirmed.** No local memory at all, **14× fewer global sectors
+   than #5 (25× fewer per interaction)**, because every load is one address for the whole warp; L2
+   drops from 95 % to 24 %. **Correction:** D-026 called #7 latency-bound. At full occupancy the
+   counters show a more balanced kernel: 69 % issue slots busy, the ALU pipe (integer compare, vote,
+   stack bookkeeping) the busiest at 62 %, and the remaining stalls split between the dependent
+   node load (39 %) and fixed-latency dependencies (21 %). The conclusion for the next step does
+   not change: fewer pops per interaction (wider nodes) reduces both.
+
+**The whole project in one row of this table:** from #4 to #7, issue slots busy go 21 % → 25 % →
+69 %, and L2 throughput goes 95 % → 95 % → 24 %. The tree kernel went from memory-bound to
+compute-bound, which is where all-pairs already was.
 
 ---
 
@@ -394,6 +442,7 @@ create the initial conditions and to receive the results.
 | Which memory, for what? | registers: the body and its sums (and #7's stack); shared: the all-pairs tile; L1/L2: the tree; VRAM: everything between steps; host: start and end only | §5.2 table, SASS and resource dump |
 | Memory optimisation? | `float4`, tiling, Morton sort, register stack, broadcast loads, large L1, allocate once, GPU-resident state | §5.4 |
 | Profiling (RAM)? | VRAM: 48 B/body all-pairs, 212.8 B/body BH (197 production), linear in N; host: 120 MiB fixed + 88 B/body; traversal > 90 % of the step | §5.6, nsys |
+| Profiling (counters)? | all-pairs issue-bound (68 % issue, DRAM idle); #5 memory-bound (86 % load stalls, L2 at 95 %, 39 % of misses are the stack); #7 compute-bound (69 % issue, L2 24 %, 14× fewer sectors) | §5.5.4, Nsight Compute |
 
 ---
 

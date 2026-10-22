@@ -27,3 +27,5 @@ __pycache__/
 # nsys traces embed the full process environment (emails, tokens); keep local
 results/**/*.nsys-rep
 results/**/*.sqlite
+results/**/*.ncu-rep
+results/**/*.ncu-repz

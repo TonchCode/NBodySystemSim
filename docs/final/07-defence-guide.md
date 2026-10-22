@@ -178,9 +178,11 @@ next card.
 - **Bonus.** More accurate than #5 (rms error 4.59 × 10⁻³ vs 6.55 × 10⁻³ at 262,144), because each
   lane interacts with at least the cells it would have used alone.
 - **Needs #5.** On unsorted bodies the union is huge and the method collapses (ch.4, §4.7.3).
-- **New limit: latency.** It speeds up with more warps (×1.87 from 4 to 11 blocks/SM) but barely
-  with more L1 (×1.12). The dependent pop chain (shuffle → load → test → vote → branch) is the
-  limit, so the next step would be wider tree nodes (fewer pops), not more occupancy (D-026).
+- **New limit: the pop chain and instruction issue.** It speeds up with more warps (×1.87 from 4 to
+  11 blocks/SM) but barely with more L1 (×1.12) (D-026). Nsight Compute at full occupancy: 69 % of
+  issue slots busy, ALU pipe 62 %, L2 only 24 %: no longer memory-bound, close to balanced between
+  the latency of the dependent pop chain (shuffle → load → test → vote → branch) and issue (D-038).
+  Either way the next step is wider tree nodes (fewer pops), not more occupancy.
 
 ### #8 CPU + GPU split (a second **negative** result)
 
@@ -200,6 +202,28 @@ next card.
   Dynamic scheduling fixes it: +22 % (37.8 G/s). Equal work ≠ equal time on unequal cores.
 - **Memory.** The only variant that uses **pinned host memory** (`cudaHostAlloc`): 21–26 GB/s
   device→host. The CPU-built tree is bitwise identical to the GPU tree (phase 1).
+
+---
+
+## 7.3b What the hardware counters say (Nsight Compute)
+
+One table to remember (ch.5, §5.5.4):
+
+| | all-pairs | #4 | #5 | #7 |
+|---|---|---|---|---|
+| issue slots busy | 68 % | 21 % | 25 % | 69 % |
+| active lanes of 32 | 32 | 6.1 | 10.8 | 32 |
+| L2 throughput | 2 % | 95 % | 95 % | 24 % |
+| main stall | none (ready, not selected) | waiting for memory | waiting for memory | spread |
+
+**Say it in one sentence:** the naive and sorted trees are *memory-bound* (they wait for L2, which
+is saturated, and 39 % of that traffic is the stack); the warp walk turned the tree into a
+*compute-bound* kernel like all-pairs, by making every load one address per warp (14× fewer
+memory sectors) and putting the stack in registers.
+
+**One correction we made from it:** we had called #7 "latency-bound". The counters show it is
+closer to balanced (69 % issue, ALU pipe 62 %). Being able to say "the profiler corrected us here"
+is a strong defence point.
 
 ---
 
@@ -271,13 +295,15 @@ next card.
 14. *How did you balance work between P-cores and E-cores?* → dynamic scheduling; a static even
     split was slower than P-cores alone (21.4 vs 31.0 G/s), dynamic gave 37.8.
 15. *Did you try `__restrict__` / the read-only cache for #7?* → yes, pre-registered: the loads
-    became `LDG.E.128.CONSTANT`, the time did not change (0.0–0.3 %), because #7 is latency-bound
+    became `LDG.E.128.CONSTANT`, the time did not change (0.0–0.3 %), because the load path is not #7's limit (D-037, D-038)
     (D-037).
 16. *How much memory does the simulation need, and how many bodies fit?* → ≈ 197 B/body in
     production BH → 70–80 M bodies in 16 GB (ch.5, §5.6).
-17. *Where is Barnes-Hut used outside astronomy?* → t-SNE, graph layout (Gephi ForceAtlas2,
+17. *What did Nsight Compute show?* → all-pairs issue-bound (68 % issue slots, DRAM idle); #5
+    waits on memory (86 % of stalls, L2 at 95 %); #7 is compute-bound (69 % issue, L2 24 %).
+18. *Where is Barnes-Hut used outside astronomy?* → t-SNE, graph layout (Gephi ForceAtlas2,
     d3-force with θ = 0.9) (ch.6, §6.2.3).
-18. *Which result surprised you, and what did you learn from it?* → #6: better balance, worse
+19. *Which result surprised you, and what did you learn from it?* → #6: better balance, worse
     performance. Balance is a means; the real limit was L1.
 
 ---

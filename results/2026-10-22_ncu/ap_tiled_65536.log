@@ -1,0 +1,9 @@
+==PROF== Connected to process 2808 (D:\NBodyProblemSim\build\nbody_bench.exe)
+==PROF== Profiling "allPairsTiledKernel": 0%....50%....100% - 45 passes
+==PROF== Disconnected from process 2808
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=256 block=256 q=1 prefetch=-1 unroll=8  regs=40 smem=4096 B  resident 6 blocks/SM (100% occupancy)  blocks/SM=3.20 (busiest 4)  waves=0.53
+# ic=plummer seed=42 theta=0.5 leaf=16 mass_spectrum=equal bh_mass=0.01 ic_hash=e11a638ea14aeb36 | mass total 1.000000000, min 1.526e-05, max 1.526e-05 (max/min 1) | dt advisory 4.13e-02 (dt 0.001)
+kernel=allpairs_tiled n=65536 block=256 q=1 prefetch=-1 unroll=8 runs=3 batch=1  median=3.9009 ms  min=3.8883  max=3.9085  1101.030 Ginteractions/s  22020.6 GFLOP/s (@20 FLOP/interaction)
+gates: not evaluated (--no-validate)
+==PROF== Report: D:\NBodyProblemSim\results\2026-10-22_ncu\ap_tiled_65536.ncu-repz

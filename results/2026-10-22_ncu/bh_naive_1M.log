@@ -1,0 +1,15 @@
+==PROF== Connected to process 16396 (D:\NBodyProblemSim\build\nbody_bench.exe)
+==PROF== Profiling "bhTraverseKernel": 0%
+==WARNING== Launching the workload is taking more time than expected. If this continues to hang, terminate the profile and re-try by profiling the range of all related launches using '--replay-mode range'. See https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html#replay for more details.
+....50%....100% - 49 passes
+==PROF== Disconnected from process 16396
+# device  NVIDIA GeForce RTX 4080 SUPER  sm_89  80 SMs  boost 2610 MHz  CUDA driver 13040 runtime 13040
+# launch  grid=8192 block=128 q=1 prefetch=-1 unroll=-1  regs=40 smem=0 B  resident 12 blocks/SM (100% occupancy)  blocks/SM=102.40 (busiest 103)  waves=8.53
+# ic=plummer seed=42 theta=0.5 leaf=32 mass_spectrum=equal bh_mass=0.01 ic_hash=d05ab553b27cfaed | mass total 1.000000000, min 9.537e-07, max 9.537e-07 (max/min 1) | dt advisory 1.65e-01 (dt 0.001)
+kernel=bh_naive n=1048576 block=128 q=1 prefetch=-1 unroll=-1 runs=3 batch=1  median=119.5880 ms  min=89.4656  max=166.2462  9194.166 G N^2-equivalent interactions/s (not the tree rate; see the work: line)
+phases (median of 3, ms):  keys 0.1043  sort 0.2778  tree 0.3317  order 0.0013  traverse 71.3201  | build(keys+sort+tree) 0.7138  order 0.0013  traverse 71.3201  sum 72.2188  (production total 119.5880)
+work: 1414.6 interactions/body (1.483e+09 total), 1555.3 nodes popped/body | per-warp max/mean 1.189 (median warp 1.187) | SIMT eff interactions 0.080, pops 0.812 | warp-cost max/mean 1.13 | traversal 20.8 G interactions/s
+rates: real 12.40 G interactions/s over the full pipeline (119.5880 ms), 20.80 over the traversal; N^2-equivalent 9194.2 G/s
+tree: max depth 34, push depth 26 -> stack bound 28 (capacity: per-thread 96, warp 64), duplicate keys 0 (0.000% of bodies)
+gates: not evaluated (--no-validate)
+==PROF== Report: D:\NBodyProblemSim\results\2026-10-22_ncu\bh_naive_1M.ncu-repz

@@ -605,3 +605,21 @@ all pairs within ±1.2 %). 5/5 items HIT.
 result: the load path is not #7's limit; the dependent pop chain is (D-026).
 
 **Rules out:** listing "add `__restrict__` to #7" as an open optimisation.
+
+## D-038 — Nsight Compute profile: what limits each kernel (2026-10-22, main session)
+
+**Measured** (`results/2026-10-22_ncu/`, diagnostic, not pre-registered; run from an administrator
+prompt, because the non-elevated session still got ERR_NVGPUCTRPERM after the counter setting and a
+restart):
+- all-pairs #1 (65,536): 68 % issue slots busy, top stall `not_selected`, DRAM 0.5 %, FMA 69 % /
+  XU 39 %; achieved occupancy 39 % (starvation, 3.2 blocks/SM).
+- #5 (1M): 86 % of stall cycles `long_scoreboard`; L1 hit 50 % (global) / 30 % (stack); L2
+  throughput 95 %, DRAM 1 %; the stack is 39 % of L1-miss sectors.
+- #7 (1M): 69 % issue slots busy, ALU pipe 62 %, L2 24 %, 0 local memory, 14× fewer global sectors
+  than #5.
+
+**Decided:** D-026's "#5 is L1-capacity bound" stands, stated as "L1 misses saturate L2 throughput".
+D-026's "#7 is latency-bound" is corrected to "near balance between pop-chain latency and issue";
+the proposed next step (wider nodes, fewer pops) is unchanged.
+
+**Rules out:** calling #7 purely latency-bound; calling #5 DRAM-bound.
