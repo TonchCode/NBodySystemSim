@@ -217,12 +217,14 @@ One table to remember (ch.5, §5.5.4):
 | main stall | none (ready, not selected) | waiting for memory | waiting for memory | spread |
 
 **Say it in one sentence:** the naive and sorted trees are *memory-bound* (they wait for L2, which
-is saturated, and 39 % of that traffic is the stack); the warp walk turned the tree into a
-*compute-bound* kernel like all-pairs, by making every load one address per warp (14× fewer
-memory sectors) and putting the stack in registers.
+is saturated, and 39 % of that traffic is the stack); the warp walk removed the memory wall by making every load one address per warp (14× fewer
+memory sectors) and putting the stack in registers. It is not cleanly *compute-bound* like
+all-pairs: it sits near a balance between pop-chain latency and issue.
 
 **One correction we made from it:** we had called #7 "latency-bound". The counters show it is
-closer to balanced (69 % issue, ALU pipe 62 %). Being able to say "the profiler corrected us here"
+closer to balanced (69 % issue, ALU pipe 62 %, stalls split between the dependent node load
+(39 %) and fixed-latency dependencies (21 %)). The next step is the same either way: fewer pops
+(wider nodes). Being able to say "the profiler corrected us here"
 is a strong defence point.
 
 ---
@@ -300,7 +302,8 @@ is a strong defence point.
 16. *How much memory does the simulation need, and how many bodies fit?* → ≈ 197 B/body in
     production BH → 70–80 M bodies in 16 GB (ch.5, §5.6).
 17. *What did Nsight Compute show?* → all-pairs issue-bound (68 % issue slots, DRAM idle); #5
-    waits on memory (86 % of stalls, L2 at 95 %); #7 is compute-bound (69 % issue, L2 24 %).
+    waits on memory (86 % of stalls, L2 at 95 %); #7 is off the memory wall and near a
+    latency/issue balance (69 % issue, ALU 62 %, L2 24 %).
 18. *Where is Barnes-Hut used outside astronomy?* → t-SNE, graph layout (Gephi ForceAtlas2,
     d3-force with θ = 0.9) (ch.6, §6.2.3).
 19. *Which result surprised you, and what did you learn from it?* → #6: better balance, worse

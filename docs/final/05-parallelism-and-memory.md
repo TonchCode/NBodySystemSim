@@ -357,7 +357,7 @@ previous instruction.
 
 **The whole project in one row of this table:** from #4 to #7, issue slots busy go 21 % → 25 % →
 69 %, and L2 throughput goes 95 % → 95 % → 24 %. The tree kernel went from memory-bound to
-compute-bound, which is where all-pairs already was.
+near a balance between pop-chain latency and issue. It is not cleanly compute-bound like all-pairs.
 
 ---
 
@@ -442,7 +442,7 @@ create the initial conditions and to receive the results.
 | Which memory, for what? | registers: the body and its sums (and #7's stack); shared: the all-pairs tile; L1/L2: the tree; VRAM: everything between steps; host: start and end only | §5.2 table, SASS and resource dump |
 | Memory optimisation? | `float4`, tiling, Morton sort, register stack, broadcast loads, large L1, allocate once, GPU-resident state | §5.4 |
 | Profiling (RAM)? | VRAM: 48 B/body all-pairs, 212.8 B/body BH (197 production), linear in N; host: 120 MiB fixed + 88 B/body; traversal > 90 % of the step | §5.6, nsys |
-| Profiling (counters)? | all-pairs issue-bound (68 % issue, DRAM idle); #5 memory-bound (86 % load stalls, L2 at 95 %, 39 % of misses are the stack); #7 compute-bound (69 % issue, L2 24 %, 14× fewer sectors) | §5.5.4, Nsight Compute |
+| Profiling (counters)? | all-pairs issue-bound (68 % issue, DRAM idle); #5 memory-bound (86 % load stalls, L2 at 95 %, 39 % of misses are the stack); #7 off the memory wall, near a latency/issue balance (69 % issue, ALU 62 %, L2 24 %, 14× fewer sectors) | §5.5.4, Nsight Compute |
 
 ---
 
