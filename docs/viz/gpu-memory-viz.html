@@ -1,4 +1,5 @@
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>N-body по паметта на AD103</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -7,7 +8,7 @@
 /* Layout: projector console. Galaxy left, chip diagram + zoom right, stepper strip and two counter panels below. */
 :root{
   --bg:#F7F7F5; --panel:#FFFFFF; --ink:#1B1E23; --ink-2:#5A616B; --rule:#E2E3E0;
-  --idle:#D5D7DA; --sm-busy:#9CC6E8; --sel:#D9600B; --sel-ring:#FFFFFF; --focus:#111111;
+  --idle:#D5D7DA; --sm-busy:#9CC6E8; --sel:#C8246E; --sel-ring:#FFFFFF; --focus:#111111;
   --measured:#7A4FB5; --dim:#B8BCC2; --amber:#E9A23B; --blue:#3A8FC4;
   --lv-R:#D9600B; --lv-S:#E9A23B; --lv-L1:#E2D48A; --lv-L2:#5DA5D8; --lv-V:#244C8F; --lv-loc:#244C8F; --lv-H:#7A808A;
   --font-ui:"IBM Plex Sans", "Segoe UI", Arial, sans-serif;
@@ -15,13 +16,13 @@
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
   --bg:#111317; --panel:#1A1D23; --ink:#E6E8EB; --ink-2:#9AA3AE; --rule:#2A2F37;
-  --idle:#2B2F36; --sm-busy:#2D5878; --sel:#FF8A3D; --sel-ring:#000000; --focus:#FFFFFF;
+  --idle:#2B2F36; --sm-busy:#2D5878; --sel:#FF5FA8; --sel-ring:#000000; --focus:#FFFFFF;
   --measured:#B394E8; --dim:#4A505A; --amber:#F5C06A; --blue:#5FB0E6;
   --lv-R:#FF8A3D; --lv-S:#F5C06A; --lv-L1:#E0D07E; --lv-L2:#3D86C2; --lv-V:#7C9FE0; --lv-loc:#7C9FE0; --lv-H:#9AA0AA;
   color-scheme:dark }}
 :root[data-theme="dark"]{
   --bg:#111317; --panel:#1A1D23; --ink:#E6E8EB; --ink-2:#9AA3AE; --rule:#2A2F37;
-  --idle:#2B2F36; --sm-busy:#2D5878; --sel:#FF8A3D; --sel-ring:#000000; --focus:#FFFFFF;
+  --idle:#2B2F36; --sm-busy:#2D5878; --sel:#FF5FA8; --sel-ring:#000000; --focus:#FFFFFF;
   --measured:#B394E8; --dim:#4A505A; --amber:#F5C06A; --blue:#5FB0E6;
   --lv-R:#FF8A3D; --lv-S:#F5C06A; --lv-L1:#E0D07E; --lv-L2:#3D86C2; --lv-V:#7C9FE0; --lv-loc:#7C9FE0; --lv-H:#9AA0AA;
   color-scheme:dark }
@@ -34,15 +35,40 @@ button,select,input{font:inherit;color:var(--ink);background:var(--panel);border
 button{cursor:pointer}
 button:hover{border-color:var(--ink-2)}
 :focus-visible{outline:2px solid var(--focus);outline-offset:2px}
-.top{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding-block:6px 12px}
+.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 18px;padding-block:4px 10px}
+.ctrls{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.chk{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-2);cursor:pointer}
+.chk input{min-height:0;width:16px;height:16px;margin:0;accent-color:var(--sel)}
 .top h1{font-size:18px;font-weight:600;margin:0;text-wrap:balance}
 .top h1 small{display:block;font-size:12px;font-weight:400;color:var(--ink-2)}
 .grp{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .grp label{font-size:12px;color:var(--ink-2);letter-spacing:.04em;text-transform:uppercase}
 .transport button{min-width:38px;font-family:var(--font-mono)}
 #bPlay{min-width:64px;background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.grid{display:grid;grid-template-columns:minmax(340px, 40%) minmax(0, 1fr);gap:12px}
-.right{display:flex;flex-direction:column;gap:12px;min-width:0}
+.grid{display:grid;grid-template-columns:minmax(0, 5fr) minmax(0, 7fr);gap:12px;margin-top:12px;align-items:start}
+#galCap{margin:0 0 8px;font-size:13.5px;line-height:1.45;min-height:2.9em}
+#galCap .k{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:0;margin-right:3px}
+.pathwrap{margin-top:10px;border-top:1px solid var(--rule);padding-top:8px}
+.pathhead{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin-bottom:4px}
+.pathhead h2{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin:0}
+.pathhead .busy{margin-left:auto;font-size:13px;color:var(--ink-2)}
+#path{position:relative;padding-top:46px;padding-bottom:24px}
+#path .groups,#path .boxes{display:grid;grid-template-columns:1fr 1.15fr 1.15fr 1fr 1fr 1fr;gap:8px}
+#path .groups{position:absolute;top:2px;left:0;right:0;pointer-events:none}
+#path .groups span{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);border-bottom:1px solid var(--rule);padding-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lvbox{position:relative;border:1.5px solid var(--rule);border-radius:7px;padding:5px 9px 6px 12px;background:var(--bg);opacity:.5;transition:opacity .25s, border-color .25s;min-width:0}
+.lvbox b{display:flex;justify-content:space-between;gap:6px;font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden}
+.lvbox b .lat{font-weight:400}
+.lvbox .sz{display:block;font-size:11.5px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lvbox .lat{font-family:var(--font-mono);font-size:11.5px;color:var(--ink-2)}
+.lvbox .sw{position:absolute;left:0;top:0;bottom:0;width:5px;border-radius:6px 0 0 6px}
+.lvbox.on{opacity:1;border-color:var(--c);box-shadow:inset 0 0 0 1px var(--c)}
+.lvbox .tag{display:none;font-size:11px;font-weight:600;margin-top:2px}
+.lvbox .tag.on{display:block}
+#pathArrows{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.notes{margin-top:12px}
+.notes summary{cursor:pointer;font-weight:600;font-size:13px}
+.notes ul{margin:8px 0 0;padding-left:18px;font-size:13px;color:var(--ink-2);display:grid;gap:4px;max-width:900px}
 .panel{background:var(--panel);border:1px solid var(--rule);border-radius:8px;padding:14px 16px;min-width:0}
 .ph{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px}
 .ph h2{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin:0}
@@ -72,29 +98,30 @@ svg text{fill:var(--ink)}
 .sm.busy .hatch{display:none}
 .sm rect.ol{fill:none;stroke:none}
 .sm.focus rect.ol{stroke:var(--focus);stroke-width:2.5}
-.sm text{font-family:var(--font-mono);font-size:10px;fill:var(--ink-2)}
+.sm text{font-family:var(--font-mono);font-size:12px;fill:var(--ink-2)}
 .sm.busy text{fill:var(--ink)}
 .sm .occ{fill:var(--ink);opacity:.55}
 .sm.flash rect.cell{fill:var(--lv-L1)}
 .tabs{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
 .tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 #bPin[aria-pressed="true"]{border-color:var(--sel);color:var(--sel)}
-.stepper{display:grid;grid-template-columns:minmax(0, 1fr) minmax(0, 340px);gap:10px 18px}
-#timeline{grid-column:1 / -1;display:flex;gap:3px;min-height:34px}
+.stepper{display:grid;grid-template-columns:minmax(0, 1fr) minmax(0, 380px);gap:10px 18px;margin-top:8px;min-height:92px}
+#timeline{display:flex;gap:3px;min-height:34px}
 #timeline button{flex:1 1 0;min-width:0;padding:2px 4px;font-family:var(--font-mono);font-size:11px;border-radius:4px;position:relative;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;background:var(--bg)}
 #timeline button .fill{position:absolute;left:0;top:0;bottom:0;background:var(--sm-busy);opacity:.6;z-index:0}
 #timeline button span{position:relative;z-index:1}
 #timeline button.cur{border-color:var(--ink);font-weight:600}
 #cap1{font-size:18px;font-weight:600;margin:0;line-height:1.35;text-wrap:pretty}
-#cap2{font-size:15px;margin:6px 0 0;color:var(--ink);line-height:1.6}
+#cap2{font-size:15px;margin:4px 0 0;color:var(--ink);line-height:1.55}
 #stepno{font-size:12px;color:var(--ink-2);margin:0 0 4px}
-#why{border-left:3px solid var(--sel);padding:6px 12px;font-size:15px;background:var(--bg);border-radius:0 6px 6px 0}
+#why{border-left:3px solid var(--ink-2);padding:6px 12px;font-size:14px;line-height:1.45;background:var(--bg);border-radius:0 6px 6px 0}
 #why h3{margin:0 0 4px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
 #why p{margin:0}
 .counters{display:grid;grid-template-columns:minmax(0, 1fr) minmax(0, 1fr);gap:12px;margin-top:12px}
 table{border-collapse:collapse;width:100%;font-size:13px}
 th,td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--rule);vertical-align:top}
-td.n,th.n{text-align:right;font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+td.n,th.n{text-align:right;font-family:var(--font-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+td .sub{font-size:11px;color:var(--ink-2)}
 .tablewrap{overflow-x:auto}
 #pG{border-left:3px solid var(--measured)}
 #pG .hl{background:color-mix(in srgb, var(--measured) 14%, transparent)}
@@ -109,21 +136,29 @@ canvas.strip{width:100%;height:28px;display:block;border:1px solid var(--rule);b
 .mchip::before{content:"измерено: ";font-family:var(--font-ui);font-size:11px;letter-spacing:.04em}
 .foot{font-size:12px;color:var(--ink-2);margin-top:6px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-@media (min-width: 901px){
-  #pE{position:sticky;bottom:0;z-index:5;box-shadow:0 -6px 18px color-mix(in srgb, var(--ink) 12%, transparent);padding-bottom:max(14px, env(safe-area-inset-bottom, 0px))}
-  canvas#gal{max-width:min(100%, calc(100vh - 330px));margin-inline:auto}
-}
-@media (max-width: 900px){
+canvas#gal{max-width:min(100%, 540px);margin-inline:auto}
+@media (max-width: 1000px){
   .grid{grid-template-columns:minmax(0, 1fr)}
-  .stepper{grid-template-columns:minmax(0, 1fr)}
+  .stepper{grid-template-columns:minmax(0, 1fr);min-height:0}
   .counters{grid-template-columns:minmax(0, 1fr)}
-  #timeline button{font-size:9px}
+}
+@media (max-width: 700px){
+  #timeline{flex-wrap:wrap}
+  #timeline button{flex:1 1 30%;font-size:10px}
+  #path .groups{display:none}
+  #path{padding-top:0}
+  #path .boxes{grid-template-columns:repeat(2, minmax(0, 1fr))}
+  .svgwrap svg{min-width:600px}
+  .svgwrap{-webkit-overflow-scrolling:touch}
+  #pathArrows{display:none}
+  .pathhead .busy{margin-left:0}
 }
 @media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important} }
 </style>
 
 <header class="top">
-  <h1>N-body по паметта на AD103<small>RTX 4080 SUPER · стъпка по стъпка · истинските алгоритми върху схематичен модел на GPU-то</small></h1>
+  <h1>N-body по паметта на AD103<small>RTX 4080 SUPER · истинските алгоритми върху схематичен модел на GPU-то</small></h1>
+  <div class="ctrls">
   <div class="grp"><label for="selMode">Режим</label>
     <select id="selMode">
       <option value="1">#1 all-pairs, плочки</option>
@@ -156,13 +191,33 @@ canvas.strip{width:100%;height:28px;display:block;border:1px solid var(--rule);b
       <option value="10000">1 стъпка / 10 с</option>
       <option value="0">ръчно</option>
     </select></div>
+  <label class="chk" id="detGrp" title="Иначе само първите 3 итерации са разбити на под-стъпки"><input type="checkbox" id="chkAll"> всяка итерация подробно</label>
   <button id="bTheme" title="Светла / тъмна тема (T)">◐ тема</button>
+  </div>
 </header>
 
 <main>
+<section class="panel" id="pE" aria-label="Стъпка">
+  <div id="timeline" role="group" aria-label="Ядра в стъпката"></div>
+  <div class="stepper">
+    <div aria-live="polite" class="captxt">
+      <p id="stepno" class="mono"></p>
+      <p id="cap1"></p>
+      <p id="cap2"></p>
+      <div id="capChips"></div>
+    </div>
+    <div id="why" hidden><h3>Защо?</h3><p id="whyTxt"></p></div>
+  </div>
+  <div class="pathwrap">
+    <div class="pathhead"><h2>Път в паметта</h2><span class="note">отляво далеч и бавно, отдясно близо и бързо · латентност в цикли · <b>⌒</b> горе: четене към регистрите · <b>‿</b> долу, пунктир: запис обратно</span><span class="mono busy" id="busyTxt">заети SM: 0 / 80</span></div>
+    <div id="path"></div>
+  </div>
+</section>
+
 <div class="grid">
   <section class="panel" id="pA" aria-label="Галактика">
-    <div class="ph"><h2>Галактика</h2><span class="chip">истинска физика · 2D изглед на 3D код</span></div>
+    <div class="ph"><h2>Галактика</h2><span class="chip">истинска физика · изглед отгоре</span></div>
+    <p id="galCap"></p>
     <canvas id="gal" width="600" height="600" aria-label="Телата на галактиката, оцветени по нивото на паметта"></canvas>
     <div class="ph" style="margin-top:8px;margin-bottom:0">
       <div class="seg" role="group" aria-label="Оцветяване">
@@ -172,33 +227,27 @@ canvas.strip{width:100%;height:28px;display:block;border:1px solid var(--rule);b
       <span class="note" id="galInfo"></span>
     </div>
     <div class="legend" id="legA"></div>
-    <p class="note">Кликни тяло, за да избереш него и неговия warp. Тук ε = 0,05 (в кода е 0,01), за да е стабилно при малко N. Morton ключът тук е 10 бита на ос (в кода 21).</p>
   </section>
-
-  <div class="right">
-    <section class="panel" id="pB" aria-label="GPU">
-      <div class="ph"><h2>GPU · AD103</h2><span class="chip">модел</span><span class="big" id="busyTxt">заети SM: 0 / 80</span></div>
-      <div class="svgwrap"><svg id="gpu" viewBox="0 0 1000 300" role="img" aria-label="Схема на AD103: 80 SM, L2, 8 контролера на паметта, VRAM и PCIe"></svg></div>
-      <p class="note mono">латентност: регистри ~0 · shared ~30 · L1 ~32 · L2 ~270–285 · VRAM ~570 цикъла (RTX 4090, същата архитектура; Luo et al. 2025)</p>
-      <p class="foot">VRAM 16 GB GDDR6X · 256 бита · 736 GB/s · 8 контролера. Разпределението на 40-те TPC по 7-те GPC не е публикувано, затова рамката е схематична. Блоковете отиват по SM поред: това е модел, реалният планировчик не е документиран. Пакетите летят за време ∝ √латентност, условно. Tensor ядрата (320) и RT ядрата (80) съществуват, но проектът не ги използва.</p>
-    </section>
 
     <section class="panel" id="pC" aria-label="Увеличение">
       <div class="ph">
         <div class="tabs" role="tablist">
-          <button role="tab" id="tabSM" aria-selected="true" data-tab="sm">SM</button>
+          <button role="tab" id="tabChip" aria-selected="true" data-tab="chip">Чип</button>
+          <button role="tab" id="tabSM" aria-selected="false" data-tab="sm">Един SM</button>
           <button role="tab" id="tabTree" aria-selected="false" data-tab="tree">Дърво + warp</button>
           <button role="tab" id="tabPipe" aria-selected="false" data-tab="pipe">Конвейер</button>
           <button id="bPin" aria-pressed="false" title="Задръж този раздел (Esc освобождава)"><svg viewBox="0 0 16 16" width="14" height="14" style="display:inline;width:14px;vertical-align:-2px"><path d="M10 1l5 5-2 1-3 3 0 3-1 1-3-3-4 4-1 0 0-1 4-4-3-3 1-1 3 0 3-3z" fill="currentColor"/></svg> задръж</button>
         </div>
-        <span class="chip">модел</span>
+        <span class="note" id="tabHint">разделът сам следва стъпката</span>
       </div>
-      <div id="viewSM" role="tabpanel"><div class="svgwrap"><svg id="smz" viewBox="0 0 600 300" role="img" aria-label="Един SM: 4 планировчика, 128 FP32 ленти, 16 SFU, регистри, L1 и shared"></svg></div></div>
+      <div id="viewChip" role="tabpanel"><div class="svgwrap"><svg id="gpu" viewBox="0 0 1000 304" role="img" aria-label="Схема на AD103: 80 SM, L2, 8 контролера на паметта, VRAM и PCIe"></svg></div>
+        <p class="note">Всяко квадратче е един SM. Синьо = има блок с работа; с рамка = SM-ът на избрания warp. Пакетите са данни, които пътуват в тази стъпка; ×32 = цял warp наведнъж. Рамката е схематична: разпределението на SM по GPC не е публикувано.</p></div>
+      <div id="viewSM" role="tabpanel" hidden><div class="svgwrap"><svg id="smz" viewBox="0 0 600 300" role="img" aria-label="Един SM: 4 планировчика, 128 FP32 ленти, 16 SFU, регистри, L1 и shared"></svg></div></div>
       <div id="viewTree" role="tabpanel" hidden>
         <div class="svgwrap"><svg id="tree" viewBox="0 0 620 230" role="img" aria-label="Дървото на Karras"></svg></div>
         <div class="ph" style="margin:6px 0 0"><span class="big" id="laneTxt">активни ленти: 32 / 32</span><span class="note" id="laneNote"></span></div>
         <div class="svgwrap"><svg id="lanes" viewBox="0 0 620 150" role="img" aria-label="32-те ленти на избрания warp"></svg></div>
-        <div class="legend"><span>■ активна</span><span>▨ маскирана (чака)</span><span>□· свършила</span><span><b class="mono">Т</b> едно тяло · <b class="mono">П</b> приет възел · <b class="mono">Л</b> листо · <b class="mono">О</b> отваряне</span></div>
+        <div class="legend" id="treeLeg"><span>■ активна</span><span>▨ маскирана (чака)</span><span>□· свършила</span><span><b class="mono">Т</b> едно тяло · <b class="mono">П</b> приет възел · <b class="mono">Л</b> листо · <b class="mono">О</b> отваряне</span></div>
       </div>
       <div id="viewPipe" role="tabpanel" hidden>
         <div class="pipe" id="pipeChips"></div>
@@ -207,21 +256,7 @@ canvas.strip{width:100%;height:28px;display:block;border:1px solid var(--rule);b
         <p class="note">При 1M ядро 6 (обхождането) взема над 90 % от времето на стъпката (измерено); строенето на дървото е 1,6 % от стъпката при 1M и 12,6 % при N = 65 536.</p>
       </div>
     </section>
-  </div>
 </div>
-
-<section class="panel" id="pE" style="margin-top:12px" aria-label="Стъпка">
-  <div class="stepper">
-    <div id="timeline" role="group" aria-label="Ядра в стъпката"></div>
-    <div aria-live="polite">
-      <p id="stepno" class="mono"></p>
-      <p id="cap1"></p>
-      <p id="cap2"></p>
-      <div id="capChips"></div>
-    </div>
-    <div id="why" hidden><h3>Защо?</h3><p id="whyTxt"></p><div id="whyChips"></div></div>
-  </div>
-</section>
 
 <div class="counters">
   <section class="panel" id="pF" aria-label="Броячи на модела">
@@ -236,6 +271,16 @@ canvas.strip{width:100%;height:28px;display:block;border:1px solid var(--rule);b
     <p class="foot">Конфигурация: #1 при N = 65 536, блок 256; #4, #5, #7 при N = 1M (#5: лист 32, блок 256; #7: лист 16, блок 64). Едно стартиране под ncu, кешовете се изчистват между проходите, затова времената не са сравними с бенчмарка. Източник: results/2026-10-22_ncu/summary.md.</p>
   </section>
 </div>
+<details class="panel notes">
+  <summary>Бележки към модела и източници</summary>
+  <ul>
+    <li>Латентност: регистри ~0 · shared ~30 · L1 ~32 · L2 ~270–285 · VRAM ~570 цикъла. Измерено на RTX 4090, същата архитектура Ada (Luo et al. 2025).</li>
+    <li>VRAM 16 GB GDDR6X · 256 бита · 736 GB/s · 8 контролера. PCIe 4.0 x16 ≈ 31,5 GB/s в посока.</li>
+    <li>Разпределението на 40-те TPC по 7-те GPC не е публикувано, затова рамката на чипа е схематична. Блоковете отиват по SM поред: реалният планировчик не е документиран.</li>
+    <li>Пакетите летят за време ∝ √латентност, условно. Tensor ядрата (320) и RT ядрата (80) съществуват, но проектът не ги използва.</li>
+    <li>Тук ε = 0,05 (в кода е 0,01), за да е стабилно при малко N. Morton ключът тук е 10 бита на ос (в кода 21). Симулацията е 3D; виждаш я отгоре (x, y).</li>
+  </ul>
+</details>
 </main>
 <div id="tip" hidden></div>
 
@@ -255,7 +300,7 @@ function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); f
 const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // ============ state ============
-const S = { mode: "4", N: 1024, q: 4, speed: 4000, playing: false, selBody: 0, colorWho: false, pinned: false, tab: "sm" };
+const S = { mode: "4", N: 1024, q: 4, speed: 4000, playing: false, selBody: 0, colorWho: false, pinned: false, tab: "chip", allDetail: false };
 let history = [], TS = null, cur = 0, timer = null, tsBase = 0;
 
 // ============ physics ============
@@ -501,14 +546,14 @@ function buildSteps(ts) {
   if (m === "8") return buildExplain8(ts, kernel, add);
   const busyKD = Math.min(NSM, Math.ceil(N / 256));
   kernel("начало", "начало");
-  add({ id: "K0", tab: "sm", cap: "Начало на времевата стъпка (leapfrog: kick–drift–kick).", where: `Позициите и масите (float4), скоростите и ускоренията са във ${badge("V")} VRAM.`, why: "Силата е скъпата част. Kick и drift са евтини: по едно тяло на нишка, ограничени от паметта.", gal: { all: LV.V, pos: "P0" }, busy: 0 });
+  add({ id: "K0", tab: "chip", cap: "Начало на времевата стъпка (leapfrog: kick–drift–kick).", where: `Позициите и масите (float4), скоростите и ускоренията са във ${badge("V")} VRAM.`, why: "Силата е скъпата част. Kick и drift са евтини: по едно тяло на нишка, ограничени от паметта.", gal: { all: LV.V, pos: "P0" }, busy: 0 });
   kernel("kickDriftKernel", "kick+drift");
-  add({ id: "K1", tab: "sm", cap: "kickDriftKernel: всяка нишка чете своето тяло, прави v ← v + a·dt/2 и x ← x + v·dt и записва обратно. Телата се преместват.", where: `${badge("V")} → ${badge("L2")} → ${badge("R")} → ${badge("V")}. Съседните нишки четат съседни адреси (coalesced): една заявка на warp.`, gal: { all: LV.R }, busy: busyKD, pk: [{ from: "V", sms: busyKD, lv: LV.V, fat: true }, { from: "SM", to: "V", sms: busyKD, lv: LV.R, fat: true, delay: 0.5 }] });
+  add({ id: "K1", tab: "chip", cap: "kickDriftKernel: всяка нишка чете своето тяло, прави v ← v + a·dt/2 и x ← x + v·dt и записва обратно. Телата се преместват.", where: `${badge("V")} → ${badge("L2")} → ${badge("R")} → ${badge("V")}. Съседните нишки четат съседни адреси (coalesced): една заявка на warp.`, gal: { all: LV.R }, busy: busyKD, pk: [{ from: "V", sms: busyKD, lv: LV.V, fat: true }, { from: "SM", to: "V", sms: busyKD, lv: LV.R, fat: true, delay: 0.5 }] });
   if (m === "1") stepsAP(ts, kernel, add);
   else if (m === "3") stepsMulti(ts, kernel, add);
   else stepsTree(ts, kernel, add);
   kernel(m === "1" || m === "3" ? "kickDriftKernel" : "7 интегриране", m === "1" || m === "3" ? "kick" : "7 kick");
-  add({ id: "K3", tab: "sm", cap: "Kick ½ с новите ускорения: v ← v + a·dt/2. Край на времевата стъпка.", where: `${badge("V")} → ${badge("R")} → ${badge("V")}, по една нишка на тяло. Следващата стъпка ще започне от тук.`, gal: { all: LV.R }, busy: busyKD, pk: [{ from: "V", sms: busyKD, lv: LV.V, fat: true }, { from: "SM", to: "V", sms: busyKD, lv: LV.R, fat: true, delay: 0.5 }] });
+  add({ id: "K3", tab: "chip", cap: "Kick ½ с новите ускорения: v ← v + a·dt/2. Край на времевата стъпка.", where: `${badge("V")} → ${badge("L2")} → ${badge("R")} → ${badge("L2")} → ${badge("V")}, по една нишка на тяло. Следващата стъпка ще започне от тук.`, gal: { all: LV.R }, busy: busyKD, pk: [{ from: "V", sms: busyKD, lv: LV.V, fat: true }, { from: "SM", to: "V", sms: busyKD, lv: LV.R, fat: true, delay: 0.5 }] });
 }
 
 function stepsAP(ts, kernel, add) {
@@ -517,7 +562,7 @@ function stepsAP(ts, kernel, add) {
   ts.selWarp = selW; ts.selLane = S.selBody % 32; ts.selSM = selB % NSM;
   const apCnt = (tilesDone, extra) => ({ ap: true, tiles: tilesDone, nT, nB, busy, ...extra });
   kernel("allPairsTiledKernel", "ap_tiled");
-  add({ id: "A1", tab: "sm", cap: `Стартиране на ядрото: N/256 = ${nB} блока по 256 нишки, по една нишка на тяло.`, where: `Всеки блок отива на един SM. ${busy < NSM ? `<b>${NSM - busy} от 80 SM стоят празни.</b>` : "Всички 80 SM имат работа."}`, why: busy < NSM ? "При малко N блоковете са твърде малко: GPU-то е недонатоварено, колкото и бърз да е кодът вътре в блока." : "При това N има поне един блок на SM.", gal: { who: true }, busy, cnt: apCnt(0) });
+  add({ id: "A1", tab: "chip", cap: `Стартиране на ядрото: N/256 = ${nB} блока по 256 нишки, по една нишка на тяло.`, where: `Всеки блок отива на един SM. ${busy < NSM ? `<b>${NSM - busy} от 80 SM стоят празни.</b>` : "Всички 80 SM имат работа."}`, why: busy < NSM ? "При малко N блоковете са твърде малко: GPU-то е недонатоварено, колкото и бърз да е кодът вътре в блока." : "При това N има поне един блок на SM.", gal: { who: true }, busy, cnt: apCnt(0) });
   add({ id: "A2", tab: "sm", cap: "Всяка нишка зарежда своето тяло в регистрите си.", where: `${badge("L2")} → ${badge("R")}: kickDrift току-що е записал позициите, затова са в L2. По един float4 (16 B) на нишка; 32 нишки = 512 B, една заявка на warp (coalesced).`, gal: { all: LV.R }, busy, pk: [{ from: "L2", sms: busy, lv: LV.L2, fat: true }], sm: { reg: true }, cnt: apCnt(0) });
   for (let t = 0; t < nT; t++) {
     const tile = [t * TILE, (t + 1) * TILE];
@@ -532,7 +577,7 @@ function stepsAP(ts, kernel, add) {
     }
     add({ id: "A7", tab: "sm", tile: t, cap: t < nT - 1 ? "__syncthreads() и към следващата плочка: shared ще се презапише." : "__syncthreads(): последната плочка е изчислена.", where: `Частичното ускорение остава в ${badge("R")} през всички плочки.`, gal: { all: LV.R }, busy, sm: { sync: true }, cnt: apCnt(t + 1) });
   }
-  add({ id: "A8", tab: "sm", cap: "Запис на ускоренията: регистри → VRAM.", where: `${badge("R")} → ${badge("L2")} → ${badge("V")}, по един float4 на нишка, coalesced.`, gal: { all: LV.V }, busy, pk: [{ from: "SM", to: "V", sms: busy, lv: LV.R, fat: true }], cnt: apCnt(nT) });
+  add({ id: "A8", tab: "chip", cap: "Запис на ускоренията: регистри → VRAM.", where: `${badge("R")} → ${badge("L2")} → ${badge("V")}, по един float4 на нишка, coalesced.`, gal: { all: LV.V }, busy, pk: [{ from: "SM", to: "V", sms: busy, lv: LV.R, fat: true }], cnt: apCnt(nT) });
 }
 
 function stepsMulti(ts, kernel, add) {
@@ -541,11 +586,11 @@ function stepsMulti(ts, kernel, add) {
   ts.selSM = selB % NSM; ts.selWarp = Math.floor(S.selBody * q / 32); ts.selLane = (S.selBody % (32 / q)) * q;
   const c = (x) => ({ ap: true, multi: true, q, nB, busy, nT: N / TILE, tiles: x });
   kernel("allPairsMultiKernel", "ap_multi");
-  add({ id: "M1", tab: "sm", cap: `q = ${q} нишки на тяло: ${q}× повече нишки, ${nB} блока вместо ${N / AP_BLOCK}.`, where: `Блок от 256 нишки = ${bpb} тела × ${q} нишки. Заети SM: ${busy} от 80.`, why: "Същата работа, разделена на повече SM. Това е паралелизъм на ниво нишки (TLP): повече от машината работи.", chips: ["2,56× при N = 4 096, спрямо настроения all-pairs #2"], gal: { who: true }, busy, cnt: c(0) });
+  add({ id: "M1", tab: "chip", cap: `q = ${q} нишки на тяло: ${q}× повече нишки, ${nB} блока вместо ${N / AP_BLOCK}.`, where: `Блок от 256 нишки = ${bpb} тела × ${q} нишки. Заети SM: ${busy} от 80.`, why: "Същата работа, разделена на повече SM. Това е паралелизъм на ниво нишки (TLP): повече от машината работи.", chips: ["2,56× при N = 4 096, спрямо настроения all-pairs #2"], gal: { who: true }, busy, cnt: c(0) });
   add({ id: "M2", tab: "sm", cap: `В рамките на всяка плочка нишка s от групата взема телата j ≡ s (mod ${q}): всяка от ${q}-те нишки прави 1/${q} от взаимодействията.`, where: `Тялото е в ${badge("R")} на всичките ${q} нишки; галактиката е оцветена по j mod ${q}, т.е. по това коя от ${q}-те нишки чете тялото.`, gal: { quarters: q }, busy, sm: { reg: true }, cnt: c(0) });
   add({ id: "M3", tab: "sm", cap: "Плочки в shared, както в #1, но на всяка стъпка warp-ът чете q различни елемента от плочката.", where: `${badge("L2")} → ${badge("S")} → ${badge("R")}. Не е един broadcast: q различни адреса, max(1, q/8) wavefront-а на четене.`, gal: { quarters: q }, busy, pk: [{ from: "L2", sms: busy, lv: LV.L2, fat: true }], sm: { shared: "multi", fma: true, sfu: true, lanes: "all" }, cnt: c(N / TILE) });
   add({ id: "M4", tab: "tree", cap: `Събиране на частичните суми: __shfl_xor_sync, ${Math.log2(q)} кръга (отместване ${[...Array(Math.log2(q))].map((_, i) => q >> (i + 1)).join(", ")}).`, where: `${badge("R")} → ${badge("R")}: лентите в warp-а обменят стойности директно, без shared и без L1.`, why: "Обменът между лентите в един warp минава по мрежата между регистрите. Не струва достъп до паметта.", gal: { all: LV.R }, busy, lanes: { butterfly: q }, cnt: c(N / TILE) });
-  add({ id: "M5", tab: "sm", cap: "Първата нишка от всяка група записва ускорението.", where: `${badge("R")} → ${badge("L2")} → ${badge("V")}.`, gal: { all: LV.V }, busy, pk: [{ from: "SM", to: "V", sms: busy, lv: LV.R, fat: true }], cnt: c(N / TILE) });
+  add({ id: "M5", tab: "chip", cap: "Първата нишка от всяка група записва ускорението.", where: `${badge("R")} → ${badge("L2")} → ${badge("V")}.`, gal: { all: LV.V }, busy, pk: [{ from: "SM", to: "V", sms: busy, lv: LV.R, fat: true }], cnt: c(N / TILE) });
 }
 
 function stepsTree(ts, kernel, add) {
@@ -569,12 +614,24 @@ function stepsTree(ts, kernel, add) {
   }[m];
   add({ id: "T0", tab: "tree", it: -1, cap: `Обхождане, ${TREE_BLOCK} нишки на блок (модел): ${N / TREE_BLOCK} блока, warp ${ts.selWarp} е на SM ${R.sm}. ${T0[0]}`, where: `Всяка нишка държи своето тяло и ускорението си в ${badge("R")}. ${m === "7" ? `Стекът е общ, в ${badge("R")} (по 2 на лента = 64 записа).` : `Стекът е по нишка, ${badge("loc")} local memory: 96 записа × 4 B = 384 B на нишка, физически във VRAM, кеширан в L1 и L2.`}`, why: (T0[1] ? T0[1] + " " : "") + "Внимание: при N ≤ 4 096, както тук, дървото всъщност губи от all-pairs. Измереното пресичане е при N ≈ 28 700 за #7 и ≈ 39 700 за #5; тук N е малко, за да се вижда всяко тяло.", chips: ["пресичане N ≈ 28 700 (#7), 39 700 (#5)"], gal: { trav: -1 }, busy, lanesT: -1 });
   R.trace.forEach((rec, it) => {
-    if (m === "7") stepsIt7(ts, add, rec, it, busy); else stepsIt45(ts, add, rec, it, busy);
+    if (it >= DETAIL_IT && !S.allDetail) stepsItShort(ts, add, rec, it, busy);
+    else if (m === "7") stepsIt7(ts, add, rec, it, busy); else stepsIt45(ts, add, rec, it, busy);
   });
   add({ id: "Tend", tab: "tree", it: R.trace.length - 1, end: true, cap: `Стекът на warp ${ts.selWarp} е празен след ${R.trace.length} итерации. Запис на ускоренията.`, where: `${badge("R")} → ${badge("L2")} → ${badge("V")}. Останалите warp-ове са минали същото (виж броячите за цялото ядро).`, gal: { trav: R.trace.length - 1, endAll: true }, busy, lanesT: R.trace.length - 1, pk: [{ from: "SM", to: "V", sms: 1, lv: LV.R, fat: true }] });
 }
 
 const pl = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+const DETAIL_IT = 3;   // iterations shown as 4-5 sub-steps; the rest are one step each
+function stepsItShort(ts, add, rec, it, busy) {
+  const pre = `Итерация ${it + 1} (накратко): `;
+  if (ts.mode === "7") {
+    const kindTxt = { "Т": "едно тяло", "П": "приет възел", "Л": `листо с ${rec.size} тела`, "О": "отваряне, две деца в стека" }[rec.kind];
+    add({ id: "TI", tab: "tree", it, cap: pre + `${kindTxt}, за всички 32 ленти. Възелът ${rec.hit ? "е в L1" : "идва от L2"}.`, where: `${badge(rec.hit ? "L1" : "L2")} → ${badge("R")} ×32, стекът остава в ${badge("R")}: ${rec.spAfter} ${rec.spAfter === 1 ? "запис" : "записа"}.`, gal: { trav: it, phase: 4 }, busy, lanesT: it, sub: 4, pk: rec.hit ? [] : [{ from: "L2", sms: 1, lv: LV.L2, count: 1, fat: true }], smHit: rec.hit ? 1 : 0 });
+    return;
+  }
+  const k = rec.kinds, req = rec.popReq + rec.nodeReq + rec.leafReq + rec.pushReq, miss = rec.popMiss + rec.nodeMiss + rec.leafMiss + rec.pushMiss;
+  add({ id: "TI", tab: "tree", it, cap: pre + `${pl(rec.nAct, "активна лента", "активни ленти")} от 32 · Т ${k["Т"]} · П ${k["П"]} · Л ${k["Л"]} · О ${k["О"]}.`, where: `${pl(req, "заявка", "заявки")} към ${badge("L1")} (стек ${rec.popReq + rec.pushReq}, възли ${rec.nodeReq}, листа ${rec.leafReq}); ${miss} пропускат → ${badge("L2")}.`, gal: { trav: it, phase: 4 }, busy, lanesT: it, sub: 4, pk: miss ? [{ from: "L2", sms: 1, lv: LV.L2, count: Math.min(32, miss) }] : [], smHit: req - miss });
+}
 function stepsIt45(ts, add, rec, it, busy) {
   const m = ts.mode, sm = ts.run.sm, k = rec.kinds;
   const pre = `Итерация ${it + 1}: `;
@@ -587,7 +644,7 @@ function stepsIt45(ts, add, rec, it, busy) {
   const nBr = ["Т", "П", "Л", "О"].filter(x => k[x]).length;
   const t4 = m === "4" ? `Измерено при 1M: средно 6,1 от 32 активни ленти.` : `Измерено при 1M: 10,8 от 32 активни ленти; 2,06× спрямо #4.`;
   const brList = ["Т", "П", "Л", "О"].filter(x => k[x]).join(", ");
-  add({ id: "T4", tab: "tree", it, cap: pre + (nBr > 1 ? `дивергенция: ${nBr} клона (${brList}) се изпълняват един след друг; във всеки са активни само част от лентите.` : `само един клон (${brList}), но свършилите ленти пак стоят празни.`) + `${k["Л"] ? ` Листата: до ${rec.maxLeaf} тела, четат се от ${badge("L1")}/${badge("L2")} (${pl(rec.leafReq, "заявка", "заявки")}).` : ""}`, where: `Сумите се натрупват в ${badge("R")}. Маскираните ленти чакат.`, why: it < 2 ? "SIMT: една инструкция за целия warp; лентите, които не участват в клона, чакат. " + t4 : null, chips: m === "4" ? ["6,1 / 32 активни (ncu, 1M)"] : ["10,8 / 32 активни (ncu, 1M)", "2,06× спрямо #4 при 1M"], gal: { trav: it, phase: 4 }, busy, lanesT: it, sub: 4, pk: missPk(rec.leafMiss, LV.L2) });
+  add({ id: "T4", tab: "tree", it, cap: pre + (nBr > 1 ? `дивергенция: ${nBr} клона (${brList}) се изпълняват един след друг; във всеки са активни само част от лентите.` : rec.nAct === 32 ? `всичките 32 ленти са в един клон (${brList}): в тази итерация няма дивергенция.` : `само един клон (${brList}), но ${32 - rec.nAct} свършили ленти стоят празни.`) + `${k["Л"] ? ` Листата: до ${rec.maxLeaf} тела, четат се от ${badge("L1")}/${badge("L2")} (${pl(rec.leafReq, "заявка", "заявки")}).` : ""}`, where: `Сумите се натрупват в ${badge("R")}. Маскираните ленти чакат.`, why: it < 2 ? "SIMT: една инструкция за целия warp; лентите, които не участват в клона, чакат. " + t4 : null, chips: m === "4" ? ["6,1 / 32 активни (ncu, 1M)"] : ["10,8 / 32 активни (ncu, 1M)", "2,06× спрямо #4 при 1M"], gal: { trav: it, phase: 4 }, busy, lanesT: it, sub: 4, pk: missPk(rec.leafMiss, LV.L2) });
   if (k["О"]) add({ id: "T5", tab: "tree", it, cap: pre + (k["О"] === 1 ? "1 лента отваря възела: двете деца се записват (push) в нейния стек." : `${k["О"]} ленти отварят възела: двете деца се записват (push) в стека.`), where: `${badge("R")} → ${badge("loc")} local memory: ${pl(rec.pushReq, "заявка", "заявки")} за запис${rec.pushMiss ? `, ${rec.pushMiss} отиват към ${badge("L2")}` : ""}.`, why: m === "5" && it === 0 ? "Стекът все още е в local memory. При #5 той е 39 % от трафика при L1-пропуските. Това води към #7." : null, chips: m === "5" ? ["стек = 39 % от L1-miss трафика (ncu, 1M)"] : null, gal: { trav: it, phase: 5 }, busy, lanesT: it, sub: 5, pk: rec.pushMiss ? [{ from: "SM", to: "L2", sms: 1, lv: LV.loc, count: Math.min(32, rec.pushMiss) }] : [] });
 }
 function stepsIt7(ts, add, rec, it, busy) {
@@ -605,15 +662,15 @@ function stepsIt7(ts, add, rec, it, busy) {
 function buildExplain6(ts, kernel, add) {
   ts.selSM = 0;
   kernel("persistent", "#6 опашка");
-  add({ id: "P1", tab: "sm", cap: "#6: пускат се само толкова блока, колкото се побират едновременно, и те остават живи до края (persistent).", where: "Всички 80 SM са заети от началото до края; работата не се раздава от хардуерния планировчик.", gal: { all: LV.V }, busy: NSM });
-  add({ id: "P2", tab: "sm", cap: "Всеки warp взема следващата порция работа от софтуерна опашка: atomicAdd върху един брояч.", where: `Броячът е в ${badge("L2")}; всяко вземане е атомарна операция там.`, gal: { chunks: true }, busy: NSM, chunks: true, pk: [{ from: "SM", to: "L2", sms: 8, lv: LV.R, count: 8 }] });
-  add({ id: "P3", tab: "sm", cap: "Четири последователни порции по 32 тела (съседи по Morton, един до друг в галактиката) отиват на четири различни SM: 17, 42, 63 и 5.", where: `Всеки цвят в галактиката е на SM-а със същия цвят. ${badge("L1")} е отделен за всеки SM, затова съседите вече не делят L1. При хардуерния планировчик (#5) те са в един блок, на един SM.`, why: "Хардуерният планировчик държи съседните по Morton warp-ове заедно. Опашката балансира по-добре, но губи локалността в L1 и е по-бавна.", chips: ["0,63–0,97× (по-бавно)"], gal: { chunks: true }, busy: NSM, chunks: true });
+  add({ id: "P1", tab: "chip", cap: "#6: пускат се само толкова блока, колкото се побират едновременно, и те остават живи до края (persistent).", where: "Всички 80 SM са заети от началото до края; работата не се раздава от хардуерния планировчик.", gal: { all: LV.V }, busy: NSM });
+  add({ id: "P2", tab: "chip", cap: "Всеки warp взема следващата порция работа от софтуерна опашка: atomicAdd върху един брояч.", where: `Броячът е в ${badge("L2")}; всяко вземане е атомарна операция там.`, gal: { chunks: true }, busy: NSM, chunks: true, pk: [{ from: "SM", to: "L2", sms: 8, lv: LV.R, count: 8 }] });
+  add({ id: "P3", tab: "chip", cap: "Четири последователни порции по 32 тела (съседи по Morton, един до друг в галактиката) отиват на четири различни SM: 17, 42, 63 и 5.", where: `Всеки цвят в галактиката е на SM-а със същия цвят. ${badge("L1")} е отделен за всеки SM, затова съседите вече не делят L1. При хардуерния планировчик (#5) те са в един блок, на един SM.`, why: "Хардуерният планировчик държи съседните по Morton warp-ове заедно. Опашката балансира по-добре, но губи локалността в L1 и е по-бавна.", chips: ["0,63–0,97× (по-бавно)"], gal: { chunks: true }, busy: NSM, chunks: true });
 }
 function buildExplain8(ts, kernel, add) {
   ts.selSM = 0;
   kernel("CPU + GPU", "#8 разделяне");
-  add({ id: "H1", tab: "sm", cap: "#8: част от телата се смятат на CPU. Данните трябва да минат по PCIe 4.0 x16, около 31,5 GB/s в посока.", where: `${badge("V")} → ${badge("H")} и обратно, на всяка стъпка.`, gal: { split: 0.25 }, busy: NSM, pk: [{ from: "V", to: "H", sms: 0, lv: LV.V, count: 6 }, { from: "H", to: "V", sms: 0, lv: LV.H, count: 6, delay: 0.5 }] });
-  add({ id: "H2", tab: "sm", cap: "При 1M тела преносът струва 2,26 ms на стъпка (измерено). Най-доброто разделяне спечели само +1,3 %.", where: `${badge("H")} PCIe е около 23 пъти по-тесен от ${badge("V")} VRAM (736 GB/s).`, why: "GPU-то е 18,3 пъти по-бързо от най-добрия код за CPU, затова CPU-то може да поеме само малка част. Преносът по PCIe изяжда почти цялата полза.", chips: ["2,26 ms на стъпка при 1M", "+1,3 % в най-добрия случай"], gal: { split: 0.25 }, busy: NSM, pk: [{ from: "V", to: "H", sms: 0, lv: LV.V, count: 6 }] });
+  add({ id: "H1", tab: "chip", cap: "#8: част от телата се смятат на CPU. Данните трябва да минат по PCIe 4.0 x16, около 31,5 GB/s в посока.", where: `${badge("V")} → ${badge("H")} и обратно, на всяка стъпка.`, gal: { split: 0.25 }, busy: NSM, pk: [{ from: "V", to: "H", sms: 0, lv: LV.V, count: 6 }, { from: "H", to: "V", sms: 0, lv: LV.H, count: 6, delay: 0.5 }] });
+  add({ id: "H2", tab: "chip", cap: "При 1M тела преносът струва 2,26 ms на стъпка (измерено). Най-доброто разделяне спечели само +1,3 %.", where: `${badge("H")} PCIe е около 23 пъти по-тесен от ${badge("V")} VRAM (736 GB/s).`, why: "GPU-то е 18,3 пъти по-бързо от най-добрия код за CPU, затова CPU-то може да поеме само малка част. Преносът по PCIe изяжда почти цялата полза.", chips: ["2,26 ms на стъпка при 1M", "+1,3 % в най-добрия случай"], gal: { split: 0.25 }, busy: NSM, pk: [{ from: "V", to: "H", sms: 0, lv: LV.V, count: 6 }] });
 }
 
 // ============ colours ============
@@ -647,7 +704,7 @@ function drawGalaxy(step) {
   const lv = new Uint8Array(N); let colorFn = null;
   if (g.all) lv.fill(g.all);
   if (g.range) { for (let i = g.range[0]; i < g.range[1]; i++) lv[i] = g.rangeLv; if (g.dimRest) for (let i = 0; i < N; i++) if (i < g.range[0] || i >= g.range[1]) lv[i] = 0; }
-  const sel = new Set(laneBodies());
+  const explain = !!(g.chunks || g.split), sel = explain ? new Set() : new Set(laneBodies());
   if (g.dimRest) for (const b of sel) lv[b] = LV.R;
   // overlays
   if (g.bbox && TS.T) { const T = TS.T, [x0, y0] = W2C(T.lo[0], T.lo[1]), [x1, y1] = W2C(T.lo[0] + T.ext, T.lo[1] + T.ext); cx2.strokeStyle = C.ink2; cx2.lineWidth = 1.5 * d; cx2.strokeRect(x0, y1, x1 - x0, y0 - y1); }
@@ -672,9 +729,10 @@ function drawGalaxy(step) {
   if (g.ring && g.range) { cx2.strokeStyle = C.lv[2]; cx2.lineWidth = 1 * d; const rr = g.tileRing || g.range; for (let i = rr[0]; i < rr[1]; i++) { const [x, y] = W2C(P.x[i], P.y[i]); cx2.beginPath(); cx2.arc(x, y, (r + 2.2) * d, 0, 6.2832); cx2.stroke(); } }
   // selected warp: orange with a contrasting ring
   for (const b of sel) { const [x, y] = W2C(P.x[b], P.y[b]); cx2.fillStyle = C.sel; cx2.strokeStyle = C.ring; cx2.lineWidth = 1.2 * d; cx2.beginPath(); cx2.arc(x, y, (r + 1.3) * d, 0, 6.2832); cx2.fill(); cx2.stroke(); }
-  { const b = S.selBody, [x, y] = W2C(P.x[b], P.y[b]); cx2.strokeStyle = C.ink; cx2.lineWidth = 1.6 * d; cx2.beginPath(); cx2.arc(x, y, (r + 5) * d, 0, 6.2832); cx2.stroke(); }
+  if (!explain) { const b = S.selBody, [x, y] = W2C(P.x[b], P.y[b]); cx2.strokeStyle = C.ink; cx2.lineWidth = 1.6 * d; cx2.beginPath(); cx2.arc(x, y, (r + 5) * d, 0, 6.2832); cx2.stroke(); }
   if (travInfo) travInfo();
   // spread of the selected warp
+  if (explain) { $("#galInfo").textContent = ""; return; }
   let mx = 0, my = 0; for (const b of sel) { mx += P.x[b]; my += P.y[b]; } mx /= sel.size; my /= sel.size;
   let sp = 0; for (const b of sel) sp += Math.hypot(P.x[b] - mx, P.y[b] - my); sp /= sel.size;
   $("#galInfo").textContent = `избран warp: разпръснатост ${fmt(sp / world.R * 100, 1)} % от изгледа`;
@@ -719,15 +777,15 @@ function buildGPU() {
   el("rect", { width: 5, height: 5, fill: "var(--lv-loc)" }, patL); el("line", { x1: 0, y1: 0, x2: 0, y2: 5, stroke: "var(--panel)", "stroke-width": 1.4 }, patL);
   // host + PCIe
   el("rect", { x: 420, y: 2, width: 160, height: 24, rx: 4, fill: "none", stroke: "var(--lv-H)", "stroke-dasharray": "4 3", "stroke-width": 1.5 }, gpu);
-  el("text", { x: 500, y: 18, "text-anchor": "middle", "font-size": 12 }, gpu).textContent = "HOST · CPU + RAM";
+  el("text", { x: 500, y: 19, "text-anchor": "middle", "font-size": 14 }, gpu).textContent = "HOST · CPU + RAM";
   el("line", { x1: 500, y1: 26, x2: 500, y2: 52, stroke: "var(--lv-H)", "stroke-width": 4 }, gpu);
-  el("text", { x: 510, y: 44, "font-size": 11, fill: "var(--ink-2)" }, gpu).textContent = "PCIe 4.0 x16 · ~31,5 GB/s в посока";
+  el("text", { x: 510, y: 45, "font-size": 13, fill: "var(--ink-2)" }, gpu).textContent = "PCIe 4.0 x16 · ~31,5 GB/s в посока";
   // GPU frame
   el("rect", { x: 112, y: 52, width: 778, height: 228, rx: 6, fill: "none", stroke: "var(--rule)", "stroke-width": 1.5 }, gpu);
-  el("text", { x: 120, y: 64, "font-size": 10.5, fill: "var(--ink-2)" }, gpu).textContent = "AD103 · 7 GPC · 40 TPC · 80 SM (рамката е схематична)";
+  el("text", { x: 120, y: 66, "font-size": 12.5, fill: "var(--ink-2)" }, gpu).textContent = "чип AD103 · 80 SM";
   // L2
   el("rect", { x: 122, y: 142, width: 756, height: 42, rx: 4, fill: "var(--lv-L2)", opacity: 0.9 }, gpu);
-  el("text", { x: 500, y: 168, "text-anchor": "middle", "font-size": 13, fill: "var(--panel)", "font-weight": 600 }, gpu).textContent = "L2 · 64 MB · обща за всички SM";
+  el("text", { x: 500, y: 169, "text-anchor": "middle", "font-size": 16, fill: "var(--panel)", "font-weight": 600 }, gpu).textContent = "L2 · 64 MB · обща за всички 80 SM";
   // SMs
   smEls.length = 0; SMPOS.length = 0;
   const rowsY = [70, 104, 192, 226];
@@ -738,7 +796,7 @@ function buildGPU() {
     el("rect", { class: "cell", x, y, width: 35, height: 30, rx: 3 }, g);
     el("rect", { class: "hatch", x, y, width: 35, height: 30, rx: 3 }, g);
     const occ = el("rect", { class: "occ", x: x + 2, y: y + 26, width: 0, height: 2.5 }, g);
-    el("text", { x: x + 17.5, y: y + 18, "text-anchor": "middle" }, g).textContent = s;
+    el("text", { x: x + 17.5, y: y + 19, "text-anchor": "middle" }, g).textContent = s;
     el("rect", { class: "ol", x: x - 1, y: y - 1, width: 37, height: 32, rx: 4 }, g);
     smEls.push({ g, occ }); SMPOS.push([x + 17.5, y + 15]);
     g.addEventListener("click", () => selectSM(s));
@@ -749,13 +807,14 @@ function buildGPU() {
     MCY.forEach((y, i) => {
       el("line", { x1: side ? 900 : 98, y1: y + 14, x2: side ? 878 : 122, y2: L2Y, stroke: "var(--rule)", "stroke-width": 2 }, gpu);
       el("rect", { x: mx, y, width: 36, height: 28, rx: 3, fill: "var(--panel)", stroke: "var(--lv-V)", "stroke-width": 1.5 }, gpu);
-      el("text", { x: mx + 18, y: y + 18, "text-anchor": "middle", "font-size": 10.5 }, gpu).textContent = "MC";
+      el("text", { x: mx + 18, y: y + 19, "text-anchor": "middle", "font-size": 13 }, gpu).textContent = "MC";
       el("rect", { x: vx, y: y - 2, width: 46, height: 32, rx: 2, fill: "var(--lv-V)" }, gpu);
-      el("text", { x: vx + 23, y: y + 18, "text-anchor": "middle", "font-size": 9.5, fill: "var(--panel)" }, gpu).textContent = "GDDR6X";
+      el("text", { x: vx + 23, y: y + 19, "text-anchor": "middle", "font-size": 11, fill: "var(--panel)", "font-weight": 600 }, gpu).textContent = "2 GB";
     });
   }
-  el("text", { x: 33, y: 288, "text-anchor": "middle", "font-size": 10.5, fill: "var(--ink-2)" }, gpu).textContent = "VRAM";
-  el("text", { x: 967, y: 288, "text-anchor": "middle", "font-size": 10.5, fill: "var(--ink-2)" }, gpu).textContent = "VRAM";
+  el("text", { x: 33, y: 290, "text-anchor": "middle", "font-size": 13, fill: "var(--ink-2)" }, gpu).textContent = "VRAM";
+  el("text", { x: 967, y: 290, "text-anchor": "middle", "font-size": 13, fill: "var(--ink-2)" }, gpu).textContent = "VRAM";
+  el("text", { x: 500, y: 296, "text-anchor": "middle", "font-size": 12, fill: "var(--ink-2)" }, gpu).textContent = "8 чипа GDDR6X × 2 GB, всеки със свой контролер (MC) · 256 бита · 736 GB/s";
   el("g", { id: "pk" }, gpu);
 }
 function routeTo(src, sm, mcI) {
@@ -817,7 +876,7 @@ function renderGPU(step) {
   smEls.forEach((o, s) => {
     const on = step.chunks ? true : s < busy;
     o.g.classList.toggle("busy", on);
-    o.g.classList.toggle("focus", s === TS.selSM && !step.chunks);
+    o.g.classList.toggle("focus", s === TS.selSM && !step.chunks && on);
     o.occ.setAttribute("width", on ? 31 * Math.min(48, nWarpPerSM) / 48 : 0);
     o.g.classList.remove("flash");
     o.g.querySelector("rect.cell").style.fill = "";
@@ -837,7 +896,7 @@ function buildSMZ() {
     const box = el("rect", { x, y: 4, width: 139, height: 168, rx: 5, fill: "none", stroke: "var(--rule)", "stroke-width": 1.5 }, g);
     SMZ.part.push(box);
     el("rect", { x: x + 6, y: 10, width: 127, height: 22, rx: 3, fill: "var(--bg)", stroke: "var(--rule)" }, g);
-    el("text", { x: x + 69.5, y: 25, "text-anchor": "middle", "font-size": 10.5 }, g).textContent = "планировчик · 1 инстр./такт";
+    el("text", { x: x + 69.5, y: 25, "text-anchor": "middle", "font-size": 11 }, g).textContent = "планировчик " + (p + 1);
     for (let l = 0; l < 32; l++) { const r = el("rect", { x: x + 7 + (l % 8) * 16, y: 40 + Math.floor(l / 8) * 16, width: 13, height: 13, rx: 2, fill: "var(--idle)" }, g); SMZ.lanes.push(r); }
     el("text", { x: x + 69.5, y: 116, "text-anchor": "middle", "font-size": 10, fill: "var(--ink-2)" }, g).textContent = "32 FP32 ленти";
     el("text", { x: x + 8, y: 136, "font-size": 10.5 }, g).textContent = "SFU";
@@ -901,8 +960,8 @@ function visKey(nd) {
 }
 function renderTree(step) {
   treeSvg.innerHTML = "";
-  const T = TS.T; if (!T) { el("text", { x: 310, y: 115, "text-anchor": "middle", "font-size": 13, fill: "var(--ink-2)" }, treeSvg).textContent = TS.mode === "3" ? "All-pairs няма дърво. Долу: обменът между лентите." : "Този режим няма дърво."; return; }
-  const N = T.N, Wd = 600, x = nd => nd < 0 ? 10 + (~nd + 0.5) / N * Wd : 10 + (T.F[nd] + T.La[nd] + 1) / 2 / N * Wd, y = dep => 14 + dep * 26;
+  const T = TS.T; treeSvg.parentElement.hidden = !T; $("#treeLeg").hidden = !T; if (!T) return;
+  const N = T.N, Wd = 600, x = nd => nd < 0 ? 10 + (~nd + 0.5) / N * Wd : 10 + (T.F[nd] + T.La[nd] + 1) / 2 / N * Wd, y = dep => 26 + dep * 25;
   const vis = []; // internal nodes with depth <= cap
   for (let nd = 0; nd < N - 1; nd++) if (isVis(nd)) vis.push(nd);
   const gE = el("g", {}, treeSvg), gN = el("g", {}, treeSvg), bodyLeaves = [];
@@ -930,10 +989,12 @@ function renderTree(step) {
     if (h && sub === 1) { stroke = "var(--sel)"; sw = 2; }
     const g = el("g", {}, gN);
     el("title", {}, g).textContent = `възел ${nd} · тела ${T.F[nd]}–${T.La[nd]} (${size}) · дълбочина ${dep}`;
-    if (size <= LEAF) el("rect", { x: cxp - 5, y: cyp - 5, width: 10, height: 10, fill, stroke, "stroke-width": sw }, g);
-    else if (deepCut) el("path", { d: `M${cxp},${cyp - 6} l6,11 l-12,0 z`, fill, stroke, "stroke-width": sw }, g);
-    else el("circle", { cx: cxp, cy: cyp, r: 5, fill, stroke, "stroke-width": sw }, g);
-    if (h && sub >= 4) { const t = el("text", { x: cxp + 7, y: cyp - 4, "font-size": 10, "font-weight": 600 }, g); t.textContent = h.kind === "П" ? "✓" : h.kind === "О" ? "▾" : h.kind === "Л" ? "□" : "•"; }
+    const R5 = h && sub >= 1 ? 7.5 : 5;
+    if (size <= LEAF) el("rect", { x: cxp - R5, y: cyp - R5, width: 2 * R5, height: 2 * R5, fill, stroke, "stroke-width": sw }, g);
+    else if (deepCut) el("path", { d: `M${cxp},${cyp - R5 - 1} l${R5 + 1},${2 * R5 + 1} l-${2 * R5 + 2},0 z`, fill, stroke, "stroke-width": sw }, g);
+    else el("circle", { cx: cxp, cy: cyp, r: R5, fill, stroke, "stroke-width": sw }, g);
+    if (h && sub >= 2) el("text", { x: cxp, y: cyp - 11, "text-anchor": "middle", "font-size": 10.5, "font-weight": 600, style: "font-family:var(--font-mono)" }, g).textContent = h.lanes.size + (h.deep ? "↓" : "");
+    if (h && sub >= 4) { const t = el("text", { x: cxp + 10, y: cyp + 4, "font-size": 10, "font-weight": 600 }, g); t.textContent = h.kind === "П" ? "✓" : h.kind === "О" ? "▾" : h.kind === "Л" ? "□" : "•"; }
     if (h && sub >= 2) { // which lanes asked for it: 1 px per lane
       el("rect", { x: cxp - 16, y: cyp + 7, width: 32, height: 4, fill: "var(--idle)" }, g);
       h.lanes.forEach(l => el("rect", { x: cxp - 16 + l, y: cyp + 7, width: 1, height: 4, fill: "var(--sel)" }, g));
@@ -961,8 +1022,9 @@ function renderLanes(step) {
     el("text", { x: 2, y: 12, "font-size": 10.5, fill: "var(--ink-2)" }, lanesSvg).textContent = `общ стек в регистри, ${sp} записа (pop = __shfl_sync):`;
     for (let k = 0; k < 64; k++) el("rect", { x: x0 + k * 9, y: 18, width: 7.5, height: 12, rx: 1, fill: k < sp ? "var(--lv-R)" : "none", stroke: "var(--rule)" }, lanesSvg);
   } else if (st && m !== "1" && m !== "3") {
-    el("text", { x: 2, y: 10, "font-size": 10.5, fill: "var(--ink-2)" }, lanesSvg).textContent = "стек на всяка лента в local memory (физически VRAM, кеширан в L1/L2), 384 B на нишка:";
-    st.forEach((l, i) => { const d = sub === 1 || sub === 2 || sub === 3 || sub === 4 ? (l.st === "act" ? l.sp - 1 : 0) : (l.spAfter ?? l.sp ?? 0); const h = Math.min(40, d * 2.5); el("rect", { x: x0 + i * lw + 2, y: 56 - h, width: lw - 4, height: h, fill: "url(#hatchLoc2)" }, lanesSvg); });
+    el("text", { x: 2, y: 10, "font-size": 10.5, fill: "var(--ink-2)" }, lanesSvg).textContent = "стек на всяка лента в local memory (VRAM, кеширан в L1/L2): едно блокче = един запис";
+    if (!st.some(l => (l.st === "act" ? l.sp - 1 : l.spAfter) > 0) && sub >= 1 && sub <= 4) el("text", { x: x0, y: 44, "font-size": 11, fill: "var(--ink-2)" }, lanesSvg).textContent = "(след pop стековете са празни; децата ще се запишат при отваряне)";
+    st.forEach((l, i) => { const d = sub === 1 || sub === 2 || sub === 3 || sub === 4 ? (l.st === "act" ? l.sp - 1 : 0) : (l.spAfter ?? l.sp ?? 0); const shown = Math.min(8, d); for (let k = 0; k < shown; k++) el("rect", { x: x0 + i * lw + 2, y: 56 - (k + 1) * 5, width: lw - 4, height: 4, rx: 0.8, fill: "var(--lv-loc)" }, lanesSvg); if (d > 8) el("text", { x: x0 + i * lw + lw / 2 - 1, y: 14 + 2, "text-anchor": "middle", "font-size": 8, fill: "var(--ink-2)" }, lanesSvg).textContent = d; });
     const defs = el("defs", {}, lanesSvg), p = el("pattern", { id: "hatchLoc2", width: 5, height: 5, patternUnits: "userSpaceOnUse", patternTransform: "rotate(45)" }, defs);
     el("rect", { width: 5, height: 5, fill: "var(--lv-loc)" }, p); el("line", { x1: 0, y1: 0, x2: 0, y2: 5, stroke: "var(--panel)", "stroke-width": 1.4 }, p);
   }
@@ -1041,7 +1103,7 @@ function renderF(step) {
   t.innerHTML = `<tr><th></th><th class="n">избран warp, досега</th><th class="n">цялото ядро</th></tr>` +
     row("заети SM", `${busy} / 80`, `${R.busySM} / 80`) +
     row("активни ленти (средно на инструкция)", s ? `${cell(s)} / 32<div class="gauge"><i style="width:${act(s) / 32 * 100}%"></i></div>` : "–", `${cell(tot)} / 32`) +
-    row("L1 попадения / пропуски", s ? `${fmt(s.hits)} / ${fmt(s.miss)} (${pct(s.hits, s.miss)})` : "–", `${fmt(tot.hits)} / ${fmt(tot.miss)} (${pct(tot.hits, tot.miss)})`) +
+    row("L1 попадения", s ? `${pct(s.hits, s.miss)}<div class="sub">${fmt(s.hits)} от ${fmt(s.hits + s.miss)}</div>` : "–", `${pct(tot.hits, tot.miss)}<div class="sub">${fmt(tot.hits)} от ${fmt(tot.hits + tot.miss)}</div>`) +
     row("сектори към L2", s ? fmt(s.sectors) : "–", fmt(tot.sectors)) +
     row("от тях: стекът (local)", s ? fmt(s.stSectors) : "–", `${fmt(tot.stSectors)} (${tot.sectors ? fmt(100 * tot.stSectors / tot.sectors, 0) : 0} %)`) +
     row("взаимодействия", s ? fmt(s.inter) : "–", fmt(tot.inter)) +
@@ -1060,6 +1122,94 @@ function renderG() {
     (TS.mode === "3" ? `<tr><td colspan="5">#3 не е профилиран с Nsight Compute; най-близко е #1.</td></tr>` : "");
 }
 
+// ============ memory path: one row of the hierarchy, far → near ============
+const PATH = [
+  { k: "H", name: "host", sz: "CPU + RAM · PCIe ~31,5 GB/s", lat: "много бавно" },
+  { k: "V", name: "VRAM", sz: "16 GB GDDR6X · 736 GB/s", lat: "~570 цикъла" },
+  { k: "L2", name: "L2", sz: "64 MB, обща за 80 SM", lat: "~270–285" },
+  { k: "L1", name: "L1", sz: "128 KB общо с shared", lat: "~32" },
+  { k: "S", name: "shared", sz: "до 100 KB, ръчно управлявана", lat: "~30" },
+  { k: "R", name: "регистри", sz: "256 KB на SM", lat: "~0" }];
+const PIDX = Object.fromEntries(PATH.map((p, i) => [p.k, i]));
+function buildPath() {
+  const host = $("#path");
+  host.innerHTML = `<div class="groups"><span>извън картата</span><span>на платката</span><span>в чипа</span><span style="grid-column:span 3">във всеки SM</span></div>` +
+    `<div class="boxes">${PATH.map(p => `<div class="lvbox" data-k="${p.k}" style="--c:var(--lv-${p.k})"><i class="sw" style="background:var(--lv-${p.k})${p.k === "H" ? ";background:transparent;border-right:1.5px dashed var(--lv-H)" : ""}"></i><b><span>${p.name}</span><span class="lat">${p.lat}</span></b><span class="sz">${p.sz}</span>${p.k === "V" ? `<span class="tag" style="color:var(--lv-loc)">+ local: стековете</span>` : ""}</div>`).join("")}</div>` +
+    `<svg id="pathArrows" aria-hidden="true"><defs><marker id="ah" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8 z" fill="var(--ink)"/></marker><marker id="ahw" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8 z" fill="var(--ink-2)"/></marker></defs></svg>`;
+}
+// read: arrows towards the registers (drawn above); write: arrows back out (dashed, below); lit: data sits there
+function pathOf(st) {
+  const m = TS.mode, rec = st.it >= 0 && TS.run ? TS.run.trace[st.it] : null;
+  const via = miss => miss ? ["L2", "L1", "R"] : ["L1", "R"], loc = m === "4" || m === "5";
+  const out = { read: null, write: null, lit: [], self: false, loc: false };
+  switch (st.id) {
+    case "K0": out.lit = ["V"]; break;
+    case "K1": case "K3": case "B2": case "B4": out.read = ["V", "L2", "R"]; out.write = ["R", "L2", "V"]; break;
+    case "A1": case "M1": case "P1": break;
+    case "A2": out.read = ["L2", "R"]; break;
+    case "A3": out.read = ["L2", "S"]; break;
+    case "A4": out.lit = ["S", "R"]; break;
+    case "A5": out.read = ["S", "R"]; break;
+    case "A6": if (st.j) out.read = ["S", "R"]; else out.lit = ["R"]; break;
+    case "A7": case "M2": case "T3": out.lit = ["R"]; break;
+    case "A8": case "M5": case "Tend": out.write = ["R", "L2", "V"]; break;
+    case "M3": out.read = ["L2", "S", "R"]; break;
+    case "M4": out.lit = ["R"]; out.self = true; break;
+    case "B1": out.read = ["V", "L2", "R"]; out.lit = ["S"]; out.write = ["R", "L2", "V"]; break;
+    case "B3": out.read = ["V", "L2"]; out.write = ["L2", "V"]; out.lit = ["R"]; break;
+    case "B5": out.read = ["V", "L2", "R"]; out.write = ["R", "L2"]; break;
+    case "T0": out.lit = ["R"]; out.loc = loc; break;
+    case "T1": if (m === "7") { out.lit = ["R"]; out.self = true; } else { out.read = via(rec.popMiss); out.loc = true; } break;
+    case "T2": out.read = via(m === "7" ? !rec.hit : rec.nodeMiss); out.loc = loc; break;
+    case "T4": if (m !== "7" && rec.leafReq) out.read = via(rec.leafMiss); else out.lit = ["R"]; out.loc = loc; break;
+    case "T5": out.write = rec.pushMiss ? ["R", "L1", "L2"] : ["R", "L1"]; out.loc = true; break;
+    case "TI": if (m === "7") out.read = via(!rec.hit); else { const ms = rec.popMiss + rec.nodeMiss + rec.leafMiss + rec.pushMiss; out.read = via(ms); if (rec.pushReq) out.write = ["R", "L1"]; out.loc = true; } break;
+    case "P2": out.read = ["L2", "R"]; out.write = ["R", "L2"]; break;
+    case "P3": out.lit = ["L1"]; break;
+    case "H1": case "H2": out.read = ["H", "V"]; out.write = ["V", "H"]; break;
+  }
+  return out;
+}
+function renderPath(st) {
+  const p = pathOf(st), on = new Set([...(p.read || []), ...(p.write || []), ...p.lit]);
+  if (p.loc) on.add("V");
+  const host = $("#path"), boxes = [...host.querySelectorAll(".lvbox")];
+  boxes.forEach(b => b.classList.toggle("on", on.has(b.dataset.k)));
+  const tag = host.querySelector(".tag"); if (tag) tag.classList.toggle("on", p.loc);
+  const svg = $("#pathArrows"); svg.querySelectorAll("path.ar").forEach(e => e.remove());
+  const hr = host.getBoundingClientRect(), cxOf = k => { const r = boxes[PIDX[k]].getBoundingClientRect(); return [r.left - hr.left + r.width / 2, r.top - hr.top, r.bottom - hr.top]; };
+  if (boxes[0].offsetParent === null || !hr.width) return;
+  const arc = (a, b, up, dashed) => {
+    const [xa, ta, ba] = cxOf(a), [xb] = cxOf(b), d = Math.abs(PIDX[b] - PIDX[a]), h = 14 + 4 * d, y = up ? ta - 3 : ba + 3;
+    const sx = xa + (xb > xa ? 10 : -10), ex = xb + (xb > xa ? -10 : 10);
+    el("path", { class: "ar", d: `M${sx},${y} C${sx},${up ? y - h : y + h} ${ex},${up ? y - h : y + h} ${ex},${y}`, fill: "none", stroke: dashed ? "var(--ink-2)" : "var(--ink)", "stroke-width": 2.4, "stroke-dasharray": dashed ? "5 4" : "none", "marker-end": `url(#${dashed ? "ahw" : "ah"})` }, svg);
+  };
+  if (p.read) for (let i = 1; i < p.read.length; i++) arc(p.read[i - 1], p.read[i], true, false);
+  if (p.write) for (let i = 1; i < p.write.length; i++) arc(p.write[i - 1], p.write[i], false, true);
+  if (p.self) { const [x, t] = cxOf("R"); el("path", { class: "ar", d: `M${x - 14},${t - 2} C${x - 22},${t - 26} ${x + 22},${t - 26} ${x + 14},${t - 2}`, fill: "none", stroke: "var(--ink)", "stroke-width": 2, "marker-end": "url(#ah)" }, svg); }
+}
+
+// ============ galaxy caption: what the colours mean in this step ============
+const dot = v => `<i class="k" style="background:${v}"></i>`;
+function galCaption(st) {
+  const g = st.gal || {}, m = TS.mode, out = [];
+  const warp = `${dot("var(--sel)")}<b>розово</b>: 32-те тела на warp ${TS.selWarp}`;
+  if (S.colorWho || g.who) out.push(`${dot("var(--sel)")}избраният warp · ${dot("var(--amber)")}другите warp-ове от същия блок (същия SM) · ${dot("var(--blue)")}останалите блокове.`);
+  else if (g.trav !== undefined) {
+    out.push(warp + (m === "4" ? " (разпръснати: оригинален ред)." : " (съседи: Morton ред)."));
+    if (g.trav >= 0) out.push((g.phase || 0) >= 2 ? `Рамки: възлите, които warp-ът чете в тази итерация, ${dot("var(--lv-L1)")}от L1 или ${dot("var(--lv-L2)")}от L2.${(g.phase || 0) >= 4 ? " Точка = център на масата на приет възел; пунктир = отворен възел." : ""}` : "Рамките ще се появят, когато warp-ът прочете възлите.");
+  }
+  else if (g.chunks) out.push(`Четири порции по 32 съседни тела (${dot("var(--sel)")}${dot("var(--amber)")}${dot("var(--blue)")}${dot("var(--lv-L1)")}) отиват на четири различни SM.`);
+  else if (g.split) out.push(`${dot("var(--lv-H)")}телата, които смята CPU · ${dot("var(--lv-V)")}телата, които смята GPU.`);
+  else if (g.quarters) out.push(`Яркостта е j mod ${g.quarters}: коя от ${g.quarters}-те нишки на групата чете тялото. ${dot("var(--sel)")}избраните тела.`);
+  else if (g.range) out.push(`${g.dimRest ? `Ярко: тялото j, което всички нишки четат сега от shared. ` : ""}В кръгче: плочката от 256 тела в ${dot("var(--lv-S)")}shared. ${dot("var(--sel)")}избраният warp.`);
+  else if (g.all) out.push(`Всички тела: данните им сега са в ${dot(`var(--lv-${LVKEY[g.all]})`)}<b>${LVNAME[g.all]}</b>. ${dot("var(--sel)")}избраният warp.`);
+  if (g.curve) out.push("Линията е Morton кривата: редът на телата след сортирането.");
+  if (g.boxes) out.push(`Сивите рамки са възлите на дървото до дълбочина ${g.boxes}.`);
+  else if (g.bbox) out.push("Рамката е ограничаващата кутия.");
+  return out.join(" ");
+}
+
 // ============ panel E: caption + timeline ============
 function renderE(step) {
   $("#stepno").textContent = `времева стъпка ${tsBase + history.length} · стъпка ${cur + 1} от ${TS.steps.length} · ядро: ${TS.kernels[step.k].name}`;
@@ -1067,7 +1217,7 @@ function renderE(step) {
   const w = $("#why");
   w.hidden = !step.why;
   if (step.why) $("#whyTxt").textContent = step.why;
-  $("#whyChips").innerHTML = ""; $("#capChips").innerHTML = (step.chips || []).map(c => `<span class="mchip">${c}</span>`).join("");
+  $("#capChips").innerHTML = (step.chips || []).map(c => `<span class="mchip">${c}</span>`).join("");
   const tl = $("#timeline"); tl.innerHTML = "";
   TS.kernels.forEach((k, i) => {
     const last = i + 1 < TS.kernels.length ? TS.kernels[i + 1].first : TS.steps.length, n = last - k.first;
@@ -1091,14 +1241,15 @@ function render() {
   drawGalaxy(step); renderGPU(step); renderSMZ(step);
   if (!$("#viewTree").hidden || want === "tree") { renderTree(step); renderLanes(step); }
   if (!$("#viewPipe").hidden) renderPipe(step);
-  renderE(step); renderF(step); renderG();
+  renderE(step); renderF(step); renderG(); renderPath(step);
+  $("#galCap").innerHTML = galCaption(step);
   if (branchTimer) clearInterval(branchTimer); branchTimer = null; branchTick = 0;
   if (step.sub === 4 && TS.mode !== "7" && TS.run && !reduced) branchTimer = setInterval(() => { branchTick++; renderLanes(TS.steps[cur]); }, Math.max(500, Math.min(1200, (S.speed || 3000) / 4)));
 }
 function setTab(t, user) {
   if (user) { S.tab = t; }
-  for (const [id, v] of [["tabSM", "sm"], ["tabTree", "tree"], ["tabPipe", "pipe"]]) $("#" + id).setAttribute("aria-selected", v === t);
-  $("#viewSM").hidden = t !== "sm"; $("#viewTree").hidden = t !== "tree"; $("#viewPipe").hidden = t !== "pipe";
+  for (const [id, v] of [["tabChip", "chip"], ["tabSM", "sm"], ["tabTree", "tree"], ["tabPipe", "pipe"]]) $("#" + id).setAttribute("aria-selected", v === t);
+  $("#viewChip").hidden = t !== "chip"; $("#viewSM").hidden = t !== "sm"; $("#viewTree").hidden = t !== "tree"; $("#viewPipe").hidden = t !== "pipe";
   if (!S.pinned) S.tab = t;
 }
 function go(i) {
@@ -1154,6 +1305,7 @@ $("#cmWhere").addEventListener("click", () => { S.colorWho = false; $("#cmWhere"
 $("#cmWho").addEventListener("click", () => { S.colorWho = true; $("#cmWho").setAttribute("aria-pressed", true); $("#cmWhere").setAttribute("aria-pressed", false); render(); });
 document.querySelectorAll("[data-tab]").forEach(b => b.addEventListener("click", () => { setTab(b.dataset.tab, true); S.pinned = true; $("#bPin").setAttribute("aria-pressed", true); render(); }));
 $("#bPin").addEventListener("click", () => { S.pinned = !S.pinned; $("#bPin").setAttribute("aria-pressed", S.pinned); render(); });
+$("#chkAll").addEventListener("change", e => { S.allDetail = e.target.checked; rebuildKeep(); });
 document.addEventListener("keydown", e => {
   if (e.target.tagName === "SELECT" || e.target.tagName === "INPUT") return;
   if (e.key === " ") { e.preventDefault(); play(!S.playing); }
@@ -1184,11 +1336,14 @@ cv.addEventListener("mouseleave", () => $("#tip").hidden = true);
 let rz; addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { sizeCanvas(); render(); }, 120); });
 
 // ============ boot ============
-readColors(); buildGPU(); buildSMZ(); renderLegend(); sizeCanvas();
+readColors(); buildGPU(); buildSMZ(); buildPath(); renderLegend(); sizeCanvas();
 const gal0 = makeGalaxy(S.N);
 history = [{ P: gal0.P, V: gal0.V, A: accAllPairs(gal0.P, S.N) }];
 // start on the selected warp's first traversal step: the most telling view
 S.selBody = 0; setWorld(); buildTS();
 cur = Math.max(0, TS.steps.findIndex(s => s.id === "T2"));
+// deep link: #m5-s40 opens mode 5 at step 40
+const hm = /^#m([1345678])(?:-s(\d+))?$/.exec(location.hash);
+if (hm) { S.mode = hm[1]; $("#selMode").value = hm[1]; $("#qGrp").hidden = S.mode !== "3"; buildTS(); cur = hm[2] ? Math.min(+hm[2], TS.steps.length - 1) : 0; }
 render();
 </script>

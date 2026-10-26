@@ -13,7 +13,21 @@ of each body sits (registers, shared, L1, L2, VRAM, local memory, host) on a sch
   configuration. Source: `results/2026-10-22_ncu/summary.md`.
 
 Modes: #1, #3, #4, #5, #7 step by step; #6 and #8 as short explainers.
+
+Layout, top to bottom:
+
+- the step caption;
+- the memory path, one box per level from host to registers, with arrows for this step's reads
+  (above) and writes (below);
+- the galaxy, whose caption explains what its colours mean in this step;
+- one detail panel whose tab follows the step: chip, one SM, tree + warp, or pipeline;
+- the model counters next to the measured table.
+
+The first 3 traversal iterations are split into sub-steps. Later ones are one step each, unless
+"всяка итерация подробно" is ticked. A link like `gpu-memory-viz.html#m5-s40` opens mode 5 at
+step 40.
 Keys: Space plays, ← and → step, Shift+→ jumps to the end of the kernel, + and − change the speed,
 T switches the theme.
 
 Made through designer → build → critic → fixes. The design spec is `design-spec.md`.
+Second pass (2026-10-26): self-review in the browser, layout rebuilt around the memory path.
